@@ -1,6 +1,6 @@
 <?php 
 /*
-utf-8 check: äöüß
+
 
 	CMSimple Plugin - captcha image functions version 1.2
 	written by Carsten Heinelt - http://cmsimple.heinelt.eu

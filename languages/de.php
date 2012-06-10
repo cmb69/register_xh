@@ -1,5 +1,4 @@
 <?php
-$plugin_tx['register']['utf8_check']="äöü";
 $plugin_tx['register']['groupname']="Gruppenname";
 $plugin_tx['register']['name']="Titel Vorname Name";
 $plugin_tx['register']['username']="Benutzername";
@@ -91,5 +90,4 @@ $plugin_tx['register']['cf_login_all_subsites']="<p><b>true</b> erlaubt das Logi
 $plugin_tx['register']['cf_login_layout']="<p><b>horizontal</b> erzeugt ein horizontales Login Formular, leer oder alles andere erzeugt ein vertikales Login Formular.</p>";
 $plugin_tx['register']['cf_remember_user']="<p><b>true</b> zeigt die remember user checkbox unterhalb des Login Formulars.</p>";
 $plugin_tx['register']['cf_senderemail']="<p>Die e-mail Adresse des Administrators</p>";
-$plugin_tx['register']['cf_utf8_check']="<p><b>Bitte nicht ändern!</b></p>";
 ?>

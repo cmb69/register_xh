@@ -18,7 +18,7 @@ written by Carsten Heinelt - http://cmsimple.heinelt.eu
   taken from genizguestbook
 
 
-utf-8 marker: äöü
+
 */
 
 /****************************************************************************

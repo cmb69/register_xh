@@ -21,6 +21,5 @@
 	$plugin_cf['register']['login_all_subsites']="";
 	$plugin_cf['register']['remember_user']="true";
 	$plugin_cf['register']['senderemail']="e-mail adresse";
-	$plugin_cf['register']['utf8_check']="äöü";
 
 ?>

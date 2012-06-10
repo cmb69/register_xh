@@ -13,7 +13,7 @@ CMSimple Plugin - register version 2.4
 written by Carsten Heinelt - http://cmsimple.heinelt.eu
 
 
-utf-8 marker: äöü
+
 */
 
 function registerAdminGroupsForm($groups) 
