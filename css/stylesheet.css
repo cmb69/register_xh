@@ -1,0 +1,103 @@
+/* registration form styles */
+
+div.regi_register {background: #eee; text-align: center; border: 1px solid #999; padding: 15px;}
+.regi_register td {color: black; text-align: left; font-weight: normal;}
+.regi_register td .text {background: #fff; text-align:left; border: 1px solid #999; margin: 2px 6px;}
+.regi_register td .submit {border: 3px solid #ccc; background-color: #678; color: #eee; padding: 0px; padding: 0 6px 0 6px; margin: 8px 0;}
+
+
+/* settings form styles */
+
+div.regi_settings {background: #eee; text-align: center; border: 1px solid #999; padding: 15px;}
+.regi_settings td {color: black; text-align: left; font-weight: normal;}
+.regi_settings td .text {background: #fff; text-align:left; border: 1px solid #999; margin: 2px 6px;}
+.regi_settings td .submit {border: 3px solid #ccc; background-color: #678; color: #eee; padding: 0px; padding: 0 6px 0 6px; margin: 8px 0;}
+
+
+/* login form for horizontal register- and login-area */
+
+div.regi_regloginarea_hor {font-size: 94%; text-align: left;}
+div.regi_user_hor {float: left; padding: 0 10px 0 0;}
+div.regi_userfield_hor {float: left; margin: 0 16px 0 0;}
+div.regi_userfield_hor input {float: left; width: 120px;}
+div.regi_password_hor {float: left; margin: 0 8px 0 0;}
+div.regi_forgotpw_hor {float: left; margin: 3px 8px 0 0;}
+div.regi_passwordfield_hor {float: left; margin: 0 10px 0 0;}
+div.regi_passwordfield_hor input {float: left; width: 120px;}
+div.regi_loginbutton_hor {float: left; margin: 2px 10px 0 0;}
+div.regi_loginbutton_hor input {border: 0;}
+div.regi_remember_hor {float: left; text-align: left; line-height: 1.2em; margin: 0 6px 0 0;}
+div.regi_remember_hor input {float: left; text-align: left; margin: 3px 8px 0 0;}
+div.regi_register_hor {float: left;}
+/* 
+.regi_regloginarea_hor a,.registerlogin a:link,.registerlogin a:visited,
+.regi_regloginarea_hor a:active {color: #555555; font-size: 8pt; text-decoration: none; font-weight: normal;}
+.regi_regloginarea_hor a:hover { color: white; font-size: 8pt; text-decoration: none;}
+ */
+
+
+/* login form for vertical register- and login-area */
+
+.regi_regloginarea_ver {font-family: arial, sans-serif; font-size: 94%; color: #333; text-align: left;}
+div.regi_user_ver {text-align: left;}
+div.regi_userfield_ver {clear: both; width: 100%; float: left; width: 98%; margin: 0;}
+div.regi_userfield_ver input {float: left; width: 100%; margin: 0;}
+div.regi_password_ver {clear: both; width: 120px; float: left; margin: 4px 8px 0 0;}
+div.regi_forgotpw_ver {float: right; margin: 2px 0 0 20px; border: 1px solid #ccc;}
+div.regi_passwordfield_ver {clear: both; float: left; width: 98%; margin: 0;}
+div.regi_passwordfield_ver input {float: left; width: 100%; margin: 0;}
+div.regi_loginbutton_ver {clear: both; float: left; margin: 3px 10px 10px 0;}
+div.regi_loginbutton_ver input {border: 0;}
+div.regi_remember_ver {clear: both; width: 100%; float: left; text-align: left; line-height: 1em; margin: 4px 0;}
+div.regi_remember_ver input {float: left; margin: 2px 6px 6px 0;}
+div.regi_register_ver {clear: left; float: left; text-align: right; margin: 2px 0 0 0;}
+/* 
+.regi_regloginarea_ver a,.registerlogin a:link,.registerlogin a:visited,
+.regi_regloginarea_ver a:active {color: #555555; font-size: 8pt; text-decoration: none; font-weight: normal;}
+.regi_regloginarea_ver a:hover { color: white; font-size: 8pt; text-decoration: none;}
+ */
+
+/* loggedin form images */
+
+.regi_forgotpwimage {float: left; border: 0;}
+
+/* loggedin form for horizontal loggedin-area */
+
+div.regi_loggedin_loggedinarea_hor {background: #eee url(../images/loginhorizontal.jpg); font-size: 94%; text-align: left; border: 1px solid #aba; padding: 6px 12px; margin: 0 10px;}
+div.regi_loggedin_user_hor {float: left; }
+div.regi_loggedin_loggedin_hor {float: left; font-family: arial, sans-serif; font-weight: 600; color: #930; padding: 0 20px 0 0;}
+div.regi_loggedin_settings_hor {float: left; padding: 0 12px 0 0;}
+div.regi_loggedin_logout_hor {float: right;}
+/* 
+.regi_loggedin_loggedinarea_hor a,.registerlogin a:link,.registerlogin a:visited,
+.regi_loggedin_loggedinarea_hor a:active {color: #555555; font-size: 8pt; text-decoration: none; font-weight: normal;}
+.regi_loggedin_loggedinarea_hor a:hover { color: white; font-size: 8pt; text-decoration: none;}
+ */
+
+
+/* loggedin form for vertical loggedin-area */
+
+div.regi_loggedin_loggedinarea_ver {font-family: arial, sans-serif; font-size: 94%; color: #333; text-align: left; margin: 10px auto 0 auto;}
+div.regi_loggedin_user_ver {float: left; width: 100%;}
+div.regi_loggedin_loggedin_ver {float: left; width: 100%; font-family: arial, sans-serif; font-weight: 600; color: #930; padding: 6px 0;}
+div.regi_loggedin_settings_ver {float: left; width: 100%; padding: 0;}
+div.regi_loggedin_logout_ver {float: left; width: 100%; padding: 2px 0;}
+/* 
+.regi_loggedin_loggedinarea_ver a,.registerlogin a:link,.registerlogin a:visited,
+.regi_loggedin_loggedinarea_ver a:active {color: #555555; font-size: 8pt; text-decoration: none; font-weight: normal;}
+.regi_loggedin_loggedinarea_ver a:hover { color: white; font-size: 8pt; text-decoration: none;}
+ */
+
+/* loggedin form images */
+
+.regi_settingsimage {float: left; border: 0; margin: 5px 4px 0 0;}
+.regi_logoutimage {float: left; border: 0; margin: 5px 6px 0 0;}
+
+
+/* error styles in administration form */
+
+.regi_error {color: red;}
+
+/* Admin area */
+
+.register_admin_main {font-family: arial, sans serif; font-size: 14px;}
