@@ -2,6 +2,7 @@
 
 /**
  * Front-end of Register_XH.
+ *
  * Copyright (c) 2007 Carsten Heinelt (http://cmsimple.heinelt.eu)
  * Copyright (c) 2010-2012 Gert Ebersbach (http://www.ge-webdesign.de/cmsimpleplugins/)
  * Copyright (c) 2012 Christoph M. Becker (see TODO)
@@ -51,7 +52,7 @@ if(!@include($pth['file']['plugins_config'])) die('Plugin config file ' . $pth['
 
 if(!defined('CAPTCHA_LOADED'))
 {
-	$captchaInclude = $pth['folder']['plugins'] . $plugin . "/captcha.inc";
+	$captchaInclude = $pth['folder']['plugins'] . $plugin . "/captcha.inc.php";
 	if(!@include($captchaInclude)) die('Captcha functions file ' . $captchaInclude . ' missing');
 	if(CAPTCHA_LOADED != '1.2') die('Captcha functions already loaded, but of wrong version ' . CAPTCHA_LOADED);
 }
