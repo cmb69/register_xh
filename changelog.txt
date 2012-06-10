@@ -1,0 +1,161 @@
+Version TODO - released TODO
+cmb	
+
+Version 1.3 - released 2012-03-04
+ge	improved session management for login/logout (for parallel or nested installations)
+ge	new config option $plugin_cf['register']['login_all_subsites']
+ge	help variables for config in language files
+ge	added default language file
+
+Version 1.2.3 utf-8 - released 2011-07-30
+ge	replaced deprecated tags
+ge	fixed status "activated"
+
+Version 1.2.2 utf-8 - released 2011-07-25
+ge	Fixed bug activation user
+
+Version 1.2.1 utf-8 - released 2011-06-15
+ge	New user administration
+
+Version 1.1 utf-8 - released 2010-08-15
+ge	all files converted to utf-8 without BOM
+
+Version 1.0 - released 2010-03-03
+ge	code-cleaning - modified for CMSimple_XH
+ge	register function possible to enable/disable ($plugin_cf['register']['allowed_register'])
+ge	horizontal login-form now for areas with a width of 740px or higher (header or footer)
+ge	you can define a login page in the language settings ($plugin_tx['register']['config_login_page'])
+
+Version 2.4 - released 2007-07-22
+ch	added support for user status locked, i.e. disallowing edits of user
+	preferences based on status "locked", e.g. for supporting a guest login
+	(code contributed by Torben Rye Jensen)
+ch	updated function registerRemoveHiddenPages() for compatibility with
+	CMSimple v2.8 and later (code based on code by Martin Berriman)
+ch	updated version number
+	
+Version 2.3 - released 2007-01-31
+ch	removed restrictions for a user's full name
+ch	added functionality in user preferences to delete a user
+ch	special characters in German translation updated
+ch	url encoding of page names corrected
+ch	removed configuration setting for 'login_field_size'
+ch	updated stylesheet
+ch	fixed add button for IE6
+
+Version 2.2 - released 2007-01-25
+ch	added administrator mode functionality
+ch	removed registerprintname()
+ch	added registeradminmodelink()
+ch	corrected page call for custom login page
+ch	updated captcha version to be used
+ch	removed captcha code in error message of register and forgot email form
+ch	removed captcha in forgot email form - not needed because only valid
+	emails get accepted anyway
+ch	enhanced captcha functionality in register form:
+	- none
+	- image: an image with a captcha code is shown
+	- formula: a text formula is shown to be calculated by the user
+ch	call of generateCaptchaImage() updated in respect to changed arguments
+ch	call of getCaptchaHtml() updated in respect to changed arguments
+ch	changed configuration codes for better grouping in plugin loader
+ch	implemented configurable vertical and horizontal layout for login form 'login_layout'
+ch	added dutch (Eric Lotgerink) and slovak translation (Martin Sereday)
+ch	changed width of fields in user/group administration
+ch	added classes to fields in user/group administration
+
+Version 2.1 - released 2007-01-25
+ch	changed alignment of username and password field in login form
+ch	made field size of username and password field in login form configurable
+ch	corrected filtering of pages when looking for access() function
+ch	updated version number only
+
+Version 2.0 - released 2007-01-22
+ch	added functions are
+	- registerLogin()
+	- registerLogout()
+	- registerRemoveHiddenPages()
+	- access()
+	- session()
+	- registerReadGroups()
+	- registerWriteGroups()
+	- registerloginform() - replacement for registerlink()
+ch	changed functionality to support multiple access groups
+	(instead of one access level) per user - pages support
+	a multiple access groups
+ch	need for memberpages plugin removed and replaced with new functionality
+	in register plugin
+ch	reworked user administration
+ch	added group administration
+
+Version 1.1 - released 2007-01-19
+ch	implemented new option to allow encrypted passwords in CSV file
+ch	fixed problem with image URI
+ch	changed arguments of generateCaptchaImage()
+ch	changed arguments of getCaptchaHtml()
+ch	no direct plugin configuration variable access anymore
+
+Version 1.0 - released 2007-01-18
+ch	moved captcha functions into captcha.inc and associated function calls renamed
+ch	contact us email functionality moved into separate ContactUs plugin
+ch	clean-up of undefined variables
+ch	remaining functions:
+	- registerActivateUser(): activate user based on email
+	- registerReadUsers(): read users file
+	- registerWriteUsers(): write users file
+	- registerAddUser(): add user to user array
+	- registerSearchUserArray(): search user in user array
+	- registerReplaceUserEntry(): replace user entry in user array
+	- registerCheckEntry(): check form input
+	- registerCheckColons(): check form input for colons
+	- registerForm(): create HTML registration form
+	- registerUser(): register user (Top Level)
+	- registerForgotForm(): create HTML forgotten password form
+	- registerForgotPassword(): handle forgotten password request (Top Level)
+	- registerUserPrefsForm(): create HTML user preferences form
+	- registerUserPrefs(): handle user preferences (Top Level)
+	- registerlink(): print link to registration, forgot email and user preferences form
+	- registerprintname(): print user's full name
+ch	version number changed as shown in admin mode
+ch	initial version of captcha.inc: moved out of register plugin with following functions:
+	- checkGD(): check for availability of GD library
+	- md5_encrypt(): encrypt a string with a key
+	- md5_decrypt(): decrypt a string with a key
+	- generateCaptchaImage(): generate image with string and special font
+	- generateRandomCode(): generate a random string
+	- getCaptchaHtml(): generate HTML code to embed captcha image in form
+ch	needs following configuration settings
+	- $plugin_cf[$plugin]['imagewidth']: width of captcha image
+	- $plugin_cf[$plugin]['imageheight']: height of captcha image
+	- $plugin_cf[$plugin]['chars']: number of characters in captcha code
+	- $plugin_cf[$plugin]['font']: name of font in plugin 'font' folder
+	
+Version 0.4 - released 2007-01-17
+ch	added settings of $_SESSION['email'], $_SESSION['fullname'] in addition
+	to memberpages plugin's setting of $_SESSION['sessionnr'],
+	$_SESSION['accessgroups'] and $_SESSION['username']
+ch	added function registerprintname() to output current user's name
+ch	added function registercontactlink() to create link to secure email page
+ch	added functions registerEmailForm() and registerContactUs() to display secure email page
+ch	changed field width in table when editing users file
+
+Version 0.3 - released 2007-01-12
+ch	implemented password reminder via email in registerForgotPassword()
+ch	implemented user preferences setting in registerUserPrefs()
+ch	moved registration form code into separate function registerForm()
+ch	omitted need for own page calling "registerUser()" function
+ch	correction of captcha image generation so that characters don't get
+	on top of eachother anymore
+ch	PHP GD extension checking now in separate function checkGD()
+ch	added new link for forgotten password to registerlink() function
+ch	renamed registeruser() to registerUser()
+
+Version 0.2 - released 2007-01-10
+ch	registerActivateUser(): usage of $pth for reading/writing csvfile
+ch	registerUser(): usage of $pth for reading/writing csvfile
+ch	registerlink(): usage of $sn
+ch	registerAdminUsersForm(): usage of $pth for images folder
+ch	usage of $pth for reading/writing csvfile
+
+Version 0.1 - released 2007-01-10
+ch	initial version

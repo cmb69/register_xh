@@ -8,25 +8,6 @@ utf-8 check: äöüß
 	Functions md5_encrypt, md5_decrypt and generateCaptchaImage 
 	taken from genizguestbook
 	  
-	Changes:
-	v1.1 19-January-2007:
-	- fixed problem with image URI
-	- changed arguments of generateCaptchaImage()
-	- changed arguments of getCaptchaHtml()
-	- no direct plugin configuration variable access anymore
-	v1.0 18-January-2007:
-	- initial version: moved out of register plugin with following functions:
-	  - checkGD(): check for availability of GD library
-	  - md5_encrypt(): encrypt a string with a key
-	  - md5_decrypt(): decrypt a string with a key
-	  - generateCaptchaImage(): generate image with string and special font
-	  - generateRandomCode(): generate a random string
-	  - getCaptchaHtml(): generate HTML code to embed captcha image in form
-	- needs following configuration settings
-      - $plugin_cf[$plugin]['imagewidth']: width of captcha image
-      - $plugin_cf[$plugin]['imageheight']: height of captcha image
-      - $plugin_cf[$plugin]['chars']: number of characters in captcha code
-      - $plugin_cf[$plugin]['font']: name of font in plugin 'font' folder
 */
 
 /*

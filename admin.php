@@ -6,63 +6,12 @@ modified for CMSimple_XH by Gert Ebersbach - http://www.ge-webdesign.de/cmsimple
 based on register version 2.4 - written by Carsten Heinelt - http://cmsimple.heinelt.eu
 Many thanks to Carsten for permission to modify the plugin for CMSimple_XH
 
-v1.3 2012-03-04
-- improved session management for login/logout (for parallel or nested installations)
-- new config option $plugin_cf['register']['login_all_subsites']
-- help variables for config in language files
-- added default language file
-
-v1.2.3 utf-8 2011-07-30
-replaced deprecated tags
-fixed status "activated"
-
-v1.2.2 utf-8 2011-07-25
-Fixed bug activation user
-
-v1.2.1 utf-8 2011-06-15
-New user administration
-
-v1.1 utf-8 2010-08-15
-all files converted to utf-8 without BOM
-
-v1.0 2010-03-03
-- code-cleaning - modified for CMSimple_XH
-- register function possible to enable/disable ($plugin_cf['register']['allowed_register'])
-- horizontal login-form now for areas with a width of 740px or higher (header or footer)
-- you can define a login page in the language settings ($plugin_tx['register']['config_login_page'])
 
 ==============================================
 
 CMSimple Plugin - register version 2.4
 written by Carsten Heinelt - http://cmsimple.heinelt.eu
 
-Changes:
-v2.4 22-July-2007:
-- updated version number only
-v2.3 31-January-2007:
-- fixed add button for IE6
-v2.2 25-January-2007:
-- changed width of fields in user/group administration
-- added classes to fields in user/group administration
-v2.1 25-January-2007:
-- updated version number only
-v2.0 22-January-2007:
-- reworked user administration
-- added group administration
-v1.1 19-January-2007:
-- implemented new option to allow encrypted passwords in CSV file
-v1.0 18-January-2007:
-- version number changed as shown in admin mode
-- clean-up of undefined variables
-v0.4 17-January-2007:
-- changed field width in table when editing users file
-v0.3 12-January-2007:
-- no changes in this file
-v0.2 10-January-2007:
-- registerAdminUsersForm(): usage of $pth for images folder
-- usage of $pth for reading/writing csvfile
-v0.1 10-January-2007:
-- initial version
 
 utf-8 marker: äöü
 */
