@@ -1,31 +1,26 @@
 <?php
-/*
-CMSimple Plugin - register_mod_XH version 1.3
-modified for CMSimple_XH by Gert Ebersbach - http://www.ge-webdesign.de/cmsimpleplugins/
 
-based on register version 2.4 - written by Carsten Heinelt - http://cmsimple.heinelt.eu
-Many thanks to Carsten for permission to modify the plugin for CMSimple_XH
-
-
-==============================================
-
-CMSimple Plugin - register version 2.4
-written by Carsten Heinelt - http://cmsimple.heinelt.eu
-
-- Function regmemberslogin() is based on memberslogin from memberpages
-  plugin of famnissen.dk
-- Functions md5_encrypt, md5_decrypt and generateCaptchaImage
-  taken from genizguestbook
+/**
+ * Front-end of Register_XH.
+ * Copyright (c) 2007 Carsten Heinelt (http://cmsimple.heinelt.eu)
+ * Copyright (c) 2010-2012 Gert Ebersbach (http://www.ge-webdesign.de/cmsimpleplugins/)
+ * Copyright (c) 2012 Christoph M. Becker (see TODO)
+ */
 
 
+if (!defined('CMSIMPLE_XH_VERSION')) {
+    header('HTTP/1.0 403 Forbidden');
+    exit;
+}
 
-*/
+
+define('REGISTER_VERSION', '1.4rc1');
+
 
 /****************************************************************************
  *	Direct Calls															*
  ****************************************************************************/
 
-// error_reporting(8191);
 
 if($plugin_cf['register']['login_all_subsites'] == 'true')
 {
@@ -323,7 +318,7 @@ function registerLogout()
 
 	// clear all session variables
 	//$_SESSION = array();
-	
+
 	// end session
 	unset($_SESSION['username']);
 	unset($_SESSION['fullname']);
@@ -331,7 +326,7 @@ function registerLogout()
 	unset($_SESSION['accessgroups']);
 	unset($_SESSION['sessionnr']);
 	unset($_SESSION['register_sn']);
-	
+
 	// clear cookies
 	if(isset($_COOKIE['username'], $_COOKIE['password']))
 	{

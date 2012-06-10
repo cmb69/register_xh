@@ -29,7 +29,7 @@ div.regi_loginbutton_hor input {border: 0;}
 div.regi_remember_hor {float: left; text-align: left; line-height: 1.2em; margin: 0 6px 0 0;}
 div.regi_remember_hor input {float: left; text-align: left; margin: 3px 8px 0 0;}
 div.regi_register_hor {float: left;}
-/* 
+/*
 .regi_regloginarea_hor a,.registerlogin a:link,.registerlogin a:visited,
 .regi_regloginarea_hor a:active {color: #555555; font-size: 8pt; text-decoration: none; font-weight: normal;}
 .regi_regloginarea_hor a:hover { color: white; font-size: 8pt; text-decoration: none;}
@@ -51,7 +51,7 @@ div.regi_loginbutton_ver input {border: 0;}
 div.regi_remember_ver {clear: both; width: 100%; float: left; text-align: left; line-height: 1em; margin: 4px 0;}
 div.regi_remember_ver input {float: left; margin: 2px 6px 6px 0;}
 div.regi_register_ver {clear: left; float: left; text-align: right; margin: 2px 0 0 0;}
-/* 
+/*
 .regi_regloginarea_ver a,.registerlogin a:link,.registerlogin a:visited,
 .regi_regloginarea_ver a:active {color: #555555; font-size: 8pt; text-decoration: none; font-weight: normal;}
 .regi_regloginarea_ver a:hover { color: white; font-size: 8pt; text-decoration: none;}
@@ -68,7 +68,7 @@ div.regi_loggedin_user_hor {float: left; }
 div.regi_loggedin_loggedin_hor {float: left; font-family: arial, sans-serif; font-weight: 600; color: #930; padding: 0 20px 0 0;}
 div.regi_loggedin_settings_hor {float: left; padding: 0 12px 0 0;}
 div.regi_loggedin_logout_hor {float: right;}
-/* 
+/*
 .regi_loggedin_loggedinarea_hor a,.registerlogin a:link,.registerlogin a:visited,
 .regi_loggedin_loggedinarea_hor a:active {color: #555555; font-size: 8pt; text-decoration: none; font-weight: normal;}
 .regi_loggedin_loggedinarea_hor a:hover { color: white; font-size: 8pt; text-decoration: none;}
@@ -82,7 +82,7 @@ div.regi_loggedin_user_ver {float: left; width: 100%;}
 div.regi_loggedin_loggedin_ver {float: left; width: 100%; font-family: arial, sans-serif; font-weight: 600; color: #930; padding: 6px 0;}
 div.regi_loggedin_settings_ver {float: left; width: 100%; padding: 0;}
 div.regi_loggedin_logout_ver {float: left; width: 100%; padding: 2px 0;}
-/* 
+/*
 .regi_loggedin_loggedinarea_ver a,.registerlogin a:link,.registerlogin a:visited,
 .regi_loggedin_loggedinarea_ver a:active {color: #555555; font-size: 8pt; text-decoration: none; font-weight: normal;}
 .regi_loggedin_loggedinarea_ver a:hover { color: white; font-size: 8pt; text-decoration: none;}
@@ -101,3 +101,6 @@ div.regi_loggedin_logout_ver {float: left; width: 100%; padding: 2px 0;}
 /* Admin area */
 
 .register_admin_main {font-family: arial, sans serif; font-size: 14px;}
+
+img.register_plugin_icon {display: block; float: left; margin: 0 10px 0 0}
+p.register_license {clear: both; text-align: justify}

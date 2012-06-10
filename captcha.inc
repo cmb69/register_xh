@@ -1,14 +1,20 @@
-<?php 
-/*
+<?php
+
+/**
+ * Captcha image functions of Register_XH.
+ * Copyright (c) 2007 Carsten Heinelt (http://cmsimple.heinelt.eu)
+ * Copyright (c) 2010-2012 Gert Ebersbach (http://www.ge-webdesign.de/cmsimpleplugins/)
+ * Copyright (c) 2012 Christoph M. Becker (see TODO)
+ */
+
+// Functions md5_encrypt, md5_decrypt and generateCaptchaImage taken from genizguestbook
 
 
-	CMSimple Plugin - captcha image functions version 1.2
-	written by Carsten Heinelt - http://cmsimple.heinelt.eu
+if (!defined('CMSIMPLE_XH_VERSION')) {
+    header('HTTP/1.0 403 Forbidden');
+    exit;
+}
 
-	Functions md5_encrypt, md5_decrypt and generateCaptchaImage 
-	taken from genizguestbook
-	  
-*/
 
 /*
  * Check for GD Extension to allow Captcha image generation
@@ -26,6 +32,7 @@ function checkGD() {
   }
 }
 
+
 /*
  *  Encrypt a string using a specific key.
  */
@@ -39,6 +46,7 @@ function md5_encrypt($s,$key) {
   return urlencode(base64_encode($s));
 }
 
+
 /*
  *  Decrypt a string using a specific key.
  */
@@ -50,6 +58,7 @@ function md5_decrypt($s,$key) {
   for($i=1;$i<strlen($s);$i=$i+2) $r.=$s[$i];
   return $r;
 }
+
 
 /*
  *  Create a captcha image.
@@ -90,6 +99,7 @@ function generateCaptchaImage($str, $imgW, $imgH, $chars, $font, $crypt) {
   imagedestroy ($image);
 }
 
+
 /*
  *  Generate random code for captcha function.
  */
@@ -100,6 +110,7 @@ function generateRandomCode($length) {
   }
   return $str;
 }
+
 
 /*
  *  Generate random formula to be calculated by user instead of captcha image.
@@ -114,6 +125,7 @@ function generateCaptchaFormula($length) {
   }
   return $str;
 }
+
 
 /*
  *  Get HTML code to insert "captcha" image.
@@ -139,5 +151,7 @@ function getCaptchaHtml($action, $code, $imgW, $imgH, $key, $mode) {
     return "";
 }
 
+
 define("CAPTCHA_LOADED", '1.2');
+
 ?>
