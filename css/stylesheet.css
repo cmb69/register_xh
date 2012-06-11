@@ -43,7 +43,7 @@ div.regi_user_ver {text-align: left;}
 div.regi_userfield_ver {clear: both; width: 100%; float: left; width: 98%; margin: 0;}
 div.regi_userfield_ver input {float: left; width: 100%; margin: 0;}
 div.regi_password_ver {clear: both; width: 120px; float: left; margin: 4px 8px 0 0;}
-div.regi_forgotpw_ver {float: right; margin: 2px 0 0 20px; border: 1px solid #ccc;}
+div.regi_forgotpw_ver {float: right; margin: 2px 0 0 20px; /*border: 1px solid #ccc;*/}
 div.regi_passwordfield_ver {clear: both; float: left; width: 98%; margin: 0;}
 div.regi_passwordfield_ver input {float: left; width: 100%; margin: 0;}
 div.regi_loginbutton_ver {clear: both; float: left; margin: 3px 10px 10px 0;}
@@ -90,8 +90,8 @@ div.regi_loggedin_logout_ver {float: left; width: 100%; padding: 2px 0;}
 
 /* loggedin form images */
 
-.regi_settingsimage {float: left; border: 0; margin: 5px 4px 0 0;}
-.regi_logoutimage {float: left; border: 0; margin: 5px 6px 0 0;}
+.regi_settingsimage {float: left; border: 0; margin: 0 8px 0 0;}
+.regi_logoutimage {float: left; border: 0; margin: 0 8px 0 0;}
 
 
 /* error styles in administration form */

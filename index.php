@@ -1470,7 +1470,7 @@ function registerloginform()
 		$o .='<div class="regi_loggedin_settings_ver">'."\n";
 
 		if(isset($su) && urldecode($su) != html_entity_decode(preg_replace("/ /", "_", $plugin_tx[$plugin]['user_prefs'])))
-		$o .= '<a href="'.$sn.'?'.html_entity_decode(preg_replace("/ /", "_", $plugin_tx[$plugin]['user_prefs'])).'">'.tag('img class="regi_settingsimage" src="'.$imageFolder.'/'.$plugin_cf[$plugin]['image_user_preferences'].'" alt="'.$plugin_tx[$plugin]['user_prefs'].'"').'&nbsp;'.$plugin_tx[$plugin]['user_prefs'].'</a>'."\n".
+		$o .= '<a href="'.$sn.'?'.html_entity_decode(preg_replace("/ /", "_", $plugin_tx[$plugin]['user_prefs'])).'">'.tag('img class="regi_settingsimage" src="'.$imageFolder.'/'.$plugin_cf[$plugin]['image_user_preferences'].'" alt="'.$plugin_tx[$plugin]['user_prefs'].'"').$plugin_tx[$plugin]['user_prefs'].'</a>'."\n".
 		'</div>'."\n";
 		else
 		$o .= '</div>'."\n";
