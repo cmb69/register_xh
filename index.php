@@ -33,22 +33,22 @@ else
 }
 
 // Start session unless a robot is accessing the page
-if (preg_match('/Googlebot/i',$_SERVER['HTTP_USER_AGENT']));
+/*if (preg_match('/Googlebot/i',$_SERVER['HTTP_USER_AGENT']));
 else if (preg_match('/MSNbot/i',$_SERVER['HTTP_USER_AGENT']));
 else if (preg_match('/slurp/i',$_SERVER['HTTP_USER_AGENT']));
-else if(session_id() == "")
+else */if(session_id() == "")
   session_start();
 
 $plugin = basename(dirname(__FILE__),"/");
 
-// Set default language and config and language definition files to load
-if(!isset($sl)) $sl = $cf['language']['default'];
-$pth['file']['plugins_language'] = $pth['folder']['plugins'] . $plugin . '/languages/' . $sl . '.php';
-$pth['file']['plugins_config']   = $pth['folder']['plugins'] . $plugin . '/config/config.php';
+//// Set default language and config and language definition files to load
+//if(!isset($sl)) $sl = $cf['language']['default'];
+//$pth['file']['plugins_language'] = $pth['folder']['plugins'] . $plugin . '/languages/' . $sl . '.php';
+//$pth['file']['plugins_config']   = $pth['folder']['plugins'] . $plugin . '/config/config.php';
 
-// Load language and configuration file
-if(!@include($pth['file']['plugins_language'])) die('Plugin Language file ' . $pth['file']['plugins_language'] . ' missing');
-if(!@include($pth['file']['plugins_config'])) die('Plugin config file ' . $pth['file']['plugins_config'] . ' missing');
+//// Load language and configuration file
+//if(!@include($pth['file']['plugins_language'])) die('Plugin Language file ' . $pth['file']['plugins_language'] . ' missing');
+//if(!@include($pth['file']['plugins_config'])) die('Plugin config file ' . $pth['file']['plugins_config'] . ' missing');
 
 if(!defined('CAPTCHA_LOADED'))
 {
