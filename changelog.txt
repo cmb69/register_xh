@@ -1,4 +1,4 @@
-Version TODO - internally released 2012-06-11
+Version 1.4rc1 - internally released 2012-06-11
 cmb	added copyright and license information
 cmb	removed possibility to switch to admin mode
 cmb	improved registerRemoveHiddenPages(): plugin call is detected and redirect works
