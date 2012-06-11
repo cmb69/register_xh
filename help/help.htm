@@ -1,336 +1,152 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+    "http://www.w3.org/TR/html4/loose.dtd">
+<html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="content-type" content="text/html;charset=utf-8">
+<meta name="content-language" content="de">
+<title>Register_XH - Manual</title>
+<link rel="stylesheet" type="text/css" href="./stylesheet.css">
+</head>
 
-	<head>
-		<meta http-equiv="content-type" content="text/html;charset=utf-8" />
-		<meta name="generator" content="Adobe GoLive" />
-		<title>Register_mod_XH Plugin Help</title>
-	</head>
+<body>
 
-	<body>
-		<h2>Register_mod_XH Plugin Help</h2>
-		<p>Register_mod_XH is a modification of the Register plugin from <a href="http://cmsimple.heinelt.eu/">Carsten Heinelt</a> for CMSimple_XH, made by <a href="http://www.ge-webdesign.de/cmsimpleplugins/?Modifizierte_Plugins/register_mod_XH">ge-webdesign.de</a>.</p>
-		<p>Even though the plugin has been tested thoroughly, please use it on your own risk.</p>
-		
-		<div style="background: #eee; color: #600; padding: 10px 20px; margin: 16px 0; border: 1px solid;">
-		<h2>register_mod_XH 1.3</h2>
-		<h3>changes and new features</h3>
-		<ul>
-			<li>Register function is possible to enable/disable => <span style="font-family: 'courier new'; font-size: 106%; color: #000;">$plugin_cf['register']['allowed_register']</span></li>
-			<li>You can define a login page in the language settings => <span style="font-family: 'courier new'; font-size: 106%; color: #000;">$plugin_tx['register']['login_page']</span><br /><span style="color: #000;">(Use underscores, for Example: "My Login Page" => "My_Login_Page")</span></li>
-			<li>horizontal login-form now for areas with a width of 740px or higher (header or footer)</li>
-			<li>Data files are removed to folder <span style="font-family: 'courier new'; font-size: 106%; color: #000;">.content/plugins/register/</span> - You can change the path in the plugin language files.</li>			
-		</ul>
-		
-		<p>More informations you will get in the plugins backend.</p>
-		
-		<h3>Writing permissions for folders and files</h3>
-		
-		<h4>Following files you have to set to chmod 666:</h4>
-		<ul>
-			<li>all language files in the folder <span style="font-family: 'courier new'; font-size: 106%; color: #000;">./plugins/register/languages/</span></li>
-			<li>all .csv-files in the folder <span style="font-family: 'courier new'; font-size: 106%; color: #000;">./content/plugins/register/</span></li>
-			<li>file config.php in the folder <span style="font-family: 'courier new'; font-size: 106%; color: #000;">./plugins/register/config/</span></li>
-		</ul>
-		
-		<h4>Following folders you have to set to chmod 777:</h4>
-		<ul>
-			<li><span style="font-family: 'courier new'; font-size: 106%; color: #000;">./content/plugins/register/</span></li>
-		</ul>
-		
-		<h3>Styling of login-area</h3>
-		<p>You can style the login-area by the css-file:</p>
-		<ul>
-		<li>File: <span style="font-family: 'courier new'; font-size: 106%; color: #000;">./plugins/register/css/stylesheet.css</span></li>
-		<li>Classes:<br /><span style="font-family: 'courier new'; font-size: 106%; color: #000;">div.regi_regloginarea_ver {}</span> (vertical login-area)<br /><span style="font-family: 'courier new'; font-size: 106%; color: #000;">div.regi_regloginarea_hor {}</span> (horizontal login-area)</li>
-		</ul>
-		
-		<h3>Test user "admin"</h3>
-		<p>After installation you can login with username/password: <b>admin/admin</b></p>
-		</div>
-		
-		<h4>Features</h4>
-		<ul>
-			<li><strong>Login Functionality</strong><br />A login form is presented to the user that allows to enter username and password. The layout of the form can be horizontal or vertical and can be formatted through CSS</li>
-			<li><span style="font-weight: bold;">Two step registration process - Registration and Activation</span><br />
-				First the user registers on the page with login, password, full name and email. This generates an email to the user with a link that will then activate the account.</li>
-			<li><strong>Forgot Password?</strong><br />
-				The user can enter his email address to get his account data sent in case he forgot username or password.<br />
-			</li>
-			<li><strong>User Preferences</strong><br />When logged in the user can edit his user account data, i.e. full name, password, email address. In addition, he can also delete his user account.</li>
-			<li><strong>Administration Mode</strong><br />
-				When logged in as a user that belongs to the administrator group, it is possible to switch into CMSimple administration mode without logging in. The login will be performed implicitely.</li>
-			<li><strong>Confirmation Code (Captcha)</strong><br />
-				The registration form contains a confirmation code that needs to be entered to ensure that just people and no robots register. There are three options:
-				<ul>
-					<li>No confirmation code at all (&quot;none&quot;),</li>
-					<li>A randomly generated mathematical formula, e.g. &quot;1 + 2 + 8&quot;, for which the user needs to enter the result, or</li>
-					<li>An image displaying a code, e.g. &quot;AGHICO&quot;, which the user has to enter to confirm his input.</li>
-				</ul>
-			</li>
-			<li><strong>Users file</strong> on server side (colon separated fields) specifying
-				<ul>
-					<li>user name</li>
-					<li>user's full name</li>
-					<li>user's email</li>
-					<li>user's password in either <strong>clear text</strong> or <strong>encrypted</strong> form</li>
-					<li>list of access groups the user belongs to, e.g. admin, member, guest etc.</li>
-					<li>status, i.e. user got activated</li>
-				</ul>
-			</li>
-			<li><strong>Access Groups</strong> file on server side</li>
-			<li>Administration area allows <strong>administration of users and groups</strong> in CSV files<br />
-			</li>
-		</ul>
-		<h4>Requirements</h4>
-		<ul>
-			<li>The Register Plugin needs CMSimple with an installed Pluginloader.</li>
-			<li>In CMSimple_XH the Pluginloader is already included.</li>
-		</ul>
-		<h4>Acknowledgments</h4>
-		<ul>
-		<li>Many thanks to <a href="http://cmsimple.heinelt.eu">Carsten Heinelt</a> for permission to modify the plugin for CMSimple_XH.</li>
-			<li>The code for creating the captcha image is based on code from <a href="http://cmsimple_addon.famnissen.dk/?GenizBook">Geniz' Guestbook</a>.</li>
-			<li>The code from Michael Svarrer's Memberpages plugin (user administration code) was used as example for the Register plugin (user administration).<br />
-			</li>
-		</ul>
-		<h3>Installation Instructions</h3>
-		<ol>
-			<li>Download the plugin from <a href="http://www.ge-webdesign.de/cmsimple/?Plugins">www.ge-webdesign.de</a></li>
-			<li>Extract the zip-file on your PC<br /></li>
-			<li>Upload the folders "content" and "plugins" to the Root Ditectory of your CMSimple installation.<br /></li>
-		</ol>
-		<h3>Setup</h3>
-		<h4>CMSimple Website Template</h4>
-		<ol>
-			<li>Login as administrator and edit your CMSimple website template.</li>
-			<li>In your template you should foresee a place for your login form. There you need to place the following code:<br /><br />
-				<span style="font-family: 'courier new'; font-size: 106%;">&lt;?php echo registerloginform(); ?&gt;</span><br /><br />
-				This will display a login form that allows the user to specify username and password. In addition, he might want to set cookies to allow auto-login until next explicit logout.<br />
-				<div style="margin-left: 80px;">
-					<table border="0" cellspacing="20">
-						<tr>
-							<th>horizontal layout</th>
-							<th>vertical layout</th>
-						</tr>
-						<tr>
-							<td valign="top" style="text-align: center;">No image</td>
-							<td><img src="loginform_vertical.png" /></td>
-						</tr>
-					</table>
-				</div>
-				
-				
-				Below the login form there is a link to a registration page. The registration page can have either a graphical confirmation code included or a mathematical formula:<br />
-				<br />
-				<br />
-				<strong>Confirmation Code as Image (&quot;image&quot;)</strong><br />
-				 
-				<div style="margin-left: 80px;">
-				<img src="registerform.png" /><br />
-		</div>
-				<br />
-				<strong>Confirmation Code as Formula (&quot;formula&quot;)</strong><br />
-				<br />
-				<div style="margin-left: 80px;">
-				<img src="registerform_formula.png" /><br />
-		</div>
-				<br />
-				Besides the password field a link will lead you to a page where you can enter your email to get your account settings sent in case you forgot your user name or password:<br />
-				<br />
-				<div style="margin-left: 80px;">
-				<img src="forgotpassword.png" /><br />
-		</div>
-			</li>
-		</ol>
-		<div style="margin-left: 40px;">When logged in you will see instead of the login form a logout link and a link to a user preferences page. <br />
-			<div style="margin-left: 80px;">
-				<table border="0" cellspacing="20">
-			<tr>
-				<th>horizontal layout</th>
-				<th>vertical layout</th>
-			</tr>
-			<tr>
-				<td><img src="loggedin.png" /></td>
-				<td><img src="loggedin_vertical.png" /></td>
-			</tr>
-			</table>
-			</div>
-			<br />
-			The user preferences page looks as follows:<br />
-		</div>
-		<div style="margin-left: 120px;">
-			<img src="userprefs.png" /><br />
-		</div>
-		
-		<h4>Access Restricted Pages</h4>
-		<ol>
-			<li>Login as administrator and select the page for which you want to restrict access permissions.</li>
-			<li>In your page, e.g. just below the heading, insert the following code:<br /><br />
-				<span style="font-family: 'courier new'; font-size: 106%;">#CMSimple $output.= access('member,admin'); #</span><br /><br />
-				This will allow only users who are members of the access groups 'member' and 'admin' to access that page. All other users will receive an error message when accessing that page saying the the page has restricted access permissions. In addition, you may choose to hide these pages also from table of contents using the 'hide_pages' configuration option of the Register plugin.<br />
-			</li>
-		</ol>
-		<h3>Administration</h3>
-		<h4>Plugin Administration</h4>
-		<ol>
-			<li>Login as administrator.<br />
-			</li>
-			<li>Go to the Register plugin &quot;Plugin Configuration&quot; tab. Here you might want to change the &quot;senderemail&quot; to your domains webmaster's email. The entries have the following meaning:<br />
-			</li>
-			<li>
-				<table style="width: 100%; height: 24px;">
-					<tbody>
-						<tr>
-							<td style="font-weight: bold;">usersfile</td>
-							<td>relative path to users file</td>
-						</tr>
-						<tr align="left">
-							<td style="font-weight: bold;">groupsfile</td>
-							<td>relative path to groups file</td>
-						</tr>
-						<tr align="left">
-							<td style="font-weight: bold;">remember_user</td>
-							<td>displays checkbox in login form to enable auto-login until explicit logout - even when closing the browser</td>
-						</tr>
-						<tr align="left">
-							<td style="font-weight: bold;">hide_pages</td>
-							<td>hide pages in table of content to which the user does not have access</td>
-						</tr>
-						<tr align="left">
-							<td style="font-weight: bold;">encrypt_password</td>
-							<td>encrypt password in users file or not</td>
-						</tr>
-						<tr align="left">
-							<td style="font-weight: bold;">logfile</td>
-							<td>allow logging of login/logout of users in a log file</td>
-						</tr>
-						<tr align="left">
-							<td style="font-weight: bold;">group_default</td>
-							<td>default group for user after registration, but before activation</td>
-						</tr>
-						<tr align="left">
-							<td style="font-weight: bold;">group_activated</td>
-							<td>default group of user after registration and activation</td>
-						</tr>
-						<tr align="left">
-							<td style="font-weight: bold;">group_administrator</td>
-							<td>adminstrator group name (not yet used)</td>
-						</tr>
-						<tr align="left">
-							<td style="font-weight: bold;">login_layout</td>
-							<td>layout of the login form:
-								<ul>
-									<li><strong>horizontal</strong>: a horizontal layout (about 200px)</li>
-									<li><strong>vertical</strong>: a vertical layout (about 150px)</li>
-								</ul>
-							</td>
-						</tr>
-						<tr align="left">
-							<td style="font-weight: bold;">image_login</td>
-							<td>image name for login button</td>
-						</tr>
-						<tr align="left">
-							<td style="font-weight: bold;">image_logout</td>
-							<td>image name besides logout link</td>
-						</tr>
-						<tr align="left">
-							<td style="font-weight: bold;">image_forgot_password</td>
-							<td>image name for forgot password link</td>
-						</tr>
-						<tr align="left">
-							<td style="font-weight: bold;">image_user_preferences</td>
-							<td>image name besides user preferences link</td>
-						</tr>
-						<tr align="left">
-							<td style="font-weight: bold;">senderemail</td>
-							<td>Email to be used for sending out activation emails to users after registration.</td>
-						</tr>
-						<tr align="left">
-							<td style="font-weight: bold;">captcha_mode</td>
-							<td>one of the following three modes:
-								
-								<ul>
-									<li><strong>none</strong>: no validation code to be used</li>
-									<li><strong>formula</strong>: a mathematical formula used for validation</li>
-									<li><strong>image</strong>: an image with a code used for validation</li>
-								</ul>
-							</td>
-						</tr>
-						<tr align="left">
-							<td style="font-weight: bold;">captcha_font</td>
-							<td>Name of font to be used for captcha images</td>
-						</tr>
-						<tr>
-							<td style="font-weight: bold;">captcha_crypt</td>
-							<td>Crypt phrase to be used for MD5 encryption/decryption of the random captcha characters</td>
-						</tr>
-						<tr>
-							<td style="font-weight: bold;">captcha_image_width</td>
-							<td>Width of the captcha image</td>
-						</tr>
-						<tr align="left">
-							<td style="font-weight: bold;">captcha_image_height</td>
-							<td>Height of the captcha image</td>
-						</tr>
-						<tr>
-							<td style="font-weight: bold;">captcha_chars</td>
-							<td>Number of characters to be used for captach images</td>
-						</tr>
-					</tbody>
-				</table>
-			</li>
-		</ol>
-		<h4>User/Group Administration</h4>
-		<ol>
-			<li>Login as administrator.</li>
-			<li>Go to the Register plugin &quot;User/Group Administration&quot; tab and then to the &quot;Group Administration&quot; tab and edit the groups. The entries have the following meaning:<br />
-				<table style="width: 100%; height: 24px;">
-					<tbody>
-						<tr>
-							<td style="font-weight: bold;">Groupname</td>
-							<td>name of the group, e.g. 'member'</td>
-						</tr>
-					</tbody>
-				</table>
-			</li>
-			<li>Go to the Register plugin &quot;User/Group Administration&quot; tab and then to the &quot;User Administration&quot; tab and edit the users as you want to have them initially. The entries have the following meaning:<br />
-				<table style="width: 100%; height: 24px;">
-					<tbody>
-						<tr>
-							<td style="font-weight: bold;">Username</td>
-							<td>User login name, e.g. 'darwin'</td>
-						</tr>
-						<tr align="left">
-							<td style="font-weight: bold;">Password</td>
-							<td>Password for user, e.g. 'Evolution'<a href="http://cmsimpleplugins.svarrer.dk/?Plugins_avaliable:Memberspages"></a></td>
-						</tr>
-						<tr>
-							<td style="font-weight: bold;">Full Name<br />
-							</td>
-							<td>Full name of user, e.g. 'Charles Darwin'<br />
-							</td>
-						</tr>
-						<tr>
-							<td style="font-weight: bold;">Email</td>
-							<td>Email of user, e.g. 'charles.darwin@my-evolution.com'<br />
-							</td>
-						</tr>
-						<tr align="left">
-							<td style="font-weight: bold;">Access Groups<br />
-							</td>
-							<td>Access groups is a list of group names, e.g. 'guest,member'</td>
-						</tr>
-						<tr>
-							<td style="font-weight: bold;">Status</td>
-							<td>Status is 'activated' for users which activated their registered account. For all others it's a code of by default characters that is used to match the activation link in the activation email. With status 'locked' it is possible to disallow changing of the user preferences, e.g. for setting up a guest account that is not allowed to change its user preferences.</td>
-						</tr>
-					</tbody>
-				</table>
-			</li>
-		</ol>
-		<p>Note: When writing the user or group file, the Register plugin tries to reconstruct original user, group and permissions. Thus, if you note permission problems, change the user, group and permissions once on your files on server side and Register plugin will set them also on the new file.</p>
-	</body>
+<h1>Register_XH - a CMSimple_XH Plugin</h1>
+<img src="../register.png" style="display:block; float:left; margin: 0 10px 0 0">
+<p style="text-align:justify"><!-- TODO --></p>
+
+<ul id="nav">
+<li><a href="#notice">Important Notice</a></li>
+<li><a href="#requirements">Requirements</a></li>
+<li><a href="#installation">Installation</a></li>
+<li><a href="#settings">Settings</a></li>
+<li><a href="#usage">Usage</a>
+<ul><li><a href="#usage-bbcode">BBCode</a></li></ul>
+</li>
+<!--<li><a href="#limitations">Limitations</a></li>-->
+<li><a href="#license">License</a></li>
+<li><a href="#credits">Credits</a></li>
+</ul>
+
+<div id="body">
+
+<p><strong>Please do read this documentation
+<em>before</em> you encounter any problems!</strong></p>
+
+<h2><a name="notice">Important Notice</a></h2>
+<p><strong>Register_XH couldn't be tested so far in various environments.
+It is a so called release candidate. Use with caution!</strong></p>
+<div class="toplink"><a href="#">back to top</a></div>
+
+<h2><a name="requirements">Requirements</a></h2>
+<p>Register_XH is a plugin for CMSimple_XH.
+It requires a UTF-8 encoded version.</p>
+<div class="toplink"><a href="#">back to top</a></div>
+
+<h2><a name="installation">Installation</a></h2>
+<p>The installation is done as with many other CMSimple_XH plugins.
+See the <a href="http://www.cmsimple-xh.com/wiki/doku.php/manuals:users_manual:plugins:installation">
+CMSimple_XH wiki</a> for further details.</p>
+<ol>
+<li><strong>Backup the data on your server.</strong></li>
+<li>Unzip the distribution on your computer.</li>
+<li>Upload the whole directory register/ to your server into CMSimple_XH's plugins directory.</li>
+<li>Set write permissions to the subdirectories config/, css/, languages/, logfile/ and the plugin's data folder.</li>
+<!--<li><strong>Switch to "Register" in the back-end to check if all requirements are fulfilled.</strong></li>
+--></ol>
+<div class="toplink"><a href="#">back to top</a></div>
+
+<h2><a name="settings">Settings</a></h2>
+<p>The plugin's configuration is done as with many other
+CMSimple_XH plugins in the website's back-end.
+Select "Register" from "Plugins".</p>
+<p>You can change the default settings of Register_XH in "Plugin Config".
+Hints for the options will be displayed
+when hovering over the help icon with your mouse.</p>
+<p>Localization is done in "Plugin Language".
+You can translate the character strings to your own language,
+or customize them according to your needs.</p>
+<p>The look of the Register_XH can be customized in "Plugin Stylesheet".</p>
+<div class="toplink"><a href="#">back to top</a></div>
+
+<h2><a name="usage">Usage</a></h2>
+<p><!-- TODO --></p>
+<div class="toplink"><a href="#">back to top</a></div>
+
+<h3><a name="usage-bbcode">BBCode</a></h3>
+To allow users to markup their comments, basic BBCode is available.
+The following elements are supported:
+<table border="1">
+<tr><td>[b]bolded text[/b]</td>
+<td><strong>bolded text</strong></td></tr>
+<tr><td>[i]italicized text[/i]</td>
+<td><em>italicized text</em></td></tr>
+<tr><td>[u]underlined text[/u]</td>
+<td><u>underlined text</u></td></tr>
+<tr><td>[s]strikethrough text[/s]</td>
+<td><s>strikethrough text</s></td></tr>
+<tr><td>[url]http://cmsimple-xh.com/[/url]</td>
+<td><a href="http://cmsimple-xh.com/">http://cmsimple-xh.com</a></td></tr>
+<tr><td>[url=http://cmsimple-xh.com/]CMSimple_XH[/url]</td>
+<td><a href="http://cmsimple-xh.com/">CMSimple_XH</a></td></tr>
+<tr><td>[img]http://cmsimple-xh.com/images/flags/en.gif[/img]</td>
+<td><img src="http://cmsimple-xh.com/images/flags/en.gif" alt=""></td></tr>
+<tr><td>[size=150]large text[/size]</td>
+<td><span style="font-size:150%">large text</span></td></tr>
+<tr><td>[list][*]One [*]Two[/list]</td>
+<td><ul><li>One</li><li>Two</li></ul></td></tr>
+<tr><td>[list=1][*]One [*]Two[/list]</td>
+<td><ol start="1"><li>One</li><li>Two</li></ol></td></tr>
+<tr><td>[quote]quoted text[/quote]</td>
+<td><blockquote>quoted text</blockquote></td></tr>
+<tr><td>[code]monospaced text[/code]</td>
+<td><pre>monospaced text</pre></td></tr>
+</table>
+<p>Note that nesting of the same kind of elements is not allowed (e.g. nested lists are not possible).
+The (X)HTML created by the BBCode converter is always valid and secure (i.e. no script injection is possible).
+If any nesting of BBCode elements results in invalid (X)HTML,
+the offending elements will simply be ignored.</p>
+<p>The usage of the markup editor should be pretty much self explaining.
+Please note that a simple preview is available via the right most button,
+which comes in handy, as the comments can't be edited once posted.
+If JS is not available in the user's browsers, the editor won't work,
+but using BBCode in the textarea is still possible.</p>
+<div class="toplink"><a href="#">back to top</a></div>
+
+<!--<h2><a name="limitations">Limitations</a></h2>
+<div class="toplink"><a href="#">back to top</a></div>
+-->
+<h2><a name="license">License</a></h2>
+<p>Register_XH is licensed as <a href="../license.txt">freeware</a>.</p>
+<p>&copy; 2007 <a href="http://cmsimple.heinelt.eu/">Carsten Heinelt</a><br>
+&copy; 2010-2012 <a href="http://www.ge-webdesign.de/cmsimpleplugins/">Gert Ebersbach</a><br>
+&copy; 2012 Christoph M. Becker</p>
+<div class="toplink"><a href="#">back to top</a></div>
+
+<h2><a name="credits">Credits</a></h2>
+<p>Register was developed in 2007 by <a href="http://cmsimple.heinelt.eu/">Carsten Heinelt</a>.
+In 2010 he gave permission to <a href="http://www.ge-webdesign.de/cmsimpleplugins/">Gert Ebersbach</a>
+to adapt it to CMSimple_XH and to further improve it. The plugin was then distributed as Register_mod_XH.
+In 2012 Gert Ebersbach discontinued the developement,
+and gave me the permission to maintain and distribute the plugin.
+<em>Many thanks to Carsten Heinelt and Gert Ebersbach for their good work
+and the permission to further maintain the plugin</em>!</p>
+<p>The plugin icon is designed by <a href="http://www.dellustrations.com/">Wendell Fernandes</a>.
+Many thanks for publishing this icon as freeware.</p>
+<!--<p>The emoticons were taken from the <a href="http://led24.de/">LED icon pack</a>.
+Many thanks for publishing these icons under CC BY-SA.</p>
+<p>This plugin uses free applications icons from <a href="http://www.aha-soft.com/">Aha-Soft</a>.
+Many thanks for making these icons freely available.</p>
+--><!--<p>Many thanks to the community at the <a href="http://www.cmsimpleforum.com">CMSimple forum</a>-->
+<!--for tips, suggestions and testing.</p>-->
+<p>And last but not least many thanks to <a href="http://www.harteg.dk">Peter Harteg</a>,
+the "father" of CMSimple, and all developers of
+<a href="http://www.cmsimple-xh.com">CMSimple_XH</a>
+without whom this amazing CMS wouldn't exist.</p>
+<div class="toplink"><a href="#">back to top</a></div>
+
+</div>
+
+</body>
 
 </html>
