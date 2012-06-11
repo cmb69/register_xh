@@ -127,7 +127,7 @@ function registerAdminUsersForm($users) {
 if (isset($register) && $register == 'true') {
     $ERROR = '';
 
-    $o .= print_plugin_admin('on');
+    $o .= print_plugin_admin('off');
     pluginmenu('ROW');
     pluginmenu('TAB', '?&amp;register&amp;admin=plugin_main&amp;action=editgroups', '', $plugin_tx[$plugin]['mnu_group_admin']);
     pluginmenu('TAB', '?&amp;register&amp;admin=plugin_main&amp;action=editusers', '', $plugin_tx[$plugin]['mnu_user_admin']);
