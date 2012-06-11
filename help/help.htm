@@ -12,13 +12,13 @@
 <body>
 
 <h1>Register_XH - a CMSimple_XH Plugin</h1>
-<img src="../register.png" style="display:block; float:left; margin: 0 10px 0 0">
+<img src="../register.png" style="display:block; float:left; margin: 0 20px 0 0">
 <p style="text-align:justify">Register_XH facilitates to restrict access to certain CMSimple pages to registered users.
 Therefore it has a simple user and group management as well as a login form,
 with the optional possibility for visitors to register per email.
 It is used by some other plugins to add user management (e.g.
 <a href="http://3-magi.net/?CMSimple_XH/Chat_XH">Chat_XH</a> and
-<a href="http://3-magi.net/?CMSimple_XH/Forum_XH">Forum_XH</a></p>
+<a href="http://3-magi.net/?CMSimple_XH/Forum_XH">Forum_XH</a>).</p>
 
 <ul id="nav">
 <li><a href="#notice">Important Notice</a></li>
@@ -26,8 +26,11 @@ It is used by some other plugins to add user management (e.g.
 <li><a href="#installation">Installation</a></li>
 <li><a href="#settings">Settings</a></li>
 <li><a href="#usage">Usage</a>
-<ul><li><a href="#usage-bbcode">BBCode</a></li></ul>
-</li>
+<ul>
+<li><a href="#usage-administration">User and Group Administration</a></li>
+<li><a href="#usage-loginform">Login Form</a></li>
+<li><a href="#usage-access">Access to CMSimple pages</a></li>
+</ul></li>
 <!--<li><a href="#limitations">Limitations</a></li>-->
 <li><a href="#license">License</a></li>
 <li><a href="#credits">Credits</a></li>
@@ -71,24 +74,46 @@ when hovering over the help icon with your mouse.</p>
 <p>Localization is done in "Plugin Language".
 You can translate the character strings to your own language,
 or customize them according to your needs.</p>
-<p>The look of the Register_XH can be customized in "Plugin Stylesheet".</p>
+<p>The look of Register_XH can be customized in "Plugin Stylesheet".</p>
 <div class="toplink"><a href="#">back to top</a></div>
 
 <h2><a name="usage">Usage</a></h2>
-<!-- TODO: group and user management -->
-<p>To offer the user the possibility to login and optionally register first,
+<h3><a name="usage-administration">User and Group Administration</a></h3>
+<p>The first thing you should do is to adjust the user groups according to your needs.
+You can do this in "Register" &rarr; "Group administration".
+If you like you can register users in "Register" &rarr; "User administration".
+The dialogs should be pretty much self explaining.
+The status field is "activated" for users having the full priviledges according to their groups,
+"locked" for users who may not change their preferences.
+For users who have registered, but no yet activated their account, it contains a code.
+Don't change that, as the user won't be able to activate the account later.</p>
+<p>Note that the group and user CSV files could be accessed directly by calling their URL.
+An .htaccess file to prohibit this for Apache servers is already contained in the default data folder.
+For other servers or for custom data folders you have to take care for yourself,
+that those data are protected from non authorized access.</p>
+<div class="toplink"><a href="#">back to top</a></div>
+
+<h3><a name="usage-loginform">Login Form</a></h3>
+<p>To offer the user the possibility to log in and optionally register first,
 the login form must be displayed. You can put it in the template, so it's shown on all pages:</p>
 <pre>&lt;?php echo registerloginform(); ?&gt;</pre>
 <p>Alternatively you can put it on one or several CMSimple pages:</p>
 <pre>{{{PLUGIN:registerloginform();}}}</pre>
 <p>If the user forgot his password, he can request an email with the login credentials.
 If registration of new users is allowed, they can register themselves,
-and an email with the activation link will be sent to them, so they can activate their account and login nearly immediately.
+and an email with the activation link will be sent to them, so they can activate their account and log in nearly immediately.
 All this happens without requiring any actions from the admin, but he receives copies of the emails to be informed.</p>
-<!-- TODO: access() -->
+<p>After successfull login the user can edit his user preferences, i.e. name, email address and password.
+Unregistering, i.e. deleting the account, is also possible in the preferences dialog.</p>
+<p>Note that all login and logout attempts will be logged in the logfile/logfile.txt.</p>
 <div class="toplink"><a href="#">back to top</a></div>
 
-<h3><a name="usage-bbcode">BBCode</a></h3>
+<h3><a name="usage-access">Access to CMSimple pages</a></h3>
+<p>To restrict the access to a CMSimple page to certain user groups, you have to enter on that page:</p>
+<pre>{{{PLUGIN:access('LIST-OF-GROUPS');}}}</pre>
+<p>LIST-OF-GROUPS is the comma separated list of access groups that will have access to the page. For example:</p>
+<pre>{{{PLUGIN:access('admin,member,guest);}}}
+{{{PLUGIN:access('admin');}}}</pre>
 <div class="toplink"><a href="#">back to top</a></div>
 
 <!--<h2><a name="limitations">Limitations</a></h2>
@@ -109,6 +134,10 @@ In 2012 Gert Ebersbach discontinued the developement,
 and gave me the permission to maintain and distribute the plugin.
 <em>Many thanks to Carsten Heinelt and Gert Ebersbach for their good work
 and the permission to further maintain the plugin</em>!</p>
+<p>The code for creating the captcha image is based on code from
+<a href="http://cmsimple_addon.famnissen.dk/?GenizBook">Geniz' Guestbook</a>.
+The code from Michael Svarrer's <a href="http://cmsimplewiki.com/doku.php/plugins/memberpages">Memberpages plugin</a>
+has been used as example for the Register plugin.</p>
 <p>The plugin icon is designed by <a href="http://www.dellustrations.com/">Wendell Fernandes</a>.
 Many thanks for publishing this icon as freeware.</p>
 <p>This plugin uses free applications icons from <a href="http://www.aha-soft.com/">Aha-Soft</a>.
