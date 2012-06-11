@@ -34,7 +34,7 @@ function register_version() {
 	    .' and modify the Software, subject to the following conditions:</p>'."\n"
 	    .'<p class="register_license">The above copyright notice and this permission notice shall be included in all'
 	    .' copies or substantial portions of the Software.</p>'."\n"
-	    .'<p class="register_license">Redistribution is expressly prohibited.</p>'."\n"
+	    .'<p class="register_license">Redistribution via the internet is expressly prohibited.</p>'."\n"
 	    .'<p class="register_license">THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR'
 	    .' IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,'
 	    .' FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE'
