@@ -20,6 +20,6 @@ $plugin_cf['register']['logfile']="true";
 $plugin_cf['register']['login_layout']="";
 $plugin_cf['register']['login_all_subsites']="";
 $plugin_cf['register']['remember_user']="true";
-$plugin_cf['register']['senderemail']="e-mail adresse";
+$plugin_cf['register']['senderemail']="postmaster@example.com";
 
 ?>
