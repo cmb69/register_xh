@@ -1,5 +1,13 @@
-Version TODO - released TODO
-cmb	
+Version TODO - internally released 2012-06-11
+cmb	added copyright and license information
+cmb	removed possibility to switch to admin mode
+cmb	improved registerRemoveHiddenPages(): plugin call is detected and redirect works
+cmb	added default data/ folder
+cmb	slightly reworked back-end
+cmb	moved changelog to separate file changelog.txt
+cmb	replaced all icons
+cmb	(re)written English and German manual
+cmb	added Slovak and Czech translation (contributed by Tata resp. oldnema)
 
 Version 1.3 - released 2012-03-04
 ge	improved session management for login/logout (for parallel or nested installations)
@@ -33,7 +41,7 @@ ch	added support for user status locked, i.e. disallowing edits of user
 ch	updated function registerRemoveHiddenPages() for compatibility with
 	CMSimple v2.8 and later (code based on code by Martin Berriman)
 ch	updated version number
-	
+
 Version 2.3 - released 2007-01-31
 ch	removed restrictions for a user's full name
 ch	added functionality in user preferences to delete a user
@@ -129,7 +137,7 @@ ch	needs following configuration settings
 	- $plugin_cf[$plugin]['imageheight']: height of captcha image
 	- $plugin_cf[$plugin]['chars']: number of characters in captcha code
 	- $plugin_cf[$plugin]['font']: name of font in plugin 'font' folder
-	
+
 Version 0.4 - released 2007-01-17
 ch	added settings of $_SESSION['email'], $_SESSION['fullname'] in addition
 	to memberpages plugin's setting of $_SESSION['sessionnr'],
