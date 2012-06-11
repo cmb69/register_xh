@@ -1430,9 +1430,9 @@ function registerloginform()
 		else
 		$o .= '<div class="regi_remember_ver">'.tag('hr')."\n";
 		if(preg_match('/true/i',$plugin_cf[$plugin]['remember_user']) && ($plugin_cf[$plugin]['login_layout'] == 'horizontal'))
-		$o .=  tag('input type="checkbox" name="remember" class="regi_remember_hor"').$plugin_tx[$plugin]['remember_user'].'<div style="clear: both;"></div>'."\n";
+		$o .=  tag('input type="checkbox" name="remember" class="regi_remember_hor"').$plugin_tx[$plugin]['remember'].'<div style="clear: both;"></div>'."\n";
 		if(preg_match('/true/i',$plugin_cf[$plugin]['remember_user']) && ($plugin_cf[$plugin]['login_layout'] != 'horizontal'))
-		$o .=  tag('input type="checkbox" name="remember" class="regi_remember_ver"').$plugin_tx[$plugin]['remember_user']."\n".'</div>'."\n";
+		$o .=  tag('input type="checkbox" name="remember" class="regi_remember_ver"').$plugin_tx[$plugin]['remember']."\n".'</div>'."\n";
 		else $o .= '</div>'."\n";
 
 
