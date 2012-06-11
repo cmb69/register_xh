@@ -1,4 +1,5 @@
 <?php
+
 $plugin_tx['register']['groupname']="Gruppenname";
 $plugin_tx['register']['name']="Titel Vorname Name";
 $plugin_tx['register']['username']="Benutzername";
@@ -19,7 +20,7 @@ $plugin_tx['register']['admin_mode']="Administrationsmodus";
 $plugin_tx['register']['send']="Abschicken";
 $plugin_tx['register']['change']="Ändern";
 $plugin_tx['register']['fromip']="Von IP-Adresse";
-$plugin_tx['register']['remember_user']=" merken";
+$plugin_tx['register']['remember']=" merken";
 $plugin_tx['register']['login']="Login";
 $plugin_tx['register']['logout']="Logout";
 $plugin_tx['register']['loggedin']="Sie sind angemeldet !";
@@ -90,4 +91,8 @@ $plugin_tx['register']['cf_login_all_subsites']="<p><b>true</b> erlaubt das Logi
 $plugin_tx['register']['cf_login_layout']="<p><b>horizontal</b> erzeugt ein horizontales Login Formular, leer oder alles andere erzeugt ein vertikales Login Formular.</p>";
 $plugin_tx['register']['cf_remember_user']="<p><b>true</b> zeigt die remember user checkbox unterhalb des Login Formulars.</p>";
 $plugin_tx['register']['cf_senderemail']="<p>Die e-mail Adresse des Administrators</p>";
+$plugin_tx['register']['cf_config_login_page']="Name der Seite, zu der der Anwender direkt nach dem Login weiter geleitet wird.";
+$plugin_tx['register']['cf_config_usersfile']="Der Pfad (relativ zum CMSimple Installationsverzeichnis) zur Anwender CSV-Datei, z.B. \"plugins/register/data/users.csv\".";
+$plugin_tx['register']['cf_config_groupsfile']="Der Pfad (relativ zum CMSimple Installationsverzeichnis) zur Gruppen CSV-Datei, z.B. \"plugins/register/data/groups.csv\".";
+
 ?>
