@@ -153,19 +153,19 @@ if(!($edit&&$adm) && isset($su))
 }
 
 // Handle administrator mode ====================================================
-if(!($adm) &&
-isset($_GET['action']) &&
-$_GET['action'] == "admin_mode" &&
-isset($_SESSION['username'],$_SESSION['fullname'], $_SESSION['email'], $_SESSION['accessgroups'], $_SESSION['sessionnr'], $_SESSION['register_sn']) &&
-$_SESSION['sessionnr'] == session_id() && $_SESSION['register_sn'] == REGISTER_SESSION_NAME &&
-in_array($plugin_cf[$plugin]['group_administrator'], $_SESSION['accessgroups'])===true)
-{
-	setcookie('status','adm');
-	setcookie('passwd',$cf['security']['password']);
-	$adm=true;
-	$edit=true;
-	writelog(date("Y-m-d H:i:s")." from ".sv('REMOTE_ADDR').' logged_in'."\n");
-}
+//if(!($adm) &&
+//isset($_GET['action']) &&
+//$_GET['action'] == "admin_mode" &&
+//isset($_SESSION['username'],$_SESSION['fullname'], $_SESSION['email'], $_SESSION['accessgroups'], $_SESSION['sessionnr'], $_SESSION['register_sn']) &&
+//$_SESSION['sessionnr'] == session_id() && $_SESSION['register_sn'] == REGISTER_SESSION_NAME &&
+//in_array($plugin_cf[$plugin]['group_administrator'], $_SESSION['accessgroups'])===true)
+//{
+//	setcookie('status','adm');
+//	setcookie('passwd',$cf['security']['password']);
+//	$adm=true;
+//	$edit=true;
+//	writelog(date("Y-m-d H:i:s")." from ".sv('REMOTE_ADDR').' logged_in'."\n");
+//}
 
 // Handling of login/logout =====================================================
 $isSession = session('sessionnr') == session_id() &&
@@ -1489,22 +1489,24 @@ function registerloginform()
  */
 function registeradminmodelink()
 {
-	global $plugin_cf, $plugin_tx, $adm, $_SESSION, $sn, $su;
-	$plugin = basename(dirname(__FILE__),"/");
-	$isSession = isset(
-	$_SESSION['username'],
-	$_SESSION['fullname'],
-	$_SESSION['email'],
-	$_SESSION['accessgroups'],
-	$_SESSION['sessionnr'],
-	$_SESSION['register_sn']) &&
-	$_SESSION['sessionnr'] == session_id() &&
-	$_SESSION['register_sn'] == REGISTER_SESSION_NAME;
-	$isAdmin = in_array($plugin_cf[$plugin]['group_administrator'], $_SESSION['accessgroups']);
-
-	if((!isset($adm) || !$adm) && $isSession && $isAdmin)
-    return '<a href="' . $sn . '?' . $su . '&amp;action=admin_mode">' . $plugin_tx[$plugin]['admin_mode'] . '</a>'."\n";
-	else
-    return '';
+    trigger_error('registeradminmodelink() is deprecated', E_USER_WARNING);
+    return FALSE;
+//	global $plugin_cf, $plugin_tx, $adm, $_SESSION, $sn, $su;
+//	$plugin = basename(dirname(__FILE__),"/");
+//	$isSession = isset(
+//	$_SESSION['username'],
+//	$_SESSION['fullname'],
+//	$_SESSION['email'],
+//	$_SESSION['accessgroups'],
+//	$_SESSION['sessionnr'],
+//	$_SESSION['register_sn']) &&
+//	$_SESSION['sessionnr'] == session_id() &&
+//	$_SESSION['register_sn'] == REGISTER_SESSION_NAME;
+//	$isAdmin = in_array($plugin_cf[$plugin]['group_administrator'], $_SESSION['accessgroups']);
+//
+//	if((!isset($adm) || !$adm) && $isSession && $isAdmin)
+//    return '<a href="' . $sn . '?' . $su . '&amp;action=admin_mode">' . $plugin_tx[$plugin]['admin_mode'] . '</a>'."\n";
+//	else
+//    return '';
 }
 ?>
