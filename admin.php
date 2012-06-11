@@ -29,17 +29,19 @@ function register_version() {
 	    .'<p>Copyright &copy; 2007 <a href="http://cmsimple.heinelt.eu/">Carsten Heinelt</a>'.tag('br')
 	    .'Copyright &copy; 2010-2012 <a href="http://www.ge-webdesign.de/cmsimpleplugins/">Gert Ebersbach</a>'.tag('br')
 	    .'Copyright &copy; 2012 <a href="http://3-magi.net/">Christoph M. Becker</a></p>'."\n"
-	    .'<p class="register_license">This program is free software: you can redistribute it and/or modify'
-	    .' it under the terms of the GNU General Public License as published by'
-	    .' the Free Software Foundation, either version 3 of the License, or'
-	    .' (at your option) any later version.</p>'."\n"
-	    .'<p class="register_license">This program is distributed in the hope that it will be useful,'
-	    .' but WITHOUT ANY WARRANTY; without even the implied warranty of'
-	    .' MERCHAN&shy;TABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the'
-	    .' GNU General Public License for more details.</p>'."\n"
-	    .'<p class="register_license">You should have received a copy of the GNU General Public License'
-	    .' along with this program.  If not, see'
-	    .' <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.</p>'."\n";
+	    .'<p class="register_license">Permission is hereby granted, free of charge, to any person obtaining a copy of'
+	    .' this software and associated documentation files (the "Software"), to use, copy'
+	    .' and modify the Software, subject to the following conditions:</p>'."\n"
+	    .'<p class="register_license">The above copyright notice and this permission notice shall be included in all'
+	    .' copies or substantial portions of the Software.</p>'."\n"
+	    .'<p class="register_license">Redistribution is expressly prohibited.</p>'."\n"
+	    .'<p class="register_license">THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR'
+	    .' IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,'
+	    .' FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE'
+	    .' AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER'
+	    .' LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,'
+	    .' OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE'
+	    .' SOFTWARE.</p>'."\n";
 }
 
 
