@@ -362,39 +362,20 @@ function registerLogout()
  * Remove access restricted pages. Supported are multiple groups per page and
  * multiple user groups.
  */
-function registerRemoveHiddenPages($userGroups)
-{
-	global $cl, $c, $cf;
-	$function = "access";
+function registerRemoveHiddenPages($userGroups) {
+    global $cl, $c;
 
-	for($i = 0; $i < $cl; $i++)
-	{
-		// find #CMSimple scripting tag
-		if(preg_match("/".$cf['scripting']['regexp']."/is",$c[$i]))
-		{
-			$plugindata = preg_replace(array("'&(quot|#34);'i","'&(apos|#39);'i","'\"'i"),array("'","'","'"),$c[$i]);
-			// check if access function is contained in scripting tag
-			if(strpos($plugindata, "$function(") !== false)
-			{
-				$arguments = strip_tags(stristr($plugindata, "$function("));
-				// extract single argument in quotes
-				$arguments = preg_replace("/$function\w*\(\w*['\"]([A-Za-z0-9_,-]+)['\"]\w*\)\w*;(.*)/is", '$1', $arguments);
-				// remove spaces etc.
-				$arguments = preg_replace("/[ \t\r\n]*/", '', $arguments);
-				// convert arguments to list
-				$groupNames = explode(",", $arguments);
-				unset($_SESSION['page']);
-				// find page group in user's groups
-				$intersection = array_intersect($groupNames, $userGroups);
-				if(count($intersection)==0)
-				{
-					$c[$i]= '#CMSimple hide#';
-				}
-			}
+    for ($i = 0; $i < $cl; $i++) {
+	if (preg_match('/(?:#CMSimple |{{{PLUGIN:)access\((.*?)\);(?:#|}}})/isu', $c[$i], $matches)) {
+            if ($arg = trim($matches[1], "\"'")) {
+		$groups = array_map('trim', explode(',', $arg));
+		unset($_SESSION['page']); // TODO: what's this?
+		if (count(array_intersect($groups, $userGroups)) == 0) {
+		    $c[$i]= "#CMSimple hide# {{{PLUGIN:access('$arg');}}}";
 		}
+	    }
 	}
-	$c  = array_values($c);
-	$cl = count($c);
+    }
 }
 
 /*
