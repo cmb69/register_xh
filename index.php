@@ -448,7 +448,7 @@ function registerActivateUser($user, $captcha)
 		$ERROR .= '<li>' . $plugin_tx[$plugin]['err_status_empty'] . '</li>'."\n";
 		$status = md5_decrypt($captcha, $plugin_cf[$plugin]['captcha_crypt']);
 		if($status != $entry['status'])
-		$ERROR .= '<li>' . $plugin_tx[$plugin]['err_status_invalid'] . "($status<>" . $entry['status'] . ')</li>'."\n";
+		$ERROR .= '<li>' . $plugin_tx[$plugin]['err_status_invalid'] . "($status&ne;" . $entry['status'] . ')</li>'."\n";
 	}
 
 	if($ERROR != "")
@@ -937,7 +937,7 @@ function registerUser()
 			$content = $plugin_tx[$plugin]['emailtext1'] . "\n\n" .
 			' ' . $plugin_tx[$plugin]['name'] . ": $name \n" .
 			' ' . $plugin_tx[$plugin]['username'] . ": $username \n" .
-			' ' . $plugin_tx[$plugin]['password'] . ": $password1 \n" . // TODO remove this!
+			//' ' . $plugin_tx[$plugin]['password'] . ": $password1 \n" .
 			' ' . $plugin_tx[$plugin]['email'] . ": $email \n" .
 			' ' . $plugin_tx[$plugin]['fromip'] . ": $REMOTE_ADDR \n\n" .
 			$plugin_tx[$plugin]['emailtext2'] . "\n\n" .
@@ -1082,8 +1082,8 @@ function registerForgotPassword()
 			$email,
 			$plugin_tx[$plugin]['reminderemailsubject'] . ' ' . $_SERVER['SERVER_NAME'],
 			$content,
-			'From: ' . $plugin_cf[$plugin]['senderemail'] . "\r\n" .
-			'Bcc: '  . $plugin_cf[$plugin]['senderemail']
+			'From: ' . $plugin_cf[$plugin]['senderemail'] /*. "\r\n" .
+			'Bcc: '  . $plugin_cf[$plugin]['senderemail']*/
 			);
 			$o .= '<b>' . $plugin_tx[$plugin]['remindersent'] . '</b>';
 			return $o;
@@ -1244,7 +1244,7 @@ function registerUserPrefs()
 			$content = $plugin_tx[$plugin]['emailprefsupdated'] . "\n\n" .
 			' ' . $plugin_tx[$plugin]['name'] . ': '.$name."\n" .
 			' ' . $plugin_tx[$plugin]['username'] . ': '.$username."\n" .
-			' ' . $plugin_tx[$plugin]['password'] . ': '.$password1."\n" .
+			//' ' . $plugin_tx[$plugin]['password'] . ': '.$password1."\n" .
 			' ' . $plugin_tx[$plugin]['email'] . ': '.$email."\n" .
 			' ' . $plugin_tx[$plugin]['fromip'] . ': '.$REMOTE_ADDR."\n";
 
