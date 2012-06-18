@@ -951,8 +951,8 @@ function registerUser()
 			$email,
 			$plugin_tx[$plugin]['emailsubject'] . ' ' . $_SERVER['SERVER_NAME'],
 			$content,
-			'From: ' . $plugin_cf[$plugin]['senderemail'] . "\r\n" .
-			'Bcc: '  . $plugin_cf[$plugin]['senderemail']
+			array('From: ' . $plugin_cf[$plugin]['senderemail'],
+			    'Bcc: '  . $plugin_cf[$plugin]['senderemail'])
 			);
 			$o .= '<b>' . $plugin_tx[$plugin]['registered'] . '</b>';
 			return $o;
@@ -1082,8 +1082,7 @@ function registerForgotPassword()
 			$email,
 			$plugin_tx[$plugin]['reminderemailsubject'] . ' ' . $_SERVER['SERVER_NAME'],
 			$content,
-			'From: ' . $plugin_cf[$plugin]['senderemail'] /*. "\r\n" .
-			'Bcc: '  . $plugin_cf[$plugin]['senderemail']*/
+			array('From: ' . $plugin_cf[$plugin]['senderemail'])
 			);
 			$o .= '<b>' . $plugin_tx[$plugin]['remindersent'] . '</b>';
 			return $o;
@@ -1254,9 +1253,9 @@ function registerUserPrefs()
 			$email,
 			$plugin_tx[$plugin]['prefsemailsubject'] . ' ' . $_SERVER['SERVER_NAME'],
 			$content,
-			'From: ' . $plugin_cf[$plugin]['senderemail'] . "\r\n" .
-			'Cc: '  . $oldemail . "\r\n" .
-			'Bcc: '  . $plugin_cf[$plugin]['senderemail']
+			array('From: ' . $plugin_cf[$plugin]['senderemail'],
+			    'Cc: '  . $oldemail,
+			    'Bcc: '  . $plugin_cf[$plugin]['senderemail'])
 			);
 			$o .= '<b>' . $plugin_tx[$plugin]['prefsupdated'] . '</b>';
 			return $o;
@@ -1492,11 +1491,11 @@ function registeradminmodelink()
 }
 
 
-function register_mail($to, $subject, $message, $header)
+function register_mail($to, $subject, $message, $headers)
 {
-    $header = 'MIME-Version: 1.0' . "\r\n"
-	. 'Content-type: text/plain; charset=UTF-8' . "\r\n" . $header;
-    return mail($to, '=?UTF-8?B?'.base64_encode($subject).'?=', $message, $header);
+    $headers[] = 'MIME-Version: 1.0';
+    $headers[] = 'Content-type: text/plain; charset=UTF-8';
+    return mail($to, '=?UTF-8?B?'.base64_encode($subject).'?=', $message, implode("\r\n", $headers));
 }
 
 ?>
