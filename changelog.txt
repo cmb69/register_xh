@@ -1,6 +1,7 @@
-Version 1.4rc2 - released TODO (or stable?)
+Version 1.4rc2 - released TODO
 cmb	fixed minor bug: new registration triggered link check, when in admin mode
-cmb	removed passwords from emails (except "password forgotten" mail, which will not be sent to admin)
+cmb	removed passwords from emails (except "password forgotten" mail, which will not be sent to admin)#
+cmb	added MIME headers to emails
 cmb	internationalized "nach unten"
 cmb	added Danish translation (contributed by maeg)
 

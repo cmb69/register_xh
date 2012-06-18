@@ -946,7 +946,7 @@ function registerUser()
 			md5_encrypt($status, $plugin_cf[$plugin]['captcha_crypt']);
 
 			// send activation email
-			mail
+			register_mail
 			(
 			$email,
 			$plugin_tx[$plugin]['emailsubject'] . ' ' . $_SERVER['SERVER_NAME'],
@@ -1077,7 +1077,7 @@ function registerForgotPassword()
 			' ' . $plugin_tx[$plugin]['email'] . ": " . $user['email'] . "\n";
 
 			// send reminder email
-			mail
+			register_mail
 			(
 			$email,
 			$plugin_tx[$plugin]['reminderemailsubject'] . ' ' . $_SERVER['SERVER_NAME'],
@@ -1249,7 +1249,7 @@ function registerUserPrefs()
 			' ' . $plugin_tx[$plugin]['fromip'] . ': '.$REMOTE_ADDR."\n";
 
 			// send update email
-			mail
+			register_mail
 			(
 			$email,
 			$plugin_tx[$plugin]['prefsemailsubject'] . ' ' . $_SERVER['SERVER_NAME'],
@@ -1490,4 +1490,13 @@ function registeradminmodelink()
 //	else
 //    return '';
 }
+
+
+function register_mail($to, $subject, $message, $header)
+{
+    $header = 'MIME-Version: 1.0' . "\r\n"
+	. 'Content-type: text/plain; charset=UTF-8' . "\r\n" . $header;
+    return mail($to, '=?UTF-8?B?'.base64_encode($subject).'?=', $message, $header);
+}
+
 ?>
