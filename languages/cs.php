@@ -79,5 +79,11 @@ $plugin_tx['register']['csv_written']="Soubor CSV bxl úspěšně uložen.";
 $plugin_tx['register']['config_login_page']="";
 $plugin_tx['register']['config_usersfile']="plugins/register/data/users.csv";
 $plugin_tx['register']['config_groupsfile']="plugins/register/data/groups.csv";
+$plugin_tx['register']['syscheck_title']="Kontrola systému";
+$plugin_tx['register']['syscheck_phpversion']="PHP verze ≥ %s";
+$plugin_tx['register']['syscheck_extension']="Rozšíření '%s' načteno";
+$plugin_tx['register']['syscheck_encoding']="Kódování 'UTF-8' nastaveno";
+$plugin_tx['register']['syscheck_magic_quotes']="Magic quotes runtime off";
+$plugin_tx['register']['syscheck_writable']="Adresář '%s' umožňuje zápis";
 
 ?>

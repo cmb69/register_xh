@@ -45,6 +45,49 @@ function register_version() {
 }
 
 
+/**
+ * Returns the requirements information view.
+ *
+ * @return string  The (X)HTML.
+ */
+function register_system_check() { // RELEASE-TODO
+    global $pth, $tx, $plugin_tx;
+
+    define('REGISTER_PHP_VERSION', '4.3.2');
+    $ptx = $plugin_tx['register'];
+    $imgdir = $pth['folder']['plugins'].'register/images/';
+    $ok = tag('img src="'.$imgdir.'ok.png" alt="ok"');
+    $warn = tag('img src="'.$imgdir.'warn.png" alt="warning"');
+    $fail = tag('img src="'.$imgdir.'fail.png" alt="failure"');
+    $o = tag('hr').'<h4>'.$ptx['syscheck_title'].'</h4>'
+	    .(version_compare(PHP_VERSION, REGISTER_PHP_VERSION) >= 0 ? $ok : $fail)
+	    .'&nbsp;&nbsp;'.sprintf($ptx['syscheck_phpversion'], REGISTER_PHP_VERSION)
+	    .tag('br').tag('br')."\n";
+    foreach (array('date', 'gd', 'pcre', 'session') as $ext) {
+	$o .= (extension_loaded($ext) ? $ok : $fail)
+		.'&nbsp;&nbsp;'.sprintf($ptx['syscheck_extension'], $ext).tag('br')."\n";
+    }
+    $o .= tag('br').(!get_magic_quotes_runtime() ? $ok : $fail)
+	    .'&nbsp;&nbsp;'.$ptx['syscheck_magic_quotes'].tag('br')."\n";
+    $o .= (strtoupper($tx['meta']['codepage']) == 'UTF-8' ? $ok : $warn)
+	    .'&nbsp;&nbsp;'.$ptx['syscheck_encoding'].tag('br').tag('br')."\n";
+    foreach (array('config/', 'css/', 'languages/') as $folder) {
+	$folders[] = $pth['folder']['plugins'].'register/'.$folder;
+    }
+    $ufdir = dirname($pth['folder']['base'] . $plugin_tx['register']['config_usersfile']);
+    $gfdir = dirname($pth['folder']['base'] . $plugin_tx['register']['config_groupsfile']);
+    $folders[] = $ufdir . '/';
+    if ($gfdir != $ufdir) {
+	$folders[] = $gfdir . '/';
+    }
+    foreach ($folders as $folder) {
+	$o .= (is_writable($folder) ? $ok : $warn)
+		.'&nbsp;&nbsp;'.sprintf($ptx['syscheck_writable'], $folder).tag('br')."\n";
+    }
+    return $o;
+}
+
+
 function registerAdminGroupsForm($groups)  {
     global $tx, $pth, $sn, $plugin_tx;
 
@@ -134,7 +177,7 @@ if (isset($register) && $register == 'true') {
     $o .= pluginmenu('SHOW');
     switch ($admin) {
 	case '':
-	    $o .= register_version();
+	    $o .= register_version().tag('hr').register_system_check();
 	    break;
 	case 'plugin_main':
 	    switch ($action) {

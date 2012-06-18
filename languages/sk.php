@@ -79,5 +79,11 @@ $plugin_tx['register']['csv_written']="Súbor CSV bol úspešne uložený.";
 $plugin_tx['register']['config_login_page']="";
 $plugin_tx['register']['config_usersfile']="plugins/register/data/users.csv";
 $plugin_tx['register']['config_groupsfile']="plugins/register/data/groups.csv";
+$plugin_tx['register']['syscheck_title']="Kontrola systému";
+$plugin_tx['register']['syscheck_phpversion']="PHP verzia ≥ %s";
+$plugin_tx['register']['syscheck_extension']="Rozšírenie '%s' načítané";
+$plugin_tx['register']['syscheck_encoding']="Kódovanie 'UTF-8' nastavené";
+$plugin_tx['register']['syscheck_magic_quotes']="Magic quotes runtime off";
+$plugin_tx['register']['syscheck_writable']="Adresár '%s' umožňuje zápis";
 
 ?>

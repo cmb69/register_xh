@@ -101,5 +101,11 @@ $plugin_tx['register']['cf_senderemail']="<p>E-mail-konto til administrator</p>"
 $plugin_tx['register']['cf_config_login_page']="Navn på den side brugeren omdirigeres direkte efter login.";
 $plugin_tx['register']['cf_config_usersfile']="Sti (til CMSimple root)til bruger CSV file, e.g. \"plugins/register/data/users.csv\".";
 $plugin_tx['register']['cf_config_groupsfile']="Sti (til CMSimple root) til gruppe CSV file, e.g. \"plugins/register/data/groups.csv\".";
+$plugin_tx['register']['syscheck_title']="System check";
+$plugin_tx['register']['syscheck_phpversion']="PHP version ≥ %s";
+$plugin_tx['register']['syscheck_extension']="Extension '%s' loaded";
+$plugin_tx['register']['syscheck_encoding']="Tegnkoding 'UTF-8' konfigureret";
+$plugin_tx['register']['syscheck_magic_quotes']="Magic quotes runtime off";
+$plugin_tx['register']['syscheck_writable']="Mappen '%s' skrivebar";
 
 ?>

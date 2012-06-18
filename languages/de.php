@@ -80,6 +80,14 @@ $plugin_tx['register']['csv_written']="CSV Datei erfolgreich geschrieben";
 $plugin_tx['register']['config_login_page']="";
 $plugin_tx['register']['config_usersfile']="plugins/register/data/users.csv";
 $plugin_tx['register']['config_groupsfile']="plugins/register/data/groups.csv";
+
+$plugin_tx['register']['syscheck_title']="System-Prüfung";
+$plugin_tx['register']['syscheck_phpversion']="PHP Version ≥ %s";
+$plugin_tx['register']['syscheck_extension']="Erweiterung '%s' geladen";
+$plugin_tx['register']['syscheck_magic_quotes']="magic_quotes_runtime off";
+$plugin_tx['register']['syscheck_encoding']="UTF-8-Kodierung eingestellt";
+$plugin_tx['register']['syscheck_writable']="Ordner '%s' beschreibbar";
+
 $plugin_tx['register']['cf_allowed_register']="<p><b>true</b> erlaubt die Registrierung für neue Mitglieder.</b></p>";
 $plugin_tx['register']['cf_captcha_mode']="<p><b>none</b> deaktiviert das Captcha.</b></p><p><b>formula</b> aktiviert ein formelbasiertes Captcha.</b></p><p><b>image</b> aktiviert ein bildbasiertes Captcha.</b></p>";
 $plugin_tx['register']['cf_encrypt_password']="<p><b>true</b> aktiviert die Passwort Verschlüsselung.</b></p>";
