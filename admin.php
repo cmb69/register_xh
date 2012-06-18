@@ -100,7 +100,7 @@ function registerAdminUsersForm($users) {
     $i = 0;
     foreach($users as $entry) {
 	$groupString = implode(",", $entry['accessgroups']);
-	$o .= '<p style="text-align: right; margin-bottom: -6px;"><a href="#bottom">nach unten <span style="font-size: 24px;">&dArr;</span></a></p>'
+	$o .= '<p style="text-align: right; margin-bottom: -6px;"><a href="#bottom">' . $plugin_tx['register']['down_link'] . '</a></p>'
 		.tag('input type="hidden" value="' . $entry['password'] . '" name="oldpassword['.$i.']"')."\n" . tag('br')
 		.'<div><p style="width: 10em; float: left; clear: both; padding: 0; margin: 0;">' . $plugin_tx[$plugin]['username'] . ':</p>' . "\n" . tag('input type="normal" size="12" style="width: 200px;" value="' . $entry['username'] . '" name="username['.$i.']"')."\n" .  tag('br') . '<div style="clear: both;"></div></div>'
 		.'<div><p style="width: 10em; float: left; clear: both; padding: 0; margin: 0;">' . $plugin_tx[$plugin]['password']. ':</p>' . "\n" . tag('input type="normal" size="12" style="width: 200px;" value="' . $entry['password'] . '" name="password['.$i.']"')."\n" .  tag('br') . '<div style="clear: both;"></div></div>'

@@ -1,5 +1,6 @@
 <?php
 
+$plugin_tx['register']['down_link']="nach unten <span style=\"font-size: 24px;\">&dArr;</span>";
 $plugin_tx['register']['groupname']="Gruppenname";
 $plugin_tx['register']['name']="Titel Vorname Name";
 $plugin_tx['register']['username']="Benutzername";
