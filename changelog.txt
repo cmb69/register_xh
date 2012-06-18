@@ -1,4 +1,5 @@
 Version 1.4rc2 - released TODO (or stable?)
+cmb	fixed minor bug: new registration triggered link check, when in admin mode
 cmb	added Danish translation (contributed by maeg)
 
 Version 1.4rc1 - internally released 2012-06-11

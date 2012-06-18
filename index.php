@@ -822,7 +822,7 @@ function registerForm($code, $name, $username, $password1, $password2, $email)
 		$o .=
 		'<tr>' . "\n".
 		'  <td>' . $plugin_tx[$plugin]['code'] . '</td>' . "\n".
-		'  <td>'.tag('input class="text" name="validate" type="text" size="10" value=""').'</td>' . "\n".
+		'  <td>'.tag('input class="text" name="register_validate" type="text" size="10" value=""').'</td>' . "\n".
 		'  <td>' .
 		getCaptchaHtml(
 		"register_captcha", $code,
@@ -879,7 +879,7 @@ function registerUser()
 	$password2 = htmlspecialchars(isset($_POST['password2']) ? $_POST['password2'] : "");
 	$email     = htmlspecialchars(isset($_POST['email']) ? $_POST['email'] : "");
 	$captcha   = isset($_POST['captcha']) ? $_POST['captcha'] : "";
-	$validate  = isset($_POST['validate']) ? $_POST['validate'] : "";
+	$register_validate  = isset($_POST['register_validate']) ? $_POST['register_validate'] : "";
 	$REMOTE_ADDR = isset($_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR'] : "";
 
 	// Form Handling
@@ -893,7 +893,7 @@ function registerUser()
 			elseif($plugin_cf[$plugin]['captcha_mode'] == "formula")
 			eval('$code=' .  md5_decrypt($captcha, $plugin_cf[$plugin]['captcha_crypt']) . ";");
 
-			if($validate == '' || strtolower($validate) != $code)
+			if($register_validate == '' || strtolower($register_validate) != $code)
 			$ERROR .= '<li>' . $plugin_tx[$plugin]['err_validation'] . '</li>';
 		}
 
@@ -937,7 +937,7 @@ function registerUser()
 			$content = $plugin_tx[$plugin]['emailtext1'] . "\n\n" .
 			' ' . $plugin_tx[$plugin]['name'] . ": $name \n" .
 			' ' . $plugin_tx[$plugin]['username'] . ": $username \n" .
-			' ' . $plugin_tx[$plugin]['password'] . ": $password1 \n" .
+			' ' . $plugin_tx[$plugin]['password'] . ": $password1 \n" . // TODO remove this!
 			' ' . $plugin_tx[$plugin]['email'] . ": $email \n" .
 			' ' . $plugin_tx[$plugin]['fromip'] . ": $REMOTE_ADDR \n\n" .
 			$plugin_tx[$plugin]['emailtext2'] . "\n\n" .
