@@ -144,6 +144,7 @@ if(!($edit&&$adm) && isset($su))
 		}
 	} elseif($pageName == html_entity_decode(preg_replace("/ /", "_", $plugin_tx[$plugin]['access_error'])))
 	{
+		header('HTTP/1.1 403 Forbidden');
 		if(!in_array($plugin_tx[$plugin]['access_error'], $h))
 		{
 			$title = $plugin_tx[$plugin]['access_error'];
