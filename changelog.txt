@@ -4,7 +4,7 @@ cmb	removed passwords from emails (except "password forgotten" mail, which will 
 cmb	added MIME headers to emails
 cmb	added system check
 cmb	internationalized "nach unten"
-cmb	added Danish translation (contributed by maeg)
+cmb	added Danish and Russian translation (contributed by maeg resp. Old)
 
 Version 1.4rc1 - internally released 2012-06-11
 cmb	added copyright and license information
