@@ -1,5 +1,6 @@
 <?php
 
+$plugin_tx['register']['down_link']="dolů <span style=\"font-size: 24px;\">&dArr;</span>";
 $plugin_tx['register']['groupname']="Název skupiny";
 $plugin_tx['register']['name']="Jméno a příjmení";
 $plugin_tx['register']['username']="Uživatelské jméno";
@@ -20,7 +21,7 @@ $plugin_tx['register']['admin_mode']="Správcovský režim";
 $plugin_tx['register']['send']="Odeslat";
 $plugin_tx['register']['change']="Změnit";
 $plugin_tx['register']['fromip']="Z IP-Adresy";
-$plugin_tx['register']['remember']="Zapamatovat&nbsp;User";
+$plugin_tx['register']['remember']="Zapamatovat&nbsp;uživatele";
 $plugin_tx['register']['login']="Přihlásit";
 $plugin_tx['register']['logout']="Odhlásit";
 $plugin_tx['register']['loggedin']="Přihlášen";
@@ -56,7 +57,7 @@ $plugin_tx['register']['err_status_empty']="Status Vašeho uživatelského jmén
 $plugin_tx['register']['err_status_invalid']="Uvedený kontrolní kód je chybný.";
 $plugin_tx['register']['err_group_illegal']="Název skupiny může obsahovat pouze znaky: A-Z, a-z, 0-9, '_', '-'.";
 $plugin_tx['register']['registered']="Byli jste úspěšně zaregistrováni.<br>Byl Vám odeslán email s odkazem, který Vám umožní aktivovat přístup.";
-$plugin_tx['register']['register_form1']="Noví uživatelé dostávají při registraci status &quot;Guest&quot; a jejich prřstup na stránku zůstává nezměněn. Tento status může změnit jen správce stránky.";
+$plugin_tx['register']['register_form1']="Noví uživatelé dostávají při registraci status &quot;Guest&quot; a jejich přístup na stránku zůstává nezměněn. Tento status může změnit jen správce stránky.";
 $plugin_tx['register']['register_form2']="Registrace může trvat několik sekund. Vyčkejte na její úspešné dokončení.";
 $plugin_tx['register']['activated']="Úspešně jste aktivovali Váš účet.";
 $plugin_tx['register']['emailsubject']="Aktivace účtu pro\r\n";
@@ -76,7 +77,7 @@ $plugin_tx['register']['mnu_group_admin']="Správa skupin";
 $plugin_tx['register']['mnu_user_admin']="Správa uživatelů";
 $plugin_tx['register']['entries_in_csv']="Údaje v souboru CSV ";
 $plugin_tx['register']['csv_written']="Soubor CSV bxl úspěšně uložen.";
-$plugin_tx['register']['config_login_page']="";
+$plugin_tx['register']['config_login_page']="Pro_registrované";
 $plugin_tx['register']['config_usersfile']="plugins/register/data/users.csv";
 $plugin_tx['register']['config_groupsfile']="plugins/register/data/groups.csv";
 $plugin_tx['register']['syscheck_title']="Kontrola systému";
@@ -85,5 +86,20 @@ $plugin_tx['register']['syscheck_extension']="Rozšíření '%s' načteno";
 $plugin_tx['register']['syscheck_encoding']="Kódování 'UTF-8' nastaveno";
 $plugin_tx['register']['syscheck_magic_quotes']="Magic quotes runtime off";
 $plugin_tx['register']['syscheck_writable']="Adresář '%s' umožňuje zápis";
+$plugin_tx['register']['cf_allowed_register']="<p><b>true</b>umožňuje registraci pro nové členy.</b></p>";
+$plugin_tx['register']['cf_captcha_mode']="<p><b>none</b> deaktivuje captcha.</b></p><p><b>formula</b> aktivuje vzorec založený na captcha.</b></p><p><b>image</b> aktivuje obrázek založený na captcha.</b></p>";
+$plugin_tx['register']['cf_encrypt_password']="<p><b>true</b> aktivuje šifrování hesla.</b></p>";
+$plugin_tx['register']['cf_group_activated']="<p>Status nových členů (skupina po registraci a aktivaci účtu).</p>";
+$plugin_tx['register']['cf_group_administrator']="<p>Skupina s administrátorskými právy</p>";
+$plugin_tx['register']['cf_group_default']="<p>Stav nových členů (výchozí skupina uživatele po registraci, ale před aktivací účtu).</p>";
+$plugin_tx['register']['cf_hide_pages']="<p><b>true</b> skryje stránky v tabulce obsahu, na které uživatel nemá přístup.</p>";
+$plugin_tx['register']['cf_logfile']="<p><b>true</b> umožňuje logování přihlášení/odhlášení uživatelů v souboru protokolu.</p>";
+$plugin_tx['register']['cf_login_all_subsites']="<p><b>true</b> umožňuje přihlášení do všech stránek v jiném jazyce a všech subwebů v jediném kroku.</p>";
+$plugin_tx['register']['cf_login_layout']="<p><b>horizontal</b> vytváří horizontální přihlašovací formulář, nevyplněno, nebo cokoli jiného vytvoří vertikální přihlašovací formulář.</p>";
+$plugin_tx['register']['cf_remember_user']="<p><b>true</b> zobrazí políčko Zapamatovat uživatele pod přihlašovacím formulářem.</p>";
+$plugin_tx['register']['cf_senderemail']="<p>E-mailový účet správce</p>";
+$plugin_tx['register']['cf_config_login_page']="Název stránky kam je uživatel přesměrován přímo po přihlášení.";
+$plugin_tx['register']['cf_config_usersfile']="Cesta (relativní k CMSimple kořenu) pro uživatele v CSV souboru, např.\"plugins/register/data/users.csv\".";
+$plugin_tx['register']['cf_config_groupsfile']="Cesta (relativní k CMSimple kořenu) pro skupiny v CSV souboru, např.\"plugins/register/data/groups.csv\".";
 
 ?>

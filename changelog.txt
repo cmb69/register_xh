@@ -1,3 +1,6 @@
+Version 1.4rc3 - released 2012-09-12
+cmb	updated Czech translation and added Czech user manual (contributed by oldnema)
+
 Version 1.4rc2 - released 2012-09-07
 cmb	fixed minor bug: new registration triggered link check, when in admin mode
 cmb	removed passwords from emails (except "password forgotten" mail, which will not be sent to admin)
