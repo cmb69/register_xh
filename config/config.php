@@ -8,6 +8,7 @@ $plugin_cf['register']['captcha_image_width']="120";
 $plugin_cf['register']['captcha_image_height']="20";
 $plugin_cf['register']['captcha_chars']="2";
 $plugin_cf['register']['encrypt_password']="true";
+$plugin_cf['register']['fix_mail_headers']="";
 $plugin_cf['register']['group_activated']="guest";
 $plugin_cf['register']['group_administrator']="admin";
 $plugin_cf['register']['group_default']="guest";

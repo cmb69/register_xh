@@ -1495,9 +1495,12 @@ function registeradminmodelink()
 
 function register_mail($to, $subject, $message, $headers)
 {
+    global $plugin_cf;
+    
     $headers[] = 'MIME-Version: 1.0';
     $headers[] = 'Content-type: text/plain; charset=UTF-8';
-    return mail($to, '=?UTF-8?B?'.base64_encode($subject).'?=', $message, implode("\r\n", $headers));
+    $sep = strtolower($plugin_cf['register']['fix_mail_headers']) == 'true' ? "\n" : "\r\n";
+    return mail($to, '=?UTF-8?B?'.base64_encode($subject).'?=', $message, implode($sep, $headers));
 }
 
 ?>

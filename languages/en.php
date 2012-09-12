@@ -90,6 +90,7 @@ $plugin_tx['register']['syscheck_writable']="Folder '%s' writable";
 $plugin_tx['register']['cf_allowed_register']="<p><b>true</b> allows registration for new members.</b></p>";
 $plugin_tx['register']['cf_captcha_mode']="<p><b>none</b> deactivates captcha.</b></p><p><b>formula</b> activates a formula based captcha.</b></p><p><b>image</b> activates a image based captcha.</b></p>";
 $plugin_tx['register']['cf_encrypt_password']="<p><b>true</b> activates password encryption.</b></p>";
+$plugin_tx['register']['cf_fix_mail_headers']="<b>true</b> fixes problems with some buggy mail transfer agents. Use it, if you don't receive the emails or if some header information (e.g. \"MIME-Version: 1.0\") is visible in the body of the mail.";
 $plugin_tx['register']['cf_group_activated']="<p>The status of new members (group after registration and account activation).</p>";
 $plugin_tx['register']['cf_group_administrator']="<p>Group with admin rights</p>";
 $plugin_tx['register']['cf_group_default']="<p>The status of new members (default group for user after registration, but before account activation).</p>";

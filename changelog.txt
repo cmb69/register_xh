@@ -1,5 +1,6 @@
 Version 1.4rc3 - released 2012-09-12
 cmb	updated Czech translation and added Czech user manual (contributed by oldnema)
+cmb	added config option to fix broken mail headers sent via buggy unix MTAs
 
 Version 1.4rc2 - released 2012-09-07
 cmb	fixed minor bug: new registration triggered link check, when in admin mode

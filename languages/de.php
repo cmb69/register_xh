@@ -91,6 +91,7 @@ $plugin_tx['register']['syscheck_writable']="Ordner '%s' beschreibbar";
 $plugin_tx['register']['cf_allowed_register']="<p><b>true</b> erlaubt die Registrierung für neue Mitglieder.</b></p>";
 $plugin_tx['register']['cf_captcha_mode']="<p><b>none</b> deaktiviert das Captcha.</b></p><p><b>formula</b> aktiviert ein formelbasiertes Captcha.</b></p><p><b>image</b> aktiviert ein bildbasiertes Captcha.</b></p>";
 $plugin_tx['register']['cf_encrypt_password']="<p><b>true</b> aktiviert die Passwort Verschlüsselung.</b></p>";
+$plugin_tx['register']['cf_fix_mail_headers']="<b>true</b> behebt Probleme mit einigen fehlerhaften Mail Transfer Agents. Verwenden Sie es, wenn Sie die E-Mails nicht empfangen oder wenn ein Teil der Header-Informationen (z.B. \"MIME-Version: 1.0\") im Rumpf der E-Mail erscheint.";
 $plugin_tx['register']['cf_group_activated']="<p>Der Status neuer Mitglieder (Gruppe nach Registrierung und Account Aktivierung).</p>";
 $plugin_tx['register']['cf_group_administrator']="<p>Gruppe mit Administrator Rechten</p>";
 $plugin_tx['register']['cf_group_default']="<p>Der Status neuer Mitglieder (Gruppe nach Registrierung, aber vor der Account Aktivierung).</p>";
