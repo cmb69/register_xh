@@ -63,6 +63,7 @@ $plugin_tx['register']['activated']="Sie haben Ihren Zugang erfolgreich aktivier
 $plugin_tx['register']['emailsubject']="Ihr Benutzerkonto bei ";
 $plugin_tx['register']['emailtext1']="Es wurde ein Benutzerkonto mit folgenden Daten registriert:";
 $plugin_tx['register']['emailtext2']="Klicken Sie auf folgenden Link, um Ihr Benutzerkonto freizuschalten.";
+$plugin_tx['register']['emailtext3']="Klicken Sie auf folgenden Link, um ein neues Kennwort zu erhalten:";
 $plugin_tx['register']['reminderexplanation']="Auf dieser Seite können Sie Ihre e-mail Adresse eingeben, um eine e-mail mit Ihren Userdaten zu erhalten.";
 $plugin_tx['register']['reminderemailsubject']="Benutzerdaten fuer";
 $plugin_tx['register']['remindersent']="Sie haben eine e-mail zugeschickt bekommen mit Ihren Benutzerdaten.";

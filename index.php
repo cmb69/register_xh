@@ -15,7 +15,15 @@ if (!defined('CMSIMPLE_XH_VERSION')) {
 }
 
 
-define('REGISTER_VERSION', '1.4rc3');
+define('REGISTER_VERSION', '1.4rc4');
+
+
+if (!defined('CMSIMPLE_URL')) {
+    define('CMSIMPLE_URL', 'http'
+	. (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] != 'off' ? 's' : '')
+	. '://' . $_SERVER['SERVER_NAME'] . ':' . $_SERVER['SERVER_PORT']
+	. preg_replace('/index.php$/', '', $_SERVER['PHP_SELF'])); 
+}
 
 
 /****************************************************************************
@@ -850,7 +858,8 @@ function registerForm($code, $name, $username, $password1, $password2, $email)
  */
 function registerUser()
 {
-	GLOBAL $plugin_tx,$plugin_cf,$pth, $sn;
+	global $su, $pth, $sn, $plugin_tx, $plugin_cf;
+	
 	$plugin = basename(dirname(__FILE__),"/");
 
 	// In case user is logged in, no registration page is shown
@@ -943,7 +952,7 @@ function registerUser()
 			' ' . $plugin_tx[$plugin]['email'] . ": $email \n" .
 			' ' . $plugin_tx[$plugin]['fromip'] . ": $REMOTE_ADDR \n\n" .
 			$plugin_tx[$plugin]['emailtext2'] . "\n\n" .
-			'http://' . $_SERVER['SERVER_NAME'] . sv('REQUEST_URI') . '&' .
+			CMSIMPLE_URL . '?' . $su . '&' .
 			'action=registerActivateUser&username='.$username.'&captcha=' .
 			md5_encrypt($status, $plugin_cf[$plugin]['captcha_crypt']);
 
@@ -1005,7 +1014,8 @@ function registerForgotForm($email)
  */
 function registerForgotPassword()
 {
-	GLOBAL $plugin_tx,$plugin_cf,$pth,$sn;
+	global $pth, $sn, $su, $plugin_tx, $plugin_cf;
+	
 	$plugin = basename(dirname(__FILE__),"/");
 
 	// In case user is logged in, no registration page is shown
@@ -1032,7 +1042,7 @@ function registerForgotPassword()
 	$o = '<p>' . $plugin_tx[$plugin]['reminderexplanation'] . '</p>'."\n";
 
 	// Get form data if available
-	$action    = isset($_POST['action']) ? $_POST['action'] : "";
+	$action    = isset($_REQUEST['action']) ? $_REQUEST['action'] : "";
 	$email     = htmlspecialchars(isset($_POST['email']) ? $_POST['email'] : "");
 
 	// Form Handling
@@ -1051,17 +1061,17 @@ function registerForgotPassword()
 
 		// in case of encrypted password a new random password will be generated
 		// and its value be written back to the CSV file
-		if($ERROR=="" && preg_match('/true/i', $plugin_cf[$plugin]['encrypt_password']))
-		{
-			$password = generateRandomCode(8);
-			$user['password'] = crypt($password, $password);
-			$userArray = registerReplaceUserEntry($userArray, $user);
-			if(!registerWriteUsers($pth['folder']['base'] . $plugin_tx['register']['config_usersfile'], $userArray))
-			$ERROR .= '<li>' . $plugin_tx[$plugin]['err_cannot_write_csv'] .
-			' (' . $pth['folder']['base'] . $plugin_tx['register']['config_usersfile'] . ')' .
-			'</li>'."\n";
-		}
-		else
+		//if($ERROR=="" && preg_match('/true/i', $plugin_cf[$plugin]['encrypt_password']))
+		//{
+		//	$password = generateRandomCode(8);
+		//	$user['password'] = crypt($password, $password);
+		//	$userArray = registerReplaceUserEntry($userArray, $user);
+		//	if(!registerWriteUsers($pth['folder']['base'] . $plugin_tx['register']['config_usersfile'], $userArray))
+		//	$ERROR .= '<li>' . $plugin_tx[$plugin]['err_cannot_write_csv'] .
+		//	' (' . $pth['folder']['base'] . $plugin_tx['register']['config_usersfile'] . ')' .
+		//	'</li>'."\n";
+		//}
+		//else
 		$password = $user['password'];
 
 		if($ERROR != "")
@@ -1072,16 +1082,76 @@ function registerForgotPassword()
 		else
 		{
 			// prepare email content for user data email
-			$content = $plugin_tx[$plugin]['emailtext1'] . "\n\n" .
-			' ' . $plugin_tx[$plugin]['name'] . ": " . $user['name'] . "\n" .
-			' ' . $plugin_tx[$plugin]['username'] . ": " . $user['username'] . "\n" .
-			' ' . $plugin_tx[$plugin]['password'] . ": " . $password . "\n" .
-			' ' . $plugin_tx[$plugin]['email'] . ": " . $user['email'] . "\n";
+			$content = $plugin_tx[$plugin]['emailtext1'] . "\n\n"
+			    . ' ' . $plugin_tx[$plugin]['name'] . ": " . $user['name'] . "\n"
+			    . ' ' . $plugin_tx[$plugin]['username'] . ": " . $user['username'] . "\n";
+			if (!preg_match('/true/i', $plugin_cf[$plugin]['encrypt_password'])) {
+			    $content .= ' ' . $plugin_tx[$plugin]['password'] . ": " . $password . "\n";
+			}
+			$content .= ' ' . $plugin_tx[$plugin]['email'] . ": " . $user['email'] . "\n";
+			if (preg_match('/true/i', $plugin_cf[$plugin]['encrypt_password'])) {
+			    $content .= "\n" . $plugin_tx[$plugin]['emailtext3'] ."\n\n"
+				. CMSIMPLE_URL . '?' . $su . '&'
+				. 'action=registerResetPassword&username=' . urlencode($user['username']) . '&captcha='
+				. urlencode($user['password']);
+			}
 
 			// send reminder email
 			register_mail
 			(
 			$email,
+			$plugin_tx[$plugin]['reminderemailsubject'] . ' ' . $_SERVER['SERVER_NAME'],
+			$content,
+			array('From: ' . $plugin_cf[$plugin]['senderemail'])
+			);
+			$o .= '<b>' . $plugin_tx[$plugin]['remindersent'] . '</b>';
+			return $o;
+		}
+	} elseif (isset($_GET['action']) && $action == 'registerResetPassword'
+		  && preg_match('/true/i', $plugin_cf[$plugin]['encrypt_password']))
+	{
+		// read user file in CSV format separated by colons
+		$userArray = registerReadUsers($pth['folder']['base'] . $plugin_tx['register']['config_usersfile']);
+
+		// search user for email
+		$user = registerSearchUserArray($userArray, 'username', $_GET['username']);
+		if(!$user) $ERROR .= '<li>' . $plugin_tx[$plugin]['err_username_does_not_exist'] . '</li>'."\n";
+		
+		if ($user['password'] != stsl($_GET['captcha'])) {
+		    $ERROR .= '<li>' . $plugin_tx[$plugin]['err_status_invalid'] . '</li>';
+		}
+
+		// in case of encrypted password a new random password will be generated
+		// and its value be written back to the CSV file
+		if($ERROR=="")
+		{
+			$password = generateRandomCode(8);
+			$user['password'] = crypt($password, $password);
+			$userArray = registerReplaceUserEntry($userArray, $user);
+			if(!registerWriteUsers($pth['folder']['base'] . $plugin_tx['register']['config_usersfile'], $userArray))
+			$ERROR .= '<li>' . $plugin_tx[$plugin]['err_cannot_write_csv'] .
+			' (' . $pth['folder']['base'] . $plugin_tx['register']['config_usersfile'] . ')' .
+			'</li>'."\n";
+		}
+
+		if($ERROR != "")
+		{
+		$o .= '<span class="regi_error">' . $plugin_tx[$plugin]['error'] . '</span>'."\n" .
+		'<ul class="regi_error">'."\n".$ERROR.'</ul>'."\n";
+		}
+		else
+		{
+			// prepare email content for user data email
+			$content = $plugin_tx[$plugin]['emailtext1'] . "\n\n"
+			    . ' ' . $plugin_tx[$plugin]['name'] . ": " . $user['name'] . "\n"
+			    . ' ' . $plugin_tx[$plugin]['username'] . ": " . $user['username'] . "\n"
+			    . ' ' . $plugin_tx[$plugin]['password'] . ": " . $password . "\n"
+			    . ' ' . $plugin_tx[$plugin]['email'] . ": " . $user['email'] . "\n";
+
+			// send reminder email
+			register_mail
+			(
+			$user['email'],
 			$plugin_tx[$plugin]['reminderemailsubject'] . ' ' . $_SERVER['SERVER_NAME'],
 			$content,
 			array('From: ' . $plugin_cf[$plugin]['senderemail'])
