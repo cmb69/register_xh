@@ -1,3 +1,6 @@
+Version 1.4rc5 - released 2012-09-16
+cmb	fixed arbitrary code execution vulnerability
+
 Version 1.4rc4 - released 2012-09-13
 cmb	fixed conceptional bug, where anybody guessing a registered user's email address was able to reset the password
 cmb	removed the invalid <p> tags from the help strings in all language files
