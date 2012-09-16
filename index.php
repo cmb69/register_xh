@@ -904,7 +904,7 @@ function registerUser()
 			elseif($plugin_cf[$plugin]['captcha_mode'] == "formula") {
                             $formula = md5_decrypt($captcha, $plugin_cf[$plugin]['captcha_crypt']);
                             $addends = explode('+', $formula);
-                            $addends = array_filter($addends, create_function('$x', 'return is_numeric($x);'));
+                            $addends = array_filter($addends, create_function('$x', 'return is_numeric(trim($x));'));
                             $code = array_sum($addends);
 			}
 
