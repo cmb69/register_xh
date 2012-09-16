@@ -901,8 +901,12 @@ function registerUser()
 		{
 			if($plugin_cf[$plugin]['captcha_mode'] == "image")
 			$code = md5_decrypt($captcha, $plugin_cf[$plugin]['captcha_crypt']);
-			elseif($plugin_cf[$plugin]['captcha_mode'] == "formula")
-			eval('$code=' .  md5_decrypt($captcha, $plugin_cf[$plugin]['captcha_crypt']) . ";");
+			elseif($plugin_cf[$plugin]['captcha_mode'] == "formula") {
+                            $formula = md5_decrypt($captcha, $plugin_cf[$plugin]['captcha_crypt']);
+                            $addends = explode('+', $formula);
+                            $addends = array_filter($addends, create_function('$x', 'return is_numeric($x);'));
+                            $code = array_sum($addends);
+			}
 
 			if($register_validate == '' || strtolower($register_validate) != $code)
 			$ERROR .= '<li>' . $plugin_tx[$plugin]['err_validation'] . '</li>';
