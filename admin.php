@@ -127,34 +127,56 @@ function registerAdminGroupsForm($groups)  {
 
 
 function registerAdminUsersForm($users) {
-    global $tx, $pth, $sn, $plugin_tx;
+    global $tx, $pth, $sn, $hjs, $plugin_tx;
 
     $plugin = basename(dirname(__FILE__),"/");
     $imageFolder = $pth['folder']['plugins'] . $plugin . '/images';
 
+    $hjs .= '<script type="text/javascript" src="' . $pth['folder']['plugins'] . 'register/admin.js"></script>';
+    
     $o = '';
     $o .= '<h1>' . $plugin_tx[$plugin]['mnu_user_admin'] . '</h1>'."\n";
     $o .= '<div class="register_admin_main">'."\n";
 //      $o .= '<a href="#bottom">nach unten</a>';
-    $o .= '<form method="POST" action="'.$sn.'?&register#bottom">'."\n";
+    $o .= '<form id="register_user_form" method="POST" action="'.$sn.'?&register">'."\n";
     $o .= '<input type="hidden" value="saveusers" name="action" />'."\n";
     $o .= '<input type="hidden" value="plugin_main" name="admin" />'."\n";
 
+    $o .= '<table id="register_user_table">';
+    
+    $o .= '<tr>'
+        . '<th></th>'
+        . '<th onclick="register.sort()" style="cursor: pointer">' . $plugin_tx[$plugin]['username'] . '</th>'
+        . '<th>' . $plugin_tx[$plugin]['password'] . '</th>'
+        . '<th>' . $plugin_tx[$plugin]['name'] . '</th>'
+        . '</tr>'
+        . '<tr>'
+        . '<th></th>'
+        . '<th>' . $plugin_tx[$plugin]['email'] . '</th>'
+        . '<th>' . $plugin_tx[$plugin]['accessgroups'] . '</th>'
+        . '<th>' . $plugin_tx[$plugin]['status'] . '</th>'
+        . '</tr>';
+                
     $i = 0;
     foreach($users as $entry) {
 	$groupString = implode(",", $entry['accessgroups']);
-	$o .= '<p style="text-align: right; margin-bottom: -6px;"><a href="#bottom">' . $plugin_tx['register']['down_link'] . '</a></p>'
+	$o .= '<tr id="register_user_' . $i . '">'
 		.tag('input type="hidden" value="' . $entry['password'] . '" name="oldpassword['.$i.']"')."\n" . tag('br')
-		.'<div><p style="width: 10em; float: left; clear: both; padding: 0; margin: 0;">' . $plugin_tx[$plugin]['username'] . ':</p>' . "\n" . tag('input type="normal" size="12" style="width: 200px;" value="' . $entry['username'] . '" name="username['.$i.']"')."\n" .  tag('br') . '<div style="clear: both;"></div></div>'
-		.'<div><p style="width: 10em; float: left; clear: both; padding: 0; margin: 0;">' . $plugin_tx[$plugin]['password']. ':</p>' . "\n" . tag('input type="normal" size="12" style="width: 200px;" value="' . $entry['password'] . '" name="password['.$i.']"')."\n" .  tag('br') . '<div style="clear: both;"></div></div>'
-		.'<div><p style="width: 10em; float: left; clear: both; padding: 0; margin: 0;">' . $plugin_tx[$plugin]['name'] . ':</p>' . "\n" . tag('input type="normal" size="12" style="width: 200px;" value="' . $entry['name'] . '" name="name['.$i.']"')."\n" .  tag('br') . '<div style="clear: both;"></div></div>'
-		.'<div><p style="width: 10em; float: left; clear: both; padding: 0; margin: 0;">' . $plugin_tx[$plugin]['email'] . ':</p>' . "\n" . tag('input type="normal" size="12" style="width: 200px;" value="' . $entry['email'] . '" name="email['.$i.']"')."\n" .  tag('br') . '<div style="clear: both;"></div></div>'
-		.'<div><p style="width: 10em; float: left; clear: both; padding: 0; margin: 0;">' . $plugin_tx[$plugin]['accessgroups'] . ':</p>' . "\n" . tag('input type="normal" size="12" style="width: 200px;" value="' . $groupString . '" name="accessgroups['.$i.']"')."\n" .  tag('br') . '<div style="clear: both;"></div></div>'
-		.'<div><p style="width: 10em; float: left; clear: both; padding: 0; margin: 0;">' . $plugin_tx[$plugin]['status'] . ':</p>' . "\n" . tag('input type="normal" size="12" style="width: 200px;" value="' . $entry['status'] . '" name="status['.$i.']"')."\n" .  tag('br') . '<div style="clear: both;"></div></div>'
-		.tag('input type="image" src="'.$imageFolder.'/delete.png" style="width: 16px; height: 16px;" name="delete['.$i.']" value="delete" alt="Delete Entry"')."\n" . tag('br')
-		.tag('hr');
+                . '<td>' . tag('input type="image" src="'.$imageFolder.'/delete.png" style="width: 16px; height: 16px;" name="delete['.$i.']" value="delete" alt="Delete Entry"') . '</td>'
+		.'<td>' . tag('input type="normal" size="12" style="width: 200px;" value="' . $entry['username'] . '" name="username['.$i.']"') .  '</td>'
+		.'<td>' . tag('input type="normal" size="12" style="width: 200px;" value="' . $entry['password'] . '" name="password['.$i.']"') . '</td>'
+		.'<td>' . tag('input type="normal" size="12" style="width: 200px;" value="' . $entry['name'] . '" name="name['.$i.']"')  . '</td>'
+                . '</tr>'
+                . '<tr>'
+                . '<td>' . '</td>'
+		.'<td>' . tag('input type="normal" size="12" style="width: 200px;" value="' . $entry['email'] . '" name="email['.$i.']"') . '</td>'
+		.'<td>' . tag('input type="normal" size="12" style="width: 200px;" value="' . $groupString . '" name="accessgroups['.$i.']"') . '</td>'
+		.'<td>' . tag('input type="normal" size="12" style="width: 200px;" value="' . $entry['status'] . '" name="status['.$i.']"') . '</td>'
+		. '</tr>';
 	$i++;
     }
+    
+    $o .= '</table>';
 
     $o .= '<a name="bottom">'.tag('br').'</a>';
     $o .= tag('input type="image" src="'.$imageFolder.'/add.png" style="float: right; width: 16px; height: 16px;" name="add[0]" value="add" alt="Add entry"')."\n";
