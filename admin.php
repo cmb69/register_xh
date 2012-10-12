@@ -207,7 +207,9 @@ if (isset($register) && $register == 'true') {
 		    // read user file in CSV format separated by colons
 		    $o .= '<br />'."\n".'<table>'."\n";
 		    if (is_file($pth['folder']['base'] . $plugin_tx['register']['config_usersfile']))  {
+                        register_lock_users(dirname($pth['folder']['base'] . $plugin_tx['register']['config_usersfile']), LOCK_SH);
 			$users  = registerReadUsers($pth['folder']['base'] . $plugin_tx['register']['config_usersfile']);
+                        register_lock_users(dirname($pth['folder']['base'] . $plugin_tx['register']['config_usersfile']), LOCK_UN);
 			$o .= '<tr>'."\n".'  <td>'."\n";
 			$o .= registerAdminUsersForm($users);
 			$o .= '  </td>'."\n".'</tr>'."\n";
@@ -380,10 +382,12 @@ if (isset($register) && $register == 'true') {
 		    // In case that nothing got deleted or added, store back (save got pressed)
 		    $o .= '<tr>'."\n".'  <td>'."\n";
 		    if (!$deleted && !$added && $ERROR == "") {
+                        register_lock_users(dirname($pth['folder']['base'] . $plugin_tx['register']['config_usersfile']), LOCK_EX);
 			if (!registerWriteUsers($pth['folder']['base'] . $plugin_tx['register']['config_usersfile'], $newusers))
 			    $ERROR .= '<li>' . $plugin_tx[$plugin]['err_cannot_write_csv'] .
 				    ' (' . $pth['folder']['base'] . $plugin_tx['register']['config_usersfile'] . ')' .
 				    '</li>'."\n";
+                        register_lock_users(dirname($pth['folder']['base'] . $plugin_tx['register']['config_usersfile']), LOCK_UN);
 
 			if ($ERROR != '')
 			    $o .= '<b>' . $plugin_tx[$plugin]['error'] . '</b>'."\n" .
