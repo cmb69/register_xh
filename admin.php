@@ -127,7 +127,7 @@ function registerAdminGroupsForm($groups)  {
 
 
 function registerAdminUsersForm($users) {
-    global $tx, $pth, $sn, $hjs, $plugin_tx;
+    global $tx, $pth, $sn, $hjs, $plugin_cf, $plugin_tx;
 
     $plugin = basename(dirname(__FILE__),"/");
     $imageFolder = $pth['folder']['plugins'] . $plugin . '/images';
@@ -137,7 +137,25 @@ function registerAdminUsersForm($users) {
     $o = '';
     $o .= '<h1>' . $plugin_tx[$plugin]['mnu_user_admin'] . '</h1>'."\n";
     $o .= '<div class="register_admin_main">'."\n";
-//      $o .= '<a href="#bottom">nach unten</a>';
+
+    $o .= '<table><tr id="register_user_template" style="display: none">'
+            .tag('input type="hidden" value="" name="oldpassword[]"')."\n" . tag('br')
+            . '<td>' . tag('img src="'.$imageFolder.'/delete.png" style="width: 16px; height: 16px;" alt="Delete Entry" onclick="register.removeRow(this); return false"') . '</td>'
+            .'<td>' . tag('input type="normal" size="12" style="width: 200px;" value="NewUser" name="username[]"') .  '</td>'
+            .'<td>' . tag('input type="normal" size="12" style="width: 200px;" value="" name="password[]"') . '</td>'
+            .'<td>' . tag('input type="normal" size="12" style="width: 200px;" value="Name Lastname" name="name[]"')  . '</td>'
+            . '</tr>'
+            . '<tr style="display: none">'
+            . '<td>' . '</td>'
+            .'<td>' . tag('input type="normal" size="12" style="width: 200px;" value="user@domain.com" name="email[]"') . '</td>'
+            .'<td>' . tag('input type="normal" size="12" style="width: 200px;" value="' . $plugin_cf[$plugin]['group_default'] . '" name="accessgroups[]"') . '</td>'
+            .'<td>' . tag('input type="normal" size="12" style="width: 200px;" value="activated" name="status[]"') . '</td>'
+            . '</tr></table>';
+    
+
+    $o .= '<button onclick="register.toggleDetails()">Details</button>';
+    $o .= tag('input id="register_toggle_details" type="checkbox" onchange="register.toggleDetails()"');
+    
     $o .= '<form id="register_user_form" method="POST" action="'.$sn.'?&register">'."\n";
     $o .= '<input type="hidden" value="saveusers" name="action" />'."\n";
     $o .= '<input type="hidden" value="plugin_main" name="admin" />'."\n";
@@ -146,11 +164,11 @@ function registerAdminUsersForm($users) {
     
     $o .= '<tr>'
         . '<th></th>'
-        . '<th onclick="register.sort()" style="cursor: pointer">' . $plugin_tx[$plugin]['username'] . '</th>'
-        . '<th>' . $plugin_tx[$plugin]['password'] . '</th>'
+        . '<th onclick="register.sort(this, \'username\')" style="cursor: pointer">' . $plugin_tx[$plugin]['username'] . '</th>'
+        . '<th onclick="register.sort(this, \'password\')" style="cursor: pointer">' . $plugin_tx[$plugin]['password'] . '</th>'
         . '<th>' . $plugin_tx[$plugin]['name'] . '</th>'
         . '</tr>'
-        . '<tr>'
+        . '<tr class="register_second_row">'
         . '<th></th>'
         . '<th>' . $plugin_tx[$plugin]['email'] . '</th>'
         . '<th>' . $plugin_tx[$plugin]['accessgroups'] . '</th>'
@@ -162,12 +180,12 @@ function registerAdminUsersForm($users) {
 	$groupString = implode(",", $entry['accessgroups']);
 	$o .= '<tr id="register_user_' . $i . '">'
 		.tag('input type="hidden" value="' . $entry['password'] . '" name="oldpassword['.$i.']"')."\n" . tag('br')
-                . '<td>' . tag('input type="image" src="'.$imageFolder.'/delete.png" style="width: 16px; height: 16px;" name="delete['.$i.']" value="delete" alt="Delete Entry"') . '</td>'
+                . '<td>' . tag('img src="'.$imageFolder.'/delete.png" style="width: 16px; height: 16px;" alt="Delete Entry" onclick="register.removeRow(this); return false"') . '</td>'
 		.'<td>' . tag('input type="normal" size="12" style="width: 200px;" value="' . $entry['username'] . '" name="username['.$i.']"') .  '</td>'
 		.'<td>' . tag('input type="normal" size="12" style="width: 200px;" value="' . $entry['password'] . '" name="password['.$i.']"') . '</td>'
 		.'<td>' . tag('input type="normal" size="12" style="width: 200px;" value="' . $entry['name'] . '" name="name['.$i.']"')  . '</td>'
                 . '</tr>'
-                . '<tr>'
+                . '<tr class="register_second_row">'
                 . '<td>' . '</td>'
 		.'<td>' . tag('input type="normal" size="12" style="width: 200px;" value="' . $entry['email'] . '" name="email['.$i.']"') . '</td>'
 		.'<td>' . tag('input type="normal" size="12" style="width: 200px;" value="' . $groupString . '" name="accessgroups['.$i.']"') . '</td>'
@@ -179,7 +197,7 @@ function registerAdminUsersForm($users) {
     $o .= '</table>';
 
     $o .= '<a name="bottom">'.tag('br').'</a>';
-    $o .= tag('input type="image" src="'.$imageFolder.'/add.png" style="float: right; width: 16px; height: 16px;" name="add[0]" value="add" alt="Add entry"')."\n";
+    $o .= tag('img src="'.$imageFolder.'/add.png" style="float: right; width: 16px; height: 16px;" alt="Add entry" onclick="register.addRow()"')."\n";
     $o .= tag('input class="submit" type="submit" value="' . ucfirst($tx['action']['save']).  '" name="send"')."\n";
     $o .= '</form>'."\n".'</div>'.tag('br')."\n";
     return $o;
