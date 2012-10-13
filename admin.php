@@ -364,7 +364,7 @@ if (isset($register) && $register == 'true') {
 			    }
 			    if ($ENTRY_ERROR != '')
 				$ERROR .= '<li>' . $plugin_tx[$plugin]['error_in_user'] . '"' . $username[$j] . '"' .
-					'<ul class="error"><li>'.$ENTRY_ERROR.'</li></ul></li>'."\n";
+					'<ul class="error">'.$ENTRY_ERROR.'</ul></li>'."\n";
 
 			    if (preg_match('/true/i', $plugin_cf[$plugin]['encrypt_password']) && $password[$j] != $oldpassword[$j])
 				$password[$j] = crypt($password[$j], $password[$j]);
@@ -408,16 +408,14 @@ if (isset($register) && $register == 'true') {
                         register_lock_users(dirname($pth['folder']['base'] . $plugin_tx['register']['config_usersfile']), LOCK_UN);
 
 			if ($ERROR != '')
-			    $o .= '<b>' . $plugin_tx[$plugin]['error'] . '</b>'."\n" .
-				    '<ul class="error"><li>'.$ERROR.'</li></ul>'."\n";
+			    $e .= $ERROR;
 			else
 			    $o .= '<b>'  . $plugin_tx[$plugin]['csv_written'] .
 				    ' (' . $pth['folder']['base'] . $plugin_tx['register']['config_usersfile'] . ')' .
 				    '.</b>'."\n";
 		    }
 		    elseif ($ERROR != '')
-			$o .= '<b>' . $plugin_tx[$plugin]['error'] . '</b>'."\n" .
-				'<ul class="error"><li>'.$ERROR.'</li></ul>'."\n";
+			$e .= $ERROR;
 		    $o .= '  </td>'."\n".'</tr>'."\n";
 		    $o .= '</table>'."\n";
 		    break;
