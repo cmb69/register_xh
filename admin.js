@@ -1,31 +1,40 @@
 var register = {
     sort: function(heading, col) {
+        
+        var ths = document.getElementsByTagName("th");
+        for (var i = 0; i < ths.length; i++) {
+            var th = ths[i];
+            if (th != heading && th.parentNode.parentNode.parentNode.id == "register_user_table") {
+                th.className = "";
+            }
+        }
+        
         var names = [];
         var f = document.getElementById('register_user_form');
         var elts = f.elements;
-        for (var i = 0; i < elts.length; i++) {
+        for (var i = 0, j = 0; i < elts.length; i++) {
             var elt = elts[i];
             if (elt.name.indexOf(col) === 0) {
-                names.push(elt.value);
+                names.push([elt.value, j++]);
             }
         }
-        var old = names.slice();
-        names.sort();
+        names.sort(function(a, b) {return a[0].toLowerCase().localeCompare(b[0].toLowerCase())});
         if (heading.className == "register_sort_asc") {
             names.reverse();
         }
-        var tbl = document.getElementById('register_user_table');
+        var tblBody = document.getElementById('register_user_table').firstChild;
         for (var i = 0; i < names.length; i++) {
             var name = names[i];
-            var j = old.indexOf(names[i]); // TODO: non portable
+            var j = name[1];
             var row = document.getElementById('register_user_' + j);
             var row2 = row.nextSibling;
-            tbl.appendChild(row);
-            tbl.appendChild(row2);
+            tblBody.appendChild(row);
+            tblBody.appendChild(row2);
         }
         heading.className = heading.className == "register_sort_asc"
             ? "register_sort_desc"
             : "register_sort_asc";
+        register.renumberRows();
     },
     
     toggleDetails: function() {

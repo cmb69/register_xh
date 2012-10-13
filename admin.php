@@ -166,13 +166,13 @@ function registerAdminUsersForm($users) {
         . '<th></th>'
         . '<th onclick="register.sort(this, \'username\')" style="cursor: pointer">' . $plugin_tx[$plugin]['username'] . '</th>'
         . '<th onclick="register.sort(this, \'password\')" style="cursor: pointer">' . $plugin_tx[$plugin]['password'] . '</th>'
-        . '<th>' . $plugin_tx[$plugin]['name'] . '</th>'
+        . '<th onclick="register.sort(this, \'name\')" style="cursor: pointer">' . $plugin_tx[$plugin]['name'] . '</th>'
         . '</tr>'
         . '<tr class="register_second_row">'
         . '<th></th>'
-        . '<th>' . $plugin_tx[$plugin]['email'] . '</th>'
-        . '<th>' . $plugin_tx[$plugin]['accessgroups'] . '</th>'
-        . '<th>' . $plugin_tx[$plugin]['status'] . '</th>'
+        . '<th onclick="register.sort(this, \'email\')" style="cursor: pointer">' . $plugin_tx[$plugin]['email'] . '</th>'
+        . '<th onclick="register.sort(this, \'accessgroups\')" style="cursor: pointer">' . $plugin_tx[$plugin]['accessgroups'] . '</th>'
+        . '<th onclick="register.sort(this, \'status\')" style="cursor: pointer">' . $plugin_tx[$plugin]['status'] . '</th>'
         . '</tr>';
                 
     $i = 0;
