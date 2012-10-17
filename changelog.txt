@@ -1,3 +1,6 @@
+Version 1.4 - released 2012-10-17
+	-
+
 Version 1.4rc5 - released 2012-09-16
 cmb	fixed arbitrary code execution vulnerability
 
