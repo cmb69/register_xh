@@ -94,7 +94,7 @@ div.regi_loggedin_logout_ver {float: left; width: 100%; padding: 2px 0;}
 .regi_logoutimage {float: left; border: 0; margin: 0 8px 0 0;}
 
 
-/* error styles in administration form */
+/* error styles */
 
 .regi_error {color: red;}
 
@@ -107,11 +107,11 @@ div.regi_loggedin_logout_ver {float: left; width: 100%; padding: 2px 0;}
 
 div.register_admin_main table img {width: 16px; height: 16px; cursor: pointer}
 
-#register_user_table {margin: 1em 0;}
+#register_user_table {margin: 1em 0; width:100%;}
 #register_user_table th {text-align: center; font-weight: bold}
 th.register_sort_asc {background: url("./sort-asc.png") no-repeat right}
 th.register_sort_desc {background: url("./sort-desc.png") no-repeat right}
-#register_user_table input[type="text"] {width: 187px}
+#register_user_table input[type="text"] {width: 187px} /* adjust the width to your template */
 
 
 img.register_plugin_icon {display: block; float: left; margin: 0 20px 0 0}

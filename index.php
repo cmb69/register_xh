@@ -1577,7 +1577,7 @@ function registerloginform()
  * 
  * @return  string
  */
-function Register_loggedInNotice()
+function Register_loggedInForm()
 {
     return (isset($_SESSION['username'], $_SESSION['sessionnr'], $_SESSION['register_sn'])
 	    && session('sessionnr') == session_id()
