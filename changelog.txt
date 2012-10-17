@@ -1,4 +1,11 @@
-Version 1.5beta1 - released TODO
+Version 1.5beta1 - released 2012-10-17
+cmb	improved user administration (suggested by Holger)
+cmb	implemented locking of user file (suggested by Holger)
+cmb	dropped requirement for full name to be composed of first and last name (suggested by Holger)
+cmb	changed mail copies from Bcc to Cc (inspired by Holger)
+cmb	added Register_loggedInForm() (suggested by Ele)
+cmb	updated English and German user manuals
+cmb	updated and improved English and German language files
 
 Version 1.4 - released 2012-10-17
 	-
