@@ -1538,9 +1538,9 @@ function registerloginform()
 
 		// loggedin user
 		if($plugin_cf[$plugin]['login_layout'] == 'horizontal')
-		$o .= "\n".'<div class="regi_loggedin_loggedinarea_hor">'."\n".'<div class="regi_loggedin_user_hor">'.$plugin_tx[$plugin]['loggedin_welcometext'].' '.$_SESSION['fullname'].',&nbsp; </div>'."\n";
+		$o .= "\n".'<div class="regi_loggedin_loggedinarea_hor">'."\n".'<div class="regi_loggedin_user_hor">'.$plugin_tx[$plugin]['loggedin_welcometext'].' '.$_SESSION['fullname'].'!&nbsp; </div>'."\n";
 		else
-		$o .= "\n".'<div class="regi_loggedin_loggedinarea_ver">'."\n".'<div class="regi_loggedin_user_ver">'.$plugin_tx[$plugin]['loggedin_welcometext'].' '.$_SESSION['fullname'].',&nbsp; </div>'."\n";
+		$o .= "\n".'<div class="regi_loggedin_loggedinarea_ver">'."\n".'<div class="regi_loggedin_user_ver">'.$plugin_tx[$plugin]['loggedin_welcometext'].' '.$_SESSION['fullname'].'!&nbsp; </div>'."\n";
 
 		// loggedin loggedin
 		if($plugin_cf[$plugin]['login_layout'] == 'horizontal')
@@ -1568,6 +1568,24 @@ function registerloginform()
 	}
   return $o;
 }
+
+
+/**
+ * Returns the logged in form, if user is logged in.
+ *
+ * @since 1.5rc1
+ * 
+ * @return  string
+ */
+function Register_loggedInNotice()
+{
+    return (isset($_SESSION['username'], $_SESSION['sessionnr'], $_SESSION['register_sn'])
+	    && session('sessionnr') == session_id()
+	    && $_SESSION['register_sn'] == REGISTER_SESSION_NAME)
+	? registerloginform()
+	: '';
+}
+
 
 /*
  * This function outputs the full name of the current user (Top Level Function).

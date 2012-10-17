@@ -126,7 +126,7 @@ function registerAdminGroupsForm($groups)  {
 }
 
 
-function register_group_selectbox()
+function Register_groupSelectbox()
 {
     global $pth, $plugin_tx;
     
@@ -184,7 +184,7 @@ function registerAdminUsersForm($users) {
     $o .= '<button onclick="register.addRow()">' . $ptx['user_add'] . '</button>';
     $o .= tag('input id="register_toggle_details" type="checkbox" onclick="register.toggleDetails()" style="padding-left: 1em"');
     $o .= '<label for="register_toggle_details">' . $ptx['details'] . '</label>';
-    $o .= register_group_selectbox();
+    $o .= Register_groupSelectbox();
     $o .= '</div>';
     
     $o .= '<form id="register_user_form" method="POST" action="'.$sn.'?&amp;register">'."\n";
