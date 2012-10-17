@@ -15,7 +15,7 @@ if (!defined('CMSIMPLE_XH_VERSION')) {
 }
 
 
-define('REGISTER_VERSION', '1.5rc1');
+define('REGISTER_VERSION', '1.5beta1');
 
 
 if (!defined('CMSIMPLE_URL')) {
@@ -40,23 +40,11 @@ else
 	define('REGISTER_SESSION_NAME', CMSIMPLE_ROOT.$sl);
 }
 
-// Start session unless a robot is accessing the page
-/*if (preg_match('/Googlebot/i',$_SERVER['HTTP_USER_AGENT']));
-else if (preg_match('/MSNbot/i',$_SERVER['HTTP_USER_AGENT']));
-else if (preg_match('/slurp/i',$_SERVER['HTTP_USER_AGENT']));
-else */if(session_id() == "")
+if(session_id() == "")
   session_start();
 
 $plugin = basename(dirname(__FILE__),"/");
 
-//// Set default language and config and language definition files to load
-//if(!isset($sl)) $sl = $cf['language']['default'];
-//$pth['file']['plugins_language'] = $pth['folder']['plugins'] . $plugin . '/languages/' . $sl . '.php';
-//$pth['file']['plugins_config']   = $pth['folder']['plugins'] . $plugin . '/config/config.php';
-
-//// Load language and configuration file
-//if(!@include($pth['file']['plugins_language'])) die('Plugin Language file ' . $pth['file']['plugins_language'] . ' missing');
-//if(!@include($pth['file']['plugins_config'])) die('Plugin config file ' . $pth['file']['plugins_config'] . ' missing');
 
 if(!defined('CAPTCHA_LOADED'))
 {
@@ -162,21 +150,6 @@ if(!($edit&&$adm) && isset($su))
 	}
 }
 
-// Handle administrator mode ====================================================
-//if(!($adm) &&
-//isset($_GET['action']) &&
-//$_GET['action'] == "admin_mode" &&
-//isset($_SESSION['username'],$_SESSION['fullname'], $_SESSION['email'], $_SESSION['accessgroups'], $_SESSION['sessionnr'], $_SESSION['register_sn']) &&
-//$_SESSION['sessionnr'] == session_id() && $_SESSION['register_sn'] == REGISTER_SESSION_NAME &&
-//in_array($plugin_cf[$plugin]['group_administrator'], $_SESSION['accessgroups'])===true)
-//{
-//	setcookie('status','adm');
-//	setcookie('passwd',$cf['security']['password']);
-//	$adm=true;
-//	$edit=true;
-//	writelog(date("Y-m-d H:i:s")." from ".sv('REMOTE_ADDR').' logged_in'."\n");
-//}
-
 // Handling of login/logout =====================================================
 $isSession = session('sessionnr') == session_id() &&
 isset($_SESSION['username'],
@@ -213,17 +186,7 @@ function registerLogin()
 	$secret = "LoginSecretWord";
 	$rememberPeriod = 24*60*60*100;
 	$logFile = $pth['folder']['plugins'] . $plugin . '/logfile/logfile.txt';
-/*
-	if(session('sessionnr') == session_id() &&
-	isset(
-	$_SESSION['username'],
-	$_SESSION['fullname'],
-	$_SESSION['email'],
-	$_SESSION['accessgroups'],
-	$_SESSION['sessionnr'])
-	)
-    die('A session is already active. You cannot login on top of it!');
-*/
+	
 	$username = htmlspecialchars(isset($_POST['username']) ? $_POST['username'] : "");
 	$password = htmlspecialchars(isset($_POST['password']) ? $_POST['password'] : "");
 	$remember = htmlspecialchars(isset($_POST['remember']) ? $_POST['remember'] : "");
@@ -329,9 +292,6 @@ function registerLogout()
 
 	$username = session('username');
 
-	// clear all session variables
-	//$_SESSION = array();
-
 	// end session
 	unset($_SESSION['username']);
 	unset($_SESSION['fullname']);
@@ -358,16 +318,6 @@ function registerLogout()
 	$logoutTitle = html_entity_decode(preg_replace("/ /", "_", $plugin_tx[$plugin]['loggedout']));
 	header('Location: ' . $sn . '?' . $logoutTitle);
 	exit;
-
-/*
-  // go to logout page if exists or go to page where you came from
-  if(in_array($plugin_tx[$plugin]['loggedout'], $h))
-    header('Location: '.$sn.'?'. $pageTitle);
-  else
-    header('Location: ' . $sn);
-  exit;
-*/
-
 }
 
 /*
@@ -1088,19 +1038,6 @@ function registerForgotPassword()
 		$user = registerSearchUserArray($userArray, 'email', $email);
 		if(!$user) $ERROR .= '<li>' . $plugin_tx[$plugin]['err_email_does_not_exist'] . '</li>'."\n";
 
-		// in case of encrypted password a new random password will be generated
-		// and its value be written back to the CSV file
-		//if($ERROR=="" && preg_match('/true/i', $plugin_cf[$plugin]['encrypt_password']))
-		//{
-		//	$password = generateRandomCode(8);
-		//	$user['password'] = crypt($password, $password);
-		//	$userArray = registerReplaceUserEntry($userArray, $user);
-		//	if(!registerWriteUsers($pth['folder']['base'] . $plugin_tx['register']['config_usersfile'], $userArray))
-		//	$ERROR .= '<li>' . $plugin_tx[$plugin]['err_cannot_write_csv'] .
-		//	' (' . $pth['folder']['base'] . $plugin_tx['register']['config_usersfile'] . ')' .
-		//	'</li>'."\n";
-		//}
-		//else
 		$password = $user['password'];
 
 		if($ERROR != "")
@@ -1594,23 +1531,6 @@ function registeradminmodelink()
 {
     trigger_error('registeradminmodelink() is deprecated', E_USER_WARNING);
     return FALSE;
-//	global $plugin_cf, $plugin_tx, $adm, $_SESSION, $sn, $su;
-//	$plugin = basename(dirname(__FILE__),"/");
-//	$isSession = isset(
-//	$_SESSION['username'],
-//	$_SESSION['fullname'],
-//	$_SESSION['email'],
-//	$_SESSION['accessgroups'],
-//	$_SESSION['sessionnr'],
-//	$_SESSION['register_sn']) &&
-//	$_SESSION['sessionnr'] == session_id() &&
-//	$_SESSION['register_sn'] == REGISTER_SESSION_NAME;
-//	$isAdmin = in_array($plugin_cf[$plugin]['group_administrator'], $_SESSION['accessgroups']);
-//
-//	if((!isset($adm) || !$adm) && $isSession && $isAdmin)
-//    return '<a href="' . $sn . '?' . $su . '&amp;action=admin_mode">' . $plugin_tx[$plugin]['admin_mode'] . '</a>'."\n";
-//	else
-//    return '';
 }
 
 

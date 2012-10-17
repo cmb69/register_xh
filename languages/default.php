@@ -1,4 +1,5 @@
 <?php
+
 $plugin_tx['register']['down_link']="down <span style=\"font-size: 24px;\">&dArr;</span>";
 $plugin_tx['register']['groupname']="Groupname";
 $plugin_tx['register']['name']="Full Name";
@@ -74,9 +75,6 @@ $plugin_tx['register']['changeexplanation']="On this page you can change your ac
 $plugin_tx['register']['prefsemailsubject']="Account data changed for\n";
 $plugin_tx['register']['prefsupdated']="Your account information has been updated and sent to you via email.";
 $plugin_tx['register']['emailprefsupdated']="Your account information has been updated as follows.";
-$plugin_tx['register']['mnu_main']="User/Group Administration";
-$plugin_tx['register']['mnu_config']="Plugin Configuration";
-$plugin_tx['register']['mnu_language']="Plugin Language Settings";
 $plugin_tx['register']['mnu_group_admin']="Group Administration";
 $plugin_tx['register']['mnu_user_admin']="User Administration";
 $plugin_tx['register']['entries_in_csv']="Entries in CSV file ";
@@ -99,7 +97,6 @@ $plugin_tx['register']['cf_captcha_mode']="<b>none</b> deactivates captcha.</b> 
 $plugin_tx['register']['cf_encrypt_password']="<b>true</b> activates password encryption.</b>";
 $plugin_tx['register']['cf_fix_mail_headers']="<b>true</b> fixes problems with some buggy mail transfer agents. Use it, if you don't receive the emails or if some header information (e.g. \"MIME-Version: 1.0\") is visible in the body of the mail.";
 $plugin_tx['register']['cf_group_activated']="The status of new members (group after registration and account activation).";
-$plugin_tx['register']['cf_group_administrator']="Group with admin rights";
 $plugin_tx['register']['cf_group_default']="The status of new members (default group for user after registration, but before account activation).";
 $plugin_tx['register']['cf_hide_pages']="<b>true</b> hides pages in table of content to which the user does not have access.";
 $plugin_tx['register']['cf_logfile']="<b>true</b> allows logging of login/logout of users in a log file.";
@@ -110,4 +107,5 @@ $plugin_tx['register']['cf_senderemail']="The e-mail account of the administrato
 $plugin_tx['register']['cf_config_login_page']="Name of the page the user is redirected directly after login.";
 $plugin_tx['register']['cf_config_usersfile']="The path (relative to the CMSimple root) to the users CSV file, e.g. \"plugins/register/data/users.csv\".";
 $plugin_tx['register']['cf_config_groupsfile']="The path (relative to the CMSimple root) to the groups CSV file, e.g. \"plugins/register/data/groups.csv\".";
+
 ?>

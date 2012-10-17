@@ -10,7 +10,6 @@ $plugin_cf['register']['captcha_chars']="2";
 $plugin_cf['register']['encrypt_password']="true";
 $plugin_cf['register']['fix_mail_headers']="";
 $plugin_cf['register']['group_activated']="guest";
-$plugin_cf['register']['group_administrator']="admin";
 $plugin_cf['register']['group_default']="guest";
 $plugin_cf['register']['hide_pages']="true";
 $plugin_cf['register']['image_login']="submit_new.png";
