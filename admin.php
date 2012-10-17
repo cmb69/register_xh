@@ -130,8 +130,11 @@ function register_group_selectbox()
 {
     global $pth, $plugin_tx;
     
-    $groups = registerReadGroups($pth['folder']['base'] . $plugin_tx['register']['config_groupsfile']);
-    $o = '<select id="register_group_selectbox"><option value=""></option>';
+    $ptx = $plugin_tx['register'];
+    $groups = registerReadGroups($pth['folder']['base'] . $ptx['config_groupsfile']);
+    usort($groups, create_function('$a, $b', 'return strcasecmp($a["groupname"], $b["groupname"]);'));
+    $o = '<select id="register_group_selectbox" title="' . $ptx['filter_group'] . '">'
+        . '<option value="">' . $ptx['all'] . '</option>';
     foreach ($groups as $group) {
         $o .= '<option value="' . $group['groupname'] . '">' . $group['groupname'] . '</option>';
     }
@@ -163,24 +166,24 @@ function registerAdminUsersForm($users) {
 
     $o .= '<table><tr id="register_user_template" style="display: none">'
             
-            . '<td>' . tag('img src="'.$imageFolder.'/delete.png" style="width: 16px; height: 16px;" alt="' . $ptx['user_delete'] . '" title="' . $ptx['user_delete'] . '" onclick="register.removeRow(this); return false"') . '</td>'
-            . '<td>' . tag('input type="text" value="NewUser" name="username[]"') .  '</td>'
-            . '<td>' . tag('input type="text" value="" name="password[]"')
-            . tag('input type="hidden" value="" name="oldpassword[]"'). '</td>'
-            . '<td>' . tag('input type="text" value="Name Lastname" name="name[]"')  . '</td>'
+            . '<td>' . tag('img src="'.$imageFolder.'/delete.png" alt="' . $ptx['user_delete'] . '" title="' . $ptx['user_delete'] . '" onclick="register.removeRow(this); return false"') . '</td>'
+            . '<td>' . tag('input type="text" value="" name="name[]"')  . '</td>'
+            . '<td>' . tag('input type="text" value="' . $plugin_cf[$plugin]['group_default'] . '" name="accessgroups[]"') . '</td>'
+            . '<td>' . tag('input type="text" value="activated" name="status[]"') . '</td>'
             . '</tr>'
             . '<tr style="display: none">'
             . '<td>' . '</td>'
-            . '<td>' . tag('input type="text" value="user@domain.com" name="email[]"') . '</td>'
-            . '<td>' . tag('input type="text" value="' . $plugin_cf[$plugin]['group_default'] . '" name="accessgroups[]"') . '</td>'
-            . '<td>' . tag('input type="text" value="activated" name="status[]"') . '</td>'
+            . '<td>' . tag('input type="text" value="" name="username[]"') .  '</td>'
+            . '<td>' . tag('input type="text" value="" name="email[]"') . '</td>'
+            . '<td>' . tag('input type="text" value="" name="password[]"')
+            . tag('input type="hidden" value="" name="oldpassword[]"'). '</td>'
             . '</tr></table>';
     
 
     $o .= '<div>';
     $o .= '<button onclick="register.addRow()">' . $ptx['user_add'] . '</button>';
     $o .= tag('input id="register_toggle_details" type="checkbox" onclick="register.toggleDetails()" style="padding-left: 1em"');
-    $o .= '<label for="register_toggle_details">Details</label>';
+    $o .= '<label for="register_toggle_details">' . $ptx['details'] . '</label>';
     $o .= register_group_selectbox();
     $o .= '</div>';
     
@@ -192,15 +195,15 @@ function registerAdminUsersForm($users) {
     
     $o .= '<tr>'
         . '<th></th>'
-        . '<th onclick="register.sort(this, \'username\')" style="cursor: pointer">' . $plugin_tx[$plugin]['username'] . '</th>'
-        . '<th onclick="register.sort(this, \'password\')" style="cursor: pointer">' . $plugin_tx[$plugin]['password'] . '</th>'
         . '<th onclick="register.sort(this, \'name\')" style="cursor: pointer">' . $plugin_tx[$plugin]['name'] . '</th>'
+        . '<th onclick="register.sort(this, \'accessgroups\')" style="cursor: pointer">' . $plugin_tx[$plugin]['accessgroups'] . '</th>'
+        . '<th onclick="register.sort(this, \'status\')" style="cursor: pointer">' . $plugin_tx[$plugin]['status'] . '</th>'
         . '</tr>'
         . '<tr class="register_second_row">'
         . '<th></th>'
+        . '<th onclick="register.sort(this, \'username\')" style="cursor: pointer">' . $plugin_tx[$plugin]['username'] . '</th>'
         . '<th onclick="register.sort(this, \'email\')" style="cursor: pointer">' . $plugin_tx[$plugin]['email'] . '</th>'
-        . '<th onclick="register.sort(this, \'accessgroups\')" style="cursor: pointer">' . $plugin_tx[$plugin]['accessgroups'] . '</th>'
-        . '<th onclick="register.sort(this, \'status\')" style="cursor: pointer">' . $plugin_tx[$plugin]['status'] . '</th>'
+        . '<th onclick="register.sort(this, \'password\')" style="cursor: pointer">' . $plugin_tx[$plugin]['password'] . '</th>'
         . '</tr>';
                 
     $i = 0;
@@ -208,17 +211,17 @@ function registerAdminUsersForm($users) {
 	$groupString = implode(",", $entry['accessgroups']);
 	$o .= '<tr id="register_user_' . $i . '">'
 		
-                . '<td>' . tag('img src="'.$imageFolder.'/delete.png" style="width: 16px; height: 16px;" alt="' . $ptx['user_delete'] . '" title="' . $ptx['user_delete'] . '" onclick="register.removeRow(this); return false"') . '</td>'
-		.'<td>' . tag('input type="text" value="' . $entry['username'] . '" name="username['.$i.']"') .  '</td>'
-		.'<td>' . tag('input type="text" value="' . $entry['password'] . '" name="password['.$i.']"')
-                . tag('input type="hidden" value="' . $entry['password'] . '" name="oldpassword['.$i.']"') . '</td>'
+                . '<td>' . tag('img src="'.$imageFolder.'/delete.png" alt="' . $ptx['user_delete'] . '" title="' . $ptx['user_delete'] . '" onclick="register.removeRow(this); return false"') . '</td>'
 		.'<td>' . tag('input type="text" value="' . $entry['name'] . '" name="name['.$i.']"')  . '</td>'
+		.'<td>' . tag('input type="text" value="' . $groupString . '" name="accessgroups['.$i.']"') . '</td>'
+		.'<td>' . tag('input type="text" value="' . $entry['status'] . '" name="status['.$i.']"') . '</td>'
                 . '</tr>'
                 . '<tr class="register_second_row">'
                 . '<td>' . '</td>'
+		.'<td>' . tag('input type="text" value="' . $entry['username'] . '" name="username['.$i.']"') .  '</td>'
 		.'<td>' . tag('input type="text" value="' . $entry['email'] . '" name="email['.$i.']"') . '</td>'
-		.'<td>' . tag('input type="text" value="' . $groupString . '" name="accessgroups['.$i.']"') . '</td>'
-		.'<td>' . tag('input type="text" value="' . $entry['status'] . '" name="status['.$i.']"') . '</td>'
+		.'<td>' . tag('input type="text" value="' . $entry['password'] . '" name="password['.$i.']"')
+                . tag('input type="hidden" value="' . $entry['password'] . '" name="oldpassword['.$i.']"') . '</td>'
 		. '</tr>';
 	$i++;
     }
@@ -226,7 +229,6 @@ function registerAdminUsersForm($users) {
     $o .= '</table>';
 
     $o .= '<a name="bottom">'.tag('br').'</a>';
-    $o .= tag('img src="'.$imageFolder.'/add.png" style="float: right; width: 16px; height: 16px;" alt="Add entry" onclick="register.addRow()"')."\n";
     $o .= tag('input class="submit" type="submit" value="' . ucfirst($tx['action']['save']).  '" name="send"')."\n";
     $o .= '</form>'."\n".'</div>'.tag('br')."\n";
     $o .= '<script type="text/javascript">register.init()</script>';
@@ -370,7 +372,7 @@ if (isset($register) && $register == 'true') {
 			    $userGroups = explode(",", $groupString[$j]);
 			    // Error Checking
 			    $ENTRY_ERROR = '';
-			    if(preg_match('/true/i',$plugin_cf[$plugin]['encrypt_password']))
+			    if(preg_match('/true/i',$plugin_cf[$plugin]['encrypt_password']) && $password[$j] == $oldpassword[$j])
 				$ENTRY_ERROR .= registerCheckEntry($name[$j], $username[$j], "dummy", "dummy", $email[$j]);
 			    else
 				$ENTRY_ERROR .= registerCheckEntry($name[$j], $username[$j], $password[$j], $password[$j], $email[$j]);
@@ -387,7 +389,7 @@ if (isset($register) && $register == 'true') {
 				$ERROR .= '<li>' . $plugin_tx[$plugin]['error_in_user'] . '"' . $username[$j] . '"' .
 					'<ul class="error">'.$ENTRY_ERROR.'</ul></li>'."\n";
 
-			    if (preg_match('/true/i', $plugin_cf[$plugin]['encrypt_password']) && $password[$j] != $oldpassword[$j])
+			    if (empty($ENTRY_ERROR) && preg_match('/true/i', $plugin_cf[$plugin]['encrypt_password']) && $password[$j] != $oldpassword[$j])
 				$password[$j] = crypt($password[$j], $password[$j]);
 			    $entry = array(
 				    'username'     => $username[$j],

@@ -1,8 +1,17 @@
-// TODO: general iteraterators (forEachUserRow() etc.)
+/**
+ * Back-End JS of Register_XH.
+ *
+ * Copyright (c) 2007 Carsten Heinelt (http://cmsimple.heinelt.eu)
+ * Copyright (c) 2010-2012 Gert Ebersbach (http://www.ge-webdesign.de/cmsimpleplugins/)
+ * Copyright (c) 2012 Christoph M. Becker (see license.txt)
+ */
+
+
+// TODO: general iteraterators (forEachUserRow() etc.) ?
 
 var register = {
     
-    init: function() { // TODO: refactor with toggleDetails()
+    init: function() {
         var rows = document.getElementsByTagName('tr');
         for (var i = 0; i < rows.length; i++) {
             var row = rows[i];
@@ -20,13 +29,11 @@ var register = {
         var elts = f.elements;
         for (var i = 0, j = 0; i < elts.length; i++) {
             var elt = elts[i];
-            //if (elt.type == "input") {
-                elt.onchange = function() {
-                    window.onbeforeunload = function() {
-                        return register.tx.confirmLeave;
-                    }
+            elt.onchange = function() {
+                window.onbeforeunload = function() {
+                    return register.tx.confirmLeave;
                 }
-            //}
+            }
         }
         f.onsubmit = function() {
             window.onbeforeunload = null;
@@ -126,9 +133,8 @@ var register = {
         for (var i = 0, j = 0; i < elts.length; i++) {
             var elt = elts[i];
             if (elt.name.indexOf("accessgroups") === 0) {
-                var row2 = elt.parentNode.parentNode;
-                var row = row2.previousSibling;
-                //var display = elt.value.indexOf(group) >= 0 ? "" : "none";
+                var row = elt.parentNode.parentNode;
+                var row2 = row.nextSibling;
                 row.style.display = elt.value.indexOf(group) >= 0 ? "" : "none";
                 row2.style.display = elt.value.indexOf(group) >= 0
                     && document.getElementById("register_toggle_details").checked

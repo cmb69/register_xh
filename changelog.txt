@@ -1,4 +1,4 @@
-Version 1.4rc6 - released TODO
+Version 1.5rc1 - released TODO
 
 Version 1.4rc5 - released 2012-09-16
 cmb	fixed arbitrary code execution vulnerability
