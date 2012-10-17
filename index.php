@@ -990,7 +990,7 @@ function registerUser()
 			$plugin_tx[$plugin]['emailsubject'] . ' ' . $_SERVER['SERVER_NAME'],
 			$content,
 			array('From: ' . $plugin_cf[$plugin]['senderemail'],
-			    'Bcc: '  . $plugin_cf[$plugin]['senderemail'])
+			    'Cc: '  . $plugin_cf[$plugin]['senderemail'])
 			);
 			$o .= '<b>' . $plugin_tx[$plugin]['registered'] . '</b>';
 			return $o;
@@ -1359,8 +1359,7 @@ function registerUserPrefs()
 			$plugin_tx[$plugin]['prefsemailsubject'] . ' ' . $_SERVER['SERVER_NAME'],
 			$content,
 			array('From: ' . $plugin_cf[$plugin]['senderemail'],
-			    'Cc: '  . $oldemail,
-			    'Bcc: '  . $plugin_cf[$plugin]['senderemail'])
+			    'Cc: '  . $oldemail . ', ' . $plugin_cf[$plugin]['senderemail'])
 			);
 			$o .= '<b>' . $plugin_tx[$plugin]['prefsupdated'] . '</b>';
 			return $o;
