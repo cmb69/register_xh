@@ -13,6 +13,7 @@ $plugin_tx['register']['status']="Status";
 $plugin_tx['register']['register']="Register";
 $plugin_tx['register']['forgot_password']="Password forgotten";
 $plugin_tx['register']['user_prefs']="User Preferences";
+$plugin_tx['register']['user_add']="Add User";
 $plugin_tx['register']['user_delete']="Delete User";
 $plugin_tx['register']['user_deleted']="User deleted";
 $plugin_tx['register']['user_locked']="User Preferences can't be changed for";
@@ -80,6 +81,8 @@ $plugin_tx['register']['csv_written']="CSV file successfully written";
 $plugin_tx['register']['config_login_page']="";
 $plugin_tx['register']['config_usersfile']="plugins/register/data/users.csv";
 $plugin_tx['register']['config_groupsfile']="plugins/register/data/groups.csv";
+
+$plugin_tx['register']['js_confirmLeave']="Unsaved changes will be lost!";
 
 $plugin_tx['register']['syscheck_title']="System check";
 $plugin_tx['register']['syscheck_phpversion']="PHP version &ge; %s";

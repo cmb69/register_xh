@@ -100,11 +100,14 @@ div.regi_loggedin_logout_ver {float: left; width: 100%; padding: 2px 0;}
 
 /* Admin area */
 
-.register_admin_main {font-family: arial, sans serif; font-size: 14px;}
+.register_admin_main {font-family: Arial, sans-serif; font-size: 14px;}
 
-th.register_sort_asc {background: green}
-th.register_sort_desc {background: red}
-th.register_second_row, tr.register_second_row {display: none}
+#register_user_table {margin: 1em 0;}
+th.register_sort_asc {background: url("./arrow_up.gif") no-repeat right}
+th.register_sort_desc {background: url("./arrow_down.gif") no-repeat right}
+/*#register_user_table tr th:first-child, #register_user_table tr td:first-child {width: 24px}*/
+/*#register_user_table tr td {width: 30%}*/
+#register_user_table input[type="text"] {width: 98%}
 
 
 img.register_plugin_icon {display: block; float: left; margin: 0 20px 0 0}

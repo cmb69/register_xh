@@ -1,4 +1,39 @@
+// TODO: general iteraterators (forEachUserRow() etc.)
+
 var register = {
+    
+    init: function() { // TODO: refactor with toggleDetails()
+        var rows = document.getElementsByTagName('tr');
+        for (var i = 0; i < rows.length; i++) {
+            var row = rows[i];
+            if (row.className == "register_second_row") {
+                row.style.display = "none";
+            }
+        }
+        
+        var gsel = document.getElementById("register_group_selectbox");
+        gsel.onchange = function() {
+            register.filterByGroup(this.value);
+        }
+
+        var f = document.getElementById('register_user_form');
+        var elts = f.elements;
+        for (var i = 0, j = 0; i < elts.length; i++) {
+            var elt = elts[i];
+            //if (elt.type == "input") {
+                elt.onchange = function() {
+                    window.onbeforeunload = function() {
+                        return register.tx.confirmLeave;
+                    }
+                }
+            //}
+        }
+        f.onsubmit = function() {
+            window.onbeforeunload = null;
+        }
+
+    },
+    
     sort: function(heading, col) {
         
         var ths = document.getElementsByTagName("th");
@@ -38,11 +73,11 @@ var register = {
     },
     
     toggleDetails: function() {
-        var display = document.getElementById("register_toggle_details").checked ? "table-row" : "none";
+        var display = document.getElementById("register_toggle_details").checked ? "" : "none";
         var rows = document.getElementsByTagName('tr');
         for (var i = 0; i < rows.length; i++) {
             var row = rows[i];
-            if (row.className == "register_second_row") {
+            if (row.className == "register_second_row" && row.previousSibling.style.display != "none") {
                 row.style.display = display;
             }
         }
@@ -57,6 +92,8 @@ var register = {
     
     
     addRow: function() {
+        document.getElementById("register_group_selectbox").value = "";
+        
         var tbl = document.getElementById('register_user_table');
         var tpl = document.getElementById('register_user_template');
         var tpl2 = tpl.nextSibling.cloneNode(true);
@@ -66,7 +103,9 @@ var register = {
         tpl.style.display = tpl2.style.display = "table-row";
         tpl2.className = "register_second_row";
         register.renumberRows();
+        register.filterByGroup(document.getElementById("register_group_selectbox").value);
         register.toggleDetails();
+        window.onbeforeunload = function() {return register.tx.confirmLeave;};
     },
     
     renumberRows: function() {
@@ -77,6 +116,23 @@ var register = {
                 && row.id.indexOf("register_user_") === 0)
             {
                 row.id = "register_user_" + j++;
+            }
+        }
+    },
+    
+    filterByGroup: function(group) {
+        var f = document.getElementById('register_user_form');
+        var elts = f.elements;
+        for (var i = 0, j = 0; i < elts.length; i++) {
+            var elt = elts[i];
+            if (elt.name.indexOf("accessgroups") === 0) {
+                var row2 = elt.parentNode.parentNode;
+                var row = row2.previousSibling;
+                //var display = elt.value.indexOf(group) >= 0 ? "" : "none";
+                row.style.display = elt.value.indexOf(group) >= 0 ? "" : "none";
+                row2.style.display = elt.value.indexOf(group) >= 0
+                    && document.getElementById("register_toggle_details").checked
+                    ? "" : "none"
             }
         }
     }

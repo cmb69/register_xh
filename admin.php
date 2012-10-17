@@ -126,39 +126,67 @@ function registerAdminGroupsForm($groups)  {
 }
 
 
+function register_group_selectbox()
+{
+    global $pth, $plugin_tx;
+    
+    $groups = registerReadGroups($pth['folder']['base'] . $plugin_tx['register']['config_groupsfile']);
+    $o = '<select id="register_group_selectbox"><option value=""></option>';
+    foreach ($groups as $group) {
+        $o .= '<option value="' . $group['groupname'] . '">' . $group['groupname'] . '</option>';
+    }
+    $o .= '</select>';
+    return $o;
+}
+
+
 function registerAdminUsersForm($users) {
     global $tx, $pth, $sn, $hjs, $plugin_cf, $plugin_tx;
 
     $plugin = basename(dirname(__FILE__),"/");
+    $ptx = $plugin_tx['register'];
     $imageFolder = $pth['folder']['plugins'] . $plugin . '/images';
 
-    $hjs .= '<script type="text/javascript" src="' . $pth['folder']['plugins'] . 'register/admin.js"></script>';
+    $txts = array();
+    foreach ($plugin_tx['register'] as $key => $val) {
+        if (strpos($key, 'js_') === 0) {
+            $txts[] = substr($key, 3) . ':"' . $val . '"';
+        }
+    }
+    
+    $hjs .= '<script type="text/javascript" src="' . $pth['folder']['plugins'] . 'register/admin.js"></script>'
+        . '<script type="text/javascript">register.tx={' . implode(',', $txts) . '}</script>';
     
     $o = '';
     $o .= '<h1>' . $plugin_tx[$plugin]['mnu_user_admin'] . '</h1>'."\n";
     $o .= '<div class="register_admin_main">'."\n";
 
     $o .= '<table><tr id="register_user_template" style="display: none">'
-            .tag('input type="hidden" value="" name="oldpassword[]"')."\n" . tag('br')
-            . '<td>' . tag('img src="'.$imageFolder.'/delete.png" style="width: 16px; height: 16px;" alt="Delete Entry" onclick="register.removeRow(this); return false"') . '</td>'
-            .'<td>' . tag('input type="normal" size="12" style="width: 200px;" value="NewUser" name="username[]"') .  '</td>'
-            .'<td>' . tag('input type="normal" size="12" style="width: 200px;" value="" name="password[]"') . '</td>'
-            .'<td>' . tag('input type="normal" size="12" style="width: 200px;" value="Name Lastname" name="name[]"')  . '</td>'
+            
+            . '<td>' . tag('img src="'.$imageFolder.'/delete.png" style="width: 16px; height: 16px;" alt="' . $ptx['user_delete'] . '" title="' . $ptx['user_delete'] . '" onclick="register.removeRow(this); return false"') . '</td>'
+            . '<td>' . tag('input type="text" value="NewUser" name="username[]"') .  '</td>'
+            . '<td>' . tag('input type="text" value="" name="password[]"')
+            . tag('input type="hidden" value="" name="oldpassword[]"'). '</td>'
+            . '<td>' . tag('input type="text" value="Name Lastname" name="name[]"')  . '</td>'
             . '</tr>'
             . '<tr style="display: none">'
             . '<td>' . '</td>'
-            .'<td>' . tag('input type="normal" size="12" style="width: 200px;" value="user@domain.com" name="email[]"') . '</td>'
-            .'<td>' . tag('input type="normal" size="12" style="width: 200px;" value="' . $plugin_cf[$plugin]['group_default'] . '" name="accessgroups[]"') . '</td>'
-            .'<td>' . tag('input type="normal" size="12" style="width: 200px;" value="activated" name="status[]"') . '</td>'
+            . '<td>' . tag('input type="text" value="user@domain.com" name="email[]"') . '</td>'
+            . '<td>' . tag('input type="text" value="' . $plugin_cf[$plugin]['group_default'] . '" name="accessgroups[]"') . '</td>'
+            . '<td>' . tag('input type="text" value="activated" name="status[]"') . '</td>'
             . '</tr></table>';
     
 
-    $o .= '<button onclick="register.toggleDetails()">Details</button>';
-    $o .= tag('input id="register_toggle_details" type="checkbox" onchange="register.toggleDetails()"');
+    $o .= '<div>';
+    $o .= '<button onclick="register.addRow()">' . $ptx['user_add'] . '</button>';
+    $o .= tag('input id="register_toggle_details" type="checkbox" onclick="register.toggleDetails()" style="padding-left: 1em"');
+    $o .= '<label for="register_toggle_details">Details</label>';
+    $o .= register_group_selectbox();
+    $o .= '</div>';
     
-    $o .= '<form id="register_user_form" method="POST" action="'.$sn.'?&register">'."\n";
-    $o .= '<input type="hidden" value="saveusers" name="action" />'."\n";
-    $o .= '<input type="hidden" value="plugin_main" name="admin" />'."\n";
+    $o .= '<form id="register_user_form" method="POST" action="'.$sn.'?&amp;register">'."\n";
+    $o .= tag('input type="hidden" value="saveusers" name="action"');
+    $o .= tag('input type="hidden" value="plugin_main" name="admin"');
 
     $o .= '<table id="register_user_table">';
     
@@ -179,17 +207,18 @@ function registerAdminUsersForm($users) {
     foreach($users as $entry) {
 	$groupString = implode(",", $entry['accessgroups']);
 	$o .= '<tr id="register_user_' . $i . '">'
-		.tag('input type="hidden" value="' . $entry['password'] . '" name="oldpassword['.$i.']"')."\n" . tag('br')
-                . '<td>' . tag('img src="'.$imageFolder.'/delete.png" style="width: 16px; height: 16px;" alt="Delete Entry" onclick="register.removeRow(this); return false"') . '</td>'
-		.'<td>' . tag('input type="normal" size="12" style="width: 200px;" value="' . $entry['username'] . '" name="username['.$i.']"') .  '</td>'
-		.'<td>' . tag('input type="normal" size="12" style="width: 200px;" value="' . $entry['password'] . '" name="password['.$i.']"') . '</td>'
-		.'<td>' . tag('input type="normal" size="12" style="width: 200px;" value="' . $entry['name'] . '" name="name['.$i.']"')  . '</td>'
+		
+                . '<td>' . tag('img src="'.$imageFolder.'/delete.png" style="width: 16px; height: 16px;" alt="' . $ptx['user_delete'] . '" title="' . $ptx['user_delete'] . '" onclick="register.removeRow(this); return false"') . '</td>'
+		.'<td>' . tag('input type="text" value="' . $entry['username'] . '" name="username['.$i.']"') .  '</td>'
+		.'<td>' . tag('input type="text" value="' . $entry['password'] . '" name="password['.$i.']"')
+                . tag('input type="hidden" value="' . $entry['password'] . '" name="oldpassword['.$i.']"') . '</td>'
+		.'<td>' . tag('input type="text" value="' . $entry['name'] . '" name="name['.$i.']"')  . '</td>'
                 . '</tr>'
                 . '<tr class="register_second_row">'
                 . '<td>' . '</td>'
-		.'<td>' . tag('input type="normal" size="12" style="width: 200px;" value="' . $entry['email'] . '" name="email['.$i.']"') . '</td>'
-		.'<td>' . tag('input type="normal" size="12" style="width: 200px;" value="' . $groupString . '" name="accessgroups['.$i.']"') . '</td>'
-		.'<td>' . tag('input type="normal" size="12" style="width: 200px;" value="' . $entry['status'] . '" name="status['.$i.']"') . '</td>'
+		.'<td>' . tag('input type="text" value="' . $entry['email'] . '" name="email['.$i.']"') . '</td>'
+		.'<td>' . tag('input type="text" value="' . $groupString . '" name="accessgroups['.$i.']"') . '</td>'
+		.'<td>' . tag('input type="text" value="' . $entry['status'] . '" name="status['.$i.']"') . '</td>'
 		. '</tr>';
 	$i++;
     }
@@ -200,6 +229,7 @@ function registerAdminUsersForm($users) {
     $o .= tag('img src="'.$imageFolder.'/add.png" style="float: right; width: 16px; height: 16px;" alt="Add entry" onclick="register.addRow()"')."\n";
     $o .= tag('input class="submit" type="submit" value="' . ucfirst($tx['action']['save']).  '" name="send"')."\n";
     $o .= '</form>'."\n".'</div>'.tag('br')."\n";
+    $o .= '<script type="text/javascript">register.init()</script>';
     return $o;
 }
 
@@ -222,27 +252,18 @@ if (isset($register) && $register == 'true') {
 	case 'plugin_main':
 	    switch ($action) {
 		case 'editusers':
-		    // read user file in CSV format separated by colons
-		    $o .= '<br />'."\n".'<table>'."\n";
 		    if (is_file($pth['folder']['base'] . $plugin_tx['register']['config_usersfile']))  {
                         register_lock_users(dirname($pth['folder']['base'] . $plugin_tx['register']['config_usersfile']), LOCK_SH);
 			$users  = registerReadUsers($pth['folder']['base'] . $plugin_tx['register']['config_usersfile']);
                         register_lock_users(dirname($pth['folder']['base'] . $plugin_tx['register']['config_usersfile']), LOCK_UN);
-			$o .= '<tr>'."\n".'  <td>'."\n";
 			$o .= registerAdminUsersForm($users);
-			$o .= '  </td>'."\n".'</tr>'."\n";
-			$o .= '<tr>'."\n".'  <td>'."\n";
-			$o .= '<b>' . count($users) . ' ' . $plugin_tx[$plugin]['entries_in_csv'] .
-			$pth['folder']['base'] . $plugin_tx['register']['config_usersfile'] . '</b>'."\n";
-			$o .= '  </td>'."\n".'</tr>'."\n";
+			$o .= '<div id="register_status">' . count($users) . ' ' . $plugin_tx[$plugin]['entries_in_csv'] .
+			$pth['folder']['base'] . $plugin_tx['register']['config_usersfile'] . '</div>';
 		    } else {
-			$o .= '<tr>'."\n".'  <td>'."\n";
-			$o .= '<b>' . $plugin_tx[$plugin]['err_csv_missing'] .
+			$o .= '<div id="register_status">' . $plugin_tx[$plugin]['err_csv_missing'] .
 			' (' . $pth['folder']['base'] . $plugin_tx['register']['config_usersfile'] . ')' .
-			'</b>'."\n";
-			$o .= '  </td>'."\n".'</tr>'."\n";
+			'</div>';
 		    }
-		    $o .= '</table>'."\n";
 		    break;
 		case 'editgroups':
 		    // read user file in CSV format separated by colons
