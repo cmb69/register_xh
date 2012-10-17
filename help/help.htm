@@ -41,6 +41,11 @@ It is used by some other plugins to add user management (e.g.
 <p><strong>Please do read this documentation
 <em>before</em> you encounter any problems!</strong></p>
 
+<h2><a name="notice">Important Notice</a></h2>
+<p><strong>Register_XH couldn't be tested so far in various environments.
+It is a so called release candidate. Use with caution!</strong></p>
+<div class="toplink"><a href="#">back to top</a></div>
+
 <h2><a name="requirements">Requirements</a></h2>
 <p>Register_XH is a plugin for CMSimple_XH.
 It requires a UTF-8 encoded version.</p>
@@ -76,12 +81,22 @@ or customize them according to your needs.</p>
 <h3><a name="usage-administration">User and Group Administration</a></h3>
 <p>The first thing you should do is to adjust the user groups according to your needs.
 You can do this in "Register" &rarr; "Group administration".
-If you like you can register users in "Register" &rarr; "User administration".
-Both dialogs should be pretty much self explaining.
-The status field is "activated" for users having the full priviledges according to their groups,
+You can administrate the users in "Register" &rarr; "User administration".
+Both dialogs should be pretty much self explaining,
+but some notes about the latter seem appropriate:</p>
+<ul>
+<li>The selectbox allows to filter the users by an access group.
+When you add a new user, the filter is reset,
+as you might not be able to see the new user record otherwise.
+When you save the data all user records will be saved, even if they are filtered out.</li>
+<li>You can sort the user records by clicking on the respective column heading.</li>
+<li>The status field is "activated" for users having the full priviledges according to their groups,
 "locked" for users who may not change their preferences.
 For users who have registered, but no yet activated their account, it contains a code.
-Don't change that, as the user won't be able to activate the account later.</p>
+Don't change that, as the user won't be able to activate the account later.</li>
+<li>In either group and user administration adding or deleting a user is temporary;
+to make the changes permanent, you have to explicitely save them.</li>
+</ul>
 <p>Note that the group and user CSV files could be accessed directly by calling their URL.
 An .htaccess file to prohibit this for Apache servers is already contained in the default data folder.
 For other servers or for custom data folders you have to take care for yourself,
@@ -98,10 +113,15 @@ the login form must be displayed. You can put it in the template, so it's shown 
 <pre>&lt;?php echo registerloginform(); ?&gt;</pre>
 <p>Alternatively you can put it on one or several CMSimple pages:</p>
 <pre>{{{PLUGIN:registerloginform();}}}</pre>
+<p>In this case you might want to add the "logged in" form to the template.
+You can do so with the following call:</p>
+<pre>&lt;?php echo Register_loggedInForm();&gt;</pre>
 <p>If the user forgot his password, he can request an email with the login credentials.
 If registration of new users is allowed, they can register themselves,
-and an email with the activation link will be sent to them, so they can activate their account and log in nearly immediately.
-All this happens without requiring any actions from the admin, but he receives copies of the emails to be informed.</p>
+and an email with the activation link will be sent to them,
+so they can activate their account and log in nearly immediately.
+All this happens without requiring any actions from the admin,
+but he receives copies of the emails to be informed.</p>
 <p>After successfull login the user can edit his user preferences, i.e. name, email address and password.
 Unregistering, i.e. deleting the account, is also possible in the preferences dialog.</p>
 <p>Note that all login and logout attempts will be logged in the logfile/logfile.txt.</p>
@@ -143,10 +163,13 @@ The code from Michael Svarrer's <a href="http://cmsimplewiki.com/doku.php/plugin
 has been used as example for the Register plugin.</p>
 <p>The plugin icon is designed by <a href="http://www.dellustrations.com/">Wendell Fernandes</a>.
 Many thanks for publishing this icon as freeware.</p>
-<p>This plugin uses free applications icons from <a href="http://www.aha-soft.com/">Aha-Soft</a>.
+<p>This plugin uses free applications icons from <a href="http://www.aha-soft.com/">Aha-Soft</a>
+and <a href="http://19eighty7.com/icons">19eighty7</a>.
 Many thanks for making these icons freely available.</p>
-<!--<p>Many thanks to the community at the <a href="http://www.cmsimpleforum.com">CMSimple forum</a>-->
-<!--for tips, suggestions and testing.</p>-->
+<p>Many thanks to the community at the <a href="http://www.cmsimpleforum.com">CMSimple forum</a>
+for tips, suggestions and testing.
+Particularly I want to thank Holger for finding a severe flaw,
+and for his suggestion to improve the user administration.</p>
 <p>And last but not least many thanks to <a href="http://www.harteg.dk">Peter Harteg</a>,
 the "father" of CMSimple, and all developers of
 <a href="http://www.cmsimple-xh.com">CMSimple_XH</a>
