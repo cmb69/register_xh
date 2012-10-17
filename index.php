@@ -776,7 +776,7 @@ function registerCheckEntry($name, $username, $password1, $password2, $email)
 	$ERROR = '';
 
 	// check for empty or illegal/wrong fields
-	if($name == '' || !preg_match("/^\S+( \S+)+$/", $name))
+	if(empty($name))
 	$ERROR .= '<li>' . $plugin_tx[$plugin]['err_name'] . '</li>'."\n";
 	if($username == '')
 	$ERROR .= '<li>' . $plugin_tx[$plugin]['err_username'] . '</li>'."\n";
