@@ -15,7 +15,7 @@ if (!defined('CMSIMPLE_XH_VERSION')) {
 }
 
 
-define('REGISTER_VERSION', '1.5rc1');
+define('REGISTER_VERSION', '1.4rc5');
 
 
 if (!defined('CMSIMPLE_URL')) {
@@ -241,9 +241,7 @@ function registerLogin()
     $passwordHash = md5($secret.$password);
 
 	// read user file in CSV format separated by colons
-	register_lock_users(dirname($pth['folder']['base'] . $plugin_tx['register']['config_usersfile']), LOCK_SH);
 	$userArray = registerReadUsers($pth['folder']['base'] . $plugin_tx['register']['config_usersfile']);
-	register_lock_users(dirname($pth['folder']['base'] . $plugin_tx['register']['config_usersfile']), LOCK_UN);
 
 	// search user in CSV data
 	$entry = registerSearchUserArray($userArray, 'username', $username);
@@ -446,7 +444,6 @@ function registerActivateUser($user, $captcha)
 	$o ='';
 
 	// read user file in CSV format separated by colons
-	register_lock_users(dirname($pth['folder']['base'] . $plugin_tx['register']['config_usersfile']), LOCK_EX);
 	$userArray = registerReadUsers($pth['folder']['base'] . $plugin_tx['register']['config_usersfile']);
 
 	// check if user or other user for same email address exists
@@ -477,25 +474,7 @@ function registerActivateUser($user, $captcha)
 		registerWriteUsers($pth['folder']['base'] . $plugin_tx['register']['config_usersfile'],$userArray);
 		$o .= '<b>' . $plugin_tx[$plugin]['activated'] . '</b>'."\n";
 	}
-	register_lock_users(dirname($pth['folder']['base'] . $plugin_tx['register']['config_usersfile']), LOCK_UN);
   return $o;
-}
-
-
-function register_lock_users($dirname, $mode)
-{
-    static $fps = array();
-    
-    $fn = $dirname . '/.lock';
-    touch($fn);
-    if ($mode != LOCK_UN) {
-	$fps[$dirname] = fopen($fn, 'r');
-	flock($fps[$dirname], $mode);
-    } else {
-	flock($fps[$dirname], $mode);
-	fclose($fps[$dirname]);
-	unset($fps[$dirname]);
-    }
 }
 
 /*
@@ -776,7 +755,7 @@ function registerCheckEntry($name, $username, $password1, $password2, $email)
 	$ERROR = '';
 
 	// check for empty or illegal/wrong fields
-	if(empty($name))
+	if($name == '' || !preg_match("/^\S+( \S+)+$/", $name))
 	$ERROR .= '<li>' . $plugin_tx[$plugin]['err_name'] . '</li>'."\n";
 	if($username == '')
 	$ERROR .= '<li>' . $plugin_tx[$plugin]['err_username'] . '</li>'."\n";
@@ -937,7 +916,6 @@ function registerUser()
 		$ERROR .= registerCheckColons($name, $username, $password1, $email);
 
 		// read user file in CSV format separated by colons
-		register_lock_users(dirname($pth['folder']['base'] . $plugin_tx['register']['config_usersfile']), LOCK_EX);
 		$userArray = registerReadUsers($pth['folder']['base'] . $plugin_tx['register']['config_usersfile']);
 
 		// check if user or other user for same email address exists
@@ -961,7 +939,6 @@ function registerUser()
 		$plugin_tx[$plugin]['err_cannot_write_csv'] .
 		' (' . $pth['folder']['base'] . $plugin_tx['register']['config_usersfile'] . ')' .
 		'</li>'."\n";
-		register_lock_users(dirname($pth['folder']['base'] . $plugin_tx['register']['config_usersfile']), LOCK_UN);
 
 		if($ERROR != "")
 		{
@@ -990,7 +967,7 @@ function registerUser()
 			$plugin_tx[$plugin]['emailsubject'] . ' ' . $_SERVER['SERVER_NAME'],
 			$content,
 			array('From: ' . $plugin_cf[$plugin]['senderemail'],
-			    'Cc: '  . $plugin_cf[$plugin]['senderemail'])
+			    'Bcc: '  . $plugin_cf[$plugin]['senderemail'])
 			);
 			$o .= '<b>' . $plugin_tx[$plugin]['registered'] . '</b>';
 			return $o;
@@ -1080,9 +1057,7 @@ function registerForgotPassword()
 		$ERROR .= '<li>' . $plugin_tx[$plugin]['err_email_invalid'] . '</li>'."\n";
 
 		// read user file in CSV format separated by colons
-		register_lock_users(dirname($pth['folder']['base'] . $plugin_tx['register']['config_usersfile']), LOCK_SH);
 		$userArray = registerReadUsers($pth['folder']['base'] . $plugin_tx['register']['config_usersfile']);
-		register_lock_users(dirname($pth['folder']['base'] . $plugin_tx['register']['config_usersfile']), LOCK_UN);
 
 		// search user for email
 		$user = registerSearchUserArray($userArray, 'email', $email);
@@ -1140,7 +1115,6 @@ function registerForgotPassword()
 		  && preg_match('/true/i', $plugin_cf[$plugin]['encrypt_password']))
 	{
 		// read user file in CSV format separated by colons
-		register_lock_users(dirname($pth['folder']['base'] . $plugin_tx['register']['config_usersfile']), LOCK_EX);
 		$userArray = registerReadUsers($pth['folder']['base'] . $plugin_tx['register']['config_usersfile']);
 
 		// search user for email
@@ -1163,7 +1137,6 @@ function registerForgotPassword()
 			' (' . $pth['folder']['base'] . $plugin_tx['register']['config_usersfile'] . ')' .
 			'</li>'."\n";
 		}
-		register_lock_users(dirname($pth['folder']['base'] . $plugin_tx['register']['config_usersfile']), LOCK_UN);
 
 		if($ERROR != "")
 		{
@@ -1273,7 +1246,6 @@ function registerUserPrefs()
 	$username = isset($_SESSION['username']) ? $_SESSION['username'] : "";
 
 	// read user file in CSV format separated by colons
-	register_lock_users(dirname($pth['folder']['base'] . $plugin_tx['register']['config_usersfile']), LOCK_EX);
 	$userArray = registerReadUsers($pth['folder']['base'] . $plugin_tx['register']['config_usersfile']);
 
 	// search user in CSV data
@@ -1330,7 +1302,6 @@ function registerUserPrefs()
 			' (' . $pth['folder']['base'] . $plugin_tx['register']['config_usersfile'] . ')' .
 			'</li>'."\n";
 		}
-		register_lock_users(dirname($pth['folder']['base'] . $plugin_tx['register']['config_usersfile']), LOCK_UN);
 
 		if($ERROR != '')
 		{
@@ -1359,7 +1330,8 @@ function registerUserPrefs()
 			$plugin_tx[$plugin]['prefsemailsubject'] . ' ' . $_SERVER['SERVER_NAME'],
 			$content,
 			array('From: ' . $plugin_cf[$plugin]['senderemail'],
-			    'Cc: '  . $oldemail . ', ' . $plugin_cf[$plugin]['senderemail'])
+			    'Cc: '  . $oldemail,
+			    'Bcc: '  . $plugin_cf[$plugin]['senderemail'])
 			);
 			$o .= '<b>' . $plugin_tx[$plugin]['prefsupdated'] . '</b>';
 			return $o;
@@ -1385,7 +1357,6 @@ function registerUserPrefs()
 			'</li>'."\n";
 		}
 		// write CSV file if no errors occurred so far
-		register_lock_users(dirname($pth['folder']['base'] . $plugin_tx['register']['config_usersfile']), LOCK_UN);
 
 		if($ERROR != "")
 		{
@@ -1538,9 +1509,9 @@ function registerloginform()
 
 		// loggedin user
 		if($plugin_cf[$plugin]['login_layout'] == 'horizontal')
-		$o .= "\n".'<div class="regi_loggedin_loggedinarea_hor">'."\n".'<div class="regi_loggedin_user_hor">'.$plugin_tx[$plugin]['loggedin_welcometext'].' '.$_SESSION['fullname'].'!&nbsp; </div>'."\n";
+		$o .= "\n".'<div class="regi_loggedin_loggedinarea_hor">'."\n".'<div class="regi_loggedin_user_hor">'.$plugin_tx[$plugin]['loggedin_welcometext'].' '.$_SESSION['fullname'].',&nbsp; </div>'."\n";
 		else
-		$o .= "\n".'<div class="regi_loggedin_loggedinarea_ver">'."\n".'<div class="regi_loggedin_user_ver">'.$plugin_tx[$plugin]['loggedin_welcometext'].' '.$_SESSION['fullname'].'!&nbsp; </div>'."\n";
+		$o .= "\n".'<div class="regi_loggedin_loggedinarea_ver">'."\n".'<div class="regi_loggedin_user_ver">'.$plugin_tx[$plugin]['loggedin_welcometext'].' '.$_SESSION['fullname'].',&nbsp; </div>'."\n";
 
 		// loggedin loggedin
 		if($plugin_cf[$plugin]['login_layout'] == 'horizontal')
@@ -1568,24 +1539,6 @@ function registerloginform()
 	}
   return $o;
 }
-
-
-/**
- * Returns the logged in form, if user is logged in.
- *
- * @since 1.5rc1
- * 
- * @return  string
- */
-function Register_loggedInForm()
-{
-    return (isset($_SESSION['username'], $_SESSION['sessionnr'], $_SESSION['register_sn'])
-	    && session('sessionnr') == session_id()
-	    && $_SESSION['register_sn'] == REGISTER_SESSION_NAME)
-	? registerloginform()
-	: '';
-}
-
 
 /*
  * This function outputs the full name of the current user (Top Level Function).

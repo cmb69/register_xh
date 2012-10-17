@@ -81,24 +81,12 @@ oder Sie entsprechend Ihren Erfordernissen anpassen.</p>
 <h3><a name="usage-administration">Benutzer- und Gruppenverwaltung</a></h3>
 <p>Das erste was Sie tun sollten, ist die Benutzergruppen entsprechend Ihren Wünschen anzupassen.
 Dies ist unter "Register" &rarr; "Gruppenverwaltung" möglich.
-Sie können die Benutzer unter "Register" &rarr; "Benutzerverwaltung" verwalten.
-Beide Dialoge sollten weitgehen selbsterklärend sein,
-aber einige Hinweise besonders bezüglich des letzteren scheinen angebracht:</p>
-<ul>
-<li>Das Auswahlfeld erlaubt es die Benutzer nach ihrer Gruppenzugehörig zu filtern.
-Wenn Sie einen Benutzer hinzufügen, wird der Filter zurück gesetzt,
-da Sie sonst u.U. den neuen Benutzerdatensatz nicht sehen könnten.
-Wenn Sie die Daten speichern, werden alle Benutzerdatensätze gespeichert,
-selbst wenn Sie ausgefiltert wurden.</li>
-<li>Sie können die Benutzerdatensätze durch Anklicken der entsprechenden Spaltenüberschrift sortieren.</li>
-<li>Der Status ist "activated" für Benutzer, die volle Rechte entsprechend ihrer Gruppenzugehörigkeit haben,
+Wenn Sie möchten, können Sie unter "Register" &rarr; "Benutzerverwaltung" Benutzer registrieren.
+Beide Dialoge sollten weitgehen selbsterklärend sein.
+Der Status ist "activated" für Benutzer, die volle Rechte entsprechend ihrer Gruppenzugehörigkeit haben,
 und "locked" für Benutzer, die Ihre Benutzer-Einstellungen nicht bearbeiten dürfen.
 Für Benutzer, die sich registriert, aber ihr Konto noch nicht aktiviert haben, enthält es einen Code.
-Ändern Sie diesen nicht, da der Benutzer sonst nicht mehr in der Lage ist, sein Konto später zu aktivieren.</li>
-<li>Sowohl in der Gruppen- wie auch in der Benutzerverwaltung
-ist das Hinzufügen und Löschen eines Benutzers nur temporär;
-um die Änderungen dauerhaft zu machen, müssen Sie sie ausdrücklich speichern.</li>
-</ul>
+Ändern Sie diesen nicht, da der Benutzer sonst nicht mehr in der Lage ist, sein Konto später zu aktivieren.</p>
 <p>Beachten Sie, dass auf die CSV-Datei der Gruppen und Benutzer durch Aufruf ihrer URL direkt zugegriffen werden kann.
 Eine .htaccess Datei, um dies für Apache Server zu verhindern, befindet sich bereits im voreingestellten Datenordner.
 Für andere Server oder für geänderte Datenordner müssen Sie sich selbst darum kümmern,
@@ -115,9 +103,6 @@ muss das Login-Formular angezeigt werden. Sie können es im Template aufrufen, s
 <pre>&lt;?php echo registerloginform(); ?&gt;</pre>
 <p>Alternativ können Sie es auf einer oder mehreren CMSimple-Seiten aufrufen:</p>
 <pre>{{{PLUGIN:registerloginform();}}}</pre>
-<p>In diesem Fall werden Sie vermutlich das Formular für eingeloggte Benutzer
-zum Template hinzufügen wollen. Dies ist mit dem folgenden Aufruf möglich:</p>
-<pre>&lt;?php echo Register_loggedInForm();&gt;</pre>
 <p>Falls der Benutzer sein Kennwort vergessen hat, kann er eine E-Mail mit den Zugangsdaten anfordern.
 Falls die Registrierung neuer Benutzer erlaubt ist, können sich diese selbst registrieren,
 und eine E-Mail mit dem Aktivierungslink wird ihnen zugesandt, so dass sie ihr Konto aktivieren und sich nahezu sofort einloggen können.
@@ -163,13 +148,10 @@ Der Code von Michael Svarrer's <a href="http://cmsimplewiki.com/doku.php/plugins
 diente als Beispiel für das Register Plugin.</p>
 <p>Das Plugin-Icon wurde von <a href="http://www.dellustrations.com/">Wendell Fernandes</a> entworfen.
 Vielen Dank für die Veröffentlichung als Freeware.</p>
-<p>Dieses Plugin verwendet Application-Icons von <a href="http://www.aha-soft.com/">Aha-Soft</a>
-und <a href="http://19eighty7.com/icons">19eighty7</a>.
+<p>Dieses Plugin verwendet Application-Icons von <a href="http://www.aha-soft.com/">Aha-Soft</a>.
 Vielen Dank für die Veröffentlichung als Freeware.</p>
-<p>Vielen Dank an die Community im <a href="http://www.cmsimpleforum.com">CMSimple-Forum</a>
-für Anregungen, Vorschläge und das Testen.
-Besonders möchte ich Holger für das Finden eines schwerwiegenden Makels,
-und für seinen Vorschlag, die Benutzerverwaltung zu verbessern, danken.</p>
+<!--<p>Vielen Dank an die Community im <a href="http://www.cmsimpleforum.com">CMSimple-Forum</a>-->
+<!--für Anregungen, Vorschläge und das Testen.</p>-->
 <p>Zu guter Letzt vielen Dank an <a href="http://www.harteg.dk">Peter Harteg</a>,
 den "Vater" von CMSimple, und allen Entwicklern von
 <a href="http://www.cmsimple-xh.com">CMSimple_XH</a>

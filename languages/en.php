@@ -1,5 +1,4 @@
 <?php
-
 $plugin_tx['register']['down_link']="down <span style=\"font-size: 24px;\">&dArr;</span>";
 $plugin_tx['register']['groupname']="Groupname";
 $plugin_tx['register']['name']="Full Name";
@@ -14,14 +13,10 @@ $plugin_tx['register']['status']="Status";
 $plugin_tx['register']['register']="Register";
 $plugin_tx['register']['forgot_password']="Password forgotten";
 $plugin_tx['register']['user_prefs']="User Preferences";
-$plugin_tx['register']['user_add']="Add User";
 $plugin_tx['register']['user_delete']="Delete User";
 $plugin_tx['register']['user_deleted']="User deleted";
 $plugin_tx['register']['user_locked']="User Preferences can't be changed for";
 $plugin_tx['register']['admin_mode']="Administration Mode";
-$plugin_tx['register']['all']="All";
-$plugin_tx['register']['details']="Details";
-$plugin_tx['register']['filter_group']="Filter by access group";
 $plugin_tx['register']['send']="Send";
 $plugin_tx['register']['change']="Change";
 $plugin_tx['register']['fromip']="From IP-Address";
@@ -38,7 +33,7 @@ $plugin_tx['register']['access_error']="Access Restricted";
 $plugin_tx['register']['access_error_text']="This page is only accessible for members with appropriate permissions.";
 $plugin_tx['register']['error']="Error";
 $plugin_tx['register']['error_in_user']="Error in Username ";
-$plugin_tx['register']['err_name']="Please enter your full name.";
+$plugin_tx['register']['err_name']="Please enter first name and last name.";
 $plugin_tx['register']['err_username']="Please choose a Username.";
 $plugin_tx['register']['err_username_illegal']="The username must contain only following characters: A-Z, a-z, 0-9, _";
 $plugin_tx['register']['err_username_exists']="The chosen username exists already.";
@@ -75,6 +70,9 @@ $plugin_tx['register']['changeexplanation']="On this page you can change your ac
 $plugin_tx['register']['prefsemailsubject']="Account data changed for\n";
 $plugin_tx['register']['prefsupdated']="Your account information has been updated and sent to you via email.";
 $plugin_tx['register']['emailprefsupdated']="Your account information has been updated as follows.";
+$plugin_tx['register']['mnu_main']="User/Group Administration";
+$plugin_tx['register']['mnu_config']="Plugin Configuration";
+$plugin_tx['register']['mnu_language']="Plugin Language Settings";
 $plugin_tx['register']['mnu_group_admin']="Group Administration";
 $plugin_tx['register']['mnu_user_admin']="User Administration";
 $plugin_tx['register']['entries_in_csv']="Entries in CSV file ";
@@ -82,8 +80,6 @@ $plugin_tx['register']['csv_written']="CSV file successfully written";
 $plugin_tx['register']['config_login_page']="";
 $plugin_tx['register']['config_usersfile']="plugins/register/data/users.csv";
 $plugin_tx['register']['config_groupsfile']="plugins/register/data/groups.csv";
-
-$plugin_tx['register']['js_confirmLeave']="Unsaved changes will be lost!";
 
 $plugin_tx['register']['syscheck_title']="System check";
 $plugin_tx['register']['syscheck_phpversion']="PHP version &ge; %s";
@@ -108,5 +104,4 @@ $plugin_tx['register']['cf_senderemail']="The e-mail account of the administrato
 $plugin_tx['register']['cf_config_login_page']="Name of the page the user is redirected directly after login.";
 $plugin_tx['register']['cf_config_usersfile']="The path (relative to the CMSimple root) to the users CSV file, e.g. \"plugins/register/data/users.csv\".";
 $plugin_tx['register']['cf_config_groupsfile']="The path (relative to the CMSimple root) to the groups CSV file, e.g. \"plugins/register/data/groups.csv\".";
-
 ?>
