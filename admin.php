@@ -100,28 +100,26 @@ function registerAdminGroupsForm($groups)  {
     $o .= '<form method="POST" action="'.$sn.'?&register">'."\n";
     $o .= tag('input type="hidden" value="savegroups" name="action"')."\n";
     $o .= tag('input type="hidden" value="plugin_main" name="admin"')."\n";
-    $o .= '<table cellpadding="1" cellspacing="0" style="background:transparent; float: left; width: 250px; border: 0;">'."\n";
-    $o .= '<tr style="background:#E6E6E6">'."\n"
-	    .'  <td align="left">' . $plugin_tx[$plugin]['groupname'] . '</td>'."\n"
-	    .'  <td align="right">'."\n"
+    $o .= '<table cellpadding="1" cellspacing="0">'."\n";
+    $o .= '<tr>'."\n"
+	    .'  <th>' . $plugin_tx[$plugin]['groupname'] . '</th>'."\n"
+	    .'  <th>'."\n"
 	    .tag('input type="image" src="'.$imageFolder.'/add.png" style="width: 16px; height: 16px;" name="add[0]" value="add" alt="Add entry."')."\n"
-	    .'  </td>'."\n"
+	    .'  </th>'."\n"
 	    .'</tr>'."\n";
     $i = 0;
     foreach ($groups as $entry) {
 	$o .= '<tr>'."\n"
 		.'  <td>'.tag('input type="normal" size="10" value="'.$entry['groupname'].'" name="groupname['.$i.']"').'</td>'."\n"
-		.'  <td style="text-align: right;">'."\n"
+		.'  <td>'."\n"
 		.tag('input type="image" src="'.$imageFolder.'/delete.png" style="width: 16px; height: 16px;" name="delete['.$i.']" value="delete" alt="Delete Entry"')."\n"
 		.'  </td>'."\n"
 		.'</tr>'."\n";
 	$i++;
     }
-    $o .= '<tr>'."\n";
-    $o .= '  <td>'.tag('input class="submit" type="submit" value="'.ucfirst($tx['action']['save']).'" name="send"').'</td>'."\n";
-    $o .= '</tr>'."\n";
     $o .= '</table>'."\n";
-    $o .= '</form>'."\n".'</div>'.tag('br')."\n";
+    $o .= tag('input class="submit" type="submit" value="'.ucfirst($tx['action']['save']).'" name="send"')."\n";
+    $o .= '</form>'."\n".'</div>'."\n";
     return $o;
 }
 
@@ -228,9 +226,8 @@ function registerAdminUsersForm($users) {
     
     $o .= '</table>';
 
-    $o .= '<a name="bottom">'.tag('br').'</a>';
     $o .= tag('input class="submit" type="submit" value="' . ucfirst($tx['action']['save']).  '" name="send"')."\n";
-    $o .= '</form>'."\n".'</div>'.tag('br')."\n";
+    $o .= '</form>'."\n".'</div>'."\n";
     $o .= '<script type="text/javascript">register.init()</script>';
     return $o;
 }
@@ -259,34 +256,26 @@ if (isset($register) && $register == 'true') {
 			$users  = registerReadUsers($pth['folder']['base'] . $plugin_tx['register']['config_usersfile']);
                         register_lock_users(dirname($pth['folder']['base'] . $plugin_tx['register']['config_usersfile']), LOCK_UN);
 			$o .= registerAdminUsersForm($users);
-			$o .= '<div id="register_status">' . count($users) . ' ' . $plugin_tx[$plugin]['entries_in_csv'] .
+			$o .= '<div class="register_status">' . count($users) . ' ' . $plugin_tx[$plugin]['entries_in_csv'] .
 			$pth['folder']['base'] . $plugin_tx['register']['config_usersfile'] . '</div>';
 		    } else {
-			$o .= '<div id="register_status">' . $plugin_tx[$plugin]['err_csv_missing'] .
+			$o .= '<div class="register_status">' . $plugin_tx[$plugin]['err_csv_missing'] .
 			' (' . $pth['folder']['base'] . $plugin_tx['register']['config_usersfile'] . ')' .
 			'</div>';
 		    }
 		    break;
 		case 'editgroups':
 		    // read user file in CSV format separated by colons
-		    $o .= '<br />'."\n".'<table>'."\n";
 		    if (is_file($pth['folder']['base'] . $plugin_tx['register']['config_groupsfile'])) {
 			$groups = registerReadGroups($pth['folder']['base'] . $plugin_tx['register']['config_groupsfile']);
-			$o .= '<tr>'."\n".'  <td>'."\n";
 			$o .= registerAdminGroupsForm($groups);
-			$o .= '  </td>'."\n".'</tr>'."\n";
-			$o .= '<tr>'."\n".'  <td>'."\n";
-			$o .= '<b>' . count($groups) . ' ' . $plugin_tx[$plugin]['entries_in_csv'] .
-				$pth['folder']['base'] . $plugin_tx['register']['config_groupsfile'] . '</b>'."\n";
-			$o .= '  </td>'."\n".'</tr>'."\n";
+			$o .= '<div class="register_status">' . count($groups) . ' ' . $plugin_tx[$plugin]['entries_in_csv'] .
+				$pth['folder']['base'] . $plugin_tx['register']['config_groupsfile'] . '</div>'."\n";
 		    } else {
-			$o .= '<tr>'."\n".'  <td>'."\n";
-			$o .= '<b>' . $plugin_tx[$plugin]['err_csv_missing'] .
+			$o .= '<div class="register_status">' . $plugin_tx[$plugin]['err_csv_missing'] .
 				' (' . $pth['folder']['base'] . $plugin_tx['register']['config_groupsfile'] . ')' .
-				'</b>'."\n";
-			$o .= '  </td>'."\n".'</tr>'."\n";
+				'</div>'."\n";
 		    }
-		    $o .= '</table>'."\n";
 		    break;
 		case 'savegroups':
 		    // == Edit Groups =============================================================
@@ -315,13 +304,9 @@ if (isset($register) && $register == 'true') {
 			$added = true;
 		    }
 
-		    $o .= tag('br').'<table>'."\n";
-		    $o .= '<tr>'."\n".'  <td>'."\n";
 		    $o .= registerAdminGroupsForm($newgroups);
-		    $o .= '  </td>'."\n".'</tr>'."\n";
 
 		    // In case that nothing got deleted or added, store back (save got pressed)
-		    $o .= '<tr>'."\n".'  <td>'."\n";
 		    if(!$deleted && !$added && $ERROR == "") {
 			if (!registerWriteGroups($pth['folder']['base'] . $plugin_tx['register']['config_groupsfile'], $newgroups))
 			    $ERROR .= '<li>' . $plugin_tx[$plugin]['err_cannot_write_csv'] .
@@ -329,15 +314,13 @@ if (isset($register) && $register == 'true') {
 				    '</li>'."\n";
 
 			if($ERROR != '')
-			    $o .= '<b class="error">' . $plugin_tx[$plugin]['error'] . '</b>'."\n" . '<ul class="error">'."\n".$ERROR.'</ul>'."\n";
+			    $e .= $ERROR;
 			else
-			    $o .= '<b>'  . $plugin_tx[$plugin]['csv_written'] .
+			    $o .= '<div class="register_status">'  . $plugin_tx[$plugin]['csv_written'] .
 				    ' (' . $pth['folder']['base'] . $plugin_tx['register']['config_groupsfile'] . ')' .
-				    '.</b>'."\n";
+				    '.</div>'."\n";
 		    } elseif ($ERROR != '')
-			$o .= '<b>' . $plugin_tx[$plugin]['error'] . '</b>'."\n" . '<ul class="error">'."\n".$ERROR.'</ul>'."\n";
-		    $o .= '  </td>'."\n".'</tr>'."\n";
-		    $o .= '</table>'."\n";
+			$e .= $ERROR;
 		    break;
 		case 'saveusers':
 		    // == Edit Users ==============================================================
@@ -415,13 +398,9 @@ if (isset($register) && $register == 'true') {
 			$added = true;
 		    }
 
-		    $o .= tag('br').'<table>'."\n";
-		    $o .= '<tr>'."\n".'  <td>'."\n";
 		    $o .= registerAdminUsersForm($newusers);
-		    $o .= '  </td>'."\n".'</tr>'."\n";
 
 		    // In case that nothing got deleted or added, store back (save got pressed)
-		    $o .= '<tr>'."\n".'  <td>'."\n";
 		    if (!$deleted && !$added && $ERROR == "") {
                         register_lock_users(dirname($pth['folder']['base'] . $plugin_tx['register']['config_usersfile']), LOCK_EX);
 			if (!registerWriteUsers($pth['folder']['base'] . $plugin_tx['register']['config_usersfile'], $newusers))
@@ -433,14 +412,12 @@ if (isset($register) && $register == 'true') {
 			if ($ERROR != '')
 			    $e .= $ERROR;
 			else
-			    $o .= '<b>'  . $plugin_tx[$plugin]['csv_written'] .
+			    $o .= '<div class="register_status">'  . $plugin_tx[$plugin]['csv_written'] .
 				    ' (' . $pth['folder']['base'] . $plugin_tx['register']['config_usersfile'] . ')' .
-				    '.</b>'."\n";
+				    '.</div>'."\n";
 		    }
 		    elseif ($ERROR != '')
 			$e .= $ERROR;
-		    $o .= '  </td>'."\n".'</tr>'."\n";
-		    $o .= '</table>'."\n";
 		    break;
 	    }
 	    break;

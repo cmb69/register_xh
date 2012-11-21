@@ -100,18 +100,22 @@ div.regi_loggedin_logout_ver {float: left; width: 100%; padding: 2px 0;}
 
 /* Admin area */
 
-.register_admin_main {font-family: Arial, sans-serif; font-size: 14px;}
+.register_admin_main {font-family: Arial, sans-serif; font-size: 14px; margin-bottom: 1em}
 
 #register_toggle_details {margin: 0 0.2em 0 1em}
 #register_group_selectbox {margin-left: 1em}
 
+div.register_admin_main table {margin-bottom: 1em}
+div.register_admin_main table th {text-align: center; font-weight: bold}
+div.register_admin_main table input {width: 20em}
 div.register_admin_main table img {width: 16px; height: 16px; cursor: pointer}
 
 #register_user_table {margin: 1em 0; width:100%;}
-#register_user_table th {text-align: center; font-weight: bold}
 th.register_sort_asc {background: url("./sort-asc.png") no-repeat right}
 th.register_sort_desc {background: url("./sort-desc.png") no-repeat right}
-#register_user_table input[type="text"] {width: 187px} /* adjust the width to your template */
+#register_user_table input[type="text"] {width: 95%} /* if necessary, adjust the width to your template */
+
+div.register_status {font-weight: bold}
 
 
 img.register_plugin_icon {display: block; float: left; margin: 0 20px 0 0}
