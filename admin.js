@@ -146,5 +146,21 @@ var register = {
                     ? "" : "none"
             }
         }
+    },
+    
+    
+    changePassword: function(field) {
+        while (true) {
+            var pass = window.prompt(register.tx.newPassword);
+            if (pass === null) {
+                return;
+            } else if (/^[A-Za-z0-9_]+$/.test(pass)) {
+                field.value = pass;
+                window.onbeforeunload = function() {
+                    return register.tx.confirmLeave;
+                }
+                return;
+            }
+        }
     }
 }

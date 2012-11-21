@@ -202,7 +202,8 @@ function registerAdminUsersForm($users) {
             . '<td>' . '</td>'
             . '<td>' . tag('input type="text" value="" name="username[]"') .  '</td>'
             . '<td>' . tag('input type="text" value="" name="email[]"') . '</td>'
-            . '<td>' . tag('input type="text" value="" name="password[]"')
+            . '<td>'
+	    . tag('input type="hidden" value="" name="password[]"')
             . tag('input type="hidden" value="" name="oldpassword[]"'). '</td>'
             . '</tr></table>';
     
@@ -230,7 +231,7 @@ function registerAdminUsersForm($users) {
         . '<th></th>'
         . '<th onclick="register.sort(this, \'username\')" style="cursor: pointer">' . $plugin_tx[$plugin]['username'] . '</th>'
         . '<th onclick="register.sort(this, \'email\')" style="cursor: pointer">' . $plugin_tx[$plugin]['email'] . '</th>'
-        . '<th onclick="register.sort(this, \'password\')" style="cursor: pointer">' . $plugin_tx[$plugin]['password'] . '</th>'
+        . '<th>' . $plugin_tx[$plugin]['password'] . '</th>'
         . '</tr>';
                 
     $i = 0;
@@ -248,7 +249,8 @@ function registerAdminUsersForm($users) {
                 . '<td>' . '</td>'
 		.'<td>' . tag('input type="text" value="' . $entry['username'] . '" name="username['.$i.']"') .  '</td>'
 		.'<td>' . tag('input type="text" value="' . $entry['email'] . '" name="email['.$i.']"') . '</td>'
-		.'<td>' . tag('input type="text" value="' . $entry['password'] . '" name="password['.$i.']"')
+		.'<td>' . '<button onclick="register.changePassword(this.nextSibling); return false">' . $plugin_tx['register']['change_password'] . '</button>'
+		. tag('input type="hidden" value="' . $entry['password'] . '" name="password['.$i.']"')
                 . tag('input type="hidden" value="' . $entry['password'] . '" name="oldpassword['.$i.']"') . '</td>'
 		. '</tr>';
 	$i++;

@@ -28,6 +28,7 @@ $plugin_tx['register']['details']="Details";
 $plugin_tx['register']['filter_group']="Filter by access group";
 $plugin_tx['register']['send']="Send";
 $plugin_tx['register']['change']="Change";
+$plugin_tx['register']['change_password']="Change Password...";
 $plugin_tx['register']['fromip']="From IP-Address";
 $plugin_tx['register']['remember']="Remember&nbsp;user";
 $plugin_tx['register']['login']="Login";
@@ -88,6 +89,7 @@ $plugin_tx['register']['config_usersfile']="plugins/register/data/users.csv";
 $plugin_tx['register']['config_groupsfile']="plugins/register/data/groups.csv";
 
 $plugin_tx['register']['js_confirmLeave']="Unsaved changes will be lost!";
+$plugin_tx['register']['js_newPassword']="New Password (may contain only alphanumeric characters and underscores):";
 
 $plugin_tx['register']['syscheck_title']="System check";
 $plugin_tx['register']['syscheck_phpversion']="PHP version &ge; %s";

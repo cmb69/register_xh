@@ -113,7 +113,7 @@ div.register_admin_main table img {width: 16px; height: 16px; cursor: pointer}
 #register_user_table {margin: 1em 0; width:100%;}
 th.register_sort_asc {background: url("./sort-asc.png") no-repeat right}
 th.register_sort_desc {background: url("./sort-desc.png") no-repeat right}
-#register_user_table input[type="text"], #register_user_table select {width: 95%} /* if necessary, adjust the width to your template */
+#register_user_table input[type="text"], #register_user_table select, #register_user_table button {width: 95%} /* if necessary, adjust the width to your template */
 
 div.register_status {font-weight: bold}
 

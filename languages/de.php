@@ -28,6 +28,7 @@ $plugin_tx['register']['details']="Details";
 $plugin_tx['register']['filter_group']="Filtern nach Gruppenzugehörigkeit";
 $plugin_tx['register']['send']="Abschicken";
 $plugin_tx['register']['change']="Ändern";
+$plugin_tx['register']['change_password']="Kennwort ändern...";
 $plugin_tx['register']['fromip']="Von IP-Adresse";
 $plugin_tx['register']['remember']="Benutzer&nbsp;merken";
 $plugin_tx['register']['login']="Login";
@@ -88,6 +89,7 @@ $plugin_tx['register']['config_usersfile']="plugins/register/data/users.csv";
 $plugin_tx['register']['config_groupsfile']="plugins/register/data/groups.csv";
 
 $plugin_tx['register']['js_confirmLeave']="Ungespeicherte Änderungen gehen verloren!";
+$plugin_tx['register']['js_newPassword']="Neues Kennwort (darf nur alphanumerische Zeichen und Unterstriche enthalten):";
 
 $plugin_tx['register']['syscheck_title']="System-Prüfung";
 $plugin_tx['register']['syscheck_phpversion']="PHP Version ≥ %s";
