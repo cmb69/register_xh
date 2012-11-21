@@ -464,7 +464,7 @@ function registerReadGroups($filename)
 			$line = fgets($fp, 4096);
 			if($line != "" && !strpos($line, "//"))
 			{
-				list($groupname,$dummy) = explode("\n", $line);
+				$groupname = rtrim($line);
 				// line must not start with '//' and all fields must be set
 				if(strpos($groupname, "//") === false && $groupname != "")
 				{
@@ -549,7 +549,7 @@ function registerReadUsers($filename)
 			$line = fgets($fp, 4096);
 			if($line != "" && strpos($line, '//')=== false)
 			{
-				list($username,$password,$accessgroups,$name,$email,$status,$dummy) = preg_split('/[:\n]/', $line);
+				list($username,$password,$accessgroups,$name,$email,$status) = explode(':', rtrim($line));
 				// line must not start with '//' and all fields must be set
 				if(
 				$username != "" &&
