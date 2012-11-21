@@ -114,7 +114,10 @@ var register = {
         register.filterByGroup(document.getElementById("register_group_selectbox").value);
         document.getElementById("register_toggle_details").checked = true;
         register.toggleDetails();
-        window.onbeforeunload = function() {return register.tx.confirmLeave;};
+        window.onbeforeunload = function() {
+            return register.tx.confirmLeave;
+        }
+        tpl.firstChild.nextSibling.firstChild.focus();
     },
     
     renumberRows: function() {
