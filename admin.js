@@ -112,6 +112,7 @@ var register = {
         tpl2.className = "register_second_row";
         register.renumberRows();
         register.filterByGroup(document.getElementById("register_group_selectbox").value);
+        document.getElementById("register_toggle_details").checked = true;
         register.toggleDetails();
         window.onbeforeunload = function() {return register.tx.confirmLeave;};
     },
