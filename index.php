@@ -716,6 +716,33 @@ function registerDeleteUserEntry($array, $username)
 	return $newarray;
 }
 
+
+/**
+ * Returns the user record, if the user is logged in, otherwise null.
+ *
+ * @return array
+ */
+function Register_currentUser()
+{
+    global $pth, $plugin_tx;
+    
+    $ptx = $plugin_tx['register'];
+    $loggedIn = session('sessionnr') == session_id()
+	&& isset($_SESSION['username'], $_SESSION['fullname'],
+		 $_SESSION['email'], $_SESSION['accessgroups'],
+		 $_SESSION['sessionnr'], $_SESSION['register_sn'])
+	&& $_SESSION['register_sn'] == REGISTER_SESSION_NAME;
+    if ($loggedIn) {
+	register_lock_users(dirname($pth['folder']['base'] . $ptx['config_usersfile']), LOCK_SH);
+	$users = registerReadUsers($pth['folder']['base'] . $ptx['config_usersfile']);
+	$rec = registerSearchUserArray($users, 'username', $_SESSION['username']);
+	register_lock_users(dirname($pth['folder']['base'] . $ptx['config_usersfile']), LOCK_UN);
+	return $rec;
+    } else {
+	return null;
+    }
+}
+
 /*
  *  Check entry for completeness.
  */
@@ -1491,11 +1518,15 @@ function registerloginform()
 		else
 		$o .='<div class="regi_loggedin_settings_ver">'."\n";
 
-		if(isset($su) && urldecode($su) != html_entity_decode(preg_replace("/ /", "_", $plugin_tx[$plugin]['user_prefs'])))
-		$o .= '<a href="'.$sn.'?'.html_entity_decode(preg_replace("/ /", "_", $plugin_tx[$plugin]['user_prefs'])).'">'.tag('img class="regi_settingsimage" src="'.$imageFolder.'/'.$plugin_cf[$plugin]['image_user_preferences'].'" alt="'.$plugin_tx[$plugin]['user_prefs'].'"').$plugin_tx[$plugin]['user_prefs'].'</a>'."\n".
-		'</div>'."\n";
-		else
-		$o .= '</div>'."\n";
+		$currentUser = Register_currentUser();
+		if ($currentUser['status'] == 'activated' && isset($su)
+		    && urldecode($su) != html_entity_decode(preg_replace("/ /", "_", $plugin_tx[$plugin]['user_prefs'])))
+		{
+		    $o .= '<a href="?' . html_entity_decode(preg_replace("/ /", "_", $plugin_tx[$plugin]['user_prefs'])).'">'.tag('img class="regi_settingsimage" src="'.$imageFolder.'/'.$plugin_cf[$plugin]['image_user_preferences'].'" alt="'.$plugin_tx[$plugin]['user_prefs'].'"').$plugin_tx[$plugin]['user_prefs'].'</a>'."\n".
+			'</div>'."\n";
+		} else {
+		    $o .= '</div>'."\n";
+		}
 
 		// loggedin logout
 		if($plugin_cf[$plugin]['login_layout'] == 'horizontal')
