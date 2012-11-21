@@ -90,10 +90,18 @@ When you add a new user, the filter is reset,
 as you might not be able to see the new user record otherwise.
 When you save the data all user records will be saved, even if they are filtered out.</li>
 <li>You can sort the user records by clicking on the respective column heading.</li>
-<li>The status field is "activated" for users having the full priviledges according to their groups,
-"locked" for users who may not change their preferences.
-For users who have registered, but no yet activated their account, it contains a code.
-Don't change that, as the user won't be able to activate the account later.</li>
+<li>The status can have one of the following values (the label of the values
+are language specific, and can be changed in the language settings):
+<dl>
+<dt>activated</dt>
+<dd>The user has the full priviledges according to his groups.</dd>
+<dt>locked</dt>
+<dd>The user has the full priviledges according to his groups, but may not change his preferences.</dd>
+<dt>deactivated</dt>
+<dd>The user account is (temporarily) deactivated.</dd>
+<dt>not yet activated</dt>
+<dd>The user has registered, but the account has not been activated.</dd>
+</dl></li>
 <li>In either group and user administration adding or deleting a user is temporary;
 to make the changes permanent, you have to explicitely save them.</li>
 </ul>

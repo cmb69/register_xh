@@ -556,8 +556,8 @@ function registerReadUsers($filename)
 				$password != "" &&
 				$accessgroups != "" &&
 				$name != "" &&
-				$email != "" &&
-				$status != "")
+				$email != ""/* &&
+				$status != ""*/)
 				{
 					$entry = array(
 					'username' => $username,

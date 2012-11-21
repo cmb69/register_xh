@@ -141,6 +141,35 @@ function Register_groupSelectbox()
 }
 
 
+/**
+ * Returns the status selectbox.
+ *
+ * @param  string $value  The selected value.
+ * @param  int $n  The running number.
+ * @return string  The (X)HTML.
+ */
+function Register_statusSelectbox($value, $n = null)
+{
+    global $plugin_tx;
+    
+    $ptx = $plugin_tx['register'];
+    $o = '<select name="status[' . $n . ']">';
+    $opts = array('activated' => $ptx['status_activated'],
+		  'locked' => $ptx['status_locked']);
+    if (empty($value) || array_key_exists($value, $opts)) {
+	$opts[''] = $ptx['status_deactivated'];
+    } else {
+	$opts[$value] = $ptx['status_not_yet_activated'];
+    }
+    foreach ($opts as $opt => $label) {
+	$sel = $opt == $value ? ' selected="selected"' : '';
+	$o .= '<option value="' . $opt . '"' . $sel . '>' . $label . '</option>';
+    }
+    $o .= '</select>';
+    return $o;
+}
+
+
 function registerAdminUsersForm($users) {
     global $tx, $pth, $sn, $hjs, $plugin_cf, $plugin_tx;
 
@@ -167,7 +196,7 @@ function registerAdminUsersForm($users) {
             . '<td>' . tag('img src="'.$imageFolder.'/delete.png" alt="' . $ptx['user_delete'] . '" title="' . $ptx['user_delete'] . '" onclick="register.removeRow(this); return false"') . '</td>'
             . '<td>' . tag('input type="text" value="" name="name[]"')  . '</td>'
             . '<td>' . tag('input type="text" value="' . $plugin_cf[$plugin]['group_default'] . '" name="accessgroups[]"') . '</td>'
-            . '<td>' . tag('input type="text" value="activated" name="status[]"') . '</td>'
+            . '<td>' . Register_statusSelectbox('activated') . '</td>'
             . '</tr>'
             . '<tr style="display: none">'
             . '<td>' . '</td>'
@@ -212,7 +241,8 @@ function registerAdminUsersForm($users) {
                 . '<td>' . tag('img src="'.$imageFolder.'/delete.png" alt="' . $ptx['user_delete'] . '" title="' . $ptx['user_delete'] . '" onclick="register.removeRow(this); return false"') . '</td>'
 		.'<td>' . tag('input type="text" value="' . $entry['name'] . '" name="name['.$i.']"')  . '</td>'
 		.'<td>' . tag('input type="text" value="' . $groupString . '" name="accessgroups['.$i.']"') . '</td>'
-		.'<td>' . tag('input type="text" value="' . $entry['status'] . '" name="status['.$i.']"') . '</td>'
+		//.'<td>' . tag('input type="text" value="' . $entry['status'] . '" name="status['.$i.']"') . '</td>'
+		. '<td>' . Register_statusSelectbox($entry['status'], $i) . '</td>'
                 . '</tr>'
                 . '<tr class="register_second_row">'
                 . '<td>' . '</td>'

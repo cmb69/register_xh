@@ -55,7 +55,10 @@ var register = {
         for (var i = 0, j = 0; i < elts.length; i++) {
             var elt = elts[i];
             if (elt.name.indexOf(col) === 0) {
-                names.push([elt.value, j++]);
+                var name = (elt.nodeName == 'SELECT')
+                    ? elt.options[elt.selectedIndex].text
+                    : elt.value;
+                names.push([name, j++]);
             }
         }
         names.sort(function(a, b) {return a[0].toLowerCase().localeCompare(b[0].toLowerCase())});
