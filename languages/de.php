@@ -96,11 +96,12 @@ $plugin_tx['register']['syscheck_phpversion']="PHP Version ≥ %s";
 $plugin_tx['register']['syscheck_extension']="Erweiterung '%s' geladen";
 $plugin_tx['register']['syscheck_magic_quotes']="magic_quotes_runtime off";
 $plugin_tx['register']['syscheck_encoding']="UTF-8-Kodierung eingestellt";
+$plugin_tx['register']['syscheck_encryption']="Kennwort-Verschlüsselung aktiviert";
 $plugin_tx['register']['syscheck_writable']="Ordner '%s' beschreibbar";
 
-$plugin_tx['register']['cf_allowed_register']="<b>true</b> erlaubt die Registrierung für neue Mitglieder.</b>";
-$plugin_tx['register']['cf_captcha_mode']="<b>none</b> deaktiviert das Captcha.</b> <b>formula</b> aktiviert ein formelbasiertes Captcha.</b> <b>image</b> aktiviert ein bildbasiertes Captcha.</b>";
-$plugin_tx['register']['cf_encrypt_password']="<b>true</b> aktiviert die Kennwort-Verschlüsselung.</b>";
+$plugin_tx['register']['cf_allowed_register']="<b>true</b> erlaubt die Registrierung für neue Mitglieder.";
+$plugin_tx['register']['cf_captcha_mode']="<b>none</b> deaktiviert das Captcha. <b>formula</b> aktiviert ein formelbasiertes Captcha.</b> <b>image</b> aktiviert ein bildbasiertes Captcha.";
+$plugin_tx['register']['cf_encrypt_password']="<b>true</b> aktiviert die Kennwort-Verschlüsselung, was unbedingt empfohlen wird.";
 $plugin_tx['register']['cf_fix_mail_headers']="<b>true</b> behebt Probleme mit einigen fehlerhaften Mail Transfer Agents. Verwenden Sie es, wenn Sie die E-Mails nicht empfangen oder wenn ein Teil der Header-Informationen (z.B. \"MIME-Version: 1.0\") im Rumpf der E-Mail erscheint.";
 $plugin_tx['register']['cf_group_activated']="Der Status neuer Mitglieder (Gruppe nach Registrierung und Account Aktivierung).";
 $plugin_tx['register']['cf_group_default']="Der Status neuer Mitglieder (Gruppe nach Registrierung, aber vor der Account Aktivierung).";

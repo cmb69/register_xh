@@ -96,11 +96,12 @@ $plugin_tx['register']['syscheck_phpversion']="PHP version &ge; %s";
 $plugin_tx['register']['syscheck_extension']="Extension '%s' loaded";
 $plugin_tx['register']['syscheck_encoding']="Encoding 'UTF-8' configured";
 $plugin_tx['register']['syscheck_magic_quotes']="Magic quotes runtime off";
+$plugin_tx['register']['syscheck_encryption']="Password encryption enabled";
 $plugin_tx['register']['syscheck_writable']="Folder '%s' writable";
 
-$plugin_tx['register']['cf_allowed_register']="<b>true</b> allows registration for new members.</b>";
-$plugin_tx['register']['cf_captcha_mode']="<b>none</b> deactivates captcha.</b> <b>formula</b> activates a formula based captcha.</b> <b>image</b> activates a image based captcha.</b>";
-$plugin_tx['register']['cf_encrypt_password']="<b>true</b> activates password encryption.</b>";
+$plugin_tx['register']['cf_allowed_register']="<b>true</b> allows registration for new members.";
+$plugin_tx['register']['cf_captcha_mode']="<b>none</b> deactivates captcha. <b>formula</b> activates a formula based captcha.</b> <b>image</b> activates a image based captcha.";
+$plugin_tx['register']['cf_encrypt_password']="<b>true</b> activates password encryption, what is strongly recommended.";
 $plugin_tx['register']['cf_fix_mail_headers']="<b>true</b> fixes problems with some buggy mail transfer agents. Use it, if you don't receive the emails or if some header information (e.g. \"MIME-Version: 1.0\") is visible in the body of the mail.";
 $plugin_tx['register']['cf_group_activated']="The status of new members (group after registration and account activation).";
 $plugin_tx['register']['cf_group_default']="The status of new members (default group for user after registration, but before account activation).";
