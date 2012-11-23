@@ -111,6 +111,7 @@ $plugin_tx['register']['cf_login_all_subsites']="<b>true</b> erlaubt das Login i
 $plugin_tx['register']['cf_login_layout']="<b>horizontal</b> erzeugt ein horizontales Login Formular, leer oder alles andere erzeugt ein vertikales Login Formular.";
 $plugin_tx['register']['cf_remember_user']="<b>true</b> zeigt die \"Benutzer merken\" Checkbox unterhalb des Login Formulars.";
 $plugin_tx['register']['cf_senderemail']="Die E-Mail-Adresse des Administrators";
+$plugin_tx['register']['cf_password_forgotten']="<b>true</b> zeigt den \"Kennwort vergessen\" Link im Login Formular.";
 $plugin_tx['register']['cf_config_login_page']="Name der Seite, zu der der Anwender direkt nach dem Login weiter geleitet wird.";
 $plugin_tx['register']['cf_config_usersfile']="Der Pfad (relativ zum CMSimple Installationsverzeichnis) zur Anwender CSV-Datei, z.B. \"plugins/register/data/users.csv\".";
 $plugin_tx['register']['cf_config_groupsfile']="Der Pfad (relativ zum CMSimple Installationsverzeichnis) zur Gruppen CSV-Datei, z.B. \"plugins/register/data/groups.csv\".";

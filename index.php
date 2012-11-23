@@ -89,7 +89,8 @@ if(!($edit&&$adm) && isset($su))
 		}
 	// Handling of forgotten password page
 	}
-	elseif($pageName == html_entity_decode(preg_replace("/ /", "_", $plugin_tx[$plugin]['forgot_password'])))
+	elseif (strtolower($plugin_cf['register']['password_forgotten']) == 'true'
+		&& $pageName == html_entity_decode(preg_replace("/ /", "_", $plugin_tx[$plugin]['forgot_password'])))
 	{
 		if(!in_array($plugin_tx[$plugin]['forgot_password'], $h))
 		{
@@ -1449,12 +1450,14 @@ function registerloginform()
 		else
 		$o .= '<div class="regi_forgotpw_ver">'."\n";
 
-		if(isset($su) && urldecode($su) != html_entity_decode(preg_replace("/ /", "_", $plugin_tx[$plugin]['forgot_password'])))
-		$o .=
-		'<a href="'.$sn.'?'.html_entity_decode(preg_replace("/ /", "_", $plugin_tx[$plugin]['forgot_password'])).'">'."\n" .
-		tag('img src="'.$imageFolder.'/'.$plugin_cf[$plugin]['image_forgot_password'].'" class="regi_forgotpwimage" alt="'.$plugin_tx[$plugin]['forgot_password'].'" title="'.$plugin_tx[$plugin]['forgot_password'].'"')."\n".'</a>'."\n".'</div>'."\n";
-		else
-		$o .= '</div>'."\n";
+		if (strtolower($plugin_cf['register']['password_forgotten']) == 'true'
+		    && isset($su) && urldecode($su) != html_entity_decode(preg_replace("/ /", "_", $plugin_tx[$plugin]['forgot_password']))) {
+		    $o .=
+		    '<a href="'.$sn.'?'.html_entity_decode(preg_replace("/ /", "_", $plugin_tx[$plugin]['forgot_password'])).'">'."\n" .
+		    tag('img src="'.$imageFolder.'/'.$plugin_cf[$plugin]['image_forgot_password'].'" class="regi_forgotpwimage" alt="'.$plugin_tx[$plugin]['forgot_password'].'" title="'.$plugin_tx[$plugin]['forgot_password'].'"')."\n".'</a>'."\n".'</div>'."\n";
+		} else {
+		    $o .= '</div>'."\n";
+		}
 
 		// password field & image
 		if($plugin_cf[$plugin]['login_layout'] == 'horizontal')

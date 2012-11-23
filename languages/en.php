@@ -111,6 +111,7 @@ $plugin_tx['register']['cf_login_all_subsites']="<b>true</b> allows login to all
 $plugin_tx['register']['cf_login_layout']="<b>horizontal</b> creates a horizontal login form, empty or all others creates a vertical login form.";
 $plugin_tx['register']['cf_remember_user']="<b>true</b> shows the remember user checkbox below the login form.";
 $plugin_tx['register']['cf_senderemail']="The e-mail account of the administrator";
+$plugin_tx['register']['cf_password_forgotten']="<b>true</b> shows the password forgotten link in the login form.";
 $plugin_tx['register']['cf_config_login_page']="Name of the page the user is redirected directly after login.";
 $plugin_tx['register']['cf_config_usersfile']="The path (relative to the CMSimple root) to the users CSV file, e.g. \"plugins/register/data/users.csv\".";
 $plugin_tx['register']['cf_config_groupsfile']="The path (relative to the CMSimple root) to the groups CSV file, e.g. \"plugins/register/data/groups.csv\".";
