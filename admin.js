@@ -162,5 +162,26 @@ var register = {
                 return;
             }
         }
+    },
+    
+    mailTo: function(a) {
+        var name = a.parentNode.parentNode.previousSibling.firstChild.nextSibling.firstChild;
+        var groups = name.parentNode.nextSibling.firstChild;
+        var state = groups.parentNode.nextSibling.firstChild;
+        var user = a.parentNode.nextSibling.firstChild;
+        var email = user.parentNode.nextSibling.firstChild;
+        var newPass = email.parentNode.nextSibling.firstChild.nextSibling;
+        var oldPass = newPass.nextSibling;
+        var subject = register.tx.prefsemailsubject + " " + document.location.hostname;
+        var body = register.tx.name + ": " + name.value + "\n"
+            + register.tx.username + ": " + user.value + "\n"
+            + register.tx.accessgroups + ": " + groups.value + "\n"
+            + register.tx.status + ": " + state.value + "\n";
+        if (newPass.value != oldPass.value) {
+            body += register.tx.password + ": " + newPass.value + "\n";
+        }
+        a.href = "mailto:" + email.value
+            + "?subject=" + encodeURIComponent(subject)
+            + "&body=" + encodeURIComponent(body);
     }
 }

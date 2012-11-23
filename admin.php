@@ -177,11 +177,15 @@ function registerAdminUsersForm($users) {
     $ptx = $plugin_tx['register'];
     $imageFolder = $pth['folder']['plugins'] . $plugin . '/images';
 
+    $jsKeys = array('name', 'username', 'password', 'accessgroups', 'status',
+		    'email', 'prefsemailsubject');
     $txts = array();
     foreach ($plugin_tx['register'] as $key => $val) {
         if (strpos($key, 'js_') === 0) {
             $txts[] = substr($key, 3) . ':"' . $val . '"';
-        }
+        } elseif (in_array($key, $jsKeys)) {
+	    $txts[] = "$key:\"$val\"";
+	}
     }
     
     $hjs .= '<script type="text/javascript" src="' . $pth['folder']['plugins'] . 'register/admin.js"></script>'
@@ -246,7 +250,8 @@ function registerAdminUsersForm($users) {
 		. '<td>' . Register_statusSelectbox($entry['status'], $i) . '</td>'
                 . '</tr>'
                 . '<tr class="register_second_row">'
-                . '<td>' . '</td>'
+                . '<td>' . '<a href="mailto:cmbecker69@gmx.de" onclick="register.mailTo(this)">'
+		. tag('image src="' . $imageFolder . '/mail.png" alt="' . $ptx['email'] . '" title="' . $ptx['email'] . '"') . '</a>' . '</td>'
 		.'<td>' . tag('input type="text" value="' . $entry['username'] . '" name="username['.$i.']"') .  '</td>'
 		.'<td>' . tag('input type="text" value="' . $entry['email'] . '" name="email['.$i.']"') . '</td>'
 		.'<td>' . '<button onclick="register.changePassword(this.nextSibling); return false">' . $plugin_tx['register']['change_password'] . '</button>'
