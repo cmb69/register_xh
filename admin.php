@@ -65,14 +65,14 @@ function register_system_check() { // RELEASE-TODO
 	. '&nbsp;&nbsp;' . sprintf($ptx['syscheck_phpversion'], REGISTER_PHP_VERSION)
 	. tag('br') .tag('br');
     foreach (array('date', 'gd', 'pcre', 'session') as $ext) {
-	$o .= (extension_loaded($ext) ? $ok : $fail)
+	$o .= (extension_loaded($ext) ? $ok : ($ext == 'gd' ? $warn : $fail))
 	    . '&nbsp;&nbsp;' . sprintf($ptx['syscheck_extension'], $ext) . tag('br');
     }
     $o .= tag('br') . (!get_magic_quotes_runtime() ? $ok : $fail)
 	. '&nbsp;&nbsp;' . $ptx['syscheck_magic_quotes'] . tag('br');
     $o .= (strtoupper($tx['meta']['codepage']) == 'UTF-8' ? $ok : $warn)
 	. '&nbsp;&nbsp;' . $ptx['syscheck_encoding'] . tag('br');
-    $o .= (strtolower($pcf['encrypt_password']) != 'true' ? $ok : $warn)
+    $o .= (strtolower($pcf['encrypt_password']) == 'true' ? $ok : $warn)
 	. '&nbsp;&nbsp;' . $ptx['syscheck_encryption'] . tag('br') . tag('br');
     foreach (array('config/', 'css/', 'languages/') as $folder) {
 	$folders[] = $pth['folder']['plugins'] . 'register/' . $folder;
