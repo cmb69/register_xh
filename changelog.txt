@@ -1,3 +1,8 @@
+Version 1.5beta2 - released 2012-11-24
+cmb	improved user administration (among others: selectbox for state, ad-hoc email)
+cmb	added config option to disable the "password forgotten" link (suggested by kmsmei)
+cmb	updated and extended user manuals
+
 Version 1.5beta1 - released 2012-10-17
 cmb	improved user administration (suggested by Holger)
 cmb	implemented locking of user file (suggested by Holger)
