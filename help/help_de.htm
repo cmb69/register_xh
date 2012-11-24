@@ -31,8 +31,9 @@ Es wird von einigen anderen Plugins verwendet, um eine Benutzerverwaltung zu erg
 <li><a href="#usage-administration">Benutzer- und Gruppenverwaltung</a></li>
 <li><a href="#usage-loginform">Login-Formular</a></li>
 <li><a href="#usage-access">Zugriff auf CMSimple-Seiten</a></li>
+<li><a href="#usage-pages">Spezialseiten</a></li>
 </ul></li>
-<!--<li><a href="#limitations">Limitations</a></li>-->
+<li><a href="#limitations">Einschränkungen</a></li>
 <li><a href="#license">Lizenz</a></li>
 <li><a href="#credits">Danksagung</a></li>
 </ul>
@@ -54,8 +55,8 @@ Es benötigt eine UTF-8 kodierte Version.</p>
 
 <h2><a name="installation">Installation</a></h2>
 <p>Die Installation erfolgt wie bei vielen anderen CMSimple_XH-Plugins auch.
-Weitere Details finden Sie in der <a href="http://www.cmsimple-xh.de/dokuwiki/doku.php/anwenderdokumentation:plugins:installation">
-CMSimple_XH-Dokumentation</a>.</p>
+Weitere Details finden Sie in der
+<a href="http://www.cmsimple-xh.org/wiki/doku.php/de:installation">CMSimple_XH-Dokumentation</a>.</p>
 <ol>
 <li><strong>Sichern Sie die Daten auf Ihrem Server.</strong></li>
 <li>Entpacken Sie die Datei auf Ihrem Computer.</li>
@@ -144,9 +145,48 @@ Unregistrieren, d.h. Löschen des Kontos, ist ebenso im Einstellungsdialog mögl
 {{{PLUGIN:access('admin');}}}</pre>
 <div class="toplink"><a href="#">zum Seitenanfang</a></div>
 
-<!--<h2><a name="limitations">Limitations</a></h2>
+<h3><a name="usage-pages">Spezialseiten</a></h3>
+<p>Register_XH fügt dynamisch ein paar Spezialseiten zu CMSimple hinzu, falls diese nicht bereits existieren.
+Normalerweise müssen Sie sich darüber keine Gedanken machen, aber Sie können das Feature nutzen,
+um eigene Seiten mit der entsprechenden Überschrift anzulegen,
+wenn Sie eine dieser Seiten weitergehend anpassen möchten, als es durch Anpassen der entsprechenden Sprachtexte möglich ist.
+Die Überschriften dieser Spezialseiten werden durch die folgenden Sprachtexte bestimmt,
+und die Seiten sollten den entsprechenden Pluginaufruf enthalten:</p>
+<dl>
+<dt>register</dt>
+<dd>Die Seite, auf der Anwender ein neues Benutzerkonto registrieren können.</dd>    
+<dd>{{{PLUGIN:registerUser();}}}</dd>
+<dt>forgot_password</dt>
+<dd>Die Seite, auf der ein Anwender eine E-Mail anfordern kann, die ihm erlaubt sein Kennwort zurück zu setzen.</dd> 
+<dd>{{{PLUGIN:registerForgotPassword();}}}</dd>
+<dt>user_prefs</dt>
+<dd>Die Seite, auf der ein Anwender sein Benutzerprofil ändern kann.</dd>
+<dd>{{{PLUGIN:registerUserPrefs();}}}</dd>
+<dt>login_error</dt>
+<dd>Die Seite, auf der ein Anwender über ein fehl geschlagenes Login informiert wird.</dd>
+<dd>n/a</dd>
+<dt>loggedout</dt>
+<dd>Die Seite, die angezeigt wird nachdem sich ein Anwender ausgeloggt hat.</dd>
+<dd>n/a</dd>
+<dt>loggedin</dt>
+<dd>Die Seite, die angezeigt wird nachchdem sich ein Anwender eingeloggt hat.
+Dies wird derzeit durch die Spracheinstellung config_login_page überschrieben.</dd>
+<dd>n/a</dd>
+<dt>access_error</dt>
+<dd>Die Seite, die angezeigt wird, wenn ein Benutzer eine Seite aufruft,
+für die er kein Zugriffsrecht hat.</dd>
+<dd>n/a</dd>
+</dl>
+<p>Bitte beachten Sie, dass die Behandlung und Erkennung dieser Seiten derzeit etwas locker gehandhabt wird
+(so spielt es z.B. keine Rolle, auf welcher Menüebene sich diese befinden),
+was sich vermutlich in Zukunft ändern wird.</p>
 <div class="toplink"><a href="#">zum Seitenanfang</a></div>
--->
+
+<h2><a name="limitations">Einschränkungen</a></h2>
+Wenn irgend eine CMSimple-XH-Seite unbeabsichtigt eine Überschrift hat, die für eine der 
+<a href="#usage-pages">Register_XH-Spezialseiten</a> reserviert ist, könnte das Plugin nicht richtig funktionieren.
+<div class="toplink"><a href="#">zum Seitenanfang</a></div>
+
 <h2><a name="license">Lizenz</a></h2>
 <p>Register_XH ist als <a href="../license.txt">Freeware</a> lizensiert.</p>
 <p>&copy; 2007 <a href="http://cmsimple.heinelt.eu/">Carsten Heinelt</a><br>
@@ -182,7 +222,7 @@ und für seinen Vorschlag, die Benutzerverwaltung zu verbessern,
 und natürlich Joe für viele gute Vorschläge danken.</p>
 <p>Zu guter Letzt vielen Dank an <a href="http://www.harteg.dk">Peter Harteg</a>,
 den "Vater" von CMSimple, und allen Entwicklern von
-<a href="http://www.cmsimple-xh.com">CMSimple_XH</a>
+<a href="http://www.cmsimple-xh.org/">CMSimple_XH</a>
 ohne die dieses phantastische CMS nicht existieren würde.</p>
 <div class="toplink"><a href="#">zum Seitenanfang</a></div>
 

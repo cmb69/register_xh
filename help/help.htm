@@ -29,9 +29,10 @@ It is used by some other plugins to add user management (e.g.
 <ul>
 <li><a href="#usage-administration">User and Group Administration</a></li>
 <li><a href="#usage-loginform">Login Form</a></li>
-<li><a href="#usage-access">Access to CMSimple pages</a></li>
+<li><a href="#usage-access">Access to CMSimple Pages</a></li>
+<li><a href="#usage-pages">Special Pages</a></li>
 </ul></li>
-<!--<li><a href="#limitations">Limitations</a></li>-->
+<li><a href="#limitations">Limitations</a></li>
 <li><a href="#license">License</a></li>
 <li><a href="#credits">Credits</a></li>
 </ul>
@@ -53,7 +54,7 @@ It requires a UTF-8 encoded version.</p>
 
 <h2><a name="installation">Installation</a></h2>
 <p>The installation is done as with many other CMSimple_XH plugins.
-See the <a href="http://www.cmsimple-xh.com/wiki/doku.php/manuals:users_manual:plugins:installation">
+See the <a href="http://www.cmsimple-xh.org/wiki/doku.php/installation">
 CMSimple_XH wiki</a> for further details.</p>
 <ol>
 <li><strong>Backup the data on your server.</strong></li>
@@ -135,7 +136,7 @@ Unregistering, i.e. deleting the account, is also possible in the preferences di
 <p>Note that all login and logout attempts will be logged in the logfile/logfile.txt.</p>
 <div class="toplink"><a href="#">back to top</a></div>
 
-<h3><a name="usage-access">Access to CMSimple pages</a></h3>
+<h3><a name="usage-access">Access to CMSimple Pages</a></h3>
 <p>To restrict the access to a CMSimple page to certain user groups, you have to enter on that page:</p>
 <pre>{{{PLUGIN:access('LIST-OF-GROUPS');}}}</pre>
 <p>LIST-OF-GROUPS is the comma separated list of access groups that will have access to the page. For example:</p>
@@ -143,9 +144,46 @@ Unregistering, i.e. deleting the account, is also possible in the preferences di
 {{{PLUGIN:access('admin');}}}</pre>
 <div class="toplink"><a href="#">back to top</a></div>
 
-<!--<h2><a name="limitations">Limitations</a></h2>
+<h3><a name="usage-pages">Special Pages</a></h3>
+<p>Register_XH dynamically adds some special pages to CMSimple, if these do not already exist.
+Usually you don't have to care about this, but you can use the feature to create your own pages with the respective heading,
+if you want to customize any of these pages beyond what's possible with adjusting the related language strings.
+The headings of these pages are specified by the following language strings and
+the pages should contain the respective plugin call:</p>
+<dl>
+<dt>register</dt>
+<dd>The page where users can register for a new account.</dd>    
+<dd>{{{PLUGIN:registerUser();}}}</dd>
+<dt>forgot_password</dt>
+<dd>The page where a user can request an email which allows to reset his password.</dd> 
+<dd>{{{PLUGIN:registerForgotPassword();}}}</dd>
+<dt>user_prefs</dt>
+<dd>The page where a user can change his account setting.</dd>
+<dd>{{{PLUGIN:registerUserPrefs();}}}</dd>
+<dt>login_error</dt>
+<dd>The page where a user is informed about an invalid login attempt.</dd>
+<dd>n/a</dd>
+<dt>loggedout</dt>
+<dd>The page that is displayed after a user has logged out.</dd>
+<dd>n/a</dd>
+<dt>loggedin</dt>
+<dd>The page that is displayed after a user has logged in.
+This is currently overridden by the language setting of config_login_page.</dd>
+<dd>n/a</dd>
+<dt>access_error</dt>
+<dd>The page that is displayed when a user browses to a page he is not allowed to access.</dd>
+<dd>n/a</dd>
+</dl>
+<p>Please note that the handling and recognition of these pages is a bit sloppy currently
+(e.g. it doesn't matter on which menu level they are defined),
+but this is likely to change in the future.</p>
 <div class="toplink"><a href="#">back to top</a></div>
--->
+
+<h2><a name="limitations">Limitations</a></h2>
+If any CMSimple_XH page inadvertantly has a heading that is used for one of the
+<a href="#usage-pages">special Register_XH pages</a>, the plugin might not work as expected.
+<div class="toplink"><a href="#">back to top</a></div>
+
 <h2><a name="license">License</a></h2>
 <p>Register_XH is licensed as <a href="../license.txt">freeware</a>.</p>
 <p>&copy; 2007 <a href="http://cmsimple.heinelt.eu/">Carsten Heinelt</a><br>
@@ -181,7 +219,7 @@ and for his suggestion to improve the user administration,
 and of course Joe for many good suggestions.</p>
 <p>And last but not least many thanks to <a href="http://www.harteg.dk">Peter Harteg</a>,
 the "father" of CMSimple, and all developers of
-<a href="http://www.cmsimple-xh.com">CMSimple_XH</a>
+<a href="http://www.cmsimple-xh.org/">CMSimple_XH</a>
 without whom this amazing CMS wouldn't exist.</p>
 <div class="toplink"><a href="#">back to top</a></div>
 
