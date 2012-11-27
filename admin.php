@@ -184,6 +184,7 @@ function registerAdminUsersForm($users) {
 		    'email', 'prefsemailsubject');
     $txts = array();
     foreach ($plugin_tx['register'] as $key => $val) {
+	$val = addcslashes($val, "\0..\037\"\$");
         if (strpos($key, 'js_') === 0) {
             $txts[] = substr($key, 3) . ':"' . $val . '"';
         } elseif (in_array($key, $jsKeys)) {
