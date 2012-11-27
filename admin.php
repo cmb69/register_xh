@@ -91,6 +91,21 @@ function register_system_check() { // RELEASE-TODO
 }
 
 
+function Register_pageSelectbox($loginpage, $n)
+{
+    global $cl, $h, $u, $l;
+    
+    $o = '<select name="grouploginpage[' . $n . ']"><option></option>';
+    for ($i = 0; $i < $cl; $i++) {
+	$sel = $u[$i] == $loginpage ? ' selected="selected"' : '';
+	$o .= '<option value="' . $u[$i] . '"' . $sel . '>'
+	    . str_repeat('&nbsp;', 3 * ($l[$i] - 1)) . $h[$i] . '</option>';
+    }
+    $o .= '</select>';
+    return $o;
+}
+
+
 function registerAdminGroupsForm($groups)  {
     global $tx, $pth, $sn, $plugin_tx;
 
@@ -105,7 +120,8 @@ function registerAdminGroupsForm($groups)  {
     $o .= tag('input type="hidden" value="plugin_main" name="admin"')."\n";
     $o .= '<table cellpadding="1" cellspacing="0">'."\n";
     $o .= '<tr>'."\n"
-	    .'  <th>' . $plugin_tx[$plugin]['groupname'] . '</th>'."\n"
+	    .'  <th>' . $plugin_tx[$plugin]['groupname'] . '</th>'
+	    . '<th>' . $plugin_tx['register']['login'] . '</th>'
 	    .'  <th>'."\n"
 	    .tag('input type="image" src="'.$imageFolder.'/add.png" style="width: 16px; height: 16px;" name="add[0]" value="add" alt="Add entry."')."\n"
 	    .'  </th>'."\n"
@@ -113,7 +129,8 @@ function registerAdminGroupsForm($groups)  {
     $i = 0;
     foreach ($groups as $entry) {
 	$o .= '<tr>'."\n"
-		.'  <td>'.tag('input type="normal" size="10" value="'.$entry['groupname'].'" name="groupname['.$i.']"').'</td>'."\n"
+		.'  <td>'.tag('input type="normal" size="10" value="'.$entry['groupname'].'" name="groupname['.$i.']"').'</td>'
+		. '<td>' . Register_pageSelectbox($entry['loginpage'], $i) . '</td>'
 		.'  <td>'."\n"
 		.tag('input type="image" src="'.$imageFolder.'/delete.png" style="width: 16px; height: 16px;" name="delete['.$i.']" value="delete" alt="Delete Entry"')."\n"
 		.'  </td>'."\n"
@@ -333,14 +350,16 @@ if (isset($register) && $register == 'true') {
 			$ERROR = '<li>' . $plugin_tx[$plugin]['err_group_illegal'] . '</li>'."\n";
 
 			if (!isset($delete[$j]) || $delete[$j] == '') {
-			    $entry = array('groupname' => $groupname[$j]);
+			    $entry = array('groupname' => $groupname[$j],
+					   'loginpage' => stsl($_POST['grouploginpage'][$j]));
 			    $newgroups[] = $entry;
 			} else {
 			    $deleted = true;
 			}
 		    }
 		    if($add <> '') {
-			$entry = array('groupname' => "NewGroup");
+			$entry = array('groupname' => "NewGroup",
+				       'loginpage' => '');
 			$newgroups[] = $entry;
 			$added = true;
 		    }

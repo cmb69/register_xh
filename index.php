@@ -182,7 +182,7 @@ if(!($edit&&$adm) && preg_match('/true/i',$plugin_cf[$plugin]['hide_pages']))
  */
 function registerLogin()
 {
-	global $_SESSION, $_POST, $_COOKIE, $pth, $plugin_cf, $plugin_tx, $h, $sn, $su;
+	global $pth, $plugin_cf, $plugin_tx, $h, $sn, $su;
 	$plugin = basename(dirname(__FILE__),"/");
 	$secret = "LoginSecretWord";
 	$rememberPeriod = 24*60*60*100;
@@ -241,18 +241,15 @@ function registerLogin()
 		}
 
 		// go to login page if exists or to default page otherwise
-		if($plugin_tx[$plugin]['config_login_page'] != '')
-		{
-			$loginPage = '?'.html_entity_decode(preg_replace("/ /", "_", $plugin_tx[$plugin]['config_login_page']));
-			header('Location: ' . $sn . $loginPage);
-			exit;
+		if ($glp = Register_groupLoginPage($entry['accessgroups'][0])) {
+		    $loginPage = '?' . $glp;
+		} elseif ($plugin_tx[$plugin]['config_login_page'] != '') {
+		    $loginPage = '?'.html_entity_decode(preg_replace("/ /", "_", $plugin_tx[$plugin]['config_login_page']));
+		} else {
+		    $loginPage = '';
 		}
-		else
-		{
-			$loginPage = '';
-			header('Location: ' . $sn . $loginPage);
-			exit;
-		}
+		header('Location: ' . $sn . $loginPage);
+		exit;
 
 	}
 	else
@@ -462,14 +459,15 @@ function registerReadGroups($filename)
 		$fp = fopen($filename, "r");
 		while (!feof($fp))
 		{
-			$line = fgets($fp, 4096);
-			if($line != "" && !strpos($line, "//"))
+			$line = rtrim(fgets($fp, 4096));
+			if(!empty($line) && strpos($line, '//') !== 0)
 			{
-				$groupname = rtrim($line);
+				list($groupname, $loginpage) = explode('|', $line);
 				// line must not start with '//' and all fields must be set
-				if(strpos($groupname, "//") === false && $groupname != "")
+				if (strpos($groupname, "//") === false && $groupname != "")
 				{
-					$entry = array('groupname' => $groupname);
+					$entry = array('groupname' => $groupname,
+						       'loginpage' => $loginpage);
 					$groupArray[] = $entry;
 				}
 			}
@@ -507,7 +505,7 @@ function registerWriteGroups($filename, $array)
     return false;
 
 	// write comment line to file
-	$line = '// Register Plugin Group Definitions'."\n" . '// Line Format:'."\n" . '// groupname'."\n";
+	$line = '// Register Plugin Group Definitions'."\n" . '// Line Format:'."\n" . '// groupname|loginpage'."\n";
 	if(!fwrite($fp, $line))
 	{
 		fclose($fp);
@@ -517,7 +515,7 @@ function registerWriteGroups($filename, $array)
 	foreach($array as $entry)
 	{
 		$groupname = $entry['groupname'];
-		$line = "$groupname\n";
+		$line = "$groupname|$entry[loginpage]\n";
 		if(!fwrite($fp, $line))
 		{
 			fclose($fp);
@@ -531,6 +529,20 @@ function registerWriteGroups($filename, $array)
 	if($group !== false) $chgrp = chgrp($filename, $group);
 	if($permissions !== false) $chmod = chmod($filename, $permissions);
 	return true;
+}
+
+
+function Register_groupLoginPage($group)
+{
+    global $pth, $plugin_tx;
+  
+    $groups = registerReadGroups($pth['folder']['base'] . $plugin_tx['register']['config_groupsfile']);
+    foreach ($groups as $rec) {
+	if ($rec['groupname'] == $group) {
+	    return $rec['loginpage'];
+	}
+    }
+    return false;
 }
 
 /*
