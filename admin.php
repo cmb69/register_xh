@@ -254,7 +254,7 @@ function registerAdminUsersForm($users) {
 		. '<td>' . Register_statusSelectbox($entry['status'], $i) . '</td>'
                 . '</tr>'
                 . '<tr class="register_second_row">'
-                . '<td>' . '<a href="mailto:cmbecker69@gmx.de" onclick="register.mailTo(this)">'
+                . '<td>' . '<a onclick="register.mailTo(this)">'
 		. tag('image src="' . $imageFolder . '/mail.png" alt="' . $ptx['email'] . '" title="' . $ptx['email'] . '"') . '</a>' . '</td>'
 		.'<td>' . tag('input type="text" value="' . $entry['username'] . '" name="username['.$i.']"') .  '</td>'
 		.'<td>' . tag('input type="text" value="' . $entry['email'] . '" name="email['.$i.']"') . '</td>'
