@@ -291,6 +291,127 @@ function registerAdminUsersForm($users) {
 }
 
 
+function Register_administrateUsers()
+{
+    global $action, $pth, $e, $plugin_cf, $plugin_tx;
+    
+    $ptx = $plugin_tx['register'];
+    $fn = $pth['folder']['base'] . $ptx['config_usersfile'];
+    $o = '';
+    $ERROR = '';
+    if ($action != 'saveusers') {
+	if (is_file($fn))  {
+	    register_lock_users(dirname($fn), LOCK_SH);
+	    $users  = registerReadUsers($fn);
+	    register_lock_users(dirname($fn), LOCK_UN);
+	    $o .= registerAdminUsersForm($users);
+	    $o .= '<div class="register_status">' . count($users) . ' ' . $ptx['entries_in_csv'] .
+		$fn . '</div>';
+	} else {
+	    $o .= '<div class="register_status">' . $ptx['err_csv_missing']
+		. ' (' . $fn . ')' . '</div>';
+	}
+    } else {
+	// == Edit Users ==============================================================
+	if (is_file($pth['folder']['base'] . $plugin_tx['register']['config_groupsfile']))
+	    $groups = registerReadGroups($pth['folder']['base'] . $plugin_tx['register']['config_groupsfile']);
+	else
+	    $ERROR .= '<li>' . $plugin_tx['register']['err_csv_missing'] .
+		    ' (' . $pth['folder']['base'] . $plugin_tx['register']['config_groupsfile'] . ')' .
+		    '</li>'."\n";
+
+	// put all available group Ids in an array for easier handling
+	$groupIds = array();
+	foreach($groups as $entry)
+	$groupIds[] = $entry['groupname'];
+
+	$delete      = isset($_POST['delete'])       ? $_POST['delete']       : '';
+	$add         = isset($_POST['add'])          ? $_POST['add']          : '';
+	$username    = isset($_POST['username'])     ? $_POST['username']     : '';
+	$password    = isset($_POST['password'])     ? $_POST['password']     : '';
+	$oldpassword = isset($_POST['oldpassword'])  ? $_POST['oldpassword']  : '';
+	$name        = isset($_POST['name'])         ? $_POST['name']         : '';
+	$email       = isset($_POST['email'])        ? $_POST['email']        : '';
+	$groupString = isset($_POST['accessgroups']) ? $_POST['accessgroups'] : '';
+	$status      = isset($_POST['status'])       ? $_POST['status']       : '';
+
+	$deleted = false;
+	$added   = false;
+
+	$newusers = array();
+	foreach ($username as $j => $i) {
+	    if (!isset($delete[$j]) || $delete[$j] == '') {
+		$userGroups = explode(",", $groupString[$j]);
+		// Error Checking
+		$ENTRY_ERROR = '';
+		if(preg_match('/true/i',$plugin_cf['register']['encrypt_password']) && $password[$j] == $oldpassword[$j])
+		    $ENTRY_ERROR .= registerCheckEntry($name[$j], $username[$j], "dummy", "dummy", $email[$j]);
+		else
+		    $ENTRY_ERROR .= registerCheckEntry($name[$j], $username[$j], $password[$j], $password[$j], $email[$j]);
+		$ENTRY_ERROR .= registerCheckColons($name[$j], $username[$j], $password[$j], $email[$j]);
+		if (registerSearchUserArray($newusers, 'username', $username[$j]) !== false)
+		    $ENTRY_ERROR .= '<li>' . $plugin_tx['register']['err_username_exists'] . '</li>'."\n";
+		if (registerSearchUserArray($newusers, 'email', $email) !== false)
+		    $ENTRY_ERROR .= '<li>' . $plugin_tx['register']['err_email_exists'] . '</li>'."\n";
+		foreach ($userGroups as $groupName) {
+		    if (!in_array($groupName, $groupIds))
+			$ENTRY_ERROR .= '<li>' . $plugin_tx['register']['err_group_does_not_exist'] . ' (' . $groupName . ')</li>'."\n";
+		}
+		if ($ENTRY_ERROR != '')
+		    $ERROR .= '<li>' . $plugin_tx['register']['error_in_user'] . '"' . $username[$j] . '"' .
+			    '<ul class="error">'.$ENTRY_ERROR.'</ul></li>'."\n";
+
+		if (empty($ENTRY_ERROR) && preg_match('/true/i', $plugin_cf['register']['encrypt_password']) && $password[$j] != $oldpassword[$j])
+		    $password[$j] = crypt($password[$j], $password[$j]);
+		$entry = array(
+			'username'     => $username[$j],
+			'password'     => $password[$j],
+			'accessgroups' => $userGroups,
+			'name'         => $name[$j],
+			'email'        => $email[$j],
+			'status'       => $status[$j]);
+		$newusers[] = $entry;
+	    } else {
+		$deleted = true;
+	    }
+	}
+	if ($add <> '') {
+	    $entry = array(
+		    'username'     => "NewUser",
+		    'password'     => "",
+		    'accessgroups' => array($plugin_cf['register']['group_default']),
+		    'name'         => "Name Lastname",
+		    'email'        => "user@domain.com",
+		    'status'       => "activated");
+	    $newusers[] = $entry;
+	    $added = true;
+	}
+
+	$o .= registerAdminUsersForm($newusers);
+
+	// In case that nothing got deleted or added, store back (save got pressed)
+	if (!$deleted && !$added && $ERROR == "") {
+	    register_lock_users(dirname($pth['folder']['base'] . $plugin_tx['register']['config_usersfile']), LOCK_EX);
+	    if (!registerWriteUsers($pth['folder']['base'] . $plugin_tx['register']['config_usersfile'], $newusers))
+		$ERROR .= '<li>' . $plugin_tx['register']['err_cannot_write_csv'] .
+			' (' . $pth['folder']['base'] . $plugin_tx['register']['config_usersfile'] . ')' .
+			'</li>'."\n";
+	    register_lock_users(dirname($pth['folder']['base'] . $plugin_tx['register']['config_usersfile']), LOCK_UN);
+
+	    if ($ERROR != '')
+		$e .= $ERROR;
+	    else
+		$o .= '<div class="register_status">'  . $plugin_tx['register']['csv_written'] .
+			' (' . $pth['folder']['base'] . $plugin_tx['register']['config_usersfile'] . ')' .
+			'.</div>'."\n";
+	}
+	elseif ($ERROR != '')
+	    $e .= $ERROR;
+    }
+    return $o;
+}
+
+
 /**
  * Handle the plugin administration.
  */
@@ -309,18 +430,7 @@ if (isset($register) && $register == 'true') {
 	case 'plugin_main':
 	    switch ($action) {
 		case 'editusers':
-		    if (is_file($pth['folder']['base'] . $plugin_tx['register']['config_usersfile']))  {
-                        register_lock_users(dirname($pth['folder']['base'] . $plugin_tx['register']['config_usersfile']), LOCK_SH);
-			$users  = registerReadUsers($pth['folder']['base'] . $plugin_tx['register']['config_usersfile']);
-                        register_lock_users(dirname($pth['folder']['base'] . $plugin_tx['register']['config_usersfile']), LOCK_UN);
-			$o .= registerAdminUsersForm($users);
-			$o .= '<div class="register_status">' . count($users) . ' ' . $plugin_tx[$plugin]['entries_in_csv'] .
-			$pth['folder']['base'] . $plugin_tx['register']['config_usersfile'] . '</div>';
-		    } else {
-			$o .= '<div class="register_status">' . $plugin_tx[$plugin]['err_csv_missing'] .
-			' (' . $pth['folder']['base'] . $plugin_tx['register']['config_usersfile'] . ')' .
-			'</div>';
-		    }
+		    $o .= Register_administrateUsers();
 		    break;
 		case 'editgroups':
 		    // read user file in CSV format separated by colons
@@ -383,101 +493,7 @@ if (isset($register) && $register == 'true') {
 			$e .= $ERROR;
 		    break;
 		case 'saveusers':
-		    // == Edit Users ==============================================================
-		    if (is_file($pth['folder']['base'] . $plugin_tx['register']['config_groupsfile']))
-			$groups = registerReadGroups($pth['folder']['base'] . $plugin_tx['register']['config_groupsfile']);
-		    else
-			$ERROR .= '<li>' . $plugin_tx[$plugin]['err_csv_missing'] .
-				' (' . $pth['folder']['base'] . $plugin_tx['register']['config_groupsfile'] . ')' .
-				'</li>'."\n";
-
-		    // put all available group Ids in an array for easier handling
-		    $groupIds = array();
-		    foreach($groups as $entry)
-		    $groupIds[] = $entry['groupname'];
-
-		    $delete      = isset($_POST['delete'])       ? $_POST['delete']       : '';
-		    $add         = isset($_POST['add'])          ? $_POST['add']          : '';
-		    $username    = isset($_POST['username'])     ? $_POST['username']     : '';
-		    $password    = isset($_POST['password'])     ? $_POST['password']     : '';
-		    $oldpassword = isset($_POST['oldpassword'])  ? $_POST['oldpassword']  : '';
-		    $name        = isset($_POST['name'])         ? $_POST['name']         : '';
-		    $email       = isset($_POST['email'])        ? $_POST['email']        : '';
-		    $groupString = isset($_POST['accessgroups']) ? $_POST['accessgroups'] : '';
-		    $status      = isset($_POST['status'])       ? $_POST['status']       : '';
-
-		    $deleted = false;
-		    $added   = false;
-
-		    $newusers = array();
-		    foreach ($username as $j => $i) {
-			if (!isset($delete[$j]) || $delete[$j] == '') {
-			    $userGroups = explode(",", $groupString[$j]);
-			    // Error Checking
-			    $ENTRY_ERROR = '';
-			    if(preg_match('/true/i',$plugin_cf[$plugin]['encrypt_password']) && $password[$j] == $oldpassword[$j])
-				$ENTRY_ERROR .= registerCheckEntry($name[$j], $username[$j], "dummy", "dummy", $email[$j]);
-			    else
-				$ENTRY_ERROR .= registerCheckEntry($name[$j], $username[$j], $password[$j], $password[$j], $email[$j]);
-			    $ENTRY_ERROR .= registerCheckColons($name[$j], $username[$j], $password[$j], $email[$j]);
-			    if (registerSearchUserArray($newusers, 'username', $username[$j]) !== false)
-				$ENTRY_ERROR .= '<li>' . $plugin_tx[$plugin]['err_username_exists'] . '</li>'."\n";
-			    if (registerSearchUserArray($newusers, 'email', $email) !== false)
-				$ENTRY_ERROR .= '<li>' . $plugin_tx[$plugin]['err_email_exists'] . '</li>'."\n";
-			    foreach ($userGroups as $groupName) {
-				if (!in_array($groupName, $groupIds))
-				    $ENTRY_ERROR .= '<li>' . $plugin_tx[$plugin]['err_group_does_not_exist'] . ' (' . $groupName . ')</li>'."\n";
-			    }
-			    if ($ENTRY_ERROR != '')
-				$ERROR .= '<li>' . $plugin_tx[$plugin]['error_in_user'] . '"' . $username[$j] . '"' .
-					'<ul class="error">'.$ENTRY_ERROR.'</ul></li>'."\n";
-
-			    if (empty($ENTRY_ERROR) && preg_match('/true/i', $plugin_cf[$plugin]['encrypt_password']) && $password[$j] != $oldpassword[$j])
-				$password[$j] = crypt($password[$j], $password[$j]);
-			    $entry = array(
-				    'username'     => $username[$j],
-				    'password'     => $password[$j],
-				    'accessgroups' => $userGroups,
-				    'name'         => $name[$j],
-				    'email'        => $email[$j],
-				    'status'       => $status[$j]);
-			    $newusers[] = $entry;
-			} else {
-			    $deleted = true;
-			}
-		    }
-		    if ($add <> '') {
-			$entry = array(
-				'username'     => "NewUser",
-				'password'     => "",
-				'accessgroups' => array($plugin_cf[$plugin]['group_default']),
-				'name'         => "Name Lastname",
-				'email'        => "user@domain.com",
-				'status'       => "activated");
-			$newusers[] = $entry;
-			$added = true;
-		    }
-
-		    $o .= registerAdminUsersForm($newusers);
-
-		    // In case that nothing got deleted or added, store back (save got pressed)
-		    if (!$deleted && !$added && $ERROR == "") {
-                        register_lock_users(dirname($pth['folder']['base'] . $plugin_tx['register']['config_usersfile']), LOCK_EX);
-			if (!registerWriteUsers($pth['folder']['base'] . $plugin_tx['register']['config_usersfile'], $newusers))
-			    $ERROR .= '<li>' . $plugin_tx[$plugin]['err_cannot_write_csv'] .
-				    ' (' . $pth['folder']['base'] . $plugin_tx['register']['config_usersfile'] . ')' .
-				    '</li>'."\n";
-                        register_lock_users(dirname($pth['folder']['base'] . $plugin_tx['register']['config_usersfile']), LOCK_UN);
-
-			if ($ERROR != '')
-			    $e .= $ERROR;
-			else
-			    $o .= '<div class="register_status">'  . $plugin_tx[$plugin]['csv_written'] .
-				    ' (' . $pth['folder']['base'] . $plugin_tx['register']['config_usersfile'] . ')' .
-				    '.</div>'."\n";
-		    }
-		    elseif ($ERROR != '')
-			$e .= $ERROR;
+		    $o .= Register_administrateUsers();
 		    break;
 	    }
 	    break;
