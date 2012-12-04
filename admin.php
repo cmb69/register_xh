@@ -293,7 +293,7 @@ function registerAdminUsersForm($users) {
 
 function Register_administrateUsers()
 {
-    global $action, $pth, $e, $plugin_cf, $plugin_tx;
+    global $action, $pth, $e, $plugin_cf, $plugin_tx, $_Register_hasher;
     
     $ptx = $plugin_tx['register'];
     $fn = $pth['folder']['base'] . $ptx['config_usersfile'];
@@ -362,7 +362,7 @@ function Register_administrateUsers()
 			    '<ul class="error">'.$ENTRY_ERROR.'</ul></li>'."\n";
 
 		if (empty($ENTRY_ERROR) && preg_match('/true/i', $plugin_cf['register']['encrypt_password']) && $password[$j] != $oldpassword[$j])
-		    $password[$j] = crypt($password[$j], $password[$j]);
+		    $password[$j] = $_Register_hasher->HashPassword($password[$j]);
 		$entry = array(
 			'username'     => $username[$j],
 			'password'     => $password[$j],

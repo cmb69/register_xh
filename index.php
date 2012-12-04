@@ -26,6 +26,13 @@ if (!defined('CMSIMPLE_URL')) {
 }
 
 
+if (!class_exists('PasswordHash')) {
+    include_once $pth['folder']['plugin'] . 'PasswordHash.php';
+}
+
+$_Register_hasher = new PasswordHash(8, true);
+
+
 /****************************************************************************
  *	Direct Calls															*
  ****************************************************************************/
@@ -182,9 +189,9 @@ if(!($edit&&$adm) && preg_match('/true/i',$plugin_cf[$plugin]['hide_pages']))
  */
 function registerLogin()
 {
-	global $pth, $plugin_cf, $plugin_tx, $h, $sn, $su;
+	global $pth, $plugin_cf, $plugin_tx, $h, $sn, $su, $_Register_hasher;
 	$plugin = basename(dirname(__FILE__),"/");
-	$secret = "LoginSecretWord";
+	//$secret = "LoginSecretWord";
 	$rememberPeriod = 24*60*60*100;
 	$logFile = $pth['folder']['plugins'] . $plugin . '/logfile/logfile.txt';
 	
@@ -193,16 +200,17 @@ function registerLogin()
 	$remember = htmlspecialchars(isset($_POST['remember']) ? $_POST['remember'] : "");
 
 	// encrypt password if configured that way
-	if(preg_match('/true/i', $plugin_cf[$plugin]['encrypt_password'])) $password = crypt($password, $password);
+	//if(preg_match('/true/i', $plugin_cf[$plugin]['encrypt_password'])) $password = crypt($password, $password);
 
 	// set username and password in case cookies are set
-	if(isset($_COOKIE['username'], $_COOKIE['password']))
+	if (preg_match('/true/i', $plugin_cf['register']['remember_user'])
+	    && isset($_COOKIE['username'], $_COOKIE['password']))
 	{
 		$username     = $_COOKIE['username'];
 		$passwordHash = $_COOKIE['password'];
 	}
-	else
-    $passwordHash = md5($secret.$password);
+//	else
+//    $passwordHash = md5($secret.$password);
 
 	// read user file in CSV format separated by colons
 	register_lock_users(dirname($pth['folder']['base'] . $plugin_tx['register']['config_usersfile']), LOCK_SH);
@@ -213,14 +221,22 @@ function registerLogin()
 	$entry = registerSearchUserArray($userArray, 'username', $username);
 
 	// check password and set session variables
-	if($entry && $entry['username'] == $username && ($entry['status'] == 'activated' || $entry['status'] == 'locked') && $passwordHash == md5($secret.$entry['password']))
-	{
+	if ($entry && $entry['username'] == $username
+	    && ($entry['status'] == 'activated' || $entry['status'] == 'locked')
+	    && (!isset($passwordHash) || $passwordHash == $entry['password'])
+	    && (isset($passwordHash)
+		|| preg_match('/true/i', $plugin_cf['register']['encrypt_password'])
+		    ? $_Register_hasher->CheckPassword($password, $entry['password'])
+		    : $password == $entry['password']))	{
 
 // Login Success ------------------------------------------------------------
 
 		// set cookies if requested by user
-		if(isset($_POST['remember']))
+		if (preg_match('/true/i', $plugin_cf['register']['remember_user'])
+		    && isset($_POST['remember']))
 		{
+		    $passwordHash = preg_match('/true/i', $plugin_cf['register']['encrypt_password'])
+			? $_Register_hasher->HashPassword($password) : $password;
 			setcookie("username", $username,     time() + $rememberPeriod, "/");
 			setcookie("password", $passwordHash, time() + $rememberPeriod, "/");
 		}
@@ -869,7 +885,7 @@ function registerForm($code, $name, $username, $password1, $password2, $email)
  */
 function registerUser()
 {
-	global $su, $pth, $sn, $plugin_tx, $plugin_cf;
+	global $su, $pth, $sn, $plugin_tx, $plugin_cf, $_Register_hasher;
 	
 	$plugin = basename(dirname(__FILE__),"/");
 
@@ -939,7 +955,7 @@ function registerUser()
 		// generate another captcha code for the user activation email
 		$status = generateRandomCode((int)$plugin_cf[$plugin]['captcha_chars']);
 		if(preg_match('/true/i', $plugin_cf[$plugin]['encrypt_password']))
-		$userArray = registerAddUser($userArray, $username, crypt($password1, $password1),
+		$userArray = registerAddUser($userArray, $username, $_Register_hasher->HashPassword($password1),
 		array($plugin_cf[$plugin]['group_default']), $name, $email, $status);
 		else
 		$userArray = registerAddUser($userArray, $username, $password1,
@@ -1031,7 +1047,7 @@ function registerForgotForm($email)
  */
 function registerForgotPassword()
 {
-	global $pth, $sn, $su, $plugin_tx, $plugin_cf;
+	global $pth, $sn, $su, $plugin_tx, $plugin_cf, $_Register_hasher;
 	
 	$plugin = basename(dirname(__FILE__),"/");
 
@@ -1133,7 +1149,7 @@ function registerForgotPassword()
 		if($ERROR=="")
 		{
 			$password = generateRandomCode(8);
-			$user['password'] = crypt($password, $password);
+			$user['password'] = $_Register_hasher->HashPassword($password);
 			$userArray = registerReplaceUserEntry($userArray, $user);
 			if(!registerWriteUsers($pth['folder']['base'] . $plugin_tx['register']['config_usersfile'], $userArray))
 			$ERROR .= '<li>' . $plugin_tx[$plugin]['err_cannot_write_csv'] .
@@ -1225,7 +1241,7 @@ function registerUserPrefsForm($name, $email)
  */
 function registerUserPrefs()
 {
-	GLOBAL $plugin_tx,$plugin_cf,$pth,$_SESSION, $sn;
+	GLOBAL $plugin_tx,$plugin_cf,$pth,$_SESSION, $sn, $_Register_hasher;
 	$plugin = basename(dirname(__FILE__),"/");
 
 	$ERROR = '';
@@ -1273,7 +1289,7 @@ function registerUserPrefs()
 		$oldpassword != $entry['password'])
 		$ERROR .= '<li>' . $plugin_tx[$plugin]['err_old_password_wrong'] . '</li>'."\n";
 		elseif(preg_match('/true/i', $plugin_cf[$plugin]['encrypt_password']) &&
-		crypt($oldpassword, $oldpassword) != $entry['password'])
+		!$_Register_hasher->CheckPassword($oldpassword, $entry['password']))
 		$ERROR .= '<li>' . $plugin_tx[$plugin]['err_old_password_wrong'] . '</li>'."\n";
 
 		if($password1 == "" && $password2 == "")
@@ -1294,7 +1310,7 @@ function registerUserPrefs()
 		if($ERROR=="")
 		{
 			if(preg_match('/true/i', $plugin_cf[$plugin]['encrypt_password']))
-			$entry['password'] = crypt($password1, $password1);
+			$entry['password'] = $_Register_hasher->HashPassword($password1);
 			else
 			$entry['password'] = $password1;
 			$entry['email']    = $email;
@@ -1349,7 +1365,8 @@ function registerUserPrefs()
 		// check that old password got entered correctly
 		if(!preg_match('/true/i', $plugin_cf[$plugin]['encrypt_password']) && $oldpassword != $entry['password'])
 		$ERROR .= '<li>' . $plugin_tx[$plugin]['err_old_password_wrong'] . '</li>'."\n";
-		elseif(preg_match('/true/i', $plugin_cf[$plugin]['encrypt_password']) && crypt($oldpassword, $oldpassword) != $entry['password'])
+		elseif(preg_match('/true/i', $plugin_cf[$plugin]['encrypt_password'])
+		       && !$_Register_hasher->CheckPassword($oldpassword, $entry['password']))
 		$ERROR .= '<li>' . $plugin_tx[$plugin]['err_old_password_wrong'] . '</li>'."\n";
 
 		// read user entry, update it and write it back to CSV file
