@@ -1,4 +1,4 @@
 // Register Plugin user Definitions
 // Line Format:
 // login:password:accessgroup1,accessgroup2,...:fullname:email:status
-admin:adpexzg3FUZAk:admin,member,guest:Example Administrator:admin@example.com:activated
+admin:$P$BeVnlm78X9nNauC3nEzxVcQ9k72B0B/:admin,member,guest:Example Administrator:admin@example.com:activated

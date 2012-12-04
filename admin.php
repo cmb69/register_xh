@@ -325,7 +325,7 @@ if (isset($register) && $register == 'true') {
 					'<ul class="error"><li>'.$ENTRY_ERROR.'</li></ul></li>'."\n";
 
 			    if (preg_match('/true/i', $plugin_cf[$plugin]['encrypt_password']) && $password[$j] != $oldpassword[$j])
-				$password[$j] = crypt($password[$j], $password[$j]);
+				$password[$j] = $_Register_hasher->HashPassword($password[$j]);
 			    $entry = array(
 				    'username'     => $username[$j],
 				    'password'     => $password[$j],
