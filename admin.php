@@ -227,7 +227,7 @@ function registerAdminUsersForm($users) {
             . '<td>' . '</td>'
             . '<td>' . tag('input type="text" value="" name="username[]"') .  '</td>'
             . '<td>' . tag('input type="text" value="" name="email[]"') . '</td>'
-            . '<td>'
+            . '<td>' . '<button onclick="register.changePassword(this.nextSibling); return false">' . $plugin_tx['register']['change_password'] . '</button>'
 	    . tag('input type="hidden" value="" name="password[]"')
             . tag('input type="hidden" value="" name="oldpassword[]"'). '</td>'
             . '</tr></table>';
