@@ -5,7 +5,7 @@
  *
  * Copyright (c) 2007 Carsten Heinelt (http://cmsimple.heinelt.eu)
  * Copyright (c) 2010-2012 Gert Ebersbach (http://www.ge-webdesign.de/cmsimpleplugins/)
- * Copyright (c) 2012 Christoph M. Becker (see license.txt)
+ * Copyright (c) 2012-2013 Christoph M. Becker (see license.txt)
  */
 
 
@@ -28,7 +28,7 @@ function register_version() {
 	    .'<p>Version: '.REGISTER_VERSION.'</p>'."\n"
 	    .'<p>Copyright &copy; 2007 <a href="http://cmsimple.heinelt.eu/">Carsten Heinelt</a>'.tag('br')
 	    .'Copyright &copy; 2010-2012 <a href="http://www.ge-webdesign.de/cmsimpleplugins/">Gert Ebersbach</a>'.tag('br')
-	    .'Copyright &copy; 2012 <a href="http://3-magi.net/">Christoph M. Becker</a></p>'."\n"
+	    .'Copyright &copy; 2012-2013 <a href="http://3-magi.net/">Christoph M. Becker</a></p>'."\n"
 	    .'<p class="register_license">Permission is hereby granted, free of charge, to any person obtaining a copy of'
 	    .' this software and associated documentation files (the "Software"), to use, copy'
 	    .' and modify the Software, subject to the following conditions:</p>'."\n"
@@ -94,7 +94,7 @@ function register_system_check() { // RELEASE-TODO
 function Register_pageSelectbox($loginpage, $n)
 {
     global $cl, $h, $u, $l;
-    
+
     $o = '<select name="grouploginpage[' . $n . ']"><option></option>';
     for ($i = 0; $i < $cl; $i++) {
 	$sel = $u[$i] == $loginpage ? ' selected="selected"' : '';
@@ -147,7 +147,7 @@ function registerAdminGroupsForm($groups)  {
 function Register_groupSelectbox()
 {
     global $pth, $plugin_tx;
-    
+
     $ptx = $plugin_tx['register'];
     $groups = registerReadGroups($pth['folder']['base'] . $ptx['config_groupsfile']);
     usort($groups, create_function('$a, $b', 'return strcasecmp($a["groupname"], $b["groupname"]);'));
@@ -171,7 +171,7 @@ function Register_groupSelectbox()
 function Register_statusSelectbox($value, $n = null)
 {
     global $plugin_tx;
-    
+
     $ptx = $plugin_tx['register'];
     $o = '<select name="status[' . $n . ']">';
     $opts = array('activated' => $ptx['status_activated'],
@@ -208,16 +208,16 @@ function registerAdminUsersForm($users) {
 	    $txts[] = "$key:\"$val\"";
 	}
     }
-    
+
     $hjs .= '<script type="text/javascript" src="' . $pth['folder']['plugins'] . 'register/admin.js"></script>'
         . '<script type="text/javascript">register.tx={' . implode(',', $txts) . '}</script>';
-    
+
     $o = '';
     $o .= '<h1>' . $plugin_tx[$plugin]['mnu_user_admin'] . '</h1>'."\n";
     $o .= '<div class="register_admin_main">'."\n";
 
     $o .= '<table><tr id="register_user_template" style="display: none">'
-            
+
             . '<td>' . tag('img src="'.$imageFolder.'/delete.png" alt="' . $ptx['user_delete'] . '" title="' . $ptx['user_delete'] . '" onclick="register.removeRow(this); return false"') . '</td>'
             . '<td>' . tag('input type="text" value="" name="name[]"')  . '</td>'
             . '<td>' . tag('input type="text" value="' . $plugin_cf[$plugin]['group_default'] . '" name="accessgroups[]"') . '</td>'
@@ -231,7 +231,7 @@ function registerAdminUsersForm($users) {
 	    . tag('input type="hidden" value="" name="password[]"')
             . tag('input type="hidden" value="" name="oldpassword[]"'). '</td>'
             . '</tr></table>';
-    
+
 
     $o .= '<div>';
     $o .= '<button onclick="register.addRow()">' . $ptx['user_add'] . '</button>';
@@ -239,13 +239,13 @@ function registerAdminUsersForm($users) {
     $o .= '<label for="register_toggle_details">' . $ptx['details'] . '</label>';
     $o .= Register_groupSelectbox();
     $o .= '</div>';
-    
+
     $o .= '<form id="register_user_form" method="POST" action="'.$sn.'?&amp;register">'."\n";
     $o .= tag('input type="hidden" value="saveusers" name="action"');
     $o .= tag('input type="hidden" value="plugin_main" name="admin"');
 
     $o .= '<table id="register_user_table">';
-    
+
     $o .= '<tr>'
         . '<th></th>'
         . '<th onclick="register.sort(this, \'name\')" style="cursor: pointer">' . $plugin_tx[$plugin]['name'] . '</th>'
@@ -258,12 +258,12 @@ function registerAdminUsersForm($users) {
         . '<th onclick="register.sort(this, \'email\')" style="cursor: pointer">' . $plugin_tx[$plugin]['email'] . '</th>'
         . '<th>' . $plugin_tx[$plugin]['password'] . '</th>'
         . '</tr>';
-                
+
     $i = 0;
     foreach($users as $entry) {
 	$groupString = implode(",", $entry['accessgroups']);
 	$o .= '<tr id="register_user_' . $i . '">'
-		
+
                 . '<td>' . tag('img src="'.$imageFolder.'/delete.png" alt="' . $ptx['user_delete'] . '" title="' . $ptx['user_delete'] . '" onclick="register.removeRow(this); return false"') . '</td>'
 		.'<td>' . tag('input type="text" value="' . $entry['name'] . '" name="name['.$i.']"')  . '</td>'
 		.'<td>' . tag('input type="text" value="' . $groupString . '" name="accessgroups['.$i.']"') . '</td>'
@@ -281,7 +281,7 @@ function registerAdminUsersForm($users) {
 		. '</tr>';
 	$i++;
     }
-    
+
     $o .= '</table>';
 
     $o .= tag('input class="submit" type="submit" value="' . ucfirst($tx['action']['save']).  '" name="send"')."\n";
@@ -294,7 +294,7 @@ function registerAdminUsersForm($users) {
 function Register_administrateUsers()
 {
     global $action, $pth, $e, $plugin_cf, $plugin_tx, $_Register_hasher;
-    
+
     $ptx = $plugin_tx['register'];
     $fn = $pth['folder']['base'] . $ptx['config_usersfile'];
     $o = '';

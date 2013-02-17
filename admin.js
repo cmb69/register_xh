@@ -1,14 +1,14 @@
 /**
  * Back-End JS of Register_XH.
  *
- * Copyright (c) 2012 Christoph M. Becker (see license.txt)
+ * Copyright (c) 2012-2013 Christoph M. Becker (see license.txt)
  */
 
 
 // TODO: general iteraterators (forEachUserRow() etc.) ?
 
 var register = {
-    
+
     init: function() {
         var rows = document.getElementsByTagName('tr');
         for (var i = 0; i < rows.length; i++) {
@@ -17,7 +17,7 @@ var register = {
                 row.style.display = "none";
             }
         }
-        
+
         var gsel = document.getElementById("register_group_selectbox");
         gsel.onchange = function() {
             register.filterByGroup(this.value);
@@ -38,9 +38,9 @@ var register = {
         }
 
     },
-    
+
     sort: function(heading, col) {
-        
+
         var ths = document.getElementsByTagName("th");
         for (var i = 0; i < ths.length; i++) {
             var th = ths[i];
@@ -48,7 +48,7 @@ var register = {
                 th.className = "";
             }
         }
-        
+
         var names = [];
         var f = document.getElementById('register_user_form');
         var elts = f.elements;
@@ -79,7 +79,7 @@ var register = {
             : "register_sort_asc";
         register.renumberRows();
     },
-    
+
     toggleDetails: function() {
         var display = document.getElementById("register_toggle_details").checked ? "" : "none";
         var rows = document.getElementsByTagName('tr');
@@ -90,18 +90,18 @@ var register = {
             }
         }
     },
-    
+
     removeRow: function(btn) {
         var row = btn.parentNode.parentNode;
         row.parentNode.removeChild(row.nextSibling);
         row.parentNode.removeChild(row);
         register.renumberRows();
     },
-    
-    
+
+
     addRow: function() {
         document.getElementById("register_group_selectbox").value = "";
-        
+
         var tbl = document.getElementById('register_user_table');
         var tpl = document.getElementById('register_user_template');
         var tpl2 = tpl.nextSibling.cloneNode(true);
@@ -119,7 +119,7 @@ var register = {
         }
         tpl.firstChild.nextSibling.firstChild.focus();
     },
-    
+
     renumberRows: function() {
         var rows = document.getElementsByTagName('tr');
         for (var i = 0, j = 0; i < rows.length; i++) {
@@ -131,7 +131,7 @@ var register = {
             }
         }
     },
-    
+
     filterByGroup: function(group) {
         var f = document.getElementById('register_user_form');
         var elts = f.elements;
@@ -147,8 +147,8 @@ var register = {
             }
         }
     },
-    
-    
+
+
     changePassword: function(field) {
         while (true) {
             var pass = window.prompt(register.tx.newPassword);
@@ -163,7 +163,7 @@ var register = {
             }
         }
     },
-    
+
     mailTo: function(a) {
         var name = a.parentNode.parentNode.previousSibling.firstChild.nextSibling.firstChild;
         var groups = name.parentNode.nextSibling.firstChild;
