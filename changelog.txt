@@ -1,3 +1,6 @@
+Version 1.5beta4 - released 2013-02-17
+cmb	fixed bug, where "remember me" was broken (reported by roze)
+
 Version 1.5beta3 - released 2012-12-05
 cmb	fixed security issue, where password hashes were too weak (reported by kmsmei)
 cmb	fixed bug where JS language strings were not properly escaped
