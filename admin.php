@@ -5,7 +5,7 @@
  *
  * Copyright (c) 2007 Carsten Heinelt (http://cmsimple.heinelt.eu)
  * Copyright (c) 2010-2012 Gert Ebersbach (http://www.ge-webdesign.de/cmsimpleplugins/)
- * Copyright (c) 2012 Christoph M. Becker (see license.txt)
+ * Copyright (c) 2012-2013 Christoph M. Becker (see license.txt)
  */
 
 
@@ -28,7 +28,7 @@ function register_version() {
 	    .'<p>Version: '.REGISTER_VERSION.'</p>'."\n"
 	    .'<p>Copyright &copy; 2007 <a href="http://cmsimple.heinelt.eu/">Carsten Heinelt</a>'.tag('br')
 	    .'Copyright &copy; 2010-2012 <a href="http://www.ge-webdesign.de/cmsimpleplugins/">Gert Ebersbach</a>'.tag('br')
-	    .'Copyright &copy; 2012 <a href="http://3-magi.net/">Christoph M. Becker</a></p>'."\n"
+	    .'Copyright &copy; 2012-2013 <a href="http://3-magi.net/">Christoph M. Becker</a></p>'."\n"
 	    .'<p class="register_license">Permission is hereby granted, free of charge, to any person obtaining a copy of'
 	    .' this software and associated documentation files (the "Software"), to use, copy'
 	    .' and modify the Software, subject to the following conditions:</p>'."\n"
