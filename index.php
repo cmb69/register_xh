@@ -22,7 +22,7 @@ if (!defined('CMSIMPLE_URL')) {
     define('CMSIMPLE_URL', 'http'
 	. (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] != 'off' ? 's' : '')
 	. '://' . $_SERVER['SERVER_NAME'] . ':' . $_SERVER['SERVER_PORT']
-	. preg_replace('/index.php$/', '', $_SERVER['PHP_SELF'])); 
+	. preg_replace('/index.php$/', '', $_SERVER['PHP_SELF']));
 }
 
 
@@ -194,7 +194,7 @@ function registerLogin()
 	//$secret = "LoginSecretWord";
 	$rememberPeriod = 24*60*60*100;
 	$logFile = $pth['folder']['plugins'] . $plugin . '/logfile/logfile.txt';
-	
+
 	$username = htmlspecialchars(isset($_POST['username']) ? $_POST['username'] : "");
 	$password = htmlspecialchars(isset($_POST['password']) ? $_POST['password'] : "");
 	$remember = htmlspecialchars(isset($_POST['remember']) ? $_POST['remember'] : "");
@@ -225,9 +225,9 @@ function registerLogin()
 	    && ($entry['status'] == 'activated' || $entry['status'] == 'locked')
 	    && (!isset($passwordHash) || $passwordHash == $entry['password'])
 	    && (isset($passwordHash)
-		|| preg_match('/true/i', $plugin_cf['register']['encrypt_password'])
+		|| (preg_match('/true/i', $plugin_cf['register']['encrypt_password'])
 		    ? $_Register_hasher->CheckPassword($password, $entry['password'])
-		    : $password == $entry['password']))	{
+		    : $password == $entry['password']))) {
 
 // Login Success ------------------------------------------------------------
 
@@ -235,10 +235,8 @@ function registerLogin()
 		if (preg_match('/true/i', $plugin_cf['register']['remember_user'])
 		    && isset($_POST['remember']))
 		{
-		    $passwordHash = preg_match('/true/i', $plugin_cf['register']['encrypt_password'])
-			? $_Register_hasher->HashPassword($password) : $password;
 			setcookie("username", $username,     time() + $rememberPeriod, "/");
-			setcookie("password", $passwordHash, time() + $rememberPeriod, "/");
+			setcookie("password", $entry['password'], time() + $rememberPeriod, "/");
 		}
 
 		$_SESSION['sessionnr']    = session_id();
@@ -449,7 +447,7 @@ function registerActivateUser($user, $captcha)
 function register_lock_users($dirname, $mode)
 {
     static $fps = array();
-    
+
     $fn = $dirname . '/.lock';
     touch($fn);
     if ($mode != LOCK_UN) {
@@ -551,7 +549,7 @@ function registerWriteGroups($filename, $array)
 function Register_groupLoginPage($group)
 {
     global $pth, $plugin_tx;
-  
+
     $groups = registerReadGroups($pth['folder']['base'] . $plugin_tx['register']['config_groupsfile']);
     foreach ($groups as $rec) {
 	if ($rec['groupname'] == $group) {
@@ -754,7 +752,7 @@ function registerDeleteUserEntry($array, $username)
 function Register_currentUser()
 {
     global $pth, $plugin_tx;
-    
+
     $ptx = $plugin_tx['register'];
     $loggedIn = session('sessionnr') == session_id()
 	&& isset($_SESSION['username'], $_SESSION['fullname'],
@@ -886,7 +884,7 @@ function registerForm($code, $name, $username, $password1, $password2, $email)
 function registerUser()
 {
 	global $su, $pth, $sn, $plugin_tx, $plugin_cf, $_Register_hasher;
-	
+
 	$plugin = basename(dirname(__FILE__),"/");
 
 	// In case user is logged in, no registration page is shown
@@ -1048,7 +1046,7 @@ function registerForgotForm($email)
 function registerForgotPassword()
 {
 	global $pth, $sn, $su, $plugin_tx, $plugin_cf, $_Register_hasher;
-	
+
 	$plugin = basename(dirname(__FILE__),"/");
 
 	// In case user is logged in, no registration page is shown
@@ -1139,7 +1137,7 @@ function registerForgotPassword()
 		// search user for email
 		$user = registerSearchUserArray($userArray, 'username', $_GET['username']);
 		if(!$user) $ERROR .= '<li>' . $plugin_tx[$plugin]['err_username_does_not_exist'] . '</li>'."\n";
-		
+
 		if ($user['password'] != stsl($_GET['captcha'])) {
 		    $ERROR .= '<li>' . $plugin_tx[$plugin]['err_status_invalid'] . '</li>';
 		}
@@ -1574,7 +1572,7 @@ function registerloginform()
  * Returns the logged in form, if user is logged in.
  *
  * @since 1.5rc1
- * 
+ *
  * @return  string
  */
 function Register_loggedInForm()
@@ -1600,7 +1598,7 @@ function registeradminmodelink()
 function register_mail($to, $subject, $message, $headers)
 {
     global $plugin_cf;
-    
+
     $headers[] = 'MIME-Version: 1.0';
     $headers[] = 'Content-type: text/plain; charset=UTF-8';
     $sep = strtolower($plugin_cf['register']['fix_mail_headers']) == 'true' ? "\n" : "\r\n";
