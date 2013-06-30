@@ -1,6 +1,6 @@
 // Register Plugin Group Definitions
 // Line Format:
-// groupname
-guest
-member
-admin
+// groupname|loginpage
+guest|
+member|
+admin|
