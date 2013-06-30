@@ -210,7 +210,8 @@ function registerAdminUsersForm($users) {
     }
 
     $hjs .= '<script type="text/javascript" src="' . $pth['folder']['plugins'] . 'register/admin.js"></script>'
-        . '<script type="text/javascript">register.tx={' . implode(',', $txts) . '}</script>';
+        . '<script type="text/javascript">register.tx={' . implode(',', $txts) . '};'
+	. 'register.maxNumberOfUsers=' . Register_maxRecords(7, 4) . ';</script>';
 
     $o = '';
     $o .= '<h1>' . $plugin_tx[$plugin]['mnu_user_admin'] . '</h1>'."\n";
@@ -500,6 +501,34 @@ if (isset($register) && $register == 'true') {
 	default:
 	    $o .= plugin_admin_common($action, $admin, $plugin);
     }
+}
+
+/**
+ * Returns the maximum number of records that may be successfully submitted from
+ * a form.
+ *
+ * Takes into account <var>max_input_vars</var>,
+ * <var>suhosin.post.max_vars</var> and <var>suhosin.request.max_vars</var>.
+ * If none of these is set, <var>PHP_INT_MAX</var> is returned.
+ *
+ * @param int $varsPerRecord  Number of POST variables per record.
+ * @param int $additionalVars Number of additional POST and GET variables.
+ *
+ * @return int
+ */
+function Register_maxRecords($varsPerRecord, $additionalVars)
+{
+    $miv = ini_get('max_input_vars');
+    $pmv = ini_get('suhosin.post.max_vars');
+    $rmv = ini_get('suhosin.request.max_vars');
+    foreach (array('miv', 'pmv', 'rmv') as $var) {
+        if (!$$var) {
+            $$var = PHP_INT_MAX;
+        }
+    }
+    $maxVars = min($miv, $pmv, $rmv);
+    $maxRecords = intval(($maxVars - $additionalVars) / $varsPerRecord);
+    return $maxRecords;
 }
 
 ?>

@@ -90,6 +90,7 @@ $plugin_tx['register']['config_groupsfile']="plugins/register/data/groups.csv";
 
 $plugin_tx['register']['js_confirmLeave']="Unsaved changes will be lost!";
 $plugin_tx['register']['js_newPassword']="New Password (may contain only alphanumeric characters and underscores):";
+$plugin_tx['register']['js_tooManyUsers']="There are too many users!";
 
 $plugin_tx['register']['syscheck_title']="System check";
 $plugin_tx['register']['syscheck_phpversion']="PHP version &ge; %s";

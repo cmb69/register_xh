@@ -36,7 +36,18 @@ var register = {
         f.onsubmit = function() {
             window.onbeforeunload = null;
         }
+        if (register.numberOfUsers() > register.maxNumberOfUsers) {
+            var submit = f.elements["send"];
+            f.removeChild(submit);
+            alert(register.tx["tooManyUsers"]);
+        }
+    },
 
+    numberOfUsers: function() {
+        var table;
+
+        table = document.getElementById("register_user_table");
+        return table.rows.length / 2 - 1;
     },
 
     sort: function(heading, col) {
@@ -100,6 +111,10 @@ var register = {
 
 
     addRow: function() {
+        if (register.numberOfUsers() >= register.maxNumberOfUsers) {
+            alert(register.tx["tooManyUsers"]);
+            return;
+        }
         document.getElementById("register_group_selectbox").value = "";
 
         var tbl = document.getElementById('register_user_table');
