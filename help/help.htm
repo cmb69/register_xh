@@ -180,8 +180,17 @@ but this is likely to change in the future.</p>
 <div class="toplink"><a href="#">back to top</a></div>
 
 <h2><a name="limitations">Limitations</a></h2>
-If any CMSimple_XH page inadvertantly has a heading that is used for one of the
-<a href="#usage-pages">special Register_XH pages</a>, the plugin might not work as expected.
+<ul>
+<li>If any CMSimple_XH page inadvertently has a heading that is used for one
+of the <a href="#usage-pages">special Register_XH pages</a>,
+the plugin might not work as expected.</li>
+<li>Depending on the PHP ini settings max_input_vars, suhosin.post.max_vars and
+suhosin.request.max_vars there is a limit on the maximum number of users that
+can be administrated in the plugin back-end. In a default configuration of PHP
+>= 5.3.9 at most 142 users are allowed. The plugin checks this limit, and
+does not permit more users to be added. If this limit is exceeded, you have
+to administrate the users in users.csv manually.</li>
+</ul>
 <div class="toplink"><a href="#">back to top</a></div>
 
 <h2><a name="license">License</a></h2>

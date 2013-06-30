@@ -183,8 +183,17 @@ was sich vermutlich in Zukunft ändern wird.</p>
 <div class="toplink"><a href="#">zum Seitenanfang</a></div>
 
 <h2><a name="limitations">Einschränkungen</a></h2>
-Wenn irgend eine CMSimple-XH-Seite unbeabsichtigt eine Überschrift hat, die für eine der
-<a href="#usage-pages">Register_XH-Spezialseiten</a> reserviert ist, könnte das Plugin nicht richtig funktionieren.
+<ul>
+<li>Wenn irgend eine CMSimple-XH-Seite unbeabsichtigt eine Überschrift hat,
+die für eine der <a href="#usage-pages">Register_XH-Spezialseiten</a> reserviert ist,
+könnte das Plugin nicht richtig funktionieren.</li>
+<li>In Abhängigkeit der PHP ini Einstellungen max_input_vars, suhosin.post.max_vars
+und suhosin.request.max_vars gibt es eine Obergrenze für die Höchstanzahl von
+Benutzern, die im Plugin-Back-End verwaltet werden können. In der Standardkonfiguration
+von PHP >= 5.3.9 sind höchstens 142 Benutzer erlaubt. Das Plugin überprüft diese
+Grenze, und verhindert das Hinzufügen weiterer Benutzer. Wenn die Obergrenze
+überschritten wurde, müssen Sie die Benutzer manuell in user.csv verwalten.</li>
+</ul>
 <div class="toplink"><a href="#">zum Seitenanfang</a></div>
 
 <h2><a name="license">Lizenz</a></h2>
