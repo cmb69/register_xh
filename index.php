@@ -476,7 +476,9 @@ function registerReadGroups($filename)
 			$line = rtrim(fgets($fp, 4096));
 			if(!empty($line) && strpos($line, '//') !== 0)
 			{
-				list($groupname, $loginpage) = explode('|', $line);
+				$parts = explode('|', $line, 2);
+				$groupname = $parts[0];
+				$loginpage = isset($parts[1]) ? $parts[1] : '';
 				// line must not start with '//' and all fields must be set
 				if (strpos($groupname, "//") === false && $groupname != "")
 				{
