@@ -127,7 +127,7 @@ function registerAdminGroupsForm($groups)  {
 
 
 function registerAdminUsersForm($users) {
-    global $tx, $pth, $sn, $plugin_tx;
+    global $tx, $pth, $sn, $plugin_tx, $e;
 
     $plugin = basename(dirname(__FILE__),"/");
     $imageFolder = $pth['folder']['plugins'] . $plugin . '/images';
@@ -140,6 +140,12 @@ function registerAdminUsersForm($users) {
     $o .= '<input type="hidden" value="saveusers" name="action" />'."\n";
     $o .= '<input type="hidden" value="plugin_main" name="admin" />'."\n";
 
+    $maxUsers = Register_maxRecords(7, 3);
+    $tooManyUsers = count($users) > $maxUsers;
+    if ($tooManyUsers) {
+	$e .= '<li>' . $plugin_tx['register']['err_too_many_users'] . '</li>';
+    }
+
     $i = 0;
     foreach($users as $entry) {
 	$groupString = implode(",", $entry['accessgroups']);
@@ -150,15 +156,19 @@ function registerAdminUsersForm($users) {
 		.'<div><p style="width: 10em; float: left; clear: both; padding: 0; margin: 0;">' . $plugin_tx[$plugin]['name'] . ':</p>' . "\n" . tag('input type="normal" size="12" style="width: 200px;" value="' . $entry['name'] . '" name="name['.$i.']"')."\n" .  tag('br') . '<div style="clear: both;"></div></div>'
 		.'<div><p style="width: 10em; float: left; clear: both; padding: 0; margin: 0;">' . $plugin_tx[$plugin]['email'] . ':</p>' . "\n" . tag('input type="normal" size="12" style="width: 200px;" value="' . $entry['email'] . '" name="email['.$i.']"')."\n" .  tag('br') . '<div style="clear: both;"></div></div>'
 		.'<div><p style="width: 10em; float: left; clear: both; padding: 0; margin: 0;">' . $plugin_tx[$plugin]['accessgroups'] . ':</p>' . "\n" . tag('input type="normal" size="12" style="width: 200px;" value="' . $groupString . '" name="accessgroups['.$i.']"')."\n" .  tag('br') . '<div style="clear: both;"></div></div>'
-		.'<div><p style="width: 10em; float: left; clear: both; padding: 0; margin: 0;">' . $plugin_tx[$plugin]['status'] . ':</p>' . "\n" . tag('input type="normal" size="12" style="width: 200px;" value="' . $entry['status'] . '" name="status['.$i.']"')."\n" .  tag('br') . '<div style="clear: both;"></div></div>'
-		.tag('input type="image" src="'.$imageFolder.'/delete.png" style="width: 16px; height: 16px;" name="delete['.$i.']" value="delete" alt="Delete Entry"')."\n" . tag('br')
-		.tag('hr');
+		.'<div><p style="width: 10em; float: left; clear: both; padding: 0; margin: 0;">' . $plugin_tx[$plugin]['status'] . ':</p>' . "\n" . tag('input type="normal" size="12" style="width: 200px;" value="' . $entry['status'] . '" name="status['.$i.']"')."\n" .  tag('br') . '<div style="clear: both;"></div></div>';
+	if (!$tooManyUsers) {
+	    $o .= tag('input type="image" src="'.$imageFolder.'/delete.png" style="width: 16px; height: 16px;" name="delete['.$i.']" value="delete" alt="Delete Entry"')."\n" . tag('br');
+	}
+	$o .= tag('hr');
 	$i++;
     }
 
     $o .= '<a name="bottom">'.tag('br').'</a>';
-    $o .= tag('input type="image" src="'.$imageFolder.'/add.png" style="float: right; width: 16px; height: 16px;" name="add[0]" value="add" alt="Add entry"')."\n";
-    $o .= tag('input class="submit" type="submit" value="' . ucfirst($tx['action']['save']).  '" name="send"')."\n";
+    if (!$tooManyUsers) {
+	$o .= tag('input type="image" src="'.$imageFolder.'/add.png" style="float: right; width: 16px; height: 16px;" name="add[0]" value="add" alt="Add entry"')."\n";
+	$o .= tag('input class="submit" type="submit" value="' . ucfirst($tx['action']['save']).  '" name="send"')."\n";
+    }
     $o .= '</form>'."\n".'</div>'.tag('br')."\n";
     return $o;
 }
@@ -382,6 +392,34 @@ if (isset($register) && $register == 'true') {
 	default:
 	    $o .= plugin_admin_common($action, $admin, $plugin);
     }
+}
+
+/**
+ * Returns the maximum number of records that may be successfully submitted from
+ * a form.
+ *
+ * Takes into account <var>max_input_vars</var>,
+ * <var>suhosin.post.max_vars</var> and <var>suhosin.request.max_vars</var>.
+ * If none of these is set, <var>PHP_INT_MAX</var> is returned.
+ *
+ * @param int $varsPerRecord  Number of POST variables per record.
+ * @param int $additionalVars Number of additional POST and GET variables.
+ *
+ * @return int
+ */
+function Register_maxRecords($varsPerRecord, $additionalVars)
+{
+    $miv = ini_get('max_input_vars');
+    $pmv = ini_get('suhosin.post.max_vars');
+    $rmv = ini_get('suhosin.request.max_vars');
+    foreach (array('miv', 'pmv', 'rmv') as $var) {
+        if (!$$var) {
+            $$var = PHP_INT_MAX;
+        }
+    }
+    $maxVars = min($miv, $pmv, $rmv);
+    $maxRecords = intval(($maxVars - $additionalVars) / $varsPerRecord);
+    return $maxRecords;
 }
 
 ?>

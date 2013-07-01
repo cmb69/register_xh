@@ -88,6 +88,8 @@ $plugin_tx['register']['syscheck_encoding']="Encoding 'UTF-8' configured";
 $plugin_tx['register']['syscheck_magic_quotes']="Magic quotes runtime off";
 $plugin_tx['register']['syscheck_writable']="Folder '%s' writable";
 
+$plugin_tx['register']['err_too_many_users']="Too many users!";
+
 $plugin_tx['register']['cf_allowed_register']="<b>true</b> allows registration for new members.</b>";
 $plugin_tx['register']['cf_captcha_mode']="<b>none</b> deactivates captcha.</b> <b>formula</b> activates a formula based captcha.</b> <b>image</b> activates a image based captcha.</b>";
 $plugin_tx['register']['cf_encrypt_password']="<b>true</b> activates password encryption.</b>";
