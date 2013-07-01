@@ -1,3 +1,6 @@
+Version 1.5beta5 - released 2013-07-01
+cmb	added check for and documented potential limitation of maximum number of users
+
 Version 1.5beta4 - released 2013-02-17
 cmb	fixed bug, where "remember me" was broken (reported by roze)
 
