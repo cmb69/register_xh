@@ -41,7 +41,7 @@ pro správu uživatelů (např.
 <li><a href="#usage-loginform">Přihlašovací formulář</a></li>
 <li><a href="#usage-access">Přístup do CMSimple stránek</a></li>
 </ul></li>
-<!--<li><a href="#limitations">Limitations</a></li>-->
+<ins><li><a href="#limitations">Limitations</a></li></ins>
 <li><a href="#license">Licence</a></li>
 <li><a href="#credits">Credits</a></li>
 </ul>
@@ -103,9 +103,19 @@ Vyberte "Register" v "Pluginech".</p>
 {{{PLUGIN:access('admin');}}}</pre>
 <div class="toplink"><a href="#">zpět nahoru</a></div>
 
-<!--<h2><a name="limitations">Limitations</a></h2>
+<ins>
+<h2><a name="limitations">Limitations</a></h2>
+<ul>
+<li><p>Depending on the PHP ini settings max_input_vars, suhosin.post.max_vars and
+suhosin.request.max_vars there is a limit on the maximum number of users that
+can be administrated in the plugin back-end. In a default configuration of PHP
+>= 5.3.9 at most 142 users are allowed. The plugin checks this limit, and
+does not permit more users to be added. If this limit is exceeded, you have
+to administrate the users in users.csv manually.</p></li>
+</ul>
 <div class="toplink"><a href="#">zpět nahoru</a></div>
--->
+</ins>
+
 <h2><a name="license">Licence</a></h2>
 <p>Register_XH je licencován jako <a href="../license.txt">freeware</a>.</p>
 <p>&copy; 2007 <a href="http://cmsimple.heinelt.eu/">Carsten Heinelt</a><br>

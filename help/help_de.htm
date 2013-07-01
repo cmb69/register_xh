@@ -32,7 +32,7 @@ Es wird von einigen anderen Plugins verwendet, um eine Benutzerverwaltung zu erg
 <li><a href="#usage-loginform">Login-Formular</a></li>
 <li><a href="#usage-access">Zugriff auf CMSimple-Seiten</a></li>
 </ul></li>
-<!--<li><a href="#limitations">Limitations</a></li>-->
+<li><a href="#limitations">Einschränkungen</a></li>
 <li><a href="#license">Lizenz</a></li>
 <li><a href="#credits">Danksagung</a></li>
 </ul>
@@ -115,9 +115,17 @@ Unregistrieren, d.h. Löschen des Kontos, ist ebenso im Einstellungsdialog mögl
 {{{PLUGIN:access('admin');}}}</pre>
 <div class="toplink"><a href="#">zurück zum Anfang</a></div>
 
-<!--<h2><a name="limitations">Limitations</a></h2>
-<div class="toplink"><a href="#">back to top</a></div>
--->
+<h2><a name="limitations">Einschränkungen</a></h2>
+<ul>
+<li><p>In Abhängigkeit der PHP ini Einstellungen max_input_vars, suhosin.post.max_vars
+und suhosin.request.max_vars gibt es eine Obergrenze für die Höchstanzahl von
+Benutzern, die im Plugin-Back-End verwaltet werden können. In der Standardkonfiguration
+von PHP >= 5.3.9 sind höchstens 142 Benutzer erlaubt. Das Plugin überprüft diese
+Grenze, und verhindert das Hinzufügen weiterer Benutzer. Wenn die Obergrenze
+überschritten wurde, müssen Sie die Benutzer manuell in user.csv verwalten.</p></li>
+</ul>
+<div class="toplink"><a href="#">zurück zum Anfang</a></div>
+
 <h2><a name="license">Lizenz</a></h2>
 <p>Register_XH ist als <a href="../license.txt">Freeware</a> lizensiert.</p>
 <p>&copy; 2007 <a href="http://cmsimple.heinelt.eu/">Carsten Heinelt</a><br>
