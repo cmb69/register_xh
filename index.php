@@ -15,7 +15,7 @@ if (!defined('CMSIMPLE_XH_VERSION')) {
 }
 
 
-define('REGISTER_VERSION', '1.4pl2');
+define('REGISTER_VERSION', '1.4pl3');
 
 
 if (!defined('CMSIMPLE_URL')) {
