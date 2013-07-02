@@ -4,7 +4,7 @@
 
 <head>
 <meta http-equiv="content-type" content="text/html;charset=utf-8">
-<meta name="content-language" content="de">
+<meta name="content-language" content="cs">
 <title>Register_XH - Manual</title>
 <link rel="stylesheet" type="text/css" href="./stylesheet.css">
 </head>
@@ -41,7 +41,7 @@ pro správu uživatelů (např.
 <li><a href="#usage-loginform">Přihlašovací formulář</a></li>
 <li><a href="#usage-access">Přístup do CMSimple stránek</a></li>
 </ul></li>
-<ins><li><a href="#limitations">Limitations</a></li></ins>
+<ins><li><a href="#limitations">Omezení</a></li></ins>
 <li><a href="#license">Licence</a></li>
 <li><a href="#credits">Credits</a></li>
 </ul>
@@ -103,18 +103,15 @@ Vyberte "Register" v "Pluginech".</p>
 {{{PLUGIN:access('admin');}}}</pre>
 <div class="toplink"><a href="#">zpět nahoru</a></div>
 
-<ins>
-<h2><a name="limitations">Limitations</a></h2>
-<ul>
-<li><p>Depending on the PHP ini settings max_input_vars, suhosin.post.max_vars and
-suhosin.request.max_vars there is a limit on the maximum number of users that
-can be administrated in the plugin back-end. In a default configuration of PHP
->= 5.3.9 at most 142 users are allowed. The plugin checks this limit, and
-does not permit more users to be added. If this limit is exceeded, you have
-to administrate the users in users.csv manually.</p></li>
-</ul>
+
+<h2><a name="limitations">Omezení</a></h2>
+<p>V závislosti na nastavení PHP ini max_input_vars, suhosin.post.max_vars a
+suhosin.request.max_vars je limitován maximální počet uživatelů,
+které lze spravovat z administrace. V defaultní konfiguraci PHP
+>= 5.3.9 je to maximálně 142 uživatelů. Plugin kontroluje tento limit a nedovolí přidat více uživatelů přes tento limit.
+Pokud je tento limit překročen, budete muset spravovat uživatele v souboru users.csv ručně.</p>
 <div class="toplink"><a href="#">zpět nahoru</a></div>
-</ins>
+
 
 <h2><a name="license">Licence</a></h2>
 <p>Register_XH je licencován jako <a href="../license.txt">freeware</a>.</p>
@@ -122,7 +119,7 @@ to administrate the users in users.csv manually.</p></li>
 &copy; 2010-2012 <a href="http://www.ge-webdesign.de/cmsimpleplugins/">Gert Ebersbach</a><br>
 &copy; 2012-2013 Christoph M. Becker</p>
 <p>Slovenský překlad &copy; 2012 Dr. Martin Sereday<br>
-Český překlad &copy; 2012 Josef Němec<br>
+Český překlad &copy; 2012-2013 Josef Němec<br>
 Dánský překlad &copy; 2012 Jens Maegard<br>
 Ruský překlad &copy; 2012 Lubomyr Kydray</p>
 <div class="toplink"><a href="#">zpět nahoru</a></div>
