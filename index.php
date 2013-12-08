@@ -18,12 +18,12 @@ if (!defined('CMSIMPLE_XH_VERSION')) {
 define('REGISTER_VERSION', '1.4pl3');
 
 
-if (!defined('CMSIMPLE_URL')) {
-    define('CMSIMPLE_URL', 'http'
-	. (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] != 'off' ? 's' : '')
-	. '://' . $_SERVER['SERVER_NAME'] . ':' . $_SERVER['SERVER_PORT']
-	. preg_replace('/index.php$/', '', $_SERVER['PHP_SELF']));
-}
+define(
+    'REGISTER_URL',
+    'http'
+    . (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] != 'off' ? 's' : '')
+    . '://' . $_SERVER['HTTP_HOST'] . $sn
+);
 
 
 if (!class_exists('PasswordHash')) {
@@ -971,7 +971,7 @@ function registerUser()
 			' ' . $plugin_tx[$plugin]['email'] . ": $email \n" .
 			' ' . $plugin_tx[$plugin]['fromip'] . ": $REMOTE_ADDR \n\n" .
 			$plugin_tx[$plugin]['emailtext2'] . "\n\n" .
-			CMSIMPLE_URL . '?' . $su . '&' .
+			REGISTER_URL . '?' . $su . '&' .
 			'action=registerActivateUser&username='.$username.'&captcha=' .
 			md5_encrypt($status, $plugin_cf[$plugin]['captcha_crypt']);
 
@@ -1110,7 +1110,7 @@ function registerForgotPassword()
 			$content .= ' ' . $plugin_tx[$plugin]['email'] . ": " . $user['email'] . "\n";
 			if (preg_match('/true/i', $plugin_cf[$plugin]['encrypt_password'])) {
 			    $content .= "\n" . $plugin_tx[$plugin]['emailtext3'] ."\n\n"
-				. CMSIMPLE_URL . '?' . $su . '&'
+				. REGISTER_URL . '?' . $su . '&'
 				. 'action=registerResetPassword&username=' . urlencode($user['username']) . '&captcha='
 				. urlencode($user['password']);
 			}
