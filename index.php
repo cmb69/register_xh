@@ -293,13 +293,13 @@ function registerLogin()
 		if($plugin_tx[$plugin]['config_login_page'] != '')
 		{
 			$loginPage = '?'.html_entity_decode(preg_replace("/ /", "_", $plugin_tx[$plugin]['config_login_page']));
-			header('Location: ' . $sn . $loginPage);
+			header('Location: ' . REGISTER_URL . $loginPage);
 			exit;
 		}
 		else
 		{
 			$loginPage = '';
-			header('Location: ' . $sn . $loginPage);
+			header('Location: ' . REGISTER_URL . $loginPage);
 			exit;
 		}
 
@@ -324,7 +324,7 @@ function registerLogin()
 
 		// go to login error page if exists or to default page otherwise
 		$errorTitle = html_entity_decode(preg_replace("/ /", "_", $plugin_tx[$plugin]['login_error']));
-		header('Location: ' . $sn . '?' . $errorTitle);
+		header('Location: ' . REGISTER_URL . '?' . $errorTitle);
 		exit;
 	}
 }
@@ -369,7 +369,7 @@ function registerLogout()
 
     // go to logout page if exists or to default page otherwise
 	$logoutTitle = html_entity_decode(preg_replace("/ /", "_", $plugin_tx[$plugin]['loggedout']));
-	header('Location: ' . $sn . '?' . $logoutTitle);
+	header('Location: ' . REGISTER_URL . '?' . $logoutTitle);
 	exit;
 
 /*
@@ -430,7 +430,7 @@ function access($groupString)
 
 		// go to access error page
 		$pageTitle = html_entity_decode(preg_replace("/ /", "_", $plugin_tx[$plugin]['access_error']));
-		header('Location: '.$sn.'?'. $pageTitle);
+		header('Location: '.REGISTER_URL.'?'. $pageTitle);
 		exit;
 	}
 	return $o;
@@ -888,7 +888,7 @@ function registerUser()
 	$_SESSION['register_sn']) &&
 	$_SESSION['register_sn'] == REGISTER_SESSION_NAME)
 	{
-		header('Location: ' . $sn);
+		header('Location: ' . REGISTER_URL);
 		exit;
 	}
 
@@ -1051,7 +1051,7 @@ function registerForgotPassword()
 	$_SESSION['register_sn'] == REGISTER_SESSION_NAME
 	)
 	{
-		header('Location: ' . $sn);
+		header('Location: ' . REGISTER_URL);
 		exit;
 	}
 
