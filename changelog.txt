@@ -1,3 +1,6 @@
+Version 1.4pl4 - released 2013-12-08
+cmb	fixed bug, where redirections did not work on IIS (reported by Guiseppe M.)
+
 Version 1.4pl3 - released 2013-07-01
 cmb	added check for and documented potential limitation of maximum number of users
 
