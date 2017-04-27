@@ -18,14 +18,6 @@ if (!defined('CMSIMPLE_XH_VERSION')) {
 define('REGISTER_VERSION', '1.5beta5');
 
 
-if (!defined('CMSIMPLE_URL')) {
-    define('CMSIMPLE_URL', 'http'
-	. (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] != 'off' ? 's' : '')
-	. '://' . $_SERVER['SERVER_NAME'] . ':' . $_SERVER['SERVER_PORT']
-	. preg_replace('/index.php$/', '', $_SERVER['PHP_SELF']));
-}
-
-
 if (!class_exists('PasswordHash')) {
     include_once $pth['folder']['plugin'] . 'PasswordHash.php';
 }
