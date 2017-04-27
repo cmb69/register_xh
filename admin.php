@@ -23,25 +23,10 @@ if (!defined('CMSIMPLE_XH_VERSION')) {
 function register_version() {
     global $pth;
 
-    return '<h1><a href="http://3-magi.net/?CMSimple_XH/Register_XH">Register_XH</a></h1>'."\n"
-	    .tag('img src="'.$pth['folder']['plugins'].'register/register.png" class="register_plugin_icon"')
-	    .'<p>Version: '.REGISTER_VERSION.'</p>'."\n"
-	    .'<p>Copyright &copy; 2007 <a href="http://cmsimple.heinelt.eu/">Carsten Heinelt</a>'.tag('br')
-	    .'Copyright &copy; 2010-2012 <a href="http://www.ge-webdesign.de/cmsimpleplugins/">Gert Ebersbach</a>'.tag('br')
-	    .'Copyright &copy; 2012-2013 <a href="http://3-magi.net/">Christoph M. Becker</a></p>'."\n"
-	    .'<p class="register_license">Permission is hereby granted, free of charge, to any person obtaining a copy of'
-	    .' this software and associated documentation files (the "Software"), to use, copy'
-	    .' and modify the Software, subject to the following conditions:</p>'."\n"
-	    .'<p class="register_license">The above copyright notice and this permission notice shall be included in all'
-	    .' copies or substantial portions of the Software.</p>'."\n"
-	    .'<p class="register_license">Redistribution via the internet is expressly prohibited.</p>'."\n"
-	    .'<p class="register_license">THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR'
-	    .' IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,'
-	    .' FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE'
-	    .' AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER'
-	    .' LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,'
-	    .' OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE'
-	    .' SOFTWARE.</p>'."\n";
+	$view = new Register\View('info');
+	$view->logo = "{$pth['folder']['plugins']}register/register.png";
+	$view->version = REGISTER_VERSION;
+	return (string) $view;
 }
 
 
@@ -93,9 +78,9 @@ function register_system_check() { // RELEASE-TODO
 
 function Register_pageSelectbox($loginpage, $n)
 {
-    global $cl, $h, $u, $l;
+    global $cl, $h, $u, $l, $plugin_tx;
 
-    $o = '<select name="grouploginpage[' . $n . ']"><option></option>';
+    $o = '<select name="grouploginpage[' . $n . ']"><option>' . $plugin_tx['register']['label_none'] . '</option>';
     for ($i = 0; $i < $cl; $i++) {
 	$sel = $u[$i] == $loginpage ? ' selected="selected"' : '';
 	$o .= '<option value="' . $u[$i] . '"' . $sel . '>'
@@ -107,40 +92,22 @@ function Register_pageSelectbox($loginpage, $n)
 
 
 function registerAdminGroupsForm($groups)  {
-    global $tx, $pth, $sn, $plugin_tx;
+    global $tx, $pth, $sn;
 
-    $plugin = basename(dirname(__FILE__),"/");
-    $imageFolder = $pth['folder']['plugins'] . $plugin . '/images';
+    $imageFolder = "{$pth['folder']['plugins']}register/images";
 
-    $o = '';
-    $o .= '<h1>' . $plugin_tx[$plugin]['mnu_group_admin'] . '</h1>'."\n";
-    $o .= '<div class="register_admin_main">'."\n";
-    $o .= '<form method="POST" action="'.$sn.'?&register">'."\n";
-    $o .= tag('input type="hidden" value="savegroups" name="action"')."\n";
-    $o .= tag('input type="hidden" value="plugin_main" name="admin"')."\n";
-    $o .= '<table cellpadding="1" cellspacing="0">'."\n";
-    $o .= '<tr>'."\n"
-	    .'  <th>' . $plugin_tx[$plugin]['groupname'] . '</th>'
-	    . '<th>' . $plugin_tx['register']['login'] . '</th>'
-	    .'  <th>'."\n"
-	    .tag('input type="image" src="'.$imageFolder.'/add.png" style="width: 16px; height: 16px;" name="add[0]" value="add" alt="Add entry."')."\n"
-	    .'  </th>'."\n"
-	    .'</tr>'."\n";
-    $i = 0;
-    foreach ($groups as $entry) {
-	$o .= '<tr>'."\n"
-		.'  <td>'.tag('input type="normal" size="10" value="'.$entry['groupname'].'" name="groupname['.$i.']"').'</td>'
-		. '<td>' . Register_pageSelectbox($entry['loginpage'], $i) . '</td>'
-		.'  <td>'."\n"
-		.tag('input type="image" src="'.$imageFolder.'/delete.png" style="width: 16px; height: 16px;" name="delete['.$i.']" value="delete" alt="Delete Entry"')."\n"
-		.'  </td>'."\n"
-		.'</tr>'."\n";
-	$i++;
-    }
-    $o .= '</table>'."\n";
-    $o .= tag('input class="submit" type="submit" value="'.ucfirst($tx['action']['save']).'" name="send"')."\n";
-    $o .= '</form>'."\n".'</div>'."\n";
-    return $o;
+	$view = new Register\View('admin-groups');
+	$view->actionUrl = "$sn?&register";
+	$view->addIcon = "$imageFolder/add.png";
+	$view->deleteIcon = "$imageFolder/delete.png";
+	$view->saveLabel = ucfirst($tx['action']['save']);
+	$view->groups = $groups;
+	$selects = [];
+	foreach ($groups as $i => $entry) {
+		$selects[] = new Register\HtmlString(Register_pageSelectbox($entry['loginpage'], $i));
+	}
+	$view->selects = $selects;
+    return (string) $view;
 }
 
 
@@ -213,82 +180,23 @@ function registerAdminUsersForm($users) {
         . '<script type="text/javascript">register.tx={' . implode(',', $txts) . '};'
 	. 'register.maxNumberOfUsers=' . Register_maxRecords(7, 4) . ';</script>';
 
-    $o = '';
-    $o .= '<h1>' . $plugin_tx[$plugin]['mnu_user_admin'] . '</h1>'."\n";
-    $o .= '<div class="register_admin_main">'."\n";
-
-    $o .= '<table><tr id="register_user_template" style="display: none">'
-
-            . '<td>' . tag('img src="'.$imageFolder.'/delete.png" alt="' . $ptx['user_delete'] . '" title="' . $ptx['user_delete'] . '" onclick="register.removeRow(this); return false"') . '</td>'
-            . '<td>' . tag('input type="text" value="" name="name[]"')  . '</td>'
-            . '<td>' . tag('input type="text" value="' . $plugin_cf[$plugin]['group_default'] . '" name="accessgroups[]"') . '</td>'
-            . '<td>' . Register_statusSelectbox('activated') . '</td>'
-            . '</tr>'
-            . '<tr style="display: none">'
-            . '<td>' . '</td>'
-            . '<td>' . tag('input type="text" value="" name="username[]"') .  '</td>'
-            . '<td>' . tag('input type="text" value="" name="email[]"') . '</td>'
-            . '<td>' . '<button onclick="register.changePassword(this.nextSibling); return false">' . $plugin_tx['register']['change_password'] . '</button>'
-	    . tag('input type="hidden" value="" name="password[]"')
-            . tag('input type="hidden" value="" name="oldpassword[]"'). '</td>'
-            . '</tr></table>';
-
-
-    $o .= '<div>';
-    $o .= '<button onclick="register.addRow()">' . $ptx['user_add'] . '</button>';
-    $o .= tag('input id="register_toggle_details" type="checkbox" onclick="register.toggleDetails()" style="padding-left: 1em"');
-    $o .= '<label for="register_toggle_details">' . $ptx['details'] . '</label>';
-    $o .= Register_groupSelectbox();
-    $o .= '</div>';
-
-    $o .= '<form id="register_user_form" method="POST" action="'.$sn.'?&amp;register">'."\n";
-    $o .= tag('input type="hidden" value="saveusers" name="action"');
-    $o .= tag('input type="hidden" value="plugin_main" name="admin"');
-
-    $o .= '<table id="register_user_table">';
-
-    $o .= '<tr>'
-        . '<th></th>'
-        . '<th onclick="register.sort(this, \'name\')" style="cursor: pointer">' . $plugin_tx[$plugin]['name'] . '</th>'
-        . '<th onclick="register.sort(this, \'accessgroups\')" style="cursor: pointer">' . $plugin_tx[$plugin]['accessgroups'] . '</th>'
-        . '<th onclick="register.sort(this, \'status\')" style="cursor: pointer">' . $plugin_tx[$plugin]['status'] . '</th>'
-        . '</tr>'
-        . '<tr class="register_second_row">'
-        . '<th></th>'
-        . '<th onclick="register.sort(this, \'username\')" style="cursor: pointer">' . $plugin_tx[$plugin]['username'] . '</th>'
-        . '<th onclick="register.sort(this, \'email\')" style="cursor: pointer">' . $plugin_tx[$plugin]['email'] . '</th>'
-        . '<th>' . $plugin_tx[$plugin]['password'] . '</th>'
-        . '</tr>';
-
-    $i = 0;
-    foreach($users as $entry) {
-	$groupString = implode(",", $entry['accessgroups']);
-	$o .= '<tr id="register_user_' . $i . '">'
-
-                . '<td>' . tag('img src="'.$imageFolder.'/delete.png" alt="' . $ptx['user_delete'] . '" title="' . $ptx['user_delete'] . '" onclick="register.removeRow(this); return false"') . '</td>'
-		.'<td>' . tag('input type="text" value="' . $entry['name'] . '" name="name['.$i.']"')  . '</td>'
-		.'<td>' . tag('input type="text" value="' . $groupString . '" name="accessgroups['.$i.']"') . '</td>'
-		//.'<td>' . tag('input type="text" value="' . $entry['status'] . '" name="status['.$i.']"') . '</td>'
-		. '<td>' . Register_statusSelectbox($entry['status'], $i) . '</td>'
-                . '</tr>'
-                . '<tr class="register_second_row">'
-                . '<td>' . '<a onclick="register.mailTo(this)">'
-		. tag('image src="' . $imageFolder . '/mail.png" alt="' . $ptx['email'] . '" title="' . $ptx['email'] . '"') . '</a>' . '</td>'
-		.'<td>' . tag('input type="text" value="' . $entry['username'] . '" name="username['.$i.']"') .  '</td>'
-		.'<td>' . tag('input type="text" value="' . $entry['email'] . '" name="email['.$i.']"') . '</td>'
-		.'<td>' . '<button onclick="register.changePassword(this.nextSibling); return false">' . $plugin_tx['register']['change_password'] . '</button>'
-		. tag('input type="hidden" value="' . $entry['password'] . '" name="password['.$i.']"')
-                . tag('input type="hidden" value="' . $entry['password'] . '" name="oldpassword['.$i.']"') . '</td>'
-		. '</tr>';
-	$i++;
-    }
-
-    $o .= '</table>';
-
-    $o .= tag('input class="submit" type="submit" value="' . ucfirst($tx['action']['save']).  '" name="send"')."\n";
-    $o .= '</form>'."\n".'</div>'."\n";
-    $o .= '<script type="text/javascript">register.init()</script>';
-    return $o;
+	$view = new Register\View('admin-users');
+	$view->saveLabel = ucfirst($tx['action']['save']);
+	$view->deleteIcon = "$imageFolder/delete.png";
+	$view->mailIcon = "$imageFolder/mail.png";
+	$view->defaultGroup = $plugin_cf[$plugin]['group_default'];
+	$view->statusSelectActivated = new Register\HtmlString(Register_statusSelectbox('activated'));
+	$view->groupSelect = new Register\HtmlString(Register_groupSelectbox());
+	$view->actionUrl = "$sn?&register";
+	$view->users = $users;
+	$groupStrings = $statusSelects = [];	
+	foreach ($users as $i => $entry) {
+		$groupStrings[] = implode(",", $entry['accessgroups']);
+		$statusSelects[] = new Register\HtmlString(Register_statusSelectbox($entry['status'], $i));
+	}
+	$view->groupStrings = $groupStrings;
+	$view->statusSelects = $statusSelects;
+    return (string) $view;
 }
 
 

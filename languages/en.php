@@ -87,6 +87,7 @@ $plugin_tx['register']['csv_written']="CSV file successfully written";
 $plugin_tx['register']['config_login_page']="";
 $plugin_tx['register']['config_usersfile']="plugins/register/data/users.csv";
 $plugin_tx['register']['config_groupsfile']="plugins/register/data/groups.csv";
+$plugin_tx['register']['label_none']="--- NONE ---";
 
 $plugin_tx['register']['js_confirmLeave']="Unsaved changes will be lost!";
 $plugin_tx['register']['js_newPassword']="New Password (may contain only alphanumeric characters and underscores):";

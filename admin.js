@@ -76,12 +76,12 @@ var register = {
         if (heading.className == "register_sort_asc") {
             names.reverse();
         }
-        var tblBody = document.getElementById('register_user_table').firstChild;
+        var tblBody = document.getElementById('register_user_table').firstElementChild;
         for (var i = 0; i < names.length; i++) {
             var name = names[i];
             var j = name[1];
             var row = document.getElementById('register_user_' + j);
-            var row2 = row.nextSibling;
+            var row2 = row.nextElementSibling;
             tblBody.appendChild(row);
             tblBody.appendChild(row2);
         }
@@ -96,7 +96,7 @@ var register = {
         var rows = document.getElementsByTagName('tr');
         for (var i = 0; i < rows.length; i++) {
             var row = rows[i];
-            if (row.className == "register_second_row" && row.previousSibling.style.display != "none") {
+            if (row.className == "register_second_row" && row.previousElementSibling.style.display != "none") {
                 row.style.display = display;
             }
         }
@@ -104,7 +104,7 @@ var register = {
 
     removeRow: function(btn) {
         var row = btn.parentNode.parentNode;
-        row.parentNode.removeChild(row.nextSibling);
+        row.parentNode.removeChild(row.nextElementSibling);
         row.parentNode.removeChild(row);
         register.renumberRows();
     },
@@ -119,10 +119,10 @@ var register = {
 
         var tbl = document.getElementById('register_user_table');
         var tpl = document.getElementById('register_user_template');
-        var tpl2 = tpl.nextSibling.cloneNode(true);
+        var tpl2 = tpl.nextElementSibling.cloneNode(true);
         tpl = tpl.cloneNode(true);
-        tbl.firstChild.appendChild(tpl);
-        tbl.firstChild.appendChild(tpl2);
+        tbl.firstElementChild.appendChild(tpl);
+        tbl.firstElementChild.appendChild(tpl2);
         tpl.style.display = tpl2.style.display = "table-row";
         tpl2.className = "register_second_row";
         register.renumberRows();
@@ -132,7 +132,7 @@ var register = {
         window.onbeforeunload = function() {
             return register.tx.confirmLeave;
         }
-        tpl.firstChild.nextSibling.firstChild.focus();
+        tpl.firstElementChild.nextElementSibling.firstElementChild.focus();
     },
 
     renumberRows: function() {
@@ -154,7 +154,7 @@ var register = {
             var elt = elts[i];
             if (elt.name.indexOf("accessgroups") === 0) {
                 var row = elt.parentNode.parentNode;
-                var row2 = row.nextSibling;
+                var row2 = row.nextElementSibling;
                 row.style.display = elt.value.indexOf(group) >= 0 ? "" : "none";
                 row2.style.display = elt.value.indexOf(group) >= 0
                     && document.getElementById("register_toggle_details").checked
@@ -180,13 +180,13 @@ var register = {
     },
 
     mailTo: function(a) {
-        var name = a.parentNode.parentNode.previousSibling.firstChild.nextSibling.firstChild;
-        var groups = name.parentNode.nextSibling.firstChild;
-        var state = groups.parentNode.nextSibling.firstChild;
-        var user = a.parentNode.nextSibling.firstChild;
-        var email = user.parentNode.nextSibling.firstChild;
-        var newPass = email.parentNode.nextSibling.firstChild.nextSibling;
-        var oldPass = newPass.nextSibling;
+        var name = a.parentNode.parentNode.previousElementSibling.firstElementChild.nextElementSibling.firstElementChild;
+        var groups = name.parentNode.nextElementSibling.firstElementChild;
+        var state = groups.parentNode.nextElementSibling.firstElementChild;
+        var user = a.parentNode.nextElementSibling.firstElementChild;
+        var email = user.parentNode.nextElementSibling.firstElementChild;
+        var newPass = email.parentNode.nextElementSibling.firstElementChild.nextElementSibling;
+        var oldPass = newPass.nextElementSibling;
         var subject = register.tx.prefsemailsubject + " " + document.location.hostname;
         var body = register.tx.name + ": " + name.value + "\n"
             + register.tx.username + ": " + user.value + "\n"
