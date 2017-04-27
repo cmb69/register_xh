@@ -176,7 +176,7 @@ function registerAdminUsersForm($users) {
 	}
     }
 
-    $hjs .= '<script type="text/javascript" src="' . $pth['folder']['plugins'] . 'register/admin.js"></script>'
+    $hjs .= '<script type="text/javascript" src="' . $pth['folder']['plugins'] . 'register/admin.min.js"></script>'
         . '<script type="text/javascript">register.tx={' . implode(',', $txts) . '};'
 	. 'register.maxNumberOfUsers=' . Register_maxRecords(7, 4) . ';</script>';
 
