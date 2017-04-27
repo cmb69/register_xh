@@ -18,11 +18,7 @@ if (!defined('CMSIMPLE_XH_VERSION')) {
 define('REGISTER_VERSION', '1.5beta5');
 
 
-if (!class_exists('PasswordHash')) {
-    include_once $pth['folder']['plugin'] . 'PasswordHash.php';
-}
-
-$_Register_hasher = new PasswordHash(8, true);
+$_Register_hasher = new Register\PasswordHash(8, true);
 
 
 /****************************************************************************
