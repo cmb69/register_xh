@@ -181,7 +181,6 @@ function registerLogin()
 	$plugin = basename(dirname(__FILE__),"/");
 	//$secret = "LoginSecretWord";
 	$rememberPeriod = 24*60*60*100;
-	$logFile = $pth['folder']['plugins'] . $plugin . '/logfile/logfile.txt';
 
 	$username = htmlspecialchars(isset($_POST['username']) ? $_POST['username'] : "");
 	$password = htmlspecialchars(isset($_POST['password']) ? $_POST['password'] : "");
@@ -237,9 +236,7 @@ function registerLogin()
 		// write line to log-file
 		if(preg_match('/true/i',$plugin_cf[$plugin]['logfile']))
 		{
-		$logfile = fopen($pth['folder']['plugins'].$plugin.'/logfile/logfile.txt', 'a');
-		fwrite($logfile, date("Y-m-d H:i:s") . " $username logged in\n");
-		fclose($logfile);
+			XH_logMessage('info', 'register', 'login', "$username logged in");
 		}
 
 		// go to login page if exists or to default page otherwise
@@ -267,9 +264,7 @@ function registerLogin()
 		// write line to log-file
 		if(preg_match('/true/i',$plugin_cf[$plugin]['logfile']))
 		{
-			$logfile = fopen($logFile, 'a');
-			fwrite($logfile, date("Y-m-d H:i:s") . " $username wrong password\n");
-			fclose($logfile);
+			XH_logMessage('error', 'register', 'login', "$username wrong password");
 		}
 
 		// go to login error page if exists or to default page otherwise
@@ -288,7 +283,6 @@ function registerLogout()
 
 	$plugin = basename(dirname(__FILE__),"/");
 	$rememberPeriod = 24*60*60*100;
-	$logFile = $pth['folder']['plugins'] . $plugin . '/logfile/logfile.txt';
 
 	$username = session('username');
 
@@ -309,9 +303,7 @@ function registerLogout()
 	// write line to log-file
 	if(preg_match('/true/i',$plugin_cf[$plugin]['logfile']))
 	{
-		$logfile = fopen($logFile, 'a');
-		fwrite($logfile, date("Y-m-d H:i:s") . " $username logged out\n");
-		fclose($logfile);
+		XH_logMessage('info', 'register', 'logout', "$username logged out");
 	}
 
     // go to logout page if exists or to default page otherwise
@@ -1312,7 +1304,6 @@ function registerUserPrefs()
 		else
 		{
 			$rememberPeriod = 24*60*60*100;
-			$logFile = $pth['folder']['plugins'] . $plugin . '/logfile/logfile.txt';
 
 			$username = session('username');
 
@@ -1337,9 +1328,7 @@ function registerUserPrefs()
 			// write line to log-file
 			if(preg_match('/true/i',$plugin_cf[$plugin]['logfile']))
 			{
-			$logfile = fopen($logFile, 'a');
-			fwrite($logfile, date("Y-m-d H:i:s") . " $username deleted and logged out\n");
-			fclose($logfile);
+				XH_logMessage('info', 'register', 'logout', "$username deleted and logged out");
 			}
 
 			$o .= '<b>' . $plugin_tx[$plugin]['user_deleted'] . ': '.$username.'</b>'."\n";
