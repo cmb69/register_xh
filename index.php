@@ -965,13 +965,14 @@ function registerUser()
 			md5_encrypt($status, $plugin_cf[$plugin]['captcha_crypt']);
 
 			// send activation email
-			register_mail
-			(
-			$email,
-			$plugin_tx[$plugin]['emailsubject'] . ' ' . $_SERVER['SERVER_NAME'],
-			$content,
-			array('From: ' . $plugin_cf[$plugin]['senderemail'],
-			    'Cc: '  . $plugin_cf[$plugin]['senderemail'])
+			(new Register\MailService)->sendMail(
+				$email,
+				$plugin_tx[$plugin]['emailsubject'] . ' ' . $_SERVER['SERVER_NAME'],
+				$content,
+				array(
+					'From: ' . $plugin_cf[$plugin]['senderemail'],
+					'Cc: '  . $plugin_cf[$plugin]['senderemail']
+				)
 			);
 			$o .= '<b>' . $plugin_tx[$plugin]['registered'] . '</b>';
 			return $o;
@@ -1086,12 +1087,11 @@ function registerForgotPassword()
 			}
 
 			// send reminder email
-			register_mail
-			(
-			$email,
-			$plugin_tx[$plugin]['reminderemailsubject'] . ' ' . $_SERVER['SERVER_NAME'],
-			$content,
-			array('From: ' . $plugin_cf[$plugin]['senderemail'])
+			(new Register\MailService)->sendMail(
+				$email,
+				$plugin_tx[$plugin]['reminderemailsubject'] . ' ' . $_SERVER['SERVER_NAME'],
+				$content,
+				array('From: ' . $plugin_cf[$plugin]['senderemail'])
 			);
 			$o .= '<b>' . $plugin_tx[$plugin]['remindersent'] . '</b>';
 			return $o;
@@ -1140,12 +1140,11 @@ function registerForgotPassword()
 			    . ' ' . $plugin_tx[$plugin]['email'] . ": " . $user['email'] . "\n";
 
 			// send reminder email
-			register_mail
-			(
-			$user['email'],
-			$plugin_tx[$plugin]['reminderemailsubject'] . ' ' . $_SERVER['SERVER_NAME'],
-			$content,
-			array('From: ' . $plugin_cf[$plugin]['senderemail'])
+			(new Register\MailService)->sendMail(
+				$user['email'],
+				$plugin_tx[$plugin]['reminderemailsubject'] . ' ' . $_SERVER['SERVER_NAME'],
+				$content,
+				array('From: ' . $plugin_cf[$plugin]['senderemail'])
 			);
 			$o .= '<b>' . $plugin_tx[$plugin]['remindersent'] . '</b>';
 			return $o;
@@ -1281,13 +1280,14 @@ function registerUserPrefs()
 			' ' . $plugin_tx[$plugin]['fromip'] . ': '.$REMOTE_ADDR."\n";
 
 			// send update email
-			register_mail
-			(
-			$email,
-			$plugin_tx[$plugin]['prefsemailsubject'] . ' ' . $_SERVER['SERVER_NAME'],
-			$content,
-			array('From: ' . $plugin_cf[$plugin]['senderemail'],
-			    'Cc: '  . $oldemail . ', ' . $plugin_cf[$plugin]['senderemail'])
+			(new Register\MailService)->sendMail(
+				$email,
+				$plugin_tx[$plugin]['prefsemailsubject'] . ' ' . $_SERVER['SERVER_NAME'],
+				$content,
+				array(
+					'From: ' . $plugin_cf[$plugin]['senderemail'],
+					'Cc: '  . $oldemail . ', ' . $plugin_cf[$plugin]['senderemail']
+				)
 			);
 			$o .= '<b>' . $plugin_tx[$plugin]['prefsupdated'] . '</b>';
 			return $o;
@@ -1436,17 +1436,6 @@ function registeradminmodelink()
 {
     trigger_error('registeradminmodelink() is deprecated', E_USER_WARNING);
     return FALSE;
-}
-
-
-function register_mail($to, $subject, $message, $headers)
-{
-    global $plugin_cf;
-
-    $headers[] = 'MIME-Version: 1.0';
-    $headers[] = 'Content-type: text/plain; charset=UTF-8';
-    $sep = strtolower($plugin_cf['register']['fix_mail_headers']) == 'true' ? "\n" : "\r\n";
-    return mail($to, '=?UTF-8?B?'.base64_encode($subject).'?=', $message, implode($sep, $headers));
 }
 
 ?>
