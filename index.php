@@ -254,7 +254,7 @@ function registerLogin()
 		} else {
 		    $loginPage = '';
 		}
-		header('Location: ' . $sn . $loginPage);
+		header('Location: ' . CMSIMPLE_URL . $loginPage);
 		exit;
 
 	}
@@ -278,7 +278,7 @@ function registerLogin()
 
 		// go to login error page if exists or to default page otherwise
 		$errorTitle = html_entity_decode(preg_replace("/ /", "_", $plugin_tx[$plugin]['login_error']));
-		header('Location: ' . $sn . '?' . $errorTitle);
+		header('Location: ' . CMSIMPLE_URL . '?' . $errorTitle);
 		exit;
 	}
 }
@@ -320,7 +320,7 @@ function registerLogout()
 
     // go to logout page if exists or to default page otherwise
 	$logoutTitle = html_entity_decode(preg_replace("/ /", "_", $plugin_tx[$plugin]['loggedout']));
-	header('Location: ' . $sn . '?' . $logoutTitle);
+	header('Location: ' . CMSIMPLE_URL . '?' . $logoutTitle);
 	exit;
 }
 
@@ -371,7 +371,7 @@ function access($groupString)
 
 		// go to access error page
 		$pageTitle = html_entity_decode(preg_replace("/ /", "_", $plugin_tx[$plugin]['access_error']));
-		header('Location: '.$sn.'?'. $pageTitle);
+		header('Location: '.CMSIMPLE_URL.'?'. $pageTitle);
 		exit;
 	}
 	return $o;
@@ -867,7 +867,7 @@ function registerUser()
 	$_SESSION['register_sn']) &&
 	$_SESSION['register_sn'] == REGISTER_SESSION_NAME)
 	{
-		header('Location: ' . $sn);
+		header('Location: ' . CMSIMPLE_URL);
 		exit;
 	}
 
@@ -1025,7 +1025,7 @@ function registerForgotPassword()
 	$_SESSION['register_sn'] == REGISTER_SESSION_NAME
 	)
 	{
-		header('Location: ' . $sn);
+		header('Location: ' . CMSIMPLE_URL);
 		exit;
 	}
 
