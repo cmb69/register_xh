@@ -53,7 +53,7 @@ function register_version() {
 function register_system_check() { // RELEASE-TODO
     global $pth, $tx, $plugin_cf, $plugin_tx;
 
-    define('REGISTER_PHP_VERSION', '4.4.0');
+    define('REGISTER_PHP_VERSION', '5.4.0');
     $pcf = $plugin_cf['register'];
     $ptx = $plugin_tx['register'];
     $imgdir = $pth['folder']['plugins'] . 'register/images/';
