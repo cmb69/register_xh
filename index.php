@@ -15,7 +15,7 @@ if (!defined('CMSIMPLE_XH_VERSION')) {
 }
 
 
-define('REGISTER_VERSION', '1.5beta5');
+define('REGISTER_VERSION', '@REGISTER_VERSION@');
 
 
 $_Register_hasher = new Register\PasswordHash(10, false);
