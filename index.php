@@ -826,56 +826,31 @@ function registerCheckColons($name, $username, $password1, $email)
  */
 function registerForm($code, $name, $username, $password1, $password2, $email)
 {
-	GLOBAL $plugin_tx, $plugin_cf;
-	$plugin = basename(dirname(__FILE__),"/");
+	global $plugin_cf;
 
-  $o = "\n\n" .
-	'<form method="post" action="' . htmlspecialchars(sv('REQUEST_URI')) . '" target="_self">' . "\n" .
-	'<div class="regi_register">'. "\n" .'<table>' . "\n" .
-	'<tr>' . "\n".
-	'  <td>'.tag('input type="hidden" name="action" value="register_user"') . "\n".
-	tag('input type="hidden" name="captcha" value="' . md5_encrypt($code, $plugin_cf[$plugin]['captcha_crypt']) . '"') . "\n".
-	$plugin_tx[$plugin]['name'] . '</td>' . "\n".
-	'  <td colspan="2">'.tag('input class="text" name="name" type="text" size="35" value="' . $name . '"').'</td>' . "\n".
-	'</tr>' . "\n".
-	'<tr>' . "\n".
-	'  <td>' . $plugin_tx[$plugin]['username'] . '</td>' . "\n".
-	'  <td colspan="2">'.tag('input class="text" name="username" type="text" size="10" value="' . $username . '"').'</td>' . "\n".
-	'</tr>' . "\n".
-	'<tr>' . "\n".
-	'  <td>' . $plugin_tx[$plugin]['password'] . '</td>' . "\n".
-	'  <td colspan="2">'.tag('input class="text" name="password1" type="password" size="10" value="' . $password1 . '"').'</td>' . "\n".
-	'</tr>' . "\n".
-	'<tr>' . "\n".
-	'  <td>' . $plugin_tx[$plugin]['password2'] . '</td>' . "\n".
-	'  <td colspan="2">'.tag('input class="text" name="password2" type="password" size="10" value="' . $password2 . '"').'</td>' . "\n".
-	'</tr>' . "\n".
-	'<tr>' . "\n".
-	'  <td>' . $plugin_tx[$plugin]['email'] . '</td>' . "\n".
-	'  <td colspan="2">'.tag('input class="text" name="email" type="text" size="35" value="' . $email . '"').'</td>' . "\n";
-
-	if($plugin_cf[$plugin]['captcha_mode'] != "none")
-	{
-		$o .=
-		'<tr>' . "\n".
-		'  <td>' . $plugin_tx[$plugin]['code'] . '</td>' . "\n".
-		'  <td>'.tag('input class="text" name="register_validate" type="text" size="10" value=""').'</td>' . "\n".
-		'  <td>' .
-		getCaptchaHtml(
-		"register_captcha", $code,
-		(int)$plugin_cf[$plugin]['captcha_image_width'],
-		(int)$plugin_cf[$plugin]['captcha_image_height'],
-		$plugin_cf[$plugin]['captcha_crypt'],
-		$plugin_cf[$plugin]['captcha_mode']) .
-		'</td>' . "\n".
-		'</tr>' . "\n";
+    $view = new Register\View('registerform');
+	$view->actionUrl = sv('REQUEST_URI');
+	$view->captcha = md5_encrypt($code, $plugin_cf['register']['captcha_crypt']);
+	$view->name = $name;
+	$view->username = $username;
+	$view->password1 = $password1;
+	$view->password2 = $password2;
+	$view->email = $email;
+	$hasCaptcha =  $plugin_cf['register']['captcha_mode'] != "none";
+	$view->hasCaptcha = $hasCaptcha;
+	if ($hasCaptcha) {
+		$view->captchaHtml = new Register\HtmlString(
+			getCaptchaHtml(
+				"register_captcha",
+				$code,
+				(int) $plugin_cf['register']['captcha_image_width'],
+				(int) $plugin_cf['register']['captcha_image_height'],
+				$plugin_cf['register']['captcha_crypt'],
+				$plugin_cf['register']['captcha_mode']
+			)
+		);
 	}
-	$o .=
-	'<tr>' . "\n".
-	'  <td colspan="3">'.tag('input class="submit" type="submit" value="' . $plugin_tx[$plugin]['register'] . '"') . '</td>' . "\n".'</tr>'."\n".'</table>'."\n";
-
-	$o .= '<p>'.$plugin_tx[$plugin]['register_form2'].'</p>' . "\n" . '</div>' . "\n" . '</form>'."\n";
-	return $o;
+	return (string) $view;
 }
 
 
@@ -1028,18 +1003,10 @@ function registerUser()
  */
 function registerForgotForm($email)
 {
-	GLOBAL $plugin_tx,$plugin_cf;
-	$plugin = basename(dirname(__FILE__),"/");
-
-	$o =
-    '<form method="post" action="' . htmlspecialchars(sv('REQUEST_URI')) . '" target="_self">' . "\n" .
-    '<table class="regi_register">' . "\n" .
-    '<tr>' . "\n".
-    '  <td>'.tag('input type="hidden" name="action" value="forgotten_password"') . $plugin_tx[$plugin]['email'] . '</td>' . "\n".
-    '  <td>'.tag('input class="text" name="email" type="text" size="35" value="' . $email . '"').'</td>' . "\n".
-    '  <td>'.tag('input class="submit" type="submit" value="' . $plugin_tx[$plugin]['send'] . '"').'</td>' . "\n".
-    '</tr>'."\n".'</table>'."\n".'</form>' . "\n";
-	return $o;
+	$view = new Register\View('forgotten-form');
+	$view->actionUrl = sv('REQUEST_URI');
+	$view->email = $email;
+	return (string) $view;
 }
 
 /*
@@ -1196,43 +1163,11 @@ function registerForgotPassword()
 
 function registerUserPrefsForm($name, $email)
 {
-	GLOBAL $plugin_tx,$plugin_cf;
-	$plugin = basename(dirname(__FILE__),"/");
-
-	$o = '<p>' . $plugin_tx[$plugin]['changeexplanation'] . '</p>'."\n";
-	$o .=
-	'<div class="regi_settings">' . "\n".
-	'<form method="post" action="' . htmlspecialchars(sv('REQUEST_URI')) . '" target="_self">' ."\n".
-	tag('input type="hidden" name="action" value="edit_user_prefs"') . "\n".
-	'<table style="margin: auto;">' . "\n" .
-	'<tr>' . "\n".
-	'  <td>' . $plugin_tx[$plugin]['name'] . '</td>' . "\n".
-	'  <td>'.tag('input class="text" name="name" type="text" size="35" value="' . $name . '"').'</td>' . "\n".
-	'</tr>' . "\n".
-	'<tr>' . "\n".
-	'  <td>' . $plugin_tx[$plugin]['oldpassword'] . '</td>' . "\n".
-	'  <td>'.tag('input class="text" name="oldpassword" type="password" size="10" value=""').'</td>' . "\n".
-	'</tr>' . "\n".
-	'<tr>' . "\n".
-	'  <td>' . $plugin_tx[$plugin]['password'] . '</td>' . "\n".
-	'  <td>'.tag('input class="text" name="password1" type="password" size="10" value=""').'</td>' . "\n".
-	'</tr>' . "\n".
-	'<tr>' . "\n".
-	'  <td>' . $plugin_tx[$plugin]['password2'] . '</td>' . "\n".
-	'  <td>'.tag('input class="text" name="password2" type="password" size="10" value=""').'</td>' . "\n".
-	'</tr>' . "\n".
-	'<tr>' . "\n".
-	'  <td>' . $plugin_tx[$plugin]['email'] . '</td>' . "\n".
-	'  <td>'.tag('input class="text" name="email" type="text" size="35" value="' . $email . '"').'</td>' . "\n".
-	'</tr>' . "\n".
-	'<tr>' . "\n".
-	'  <td colspan="2">'."\n" .
-	tag('input class="submit" name="submit" type="submit" value="'.$plugin_tx[$plugin]['change'].'"')."\n".
-	tag('input class="submit" name="delete" type="submit" value="'.$plugin_tx[$plugin]['user_delete'].'"')."\n".
-	'  </td>'."\n".
-	'</tr>'."\n".
-	'</table>'."\n".'</form>'."\n".'</div>';
-	return $o;
+	$view = new Register\View('userprefs-form');
+	$view->actionUrl = sv('REQUEST_URI');
+	$view->name = $name;
+	$view->email = $email;
+	return (string) $view;
 }
 
 /*
@@ -1439,134 +1374,41 @@ function registerUserPrefs()
  */
 function registerloginform()
 {
-	GLOBAL $plugin_cf, $plugin_tx, $pth, $sn, $su, $fieldsize;
-	$plugin = basename(dirname(__FILE__),"/");
-	$imageFolder = $pth['folder']['plugins'] . $plugin . "/images";
-
-	$o = '';
+	global $plugin_cf, $plugin_tx, $pth, $sn, $su;
+	$imageFolder = "{$pth['folder']['plugins']}register/images";
 
 	// If logged in show user preferences link, otherwise register and forgot email links.
 
-	if(!isset($_SESSION['username'],$_SESSION['sessionnr'],$_SESSION['register_sn']) || session('sessionnr') != session_id() || $_SESSION['register_sn'] != REGISTER_SESSION_NAME)
-	{
-
+	if(!isset($_SESSION['username'],$_SESSION['sessionnr'],$_SESSION['register_sn']) || session('sessionnr') != session_id() || $_SESSION['register_sn'] != REGISTER_SESSION_NAME) {
 		// Begin register- and loginarea and user fields
-
-		if($plugin_cf[$plugin]['login_layout'] == 'horizontal')
-		$o .= "\n".
-		'<div class="regi_regloginarea_hor">'."\n".
-		'<form action="'.preg_replace('&','&amp;',htmlspecialchars(sv('REQUEST_URI'))).'" method="post">'."\n".
-		tag('input type="hidden" name="function" value="registerlogin"')."\n".
-		'<div class="regi_user_hor">' . $plugin_tx[$plugin]['username'].'</div>'."\n".
-		'<div class="regi_userfield_hor">'.tag('input class="regi_userfield_hor" type="text" name="username"').'</div>'."\n";
-		else
-		$o .= "\n".
-		'<div class="regi_regloginarea_ver">'."\n".
-		'<form action="'.str_replace('&','&amp;',htmlspecialchars(sv('REQUEST_URI'))).'" method="post">'."\n".
-		tag('input type="hidden" name="function" value="registerlogin"')."\n".
-		'<div class="regi_user_ver">'.$plugin_tx[$plugin]['username'].'</div>'."\n".
-		'<div class="regi_userfield_ver">'.tag('input class="regi_userfield_ver" type="text" name="username"').'</div>'."\n";
-
-		// password
-		if($plugin_cf[$plugin]['login_layout'] == 'horizontal')
-		$o .= '<div class="regi_password_hor">'.$plugin_tx[$plugin]['password'].'</div>'."\n";
-		else
-		$o .= '<div class="regi_password_ver">'.$plugin_tx[$plugin]['password'].'</div>'."\n";
-
-		// Forgot password link
-		if($plugin_cf[$plugin]['login_layout'] == 'horizontal')
-		$o .= '<div class="regi_forgotpw_hor">'."\n";
-		else
-		$o .= '<div class="regi_forgotpw_ver">'."\n";
-
-		if (strtolower($plugin_cf['register']['password_forgotten']) == 'true'
-		    && isset($su) && urldecode($su) != html_entity_decode(preg_replace("/ /", "_", $plugin_tx[$plugin]['forgot_password']))) {
-		    $o .=
-		    '<a href="'.$sn.'?'.html_entity_decode(preg_replace("/ /", "_", $plugin_tx[$plugin]['forgot_password'])).'">'."\n" .
-		    tag('img src="'.$imageFolder.'/'.$plugin_cf[$plugin]['image_forgot_password'].'" class="regi_forgotpwimage" alt="'.$plugin_tx[$plugin]['forgot_password'].'" title="'.$plugin_tx[$plugin]['forgot_password'].'"')."\n".'</a>'."\n".'</div>'."\n";
-		} else {
-		    $o .= '</div>'."\n";
-		}
-
-		// password field & image
-		if($plugin_cf[$plugin]['login_layout'] == 'horizontal')
-		$o .=
-		'<div class="regi_passwordfield_hor">'."\n".
-		tag('input type="password" name="password"')."\n".
-		'</div>'."\n" .
-		'<div class="regi_loginbutton_hor">'."\n".
-		tag('input class="regi_loginbutton_hor" type="image" name="login" src="'.$imageFolder.'/'. $plugin_cf[$plugin]['image_login'].'" alt="'.$plugin_tx[$plugin]['login'].'" title="'. $plugin_tx[$plugin]['login'].'"')."\n".'</div>'."\n";
-		else
-		$o .=
-		'<div class="regi_passwordfield_ver">'."\n" .
-		tag('input type="password" name="password" size="'.$fieldsize.'"')."\n".
-		'</div>'."\n".
-		'<div class="regi_loginbutton_ver">'."\n".
-		tag('input class="regi_loginbutton_ver" type="image" name="login" src="'.$imageFolder.'/'.$plugin_cf[$plugin]['image_login'].'" alt="'.$plugin_tx[$plugin]['login'].'" title="'. $plugin_tx[$plugin]['login'].'"')."\n".
-		'</div>'."\n";
-
-		// Remember Me
-		if($plugin_cf[$plugin]['login_layout'] == 'horizontal')
-		$o .= '<div class="regi_remember_hor">'."\n";
-		else
-		$o .= '<div class="regi_remember_ver">'.tag('hr')."\n";
-		if(preg_match('/true/i',$plugin_cf[$plugin]['remember_user']) && ($plugin_cf[$plugin]['login_layout'] == 'horizontal'))
-		$o .=  tag('input type="checkbox" name="remember" class="regi_remember_hor"').$plugin_tx[$plugin]['remember'].'<div style="clear: both;"></div>'."\n";
-		if(preg_match('/true/i',$plugin_cf[$plugin]['remember_user']) && ($plugin_cf[$plugin]['login_layout'] != 'horizontal'))
-		$o .=  tag('input type="checkbox" name="remember" class="regi_remember_ver"').$plugin_tx[$plugin]['remember']."\n".'</div>'."\n";
-		else $o .= '</div>'."\n";
-
-
-		// Register Link
-		if($plugin_cf[$plugin]['login_layout'] == 'horizontal')
-		$o .= '<div class="regi_register_hor">'."\n";
-		else
-		$o .= '<div class="regi_register_ver">'."\n";
-		if(preg_match('/true/i',$plugin_cf[$plugin]['allowed_register']))
-		$o .= '<a href="'.$sn.'?'.html_entity_decode(preg_replace("/ /", "_", $plugin_tx[$plugin]['register'])).'">'.$plugin_tx[$plugin]['register'].'</a>'."\n".'</div>'."\n".'</form>'."\n".'<div style="clear: both;"></div>'."\n".'</div>'."\n";
-		else
-		$o .= '</div>'."\n".'</form>'."\n".'<div style="clear: both;"></div>'."\n".'</div>'."\n";
-	}
-	else
-	{
-
+		$view = new Register\View('loginform');
+		$view->isHorizontal = $plugin_cf['register']['login_layout'] == 'horizontal';
+		$view->actionUrl = sv('REQUEST_URI');
+		$forgotPasswordUrl = html_entity_decode(preg_replace("/ /", "_", $plugin_tx['register']['forgot_password']));
+		$view->hasForgotPasswordLink = strtolower($plugin_cf['register']['password_forgotten']) == 'true'
+			&& isset($su) && urldecode($su) != $forgotPasswordUrl;
+		$view->forgotPasswordUrl = "$sn?$forgotPasswordUrl";
+		$view->forgotPasswordIcon = "$imageFolder/{$plugin_cf['register']['image_forgot_password']}";
+		$view->loginIcon = "$imageFolder/{$plugin_cf['register']['image_login']}";
+		$view->hasRememberMe = preg_match('/true/i', $plugin_cf['register']['remember_user']);
+		$view->isRegisterAllowed = preg_match('/true/i', $plugin_cf['register']['allowed_register']);
+		$registerUrl = html_entity_decode(preg_replace("/ /", "_", $plugin_tx['register']['register']));
+		$view->registerUrl = "$sn?$registerUrl";
+	} else {
 		// Logout Link and Preferences Link
-
-		// loggedin user
-		if($plugin_cf[$plugin]['login_layout'] == 'horizontal')
-		$o .= "\n".'<div class="regi_loggedin_loggedinarea_hor">'."\n".'<div class="regi_loggedin_user_hor">'.$plugin_tx[$plugin]['loggedin_welcometext'].' '.$_SESSION['fullname'].'!&nbsp; </div>'."\n";
-		else
-		$o .= "\n".'<div class="regi_loggedin_loggedinarea_ver">'."\n".'<div class="regi_loggedin_user_ver">'.$plugin_tx[$plugin]['loggedin_welcometext'].' '.$_SESSION['fullname'].'!&nbsp; </div>'."\n";
-
-		// loggedin loggedin
-		if($plugin_cf[$plugin]['login_layout'] == 'horizontal')
-		$o .='<div class="regi_loggedin_loggedin_hor">'.$plugin_tx['register']['loggedin'].'</div>'."\n";
-		else
-		$o .='<div class="regi_loggedin_loggedin_ver">'.$plugin_tx['register']['loggedin'].'</div>'."\n";
-
-		// loggedin settings
-		if($plugin_cf[$plugin]['login_layout'] == 'horizontal')
-		$o .='<div class="regi_loggedin_settings_hor">'."\n";
-		else
-		$o .='<div class="regi_loggedin_settings_ver">'."\n";
-
+		$view = new Register\View('loggedin-area');
+		$view->isHorizontal = $plugin_cf['register']['login_layout'] == 'horizontal';
+		$view->fullName = $_SESSION['fullname'];
 		$currentUser = Register_currentUser();
-		if ($currentUser['status'] == 'activated' && isset($su)
-		    && urldecode($su) != html_entity_decode(preg_replace("/ /", "_", $plugin_tx[$plugin]['user_prefs'])))
-		{
-		    $o .= '<a href="?' . html_entity_decode(preg_replace("/ /", "_", $plugin_tx[$plugin]['user_prefs'])).'">'.tag('img class="regi_settingsimage" src="'.$imageFolder.'/'.$plugin_cf[$plugin]['image_user_preferences'].'" alt="'.$plugin_tx[$plugin]['user_prefs'].'"').$plugin_tx[$plugin]['user_prefs'].'</a>'."\n".
-			'</div>'."\n";
-		} else {
-		    $o .= '</div>'."\n";
-		}
-
-		// loggedin logout
-		if($plugin_cf[$plugin]['login_layout'] == 'horizontal')
-		$o .= '<div class="regi_loggedin_logout_hor">'."\n".'<a href="'.$sn.'?&amp;function=registerlogout">'.tag('img  class="regi_logoutimage" src="'.$imageFolder.'/'.$plugin_cf[$plugin]['image_logout'].'" alt="'.$plugin_tx[$plugin]['logout'].'"').$plugin_tx[$plugin]['logout'].'</a>'."\n".'</div>'."\n".'<div style="clear: both;"></div>'."\n".'</div>'."\n";
-		else
-		$o .= '<div class="regi_loggedin_logout_ver">'."\n".'<a href="'.$sn.'?&amp;function=registerlogout">'.tag('img  class="regi_logoutimage" src="'.$imageFolder.'/'.$plugin_cf[$plugin]['image_logout'].'" alt="'.$plugin_tx[$plugin]['logout'].'"').$plugin_tx[$plugin]['logout'].'</a>'."\n".'</div>'."\n".'<div style="clear: both;"></div>'."\n".'</div>'."\n";
+		$userPrefUrl = html_entity_decode(preg_replace("/ /", "_", $plugin_tx['register']['user_prefs']));
+		$view->hasUserPrefs = $currentUser['status'] == 'activated' && isset($su)
+		    && urldecode($su) != $userPrefUrl;
+		$view->userPrefUrl = "?$userPrefUrl";
+		$view->userPrefIcon = "$imageFolder/{$plugin_cf['register']['image_user_preferences']}";
+		$view->logoutUrl = "$sn?&function=registerlogout";
+		$view->logoutIcon = "$imageFolder/{$plugin_cf['register']['image_logout']}";
 	}
-  return $o;
+	return (string) $view;
 }
 
 
