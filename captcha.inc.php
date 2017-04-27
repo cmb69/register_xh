@@ -5,7 +5,7 @@
  *
  * Copyright (c) 2007 Carsten Heinelt (http://cmsimple.heinelt.eu)
  * Copyright (c) 2010-2012 Gert Ebersbach (http://www.ge-webdesign.de/cmsimpleplugins/)
- * Copyright (c) 2012-2017 Christoph M. Becker (see license.txt)
+ * Copyright (c) 2012-2017 Christoph M. Becker
  */
 
 // Functions md5_encrypt, md5_decrypt and generateCaptchaImage taken from genizguestbook

@@ -1,7 +1,7 @@
 /**
  * Back-End JS of Register_XH.
  *
- * Copyright (c) 2012-2017 Christoph M. Becker (see license.txt)
+ * Copyright (c) 2012-2017 Christoph M. Becker
  */
 
 
