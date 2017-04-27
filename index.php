@@ -233,11 +233,7 @@ function registerLogin()
 		$_SESSION['email']        = $entry['email'];
 		$_SESSION['register_sn']  = REGISTER_SESSION_NAME;
 
-		// write line to log-file
-		if(preg_match('/true/i',$plugin_cf[$plugin]['logfile']))
-		{
-			XH_logMessage('info', 'register', 'login', "$username logged in");
-		}
+		XH_logMessage('info', 'register', 'login', "$username logged in");
 
 		// go to login page if exists or to default page otherwise
 		if ($glp = Register_groupLoginPage($entry['accessgroups'][0])) {
@@ -261,11 +257,7 @@ function registerLogin()
 			setcookie("password", "", time() - $rememberPeriod, "/");
 		}
 
-		// write line to log-file
-		if(preg_match('/true/i',$plugin_cf[$plugin]['logfile']))
-		{
-			XH_logMessage('error', 'register', 'login', "$username wrong password");
-		}
+		XH_logMessage('error', 'register', 'login', "$username wrong password");
 
 		// go to login error page if exists or to default page otherwise
 		$errorTitle = html_entity_decode(preg_replace("/ /", "_", $plugin_tx[$plugin]['login_error']));
@@ -300,11 +292,7 @@ function registerLogout()
 		setcookie("username", "", time() - $rememberPeriod, "/");
 		setcookie("password", "", time() - $rememberPeriod, "/");
 	}
-	// write line to log-file
-	if(preg_match('/true/i',$plugin_cf[$plugin]['logfile']))
-	{
-		XH_logMessage('info', 'register', 'logout', "$username logged out");
-	}
+	XH_logMessage('info', 'register', 'logout', "$username logged out");
 
     // go to logout page if exists or to default page otherwise
 	$logoutTitle = html_entity_decode(preg_replace("/ /", "_", $plugin_tx[$plugin]['loggedout']));
@@ -1325,11 +1313,7 @@ function registerUserPrefs()
 				setcookie("password", "", time() - $rememberPeriod, "/");
 			}
 
-			// write line to log-file
-			if(preg_match('/true/i',$plugin_cf[$plugin]['logfile']))
-			{
-				XH_logMessage('info', 'register', 'logout', "$username deleted and logged out");
-			}
+			XH_logMessage('info', 'register', 'logout', "$username deleted and logged out");
 
 			$o .= '<b>' . $plugin_tx[$plugin]['user_deleted'] . ': '.$username.'</b>'."\n";
 			return $o;

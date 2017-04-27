@@ -91,7 +91,6 @@ $plugin_tx['register']['cf_fix_mail_headers']="<b>true</b> řeší problémy s n
 $plugin_tx['register']['cf_group_activated']="Status nových členů (skupina po registraci a aktivaci účtu).";
 $plugin_tx['register']['cf_group_default']="Stav nových členů (výchozí skupina uživatele po registraci, ale před aktivací účtu).";
 $plugin_tx['register']['cf_hide_pages']="<b>true</b> skryje stránky v tabulce obsahu, na které uživatel nemá přístup.";
-$plugin_tx['register']['cf_logfile']="<b>true</b> umožňuje logování přihlášení/odhlášení uživatelů v souboru protokolu.";
 $plugin_tx['register']['cf_login_all_subsites']="<b>true</b> umožňuje přihlášení do všech stránek v jiném jazyce a všech subwebů v jediném kroku.";
 $plugin_tx['register']['cf_login_layout']="<b>horizontal</b> vytváří horizontální přihlašovací formulář, nevyplněno, nebo cokoli jiného vytvoří vertikální přihlašovací formulář.";
 $plugin_tx['register']['cf_remember_user']="<b>true</b> zobrazí políčko Zapamatovat uživatele pod přihlašovacím formulářem.";

@@ -108,7 +108,6 @@ $plugin_tx['register']['cf_fix_mail_headers']="<b>true</b> fixes problems with s
 $plugin_tx['register']['cf_group_activated']="The status of new members (group after registration and account activation).";
 $plugin_tx['register']['cf_group_default']="The status of new members (default group for user after registration, but before account activation).";
 $plugin_tx['register']['cf_hide_pages']="<b>true</b> hides pages in table of content to which the user does not have access.";
-$plugin_tx['register']['cf_logfile']="<b>true</b> allows logging of login/logout of users in a log file.";
 $plugin_tx['register']['cf_login_all_subsites']="<b>true</b> allows login to all second languages and subsites in one step.";
 $plugin_tx['register']['cf_login_layout']="<b>horizontal</b> creates a horizontal login form, empty or all others creates a vertical login form.";
 $plugin_tx['register']['cf_remember_user']="<b>true</b> shows the remember user checkbox below the login form.";

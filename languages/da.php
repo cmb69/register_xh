@@ -89,7 +89,6 @@ $plugin_tx['register']['cf_encrypt_password']="<b>true</b> Aktiver kodeords kryp
 $plugin_tx['register']['cf_group_activated']="Status for nye medlemmer (gruppe efter registrering og konto aktivering).";
 $plugin_tx['register']['cf_group_default']="Status for nye medlemmer (standard gruppe for brugeren efter registrering, men før konto aktivering).";
 $plugin_tx['register']['cf_hide_pages']="<b>true</b> Skjuler siderne i menuen som brugeren ikke har adgang til.";
-$plugin_tx['register']['cf_logfile']="<b>true</b> aktiver logging af log-in og log-out af bruger i en log fil";
 $plugin_tx['register']['cf_login_all_subsites']="<b>true</b>tillader login til alle andet sprog og underordnede websteder i én arbejdsgang.";
 $plugin_tx['register']['cf_login_layout']="<b>horizontal</b> skaber en horisontal login-formular, tom eller alle andret skaber en lodret login form.";
 $plugin_tx['register']['cf_remember_user']="<b>true</b> viser Husk brugeren afkrydsningsfeltet under login form.";

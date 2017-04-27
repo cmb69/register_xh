@@ -108,7 +108,6 @@ $plugin_tx['register']['cf_fix_mail_headers']="<b>true</b> behebt Probleme mit e
 $plugin_tx['register']['cf_group_activated']="Der Status neuer Mitglieder (Gruppe nach Registrierung und Account Aktivierung).";
 $plugin_tx['register']['cf_group_default']="Der Status neuer Mitglieder (Gruppe nach Registrierung, aber vor der Account Aktivierung).";
 $plugin_tx['register']['cf_hide_pages']="<b>true</b> versteckt Seiten in der Navigation, zu denen das Mitglied keinen Zugang hat.";
-$plugin_tx['register']['cf_logfile']="<b>true</b> aktiviert die Führung des Logfiles (Login / Logout).";
 $plugin_tx['register']['cf_login_all_subsites']="<b>true</b> erlaubt das Login in alle Zweitsprachen und Subsites in einem Schritt.";
 $plugin_tx['register']['cf_login_layout']="<b>horizontal</b> erzeugt ein horizontales Login Formular, leer oder alles andere erzeugt ein vertikales Login Formular.";
 $plugin_tx['register']['cf_remember_user']="<b>true</b> zeigt die \"Benutzer merken\" Checkbox unterhalb des Login Formulars.";

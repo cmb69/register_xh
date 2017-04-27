@@ -16,7 +16,6 @@ $plugin_cf['register']['image_login']="submit_new.png";
 $plugin_cf['register']['image_logout']="logout_new.png";
 $plugin_cf['register']['image_forgot_password']="forgot_new.png";
 $plugin_cf['register']['image_user_preferences']="preferences_new.png";
-$plugin_cf['register']['logfile']="true";
 $plugin_cf['register']['login_layout']="";
 $plugin_cf['register']['login_all_subsites']="";
 $plugin_cf['register']['remember_user']="true";
