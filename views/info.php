@@ -4,7 +4,7 @@
 <p>
     Copyright &copy; 2007 <a href="http://cmsimple.heinelt.eu/">Carsten Heinelt</a><br>
 	Copyright &copy; 2010-2012 <a href="http://www.ge-webdesign.de/cmsimpleplugins/">Gert Ebersbach</a><br>
-	Copyright &copy; 2012-2013 <a href="http://3-magi.net/">Christoph M. Becker</a>
+	Copyright &copy; 2012-2017 <a href="http://3-magi.net/">Christoph M. Becker</a>
 </p>
 <p class="register_license">
     Permission is hereby granted, free of charge, to any person obtaining a copy of
