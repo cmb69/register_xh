@@ -324,7 +324,9 @@ function Register_administrateUsers()
 /**
  * Handle the plugin administration.
  */
-if (isset($register) && $register == 'true') {
+if (function_exists('XH_wantsPluginAdministration') && XH_wantsPluginAdministration('register')
+	|| isset($register) && $register === 'true'
+) {
     $ERROR = '';
 
     $o .= print_plugin_admin('off');
