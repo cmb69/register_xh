@@ -146,26 +146,39 @@ if(!($edit&&$adm) && isset($su))
 	}
 }
 
+function Register_isLoggedIn()
+{
+	return isset(
+			$_SESSION['username'],
+			$_SESSION['fullname'],
+			$_SESSION['email'],
+			$_SESSION['accessgroups'],
+			$_SESSION['sessionnr'],
+			$_SESSION['register_sn']
+		)
+		&& $_SESSION['sessionnr'] == session_id()
+		&& $_SESSION['register_sn'] == REGISTER_SESSION_NAME;
+}
+
 // Handling of login/logout =====================================================
-$isSession = session('sessionnr') == session_id() &&
-isset($_SESSION['username'],
-$_SESSION['fullname'],
-$_SESSION['email'],
-$_SESSION['accessgroups'],
-$_SESSION['sessionnr'],
-$_SESSION['register_sn']) &&
-$_SESSION['register_sn'] == REGISTER_SESSION_NAME;
 
-if(preg_match('/true/i',$plugin_cf[$plugin]['remember_user']) && isset($_COOKIE['username'], $_COOKIE['password']) && !$isSession) $function = "registerlogin";
-
-if(!$isSession && $function == "registerlogin") registerLogin();
-if($isSession && $function == "registerlogout") registerLogout();
+if (preg_match('/true/i',$plugin_cf[$plugin]['remember_user']) && isset($_COOKIE['username'], $_COOKIE['password']) && !Register_isLoggedIn()) {
+	$function = "registerlogin";
+}
+if (!Register_isLoggedIn() && $function == "registerlogin") {
+	registerLogin();
+}
+if (Register_isLoggedIn() && $function == "registerlogout") {
+	registerLogout();
+}
 
 if(!($edit&&$adm) && preg_match('/true/i',$plugin_cf[$plugin]['hide_pages']))
 {
-	if(isset($_SESSION['accessgroups'], $_SESSION['register_sn']) && $_SESSION['register_sn'] == REGISTER_SESSION_NAME) registerRemoveHiddenPages($_SESSION['accessgroups']);
-	else
-	registerRemoveHiddenPages(array());
+	if (Register_isLoggedIn()) {
+		registerRemoveHiddenPages($_SESSION['accessgroups']);
+	} else {
+		registerRemoveHiddenPages(array());
+	}
 }
 
 /****************************************************************************
@@ -271,12 +284,12 @@ function registerLogin()
  */
 function registerLogout()
 {
-	global $_SESSION, $_COOKIE, $plugin_cf, $plugin_tx, $sn, $h, $pth;
+	global $_COOKIE, $plugin_cf, $plugin_tx, $sn, $h, $pth;
 
 	$plugin = basename(dirname(__FILE__),"/");
 	$rememberPeriod = 24*60*60*100;
 
-	$username = session('username');
+	$username = isset($_SESSION['username']) ? $_SESSION['username'] : '';
 
 	// end session
 	unset($_SESSION['username']);
@@ -325,7 +338,7 @@ function registerRemoveHiddenPages($userGroups) {
  */
 function access($groupString)
 {
-	global $_SESSION, $plugin_tx, $sn;
+	global $plugin_tx, $sn;
 	$plugin = basename(dirname(__FILE__),"/");
 
 	// remove spaces etc.
@@ -333,36 +346,13 @@ function access($groupString)
 	$groupNames = explode(",", $groupString);
 
 	$o = '';
-	if(!isset(
-	$_SESSION['username'],
-	$_SESSION['fullname'],
-	$_SESSION['email'],
-	$_SESSION['accessgroups'],
-	$_SESSION['sessionnr'],
-	$_SESSION['register_sn']) ||
-	$_SESSION['sessionnr'] != session_id() ||
-	count(array_intersect($groupNames, $_SESSION['accessgroups']))==0 ||
-	$_SESSION['register_sn'] != REGISTER_SESSION_NAME)
-	{
-
+	if (!Register_isLoggedIn() || empty(array_intersect($groupNames, $_SESSION['accessgroups']))) {
 		// go to access error page
 		$pageTitle = html_entity_decode(preg_replace("/ /", "_", $plugin_tx[$plugin]['access_error']));
 		header('Location: '.CMSIMPLE_URL.'?'. $pageTitle);
 		exit;
 	}
 	return $o;
-}
-
-/*
- * Get a session variable
- */
-function session($s)
-{
-	global $_SESSION;
-	if(isset($_SESSION[$s]))
-	return $_SESSION[$s];
-	else
-	return'';
 }
 
 /*
@@ -724,12 +714,7 @@ function Register_currentUser()
     global $pth, $plugin_tx;
 
     $ptx = $plugin_tx['register'];
-    $loggedIn = session('sessionnr') == session_id()
-	&& isset($_SESSION['username'], $_SESSION['fullname'],
-		 $_SESSION['email'], $_SESSION['accessgroups'],
-		 $_SESSION['sessionnr'], $_SESSION['register_sn'])
-	&& $_SESSION['register_sn'] == REGISTER_SESSION_NAME;
-    if ($loggedIn) {
+    if (Register_isLoggedIn()) {
 	register_lock_users(dirname($pth['folder']['base'] . $ptx['config_usersfile']), LOCK_SH);
 	$users = registerReadUsers($pth['folder']['base'] . $ptx['config_usersfile']);
 	$rec = registerSearchUserArray($users, 'username', $_SESSION['username']);
@@ -833,16 +818,7 @@ function registerUser()
 	$plugin = basename(dirname(__FILE__),"/");
 
 	// In case user is logged in, no registration page is shown
-	if(session('sessionnr') == session_id() &&
-	isset(
-	$_SESSION['username'],
-	$_SESSION['fullname'],
-	$_SESSION['email'],
-	$_SESSION['accessgroups'],
-	$_SESSION['sessionnr'],
-	$_SESSION['register_sn']) &&
-	$_SESSION['register_sn'] == REGISTER_SESSION_NAME)
-	{
+	if (Register_isLoggedIn()) {
 		header('Location: ' . CMSIMPLE_URL);
 		exit;
 	}
@@ -987,20 +963,8 @@ function registerForgotPassword()
 
 	$plugin = basename(dirname(__FILE__),"/");
 
-	// In case user is logged in, no registration page is shown
-	if(session('sessionnr') == session_id() &&
-	isset
-	(
-	$_SESSION['username'],
-	$_SESSION['fullname'],
-	$_SESSION['email'],
-	$_SESSION['accessgroups'],
-	$_SESSION['sessionnr'],
-	$_SESSION['register_sn']
-	) &&
-	$_SESSION['register_sn'] == REGISTER_SESSION_NAME
-	)
-	{
+	// In case user is logged in, no password forgotten page is shown
+	if(Register_isLoggedIn()) {
 		header('Location: ' . CMSIMPLE_URL);
 		exit;
 	}
@@ -1143,15 +1107,13 @@ function registerUserPrefsForm($name, $email)
  */
 function registerUserPrefs()
 {
-	GLOBAL $plugin_tx,$plugin_cf,$pth,$_SESSION, $sn, $_Register_hasher;
+	GLOBAL $plugin_tx,$plugin_cf,$pth, $sn, $_Register_hasher;
 	$plugin = basename(dirname(__FILE__),"/");
 
 	$ERROR = '';
 	$o = '';
 
-	if(!isset($_SESSION['username'],$_SESSION['fullname'],$_SESSION['email'],$_SESSION['sessionnr'],$_SESSION['register_sn']) ||
-	session('sessionnr') != session_id() || $_SESSION['register_sn'] != REGISTER_SESSION_NAME)
-	{
+	if(!Register_isLoggedIn()) {
 		return $plugin_tx[$plugin]['access_error_text'];
 	}
 
@@ -1293,7 +1255,7 @@ function registerUserPrefs()
 		{
 			$rememberPeriod = 24*60*60*100;
 
-			$username = session('username');
+			$username = isset($_SESSION['username']) ? $_SESSION['username'] : '';
 
 			// clear all session variables
 			//$_SESSION = array();
@@ -1340,7 +1302,7 @@ function registerloginform()
 
 	// If logged in show user preferences link, otherwise register and forgot email links.
 
-	if(!isset($_SESSION['username'],$_SESSION['sessionnr'],$_SESSION['register_sn']) || session('sessionnr') != session_id() || $_SESSION['register_sn'] != REGISTER_SESSION_NAME) {
+	if (!Register_isLoggedIn()) {
 		// Begin register- and loginarea and user fields
 		$view = new Register\View('loginform');
 		$view->isHorizontal = $plugin_cf['register']['login_layout'] == 'horizontal';
@@ -1382,11 +1344,7 @@ function registerloginform()
  */
 function Register_loggedInForm()
 {
-    return (isset($_SESSION['username'], $_SESSION['sessionnr'], $_SESSION['register_sn'])
-	    && session('sessionnr') == session_id()
-	    && $_SESSION['register_sn'] == REGISTER_SESSION_NAME)
-	? registerloginform()
-	: '';
+    return Register_isLoggedIn() ? registerloginform() : '';
 }
 
 
