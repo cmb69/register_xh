@@ -85,8 +85,6 @@ $plugin_tx['register']['mnu_user_admin']="Benutzerverwaltung";
 $plugin_tx['register']['entries_in_csv']="Einträge in CSV Datei ";
 $plugin_tx['register']['csv_written']="CSV Datei erfolgreich geschrieben";
 $plugin_tx['register']['config_login_page']="";
-$plugin_tx['register']['config_usersfile']="plugins/register/data/users.csv";
-$plugin_tx['register']['config_groupsfile']="plugins/register/data/groups.csv";
 $plugin_tx['register']['label_none']="--- KEINE ---";
 
 $plugin_tx['register']['js_confirmLeave']="Ungespeicherte Änderungen gehen verloren!";
@@ -108,13 +106,11 @@ $plugin_tx['register']['cf_fix_mail_headers']="Ob Probleme mit einigen fehlerhaf
 $plugin_tx['register']['cf_group_activated']="Der Status neuer Mitglieder (Gruppe nach Registrierung und Account Aktivierung).";
 $plugin_tx['register']['cf_group_default']="Der Status neuer Mitglieder (Gruppe nach Registrierung, aber vor der Account Aktivierung).";
 $plugin_tx['register']['cf_hide_pages']="Ob versteckt Seiten, zu denen das Mitglied keinen Zugang hat, in der Navigation angezeigt werden sollen.";
-$plugin_tx['register']['cf_login_all_subsites']="Ob das Login in alle Zweitsprachen und Subsites in einem Schritt erfolgen soll.";
+$plugin_tx['register']['cf_login_all_subsites']="Ob es einen einzigen Satz von Mitgliedern für alle Sprachen gibt; andernfalls hat jede Sprache ihren eigenen Satz.";
 $plugin_tx['register']['cf_login_layout']="<b>horizontal</b> erzeugt ein horizontales Login Formular, leer oder alles andere erzeugt ein vertikales Login Formular.";
 $plugin_tx['register']['cf_remember_user']="Ob die \"Benutzer merken\" Checkbox unterhalb des Login Formulars angezeigt werden soll.";
 $plugin_tx['register']['cf_senderemail']="Die E-Mail-Adresse des Administrators";
 $plugin_tx['register']['cf_password_forgotten']="Ob der \"Kennwort vergessen\" Link im Login Formular angezeigt werden soll.";
 $plugin_tx['register']['cf_config_login_page']="Name der Seite, zu der der Anwender direkt nach dem Login weiter geleitet wird.";
-$plugin_tx['register']['cf_config_usersfile']="Der Pfad (relativ zum CMSimple Installationsverzeichnis) zur Anwender CSV-Datei, z.B. \"plugins/register/data/users.csv\".";
-$plugin_tx['register']['cf_config_groupsfile']="Der Pfad (relativ zum CMSimple Installationsverzeichnis) zur Gruppen CSV-Datei, z.B. \"plugins/register/data/groups.csv\".";
 
 ?>

@@ -76,8 +76,6 @@ $plugin_tx['register']['mnu_user_admin']="Správa uživatelů";
 $plugin_tx['register']['entries_in_csv']="Údaje v souboru CSV ";
 $plugin_tx['register']['csv_written']="Soubor CSV bxl úspěšně uložen.";
 $plugin_tx['register']['config_login_page']="Pro_registrované";
-$plugin_tx['register']['config_usersfile']="plugins/register/data/users.csv";
-$plugin_tx['register']['config_groupsfile']="plugins/register/data/groups.csv";
 $plugin_tx['register']['syscheck_title']="Kontrola systému";
 $plugin_tx['register']['syscheck_phpversion']="PHP verze ≥ %s";
 $plugin_tx['register']['syscheck_extension']="Rozšíření '%s' načteno";
@@ -91,7 +89,5 @@ $plugin_tx['register']['cf_group_default']="Stav nových členů (výchozí skup
 $plugin_tx['register']['cf_login_layout']="<b>horizontal</b> vytváří horizontální přihlašovací formulář, nevyplněno, nebo cokoli jiného vytvoří vertikální přihlašovací formulář.";
 $plugin_tx['register']['cf_senderemail']="E-mailový účet správce";
 $plugin_tx['register']['cf_config_login_page']="Název stránky kam je uživatel přesměrován přímo po přihlášení.";
-$plugin_tx['register']['cf_config_usersfile']="Cesta (relativní k CMSimple kořenu) pro uživatele v CSV souboru, např.\"plugins/register/data/users.csv\".";
-$plugin_tx['register']['cf_config_groupsfile']="Cesta (relativní k CMSimple kořenu) pro skupiny v CSV souboru, např.\"plugins/register/data/groups.csv\".";
 
 ?>

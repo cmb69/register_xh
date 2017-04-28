@@ -85,8 +85,6 @@ $plugin_tx['register']['mnu_user_admin']="User Administration";
 $plugin_tx['register']['entries_in_csv']="Entries in CSV file ";
 $plugin_tx['register']['csv_written']="CSV file successfully written";
 $plugin_tx['register']['config_login_page']="";
-$plugin_tx['register']['config_usersfile']="plugins/register/data/users.csv";
-$plugin_tx['register']['config_groupsfile']="plugins/register/data/groups.csv";
 $plugin_tx['register']['label_none']="--- NONE ---";
 
 $plugin_tx['register']['js_confirmLeave']="Unsaved changes will be lost!";
@@ -108,13 +106,11 @@ $plugin_tx['register']['cf_fix_mail_headers']="Whether to fix problems with some
 $plugin_tx['register']['cf_group_activated']="The status of new members (group after registration and account activation).";
 $plugin_tx['register']['cf_group_default']="The status of new members (default group for user after registration, but before account activation).";
 $plugin_tx['register']['cf_hide_pages']="Whether to hide pages in the table of contents to which the user does not have access.";
-$plugin_tx['register']['cf_login_all_subsites']="Whether to login into all second languages and subsites in one step.";
+$plugin_tx['register']['cf_login_all_subsites']="Whether there is a single set of users for all languages; otherwise each language has its own set.";
 $plugin_tx['register']['cf_login_layout']="<b>horizontal</b> creates a horizontal login form, empty or all others creates a vertical login form.";
 $plugin_tx['register']['cf_remember_user']="Whether the remember user checkbox shall be shown below the login form.";
 $plugin_tx['register']['cf_senderemail']="The e-mail account of the administrator";
 $plugin_tx['register']['cf_password_forgotten']="Whether the password forgotten link shall be shown in the login form.";
 $plugin_tx['register']['cf_config_login_page']="Name of the page the user is redirected directly after login.";
-$plugin_tx['register']['cf_config_usersfile']="The path (relative to the CMSimple root) to the users CSV file, e.g. \"plugins/register/data/users.csv\".";
-$plugin_tx['register']['cf_config_groupsfile']="The path (relative to the CMSimple root) to the groups CSV file, e.g. \"plugins/register/data/groups.csv\".";
 
 ?>

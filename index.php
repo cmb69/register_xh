@@ -143,6 +143,24 @@ if(!($edit&&$adm) && isset($su))
 	}
 }
 
+function Register_dataFolder()
+{
+	global $plugin_cf, $pth;
+
+	if ($plugin_cf['register']['login_all_subsites']) {
+		$folder = "{$pth['folder']['content']}{$pth['folder']['base']}register/";
+	} else {
+		$folder = "{$pth['folder']['content']}register/";
+	}
+	if (!file_exists($folder)) {
+		mkdir($folder, 0777, true);
+		chmod($folder, 0777);
+		registerWriteUsers("{$folder}users.csv", []);
+		registerWriteGroups("{$folder}groups.csv", []);
+	}
+	return $folder;
+}
+
 function Register_isLoggedIn()
 {
 	return isset(
@@ -210,9 +228,9 @@ function registerLogin()
 //    $passwordHash = md5($secret.$password);
 
 	// read user file in CSV format separated by colons
-	register_lock_users(dirname($pth['folder']['base'] . $plugin_tx['register']['config_usersfile']), LOCK_SH);
-	$userArray = registerReadUsers($pth['folder']['base'] . $plugin_tx['register']['config_usersfile']);
-	register_lock_users(dirname($pth['folder']['base'] . $plugin_tx['register']['config_usersfile']), LOCK_UN);
+	register_lock_users(Register_dataFolder(), LOCK_SH);
+	$userArray = registerReadUsers(Register_dataFolder() . 'users.csv');
+	register_lock_users(Register_dataFolder(), LOCK_UN);
 
 	// search user in CSV data
 	$entry = registerSearchUserArray($userArray, 'username', $username);
@@ -363,8 +381,8 @@ function registerActivateUser($user, $captcha)
 	$o ='';
 
 	// read user file in CSV format separated by colons
-	register_lock_users(dirname($pth['folder']['base'] . $plugin_tx['register']['config_usersfile']), LOCK_EX);
-	$userArray = registerReadUsers($pth['folder']['base'] . $plugin_tx['register']['config_usersfile']);
+	register_lock_users(Register_dataFolder(), LOCK_EX);
+	$userArray = registerReadUsers(Register_dataFolder() . 'users.csv');
 
 	// check if user or other user for same email address exists
 	$entry = registerSearchUserArray($userArray, 'username', $user);
@@ -391,10 +409,10 @@ function registerActivateUser($user, $captcha)
 		$entry['status'] = "activated";
 		$entry['accessgroups'] = array($plugin_cf[$plugin]['group_activated']);
 		$userArray = registerReplaceUserEntry($userArray, $entry);
-		registerWriteUsers($pth['folder']['base'] . $plugin_tx['register']['config_usersfile'],$userArray);
+		registerWriteUsers(Register_dataFolder() . 'users.csv', $userArray);
 		$o .= '<b>' . $plugin_tx[$plugin]['activated'] . '</b>'."\n";
 	}
-	register_lock_users(dirname($pth['folder']['base'] . $plugin_tx['register']['config_usersfile']), LOCK_UN);
+	register_lock_users(Register_dataFolder(), LOCK_UN);
   return $o;
 }
 
@@ -507,7 +525,7 @@ function Register_groupLoginPage($group)
 {
     global $pth, $plugin_tx;
 
-    $groups = registerReadGroups($pth['folder']['base'] . $plugin_tx['register']['config_groupsfile']);
+    $groups = registerReadGroups(Register_dataFolder() . 'groups.csv');
     foreach ($groups as $rec) {
 	if ($rec['groupname'] == $group) {
 	    return $rec['loginpage'];
@@ -712,10 +730,10 @@ function Register_currentUser()
 
     $ptx = $plugin_tx['register'];
     if (Register_isLoggedIn()) {
-	register_lock_users(dirname($pth['folder']['base'] . $ptx['config_usersfile']), LOCK_SH);
-	$users = registerReadUsers($pth['folder']['base'] . $ptx['config_usersfile']);
+	register_lock_users(Register_dataFolder(), LOCK_SH);
+	$users = registerReadUsers(Register_dataFolder() . 'users.csv');
 	$rec = registerSearchUserArray($users, 'username', $_SESSION['username']);
-	register_lock_users(dirname($pth['folder']['base'] . $ptx['config_usersfile']), LOCK_UN);
+	register_lock_users(Register_dataFolder(), LOCK_UN);
 	return $rec;
     } else {
 	return null;
@@ -859,8 +877,8 @@ function registerUser()
 		$ERROR .= registerCheckColons($name, $username, $password1, $email);
 
 		// read user file in CSV format separated by colons
-		register_lock_users(dirname($pth['folder']['base'] . $plugin_tx['register']['config_usersfile']), LOCK_EX);
-		$userArray = registerReadUsers($pth['folder']['base'] . $plugin_tx['register']['config_usersfile']);
+		register_lock_users(Register_dataFolder(), LOCK_EX);
+		$userArray = registerReadUsers(Register_dataFolder() . 'users.csv');
 
 		// check if user or other user for same email address exists
 		if(registerSearchUserArray($userArray, 'username', $username) !== false)
@@ -878,12 +896,12 @@ function registerUser()
 		array($plugin_cf[$plugin]['group_default']), $name, $email, $status);
 
 		// write CSV file if no errors occurred so far
-		if($ERROR=="" && !registerWriteUsers($pth['folder']['base'] . $plugin_tx['register']['config_usersfile'], $userArray))
+		if($ERROR=="" && !registerWriteUsers(Register_dataFolder() . 'users.csv', $userArray))
 		$ERROR .= '<li>' .
 		$plugin_tx[$plugin]['err_cannot_write_csv'] .
-		' (' . $pth['folder']['base'] . $plugin_tx['register']['config_usersfile'] . ')' .
+		' (' . Register_dataFolder() . 'users.csv' . ')' .
 		'</li>'."\n";
-		register_lock_users(dirname($pth['folder']['base'] . $plugin_tx['register']['config_usersfile']), LOCK_UN);
+		register_lock_users(Register_dataFolder(), LOCK_UN);
 
 		if($ERROR != "")
 		{
@@ -983,9 +1001,9 @@ function registerForgotPassword()
 		$ERROR .= '<li>' . $plugin_tx[$plugin]['err_email_invalid'] . '</li>'."\n";
 
 		// read user file in CSV format separated by colons
-		register_lock_users(dirname($pth['folder']['base'] . $plugin_tx['register']['config_usersfile']), LOCK_SH);
-		$userArray = registerReadUsers($pth['folder']['base'] . $plugin_tx['register']['config_usersfile']);
-		register_lock_users(dirname($pth['folder']['base'] . $plugin_tx['register']['config_usersfile']), LOCK_UN);
+		register_lock_users(Register_dataFolder(), LOCK_SH);
+		$userArray = registerReadUsers(Register_dataFolder() . 'users.csv');
+		register_lock_users(Register_dataFolder(), LOCK_UN);
 
 		// search user for email
 		$user = registerSearchUserArray($userArray, 'email', $email);
@@ -1029,8 +1047,8 @@ function registerForgotPassword()
 		  && $plugin_cf[$plugin]['encrypt_password'])
 	{
 		// read user file in CSV format separated by colons
-		register_lock_users(dirname($pth['folder']['base'] . $plugin_tx['register']['config_usersfile']), LOCK_EX);
-		$userArray = registerReadUsers($pth['folder']['base'] . $plugin_tx['register']['config_usersfile']);
+		register_lock_users(Register_dataFolder(), LOCK_EX);
+		$userArray = registerReadUsers(Register_dataFolder() . 'users.csv');
 
 		// search user for email
 		$user = registerSearchUserArray($userArray, 'username', $_GET['username']);
@@ -1047,12 +1065,12 @@ function registerForgotPassword()
 			$password = generateRandomCode(8);
 			$user['password'] = $_Register_hasher->HashPassword($password);
 			$userArray = registerReplaceUserEntry($userArray, $user);
-			if(!registerWriteUsers($pth['folder']['base'] . $plugin_tx['register']['config_usersfile'], $userArray))
+			if(!registerWriteUsers(Register_dataFolder() . 'users.csv', $userArray))
 			$ERROR .= '<li>' . $plugin_tx[$plugin]['err_cannot_write_csv'] .
-			' (' . $pth['folder']['base'] . $plugin_tx['register']['config_usersfile'] . ')' .
+			' (' . Register_dataFolder() . 'users.csv' . ')' .
 			'</li>'."\n";
 		}
-		register_lock_users(dirname($pth['folder']['base'] . $plugin_tx['register']['config_usersfile']), LOCK_UN);
+		register_lock_users(Register_dataFolder(), LOCK_UN);
 
 		if($ERROR != "")
 		{
@@ -1127,8 +1145,8 @@ function registerUserPrefs()
 	$username = isset($_SESSION['username']) ? $_SESSION['username'] : "";
 
 	// read user file in CSV format separated by colons
-	register_lock_users(dirname($pth['folder']['base'] . $plugin_tx['register']['config_usersfile']), LOCK_EX);
-	$userArray = registerReadUsers($pth['folder']['base'] . $plugin_tx['register']['config_usersfile']);
+	register_lock_users(Register_dataFolder(), LOCK_EX);
+	$userArray = registerReadUsers(Register_dataFolder() . 'users.csv');
 
 	// search user in CSV data
 	$entry = registerSearchUserArray($userArray, 'username', $username);
@@ -1179,12 +1197,12 @@ function registerUserPrefs()
 			$userArray = registerReplaceUserEntry($userArray, $entry);
 
 			// write CSV file if no errors occurred so far
-			if(!registerWriteUsers($pth['folder']['base'] . $plugin_tx['register']['config_usersfile'], $userArray))
+			if(!registerWriteUsers(Register_dataFolder() . 'users.csv', $userArray))
 			$ERROR .= '<li>' . $plugin_tx[$plugin]['err_cannot_write_csv'] .
-			' (' . $pth['folder']['base'] . $plugin_tx['register']['config_usersfile'] . ')' .
+			' (' . Register_dataFolder() . 'users.csv' . ')' .
 			'</li>'."\n";
 		}
-		register_lock_users(dirname($pth['folder']['base'] . $plugin_tx['register']['config_usersfile']), LOCK_UN);
+		register_lock_users(Register_dataFolder(), LOCK_UN);
 
 		if($ERROR != '')
 		{
@@ -1235,13 +1253,13 @@ function registerUserPrefs()
 		if($ERROR=="")
 		{
 			$userArray = registerDeleteUserEntry($userArray, $username);
-			if(!registerWriteUsers($pth['folder']['base'] . $plugin_tx['register']['config_usersfile'], $userArray))
+			if(!registerWriteUsers(Register_dataFolder() . 'users.csv', $userArray))
 			$ERROR .= '<li>' . $plugin_tx[$plugin]['err_cannot_write_csv'] .
-			' (' . $pth['folder']['base'] . $plugin_tx['register']['config_usersfile'] . ')' .
+			' (' . Register_dataFolder() . 'users.csv' . ')' .
 			'</li>'."\n";
 		}
 		// write CSV file if no errors occurred so far
-		register_lock_users(dirname($pth['folder']['base'] . $plugin_tx['register']['config_usersfile']), LOCK_UN);
+		register_lock_users(Register_dataFolder(), LOCK_UN);
 
 		if($ERROR != "")
 		{

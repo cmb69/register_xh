@@ -62,12 +62,7 @@ function register_system_check() { // RELEASE-TODO
     foreach (array('config/', 'css/', 'languages/') as $folder) {
 	$folders[] = $pth['folder']['plugins'] . 'register/' . $folder;
     }
-    $ufdir = dirname($pth['folder']['base'] . $plugin_tx['register']['config_usersfile']);
-    $gfdir = dirname($pth['folder']['base'] . $plugin_tx['register']['config_groupsfile']);
-    $folders[] = $ufdir . '/';
-    if ($gfdir != $ufdir) {
-	$folders[] = $gfdir . '/';
-    }
+    $folders[] = Register_dataFolder();
     foreach ($folders as $folder) {
 	$o .= (is_writable($folder) ? $ok : $warn)
 	    . '&nbsp;&nbsp;' . sprintf($ptx['syscheck_writable'], $folder) . tag('br');
@@ -116,7 +111,7 @@ function Register_groupSelectbox()
     global $pth, $plugin_tx;
 
     $ptx = $plugin_tx['register'];
-    $groups = registerReadGroups($pth['folder']['base'] . $ptx['config_groupsfile']);
+    $groups = registerReadGroups(Register_dataFolder() . 'groups.csv');
     usort($groups, create_function('$a, $b', 'return strcasecmp($a["groupname"], $b["groupname"]);'));
     $o = '<select id="register_group_selectbox" title="' . $ptx['filter_group'] . '">'
         . '<option value="">' . $ptx['all'] . '</option>';
@@ -205,7 +200,7 @@ function Register_administrateUsers()
     global $action, $pth, $e, $plugin_cf, $plugin_tx, $_Register_hasher;
 
     $ptx = $plugin_tx['register'];
-    $fn = $pth['folder']['base'] . $ptx['config_usersfile'];
+    $fn = Register_dataFolder() . 'users.csv';
     $o = '';
     $ERROR = '';
     if ($action != 'saveusers') {
@@ -222,11 +217,11 @@ function Register_administrateUsers()
 	}
     } else {
 	// == Edit Users ==============================================================
-	if (is_file($pth['folder']['base'] . $plugin_tx['register']['config_groupsfile']))
-	    $groups = registerReadGroups($pth['folder']['base'] . $plugin_tx['register']['config_groupsfile']);
+	if (is_file(Register_dataFolder() . 'groups.csv'))
+	    $groups = registerReadGroups(Register_dataFolder() . 'groups.csv');
 	else
 	    $ERROR .= '<li>' . $plugin_tx['register']['err_csv_missing'] .
-		    ' (' . $pth['folder']['base'] . $plugin_tx['register']['config_groupsfile'] . ')' .
+		    ' (' . Register_dataFolder() . 'groups.csv' . ')' .
 		    '</li>'."\n";
 
 	// put all available group Ids in an array for easier handling
@@ -300,18 +295,18 @@ function Register_administrateUsers()
 
 	// In case that nothing got deleted or added, store back (save got pressed)
 	if (!$deleted && !$added && $ERROR == "") {
-	    register_lock_users(dirname($pth['folder']['base'] . $plugin_tx['register']['config_usersfile']), LOCK_EX);
-	    if (!registerWriteUsers($pth['folder']['base'] . $plugin_tx['register']['config_usersfile'], $newusers))
+	    register_lock_users(Register_dataFolder(), LOCK_EX);
+	    if (!registerWriteUsers(Register_dataFolder() . 'users.csv', $newusers))
 		$ERROR .= '<li>' . $plugin_tx['register']['err_cannot_write_csv'] .
-			' (' . $pth['folder']['base'] . $plugin_tx['register']['config_usersfile'] . ')' .
+			' (' . Register_dataFolder() . 'users.csv' . ')' .
 			'</li>'."\n";
-	    register_lock_users(dirname($pth['folder']['base'] . $plugin_tx['register']['config_usersfile']), LOCK_UN);
+	    register_lock_users(Register_dataFolder(), LOCK_UN);
 
 	    if ($ERROR != '')
 		$e .= $ERROR;
 	    else
 		$o .= '<div class="register_status">'  . $plugin_tx['register']['csv_written'] .
-			' (' . $pth['folder']['base'] . $plugin_tx['register']['config_usersfile'] . ')' .
+			' (' . Register_dataFolder() . 'users.csv' . ')' .
 			'.</div>'."\n";
 	}
 	elseif ($ERROR != '')
@@ -344,15 +339,15 @@ if (function_exists('XH_wantsPluginAdministration') && XH_wantsPluginAdministrat
 		    $o .= Register_administrateUsers();
 		    break;
 		case 'editgroups':
-		    // read user file in CSV format separated by colons
-		    if (is_file($pth['folder']['base'] . $plugin_tx['register']['config_groupsfile'])) {
-			$groups = registerReadGroups($pth['folder']['base'] . $plugin_tx['register']['config_groupsfile']);
+		    // read group file in CSV format separated by colons
+		    if (is_file(Register_dataFolder() . 'groups.csv')) {
+			$groups = registerReadGroups(Register_dataFolder() . 'groups.csv');
 			$o .= registerAdminGroupsForm($groups);
 			$o .= '<div class="register_status">' . count($groups) . ' ' . $plugin_tx[$plugin]['entries_in_csv'] .
-				$pth['folder']['base'] . $plugin_tx['register']['config_groupsfile'] . '</div>'."\n";
+				Register_dataFolder() . 'groups.csv' . '</div>'."\n";
 		    } else {
 			$o .= '<div class="register_status">' . $plugin_tx[$plugin]['err_csv_missing'] .
-				' (' . $pth['folder']['base'] . $plugin_tx['register']['config_groupsfile'] . ')' .
+				' (' . Register_dataFolder() . 'groups.csv' . ')' .
 				'</div>'."\n";
 		    }
 		    break;
@@ -389,16 +384,16 @@ if (function_exists('XH_wantsPluginAdministration') && XH_wantsPluginAdministrat
 
 		    // In case that nothing got deleted or added, store back (save got pressed)
 		    if(!$deleted && !$added && $ERROR == "") {
-			if (!registerWriteGroups($pth['folder']['base'] . $plugin_tx['register']['config_groupsfile'], $newgroups))
+			if (!registerWriteGroups(Register_dataFolder() . 'groups.csv', $newgroups))
 			    $ERROR .= '<li>' . $plugin_tx[$plugin]['err_cannot_write_csv'] .
-				    ' (' . $pth['folder']['base'] . $plugin_tx['register']['config_groupsfile'] . ')' .
+				    ' (' . Register_dataFolder() . 'groups.csv' . ')' .
 				    '</li>'."\n";
 
 			if($ERROR != '')
 			    $e .= $ERROR;
 			else
 			    $o .= '<div class="register_status">'  . $plugin_tx[$plugin]['csv_written'] .
-				    ' (' . $pth['folder']['base'] . $plugin_tx['register']['config_groupsfile'] . ')' .
+				    ' (' . Register_dataFolder() . 'groups.csv' . ')' .
 				    '.</div>'."\n";
 		    } elseif ($ERROR != '')
 			$e .= $ERROR;
