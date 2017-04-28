@@ -335,7 +335,6 @@ function registerRemoveHiddenPages($userGroups) {
 	if (preg_match('/(?:#CMSimple |{{{PLUGIN:)access\((.*?)\);(?:#|}}})/isu', $c[$i], $matches)) {
             if ($arg = trim($matches[1], "\"'")) {
 		$groups = array_map('trim', explode(',', $arg));
-		unset($_SESSION['page']); // TODO: what's this?
 		if (count(array_intersect($groups, $userGroups)) == 0) {
 		    $c[$i]= "#CMSimple hide# {{{PLUGIN:access('$arg');}}}";
 		}
