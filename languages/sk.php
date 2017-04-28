@@ -73,7 +73,6 @@ $plugin_tx['register']['mnu_group_admin']="Správa skupín";
 $plugin_tx['register']['mnu_user_admin']="Správa užívateľov";
 $plugin_tx['register']['entries_in_csv']="Údaje v súbore CSV ";
 $plugin_tx['register']['csv_written']="Súbor CSV bol úspešne uložený.";
-$plugin_tx['register']['config_login_page']="";
 $plugin_tx['register']['syscheck_title']="Kontrola systému";
 $plugin_tx['register']['syscheck_phpversion']="PHP verzia ≥ %s";
 $plugin_tx['register']['syscheck_extension']="Rozšírenie '%s' načítané";

@@ -86,14 +86,12 @@ $plugin_tx['register']['mnu_group_admin']="Управление группами
 $plugin_tx['register']['mnu_user_admin']="Управление пользователями";
 $plugin_tx['register']['entries_in_csv']="Файл CSV ";
 $plugin_tx['register']['csv_written']="Файл CSV сохранен.";
-$plugin_tx['register']['config_login_page']="";
 $plugin_tx['register']['cf_allowed_register']="<b>true</b> Разрешить регистрацию новых пользователей.</b>";
 $plugin_tx['register']['cf_captcha_mode']="<b>none</b> Не использовать капчу.</b> <b>formula</b> Активировать капчу в виде математической формулы.</b> <b>image</b> Активировать капчу на основе изображения.</b>";
 $plugin_tx['register']['cf_group_activated']="Статус новых пользователей (группа после регистрации и активации учетной записи).";
 $plugin_tx['register']['cf_group_default']="Статус новых пользователей (группа по умолчанию для новых пользователей после регистрации, но до активации учетной записи).";
 $plugin_tx['register']['cf_login_layout']="<b>horizontal</b> Создать горизонтальную форму входа, если не указано, будет создана вертикальная форма входа.";
 $plugin_tx['register']['cf_senderemail']="Электронный адрес администратора.";
-$plugin_tx['register']['cf_config_login_page']="Имя страницы для перенаправления пользователя после регистрации.";
 $plugin_tx['register']['down_link']="ВНИЗ <span style=\"font-size: 24px;\">&dArr;</span>";
 
 ?>

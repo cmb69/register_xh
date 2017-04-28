@@ -34,6 +34,7 @@ $plugin_tx['register']['remember']="Benutzer&nbsp;merken";
 $plugin_tx['register']['login']="Login";
 $plugin_tx['register']['logout']="Logout";
 $plugin_tx['register']['loggedin']="Angemeldet";
+$plugin_tx['register']['loggedin_text']="Sie haben sich erfolgreich angemeldet.";
 $plugin_tx['register']['loggedin_welcometext']="Hallo";
 $plugin_tx['register']['loggedout']="Abgemeldet";
 $plugin_tx['register']['loggedout_text']="Sie haben sich erfolgreich abgemeldet.";
@@ -84,7 +85,6 @@ $plugin_tx['register']['mnu_group_admin']="Gruppenverwaltung";
 $plugin_tx['register']['mnu_user_admin']="Benutzerverwaltung";
 $plugin_tx['register']['entries_in_csv']="Einträge in CSV Datei ";
 $plugin_tx['register']['csv_written']="CSV Datei erfolgreich geschrieben";
-$plugin_tx['register']['config_login_page']="";
 $plugin_tx['register']['label_none']="--- KEINE ---";
 
 $plugin_tx['register']['js_confirmLeave']="Ungespeicherte Änderungen gehen verloren!";
@@ -111,6 +111,5 @@ $plugin_tx['register']['cf_login_layout']="<b>horizontal</b> erzeugt ein horizon
 $plugin_tx['register']['cf_remember_user']="Ob die \"Benutzer merken\" Checkbox unterhalb des Login Formulars angezeigt werden soll.";
 $plugin_tx['register']['cf_senderemail']="Die E-Mail-Adresse des Administrators";
 $plugin_tx['register']['cf_password_forgotten']="Ob der \"Kennwort vergessen\" Link im Login Formular angezeigt werden soll.";
-$plugin_tx['register']['cf_config_login_page']="Name der Seite, zu der der Anwender direkt nach dem Login weiter geleitet wird.";
 
 ?>

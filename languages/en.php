@@ -34,6 +34,7 @@ $plugin_tx['register']['remember']="Remember&nbsp;User";
 $plugin_tx['register']['login']="Login";
 $plugin_tx['register']['logout']="Logout";
 $plugin_tx['register']['loggedin']="Logged in";
+$plugin_tx['register']['loggedin_text']="You have successfully logged in.";
 $plugin_tx['register']['loggedin_welcometext']="Hello";
 $plugin_tx['register']['loggedout']="Logged out";
 $plugin_tx['register']['loggedout_text']="You have successfully logged out.";
@@ -84,7 +85,6 @@ $plugin_tx['register']['mnu_group_admin']="Group Administration";
 $plugin_tx['register']['mnu_user_admin']="User Administration";
 $plugin_tx['register']['entries_in_csv']="Entries in CSV file ";
 $plugin_tx['register']['csv_written']="CSV file successfully written";
-$plugin_tx['register']['config_login_page']="";
 $plugin_tx['register']['label_none']="--- NONE ---";
 
 $plugin_tx['register']['js_confirmLeave']="Unsaved changes will be lost!";
@@ -111,6 +111,5 @@ $plugin_tx['register']['cf_login_layout']="<b>horizontal</b> creates a horizonta
 $plugin_tx['register']['cf_remember_user']="Whether the remember user checkbox shall be shown below the login form.";
 $plugin_tx['register']['cf_senderemail']="The e-mail account of the administrator";
 $plugin_tx['register']['cf_password_forgotten']="Whether the password forgotten link shall be shown in the login form.";
-$plugin_tx['register']['cf_config_login_page']="Name of the page the user is redirected directly after login.";
 
 ?>

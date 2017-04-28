@@ -266,10 +266,8 @@ function registerLogin()
 		// go to login page if exists or to default page otherwise
 		if ($glp = Register_groupLoginPage($entry['accessgroups'][0])) {
 		    $loginPage = '?' . $glp;
-		} elseif ($plugin_tx[$plugin]['config_login_page'] != '') {
-		    $loginPage = '?'.html_entity_decode(preg_replace("/ /", "_", $plugin_tx[$plugin]['config_login_page']));
 		} else {
-		    $loginPage = '';
+		    $loginPage = '?'. html_entity_decode(preg_replace("/ /", "_", $plugin_tx[$plugin]['loggedin']));
 		}
 		header('Location: ' . CMSIMPLE_URL . $loginPage);
 		exit;

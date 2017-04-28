@@ -75,7 +75,6 @@ $plugin_tx['register']['mnu_group_admin']="Správa skupin";
 $plugin_tx['register']['mnu_user_admin']="Správa uživatelů";
 $plugin_tx['register']['entries_in_csv']="Údaje v souboru CSV ";
 $plugin_tx['register']['csv_written']="Soubor CSV bxl úspěšně uložen.";
-$plugin_tx['register']['config_login_page']="Pro_registrované";
 $plugin_tx['register']['syscheck_title']="Kontrola systému";
 $plugin_tx['register']['syscheck_phpversion']="PHP verze ≥ %s";
 $plugin_tx['register']['syscheck_extension']="Rozšíření '%s' načteno";
@@ -88,6 +87,5 @@ $plugin_tx['register']['cf_group_activated']="Status nových členů (skupina po
 $plugin_tx['register']['cf_group_default']="Stav nových členů (výchozí skupina uživatele po registraci, ale před aktivací účtu).";
 $plugin_tx['register']['cf_login_layout']="<b>horizontal</b> vytváří horizontální přihlašovací formulář, nevyplněno, nebo cokoli jiného vytvoří vertikální přihlašovací formulář.";
 $plugin_tx['register']['cf_senderemail']="E-mailový účet správce";
-$plugin_tx['register']['cf_config_login_page']="Název stránky kam je uživatel přesměrován přímo po přihlášení.";
 
 ?>
