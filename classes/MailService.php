@@ -35,7 +35,7 @@ class MailService
     {
         $headers[] = 'MIME-Version: 1.0';
         $headers[] = 'Content-type: text/plain; charset=UTF-8';
-        $sep = strtolower($this->config['fix_mail_headers']) == 'true' ? "\n" : "\r\n";
+        $sep = $this->config['fix_mail_headers'] ? "\n" : "\r\n";
         return mail($to, '=?UTF-8?B?'.base64_encode($subject).'?=', $message, implode($sep, $headers));
     }
 }

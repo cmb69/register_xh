@@ -26,13 +26,10 @@ $_Register_hasher = new Register\PasswordHash(10, false);
  ****************************************************************************/
 
 
-if($plugin_cf['register']['login_all_subsites'] == 'true')
-{
+if ($plugin_cf['register']['login_all_subsites']) {
 	define('REGISTER_SESSION_NAME', CMSIMPLE_ROOT);
-}
-else
-{
-	define('REGISTER_SESSION_NAME', CMSIMPLE_ROOT.$sl);
+} else {
+	define('REGISTER_SESSION_NAME', CMSIMPLE_ROOT . $sl);
 }
 
 if(session_id() == "")
@@ -74,7 +71,7 @@ if(!($edit&&$adm) && isset($su))
 
 	// Handling of registration page
 	if($pageName == html_entity_decode(preg_replace("/ /", "_", $plugin_tx[$plugin]['register']))
-	&& $plugin_cf[$plugin]['allowed_register'] == 'true')
+	&& $plugin_cf[$plugin]['allowed_register'])
 	{
 		if(!in_array($plugin_tx[$plugin]['register'], $h))
 		{
@@ -84,7 +81,7 @@ if(!($edit&&$adm) && isset($su))
 		}
 	// Handling of forgotten password page
 	}
-	elseif (strtolower($plugin_cf['register']['password_forgotten']) == 'true'
+	elseif ($plugin_cf['register']['password_forgotten']
 		&& $pageName == html_entity_decode(preg_replace("/ /", "_", $plugin_tx[$plugin]['forgot_password'])))
 	{
 		if(!in_array($plugin_tx[$plugin]['forgot_password'], $h))
@@ -162,7 +159,7 @@ function Register_isLoggedIn()
 
 // Handling of login/logout =====================================================
 
-if (preg_match('/true/i',$plugin_cf[$plugin]['remember_user']) && isset($_COOKIE['username'], $_COOKIE['password']) && !Register_isLoggedIn()) {
+if ($plugin_cf[$plugin]['remember_user'] && isset($_COOKIE['username'], $_COOKIE['password']) && !Register_isLoggedIn()) {
 	$function = "registerlogin";
 }
 if (!Register_isLoggedIn() && $function == "registerlogin") {
@@ -172,7 +169,7 @@ if (Register_isLoggedIn() && $function == "registerlogout") {
 	registerLogout();
 }
 
-if(!($edit&&$adm) && preg_match('/true/i',$plugin_cf[$plugin]['hide_pages']))
+if (!($edit&&$adm) && $plugin_cf[$plugin]['hide_pages'])
 {
 	if (Register_isLoggedIn()) {
 		registerRemoveHiddenPages($_SESSION['accessgroups']);
@@ -203,7 +200,7 @@ function registerLogin()
 	//if(preg_match('/true/i', $plugin_cf[$plugin]['encrypt_password'])) $password = crypt($password, $password);
 
 	// set username and password in case cookies are set
-	if (preg_match('/true/i', $plugin_cf['register']['remember_user'])
+	if ($plugin_cf['register']['remember_user']
 	    && isset($_COOKIE['username'], $_COOKIE['password']))
 	{
 		$username     = $_COOKIE['username'];
@@ -225,14 +222,14 @@ function registerLogin()
 	    && ($entry['status'] == 'activated' || $entry['status'] == 'locked')
 	    && (!isset($passwordHash) || $passwordHash == $entry['password'])
 	    && (isset($passwordHash)
-		|| (preg_match('/true/i', $plugin_cf['register']['encrypt_password'])
+		|| ($plugin_cf['register']['encrypt_password']
 		    ? $_Register_hasher->CheckPassword($password, $entry['password'])
 		    : $password == $entry['password']))) {
 
 // Login Success ------------------------------------------------------------
 
 		// set cookies if requested by user
-		if (preg_match('/true/i', $plugin_cf['register']['remember_user'])
+		if ($plugin_cf['register']['remember_user']
 		    && isset($_POST['remember']))
 		{
 			setcookie("username", $username,     time() + $rememberPeriod, "/");
@@ -873,7 +870,7 @@ function registerUser()
 
 		// generate another captcha code for the user activation email
 		$status = generateRandomCode((int)$plugin_cf[$plugin]['captcha_chars']);
-		if(preg_match('/true/i', $plugin_cf[$plugin]['encrypt_password']))
+		if ($plugin_cf[$plugin]['encrypt_password'])
 		$userArray = registerAddUser($userArray, $username, $_Register_hasher->HashPassword($password1),
 		array($plugin_cf[$plugin]['group_default']), $name, $email, $status);
 		else
@@ -1007,11 +1004,11 @@ function registerForgotPassword()
 			$content = $plugin_tx[$plugin]['emailtext1'] . "\n\n"
 			    . ' ' . $plugin_tx[$plugin]['name'] . ": " . $user['name'] . "\n"
 			    . ' ' . $plugin_tx[$plugin]['username'] . ": " . $user['username'] . "\n";
-			if (!preg_match('/true/i', $plugin_cf[$plugin]['encrypt_password'])) {
+			if (!$plugin_cf[$plugin]['encrypt_password']) {
 			    $content .= ' ' . $plugin_tx[$plugin]['password'] . ": " . $password . "\n";
 			}
 			$content .= ' ' . $plugin_tx[$plugin]['email'] . ": " . $user['email'] . "\n";
-			if (preg_match('/true/i', $plugin_cf[$plugin]['encrypt_password'])) {
+			if ($plugin_cf[$plugin]['encrypt_password']) {
 			    $content .= "\n" . $plugin_tx[$plugin]['emailtext3'] ."\n\n"
 				. CMSIMPLE_URL . '?' . $su . '&'
 				. 'action=registerResetPassword&username=' . urlencode($user['username']) . '&captcha='
@@ -1029,7 +1026,7 @@ function registerForgotPassword()
 			return $o;
 		}
 	} elseif (isset($_GET['action']) && $action == 'registerResetPassword'
-		  && preg_match('/true/i', $plugin_cf[$plugin]['encrypt_password']))
+		  && $plugin_cf[$plugin]['encrypt_password'])
 	{
 		// read user file in CSV format separated by colons
 		register_lock_users(dirname($pth['folder']['base'] . $plugin_tx['register']['config_usersfile']), LOCK_EX);
@@ -1149,10 +1146,10 @@ function registerUserPrefs()
 	if($username!="" && isset($_POST['submit']) && $action == "edit_user_prefs")
 	{
 		// check that old password got entered correctly
-		if(!preg_match('/true/i', $plugin_cf[$plugin]['encrypt_password']) &&
+		if (!$plugin_cf[$plugin]['encrypt_password'] &&
 		$oldpassword != $entry['password'])
 		$ERROR .= '<li>' . $plugin_tx[$plugin]['err_old_password_wrong'] . '</li>'."\n";
-		elseif(preg_match('/true/i', $plugin_cf[$plugin]['encrypt_password']) &&
+		elseif ($plugin_cf[$plugin]['encrypt_password'] &&
 		!$_Register_hasher->CheckPassword($oldpassword, $entry['password']))
 		$ERROR .= '<li>' . $plugin_tx[$plugin]['err_old_password_wrong'] . '</li>'."\n";
 
@@ -1173,7 +1170,7 @@ function registerUserPrefs()
 		// read user entry, update it and write it back to CSV file
 		if($ERROR=="")
 		{
-			if(preg_match('/true/i', $plugin_cf[$plugin]['encrypt_password']))
+			if ($plugin_cf[$plugin]['encrypt_password'])
 			$entry['password'] = $_Register_hasher->HashPassword($password1);
 			else
 			$entry['password'] = $password1;
@@ -1228,9 +1225,9 @@ function registerUserPrefs()
 
 		// Form Handling - Delete User ================================================
 		// check that old password got entered correctly
-		if(!preg_match('/true/i', $plugin_cf[$plugin]['encrypt_password']) && $oldpassword != $entry['password'])
+		if (!$plugin_cf[$plugin]['encrypt_password'] && $oldpassword != $entry['password'])
 		$ERROR .= '<li>' . $plugin_tx[$plugin]['err_old_password_wrong'] . '</li>'."\n";
-		elseif(preg_match('/true/i', $plugin_cf[$plugin]['encrypt_password'])
+		elseif ($plugin_cf[$plugin]['encrypt_password']
 		       && !$_Register_hasher->CheckPassword($oldpassword, $entry['password']))
 		$ERROR .= '<li>' . $plugin_tx[$plugin]['err_old_password_wrong'] . '</li>'."\n";
 
@@ -1305,22 +1302,22 @@ function registerloginform()
 	if (!Register_isLoggedIn()) {
 		// Begin register- and loginarea and user fields
 		$view = new Register\View('loginform');
-		$view->isHorizontal = $plugin_cf['register']['login_layout'] == 'horizontal';
+		$view->isHorizontal = $plugin_cf['register']['login_layout'] === 'horizontal';
 		$view->actionUrl = sv('REQUEST_URI');
 		$forgotPasswordUrl = html_entity_decode(preg_replace("/ /", "_", $plugin_tx['register']['forgot_password']));
-		$view->hasForgotPasswordLink = strtolower($plugin_cf['register']['password_forgotten']) == 'true'
+		$view->hasForgotPasswordLink = $plugin_cf['register']['password_forgotten']
 			&& isset($su) && urldecode($su) != $forgotPasswordUrl;
 		$view->forgotPasswordUrl = "$sn?$forgotPasswordUrl";
 		$view->forgotPasswordIcon = "$imageFolder/{$plugin_cf['register']['image_forgot_password']}";
 		$view->loginIcon = "$imageFolder/{$plugin_cf['register']['image_login']}";
-		$view->hasRememberMe = preg_match('/true/i', $plugin_cf['register']['remember_user']);
-		$view->isRegisterAllowed = preg_match('/true/i', $plugin_cf['register']['allowed_register']);
+		$view->hasRememberMe = $plugin_cf['register']['remember_user'];
+		$view->isRegisterAllowed = $plugin_cf['register']['allowed_register'];
 		$registerUrl = html_entity_decode(preg_replace("/ /", "_", $plugin_tx['register']['register']));
 		$view->registerUrl = "$sn?$registerUrl";
 	} else {
 		// Logout Link and Preferences Link
 		$view = new Register\View('loggedin-area');
-		$view->isHorizontal = $plugin_cf['register']['login_layout'] == 'horizontal';
+		$view->isHorizontal = $plugin_cf['register']['login_layout'] === 'horizontal';
 		$view->fullName = $_SESSION['fullname'];
 		$currentUser = Register_currentUser();
 		$userPrefUrl = html_entity_decode(preg_replace("/ /", "_", $plugin_tx['register']['user_prefs']));

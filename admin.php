@@ -57,7 +57,7 @@ function register_system_check() { // RELEASE-TODO
 	. '&nbsp;&nbsp;' . $ptx['syscheck_magic_quotes'] . tag('br');
     $o .= (strtoupper($tx['meta']['codepage']) == 'UTF-8' ? $ok : $warn)
 	. '&nbsp;&nbsp;' . $ptx['syscheck_encoding'] . tag('br');
-    $o .= (strtolower($pcf['encrypt_password']) == 'true' ? $ok : $warn)
+    $o .= ($pcf['encrypt_password'] ? $ok : $warn)
 	. '&nbsp;&nbsp;' . $ptx['syscheck_encryption'] . tag('br') . tag('br');
     foreach (array('config/', 'css/', 'languages/') as $folder) {
 	$folders[] = $pth['folder']['plugins'] . 'register/' . $folder;
@@ -253,7 +253,7 @@ function Register_administrateUsers()
 		$userGroups = explode(",", $groupString[$j]);
 		// Error Checking
 		$ENTRY_ERROR = '';
-		if(preg_match('/true/i',$plugin_cf['register']['encrypt_password']) && $password[$j] == $oldpassword[$j])
+		if ($plugin_cf['register']['encrypt_password'] && $password[$j] == $oldpassword[$j])
 		    $ENTRY_ERROR .= registerCheckEntry($name[$j], $username[$j], "dummy", "dummy", $email[$j]);
 		else
 		    $ENTRY_ERROR .= registerCheckEntry($name[$j], $username[$j], $password[$j], $password[$j], $email[$j]);
@@ -270,7 +270,7 @@ function Register_administrateUsers()
 		    $ERROR .= '<li>' . $plugin_tx['register']['error_in_user'] . '"' . $username[$j] . '"' .
 			    '<ul class="error">'.$ENTRY_ERROR.'</ul></li>'."\n";
 
-		if (empty($ENTRY_ERROR) && preg_match('/true/i', $plugin_cf['register']['encrypt_password']) && $password[$j] != $oldpassword[$j])
+		if (empty($ENTRY_ERROR) && $plugin_cf['register']['encrypt_password'] && $password[$j] != $oldpassword[$j])
 		    $password[$j] = $_Register_hasher->HashPassword($password[$j]);
 		$entry = array(
 			'username'     => $username[$j],
