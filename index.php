@@ -1308,8 +1308,8 @@ function registerloginform()
 		$view->hasForgotPasswordLink = $plugin_cf['register']['password_forgotten']
 			&& isset($su) && urldecode($su) != $forgotPasswordUrl;
 		$view->forgotPasswordUrl = "$sn?$forgotPasswordUrl";
-		$view->forgotPasswordIcon = "$imageFolder/{$plugin_cf['register']['image_forgot_password']}";
-		$view->loginIcon = "$imageFolder/{$plugin_cf['register']['image_login']}";
+		$view->forgotPasswordIcon = "$imageFolder/forgot_new.png";
+		$view->loginIcon = "$imageFolder/submit_new.png";
 		$view->hasRememberMe = $plugin_cf['register']['remember_user'];
 		$view->isRegisterAllowed = $plugin_cf['register']['allowed_register'];
 		$registerUrl = html_entity_decode(preg_replace("/ /", "_", $plugin_tx['register']['register']));
@@ -1324,9 +1324,9 @@ function registerloginform()
 		$view->hasUserPrefs = $currentUser['status'] == 'activated' && isset($su)
 		    && urldecode($su) != $userPrefUrl;
 		$view->userPrefUrl = "?$userPrefUrl";
-		$view->userPrefIcon = "$imageFolder/{$plugin_cf['register']['image_user_preferences']}";
+		$view->userPrefIcon = "$imageFolder/preferences_new.png";
 		$view->logoutUrl = "$sn?&function=registerlogout";
-		$view->logoutIcon = "$imageFolder/{$plugin_cf['register']['image_logout']}";
+		$view->logoutIcon = "$imageFolder/logout_new.png";
 	}
 	return (string) $view;
 }
