@@ -67,10 +67,8 @@ if(isset($_GET['action']))
 
 if(!($edit&&$adm) && isset($su))
 {
-	$pageName = urldecode($su);
-
 	// Handling of registration page
-	if($pageName == html_entity_decode(preg_replace("/ /", "_", $plugin_tx[$plugin]['register']))
+	if($su == uenc($plugin_tx[$plugin]['register'])
 	&& $plugin_cf[$plugin]['allowed_register'])
 	{
 		if(!in_array($plugin_tx[$plugin]['register'], $h))
@@ -82,7 +80,7 @@ if(!($edit&&$adm) && isset($su))
 	// Handling of forgotten password page
 	}
 	elseif ($plugin_cf['register']['password_forgotten']
-		&& $pageName == html_entity_decode(preg_replace("/ /", "_", $plugin_tx[$plugin]['forgot_password'])))
+		&& $su == uenc($plugin_tx[$plugin]['forgot_password']))
 	{
 		if(!in_array($plugin_tx[$plugin]['forgot_password'], $h))
 		{
@@ -91,7 +89,7 @@ if(!($edit&&$adm) && isset($su))
 		$o .= registerForgotPassword();
 		}
   // Handling of user preferences page
-	} elseif($pageName == html_entity_decode(preg_replace("/ /", "_", $plugin_tx[$plugin]['user_prefs'])))
+	} elseif($su == uenc($plugin_tx[$plugin]['user_prefs']))
 	{
 		if(!in_array($plugin_tx[$plugin]['user_prefs'], $h))
 		{
@@ -101,7 +99,7 @@ if(!($edit&&$adm) && isset($su))
 		}
 
 	// Handling of login error page
-	} elseif($pageName == html_entity_decode(preg_replace("/ /", "_", $plugin_tx[$plugin]['login_error'])))
+	} elseif($su == uenc($plugin_tx[$plugin]['login_error']))
 	{
 		header('HTTP/1.1 403 Forbidden');
 		if(!in_array($plugin_tx[$plugin]['login_error'], $h))
@@ -112,7 +110,7 @@ if(!($edit&&$adm) && isset($su))
 		}
 
 	// Handling of logout page
-	} elseif($pageName == html_entity_decode(preg_replace("/ /", "_", $plugin_tx[$plugin]['loggedout'])))
+	} elseif($su == uenc($plugin_tx[$plugin]['loggedout']))
 	{
 		if(!in_array($plugin_tx[$plugin]['loggedout'], $h))
 		{
@@ -123,7 +121,7 @@ if(!($edit&&$adm) && isset($su))
 
 	// Handling of login page
 	}
-	elseif($pageName == html_entity_decode(preg_replace("/ /", "_", $plugin_tx[$plugin]['loggedin'])))
+	elseif($su == uenc($plugin_tx[$plugin]['loggedin']))
 	{
 		if(!in_array($plugin_tx[$plugin]['loggedin'], $h))
 		{
@@ -131,7 +129,7 @@ if(!($edit&&$adm) && isset($su))
 			$o .= "\n\n".'<h4>' . $title . '</h4>'."\n";
 			$o .= $plugin_tx[$plugin]['loggedin_text'];
 		}
-	} elseif($pageName == html_entity_decode(preg_replace("/ /", "_", $plugin_tx[$plugin]['access_error'])))
+	} elseif($su == uenc($plugin_tx[$plugin]['access_error']))
 	{
 		header('HTTP/1.1 403 Forbidden');
 		if(!in_array($plugin_tx[$plugin]['access_error'], $h))
@@ -267,7 +265,7 @@ function registerLogin()
 		if ($glp = Register_groupLoginPage($entry['accessgroups'][0])) {
 		    $loginPage = '?' . $glp;
 		} else {
-		    $loginPage = '?'. html_entity_decode(preg_replace("/ /", "_", $plugin_tx[$plugin]['loggedin']));
+		    $loginPage = '?'. uenc($plugin_tx[$plugin]['loggedin']);
 		}
 		header('Location: ' . CMSIMPLE_URL . $loginPage);
 		exit;
@@ -285,8 +283,8 @@ function registerLogin()
 
 		XH_logMessage('error', 'register', 'login', "$username wrong password");
 
-		// go to login error page if exists or to default page otherwise
-		$errorTitle = html_entity_decode(preg_replace("/ /", "_", $plugin_tx[$plugin]['login_error']));
+		// go to login error page
+		$errorTitle = uenc($plugin_tx[$plugin]['login_error']);
 		header('Location: ' . CMSIMPLE_URL . '?' . $errorTitle);
 		exit;
 	}
@@ -320,8 +318,8 @@ function registerLogout()
 	}
 	XH_logMessage('info', 'register', 'logout', "$username logged out");
 
-    // go to logout page if exists or to default page otherwise
-	$logoutTitle = html_entity_decode(preg_replace("/ /", "_", $plugin_tx[$plugin]['loggedout']));
+    // go to logout page
+	$logoutTitle = uenc($plugin_tx[$plugin]['loggedout']);
 	header('Location: ' . CMSIMPLE_URL . '?' . $logoutTitle);
 	exit;
 }
@@ -361,7 +359,7 @@ function access($groupString)
 	$o = '';
 	if (!Register_isLoggedIn() || empty(array_intersect($groupNames, $_SESSION['accessgroups']))) {
 		// go to access error page
-		$pageTitle = html_entity_decode(preg_replace("/ /", "_", $plugin_tx[$plugin]['access_error']));
+		$pageTitle = uenc($plugin_tx[$plugin]['access_error']);
 		header('Location: '.CMSIMPLE_URL.'?'. $pageTitle);
 		exit;
 	}
@@ -1320,7 +1318,7 @@ function registerloginform()
 		$view = new Register\View('loginform');
 		$view->isHorizontal = $plugin_cf['register']['login_layout'] === 'horizontal';
 		$view->actionUrl = sv('REQUEST_URI');
-		$forgotPasswordUrl = html_entity_decode(preg_replace("/ /", "_", $plugin_tx['register']['forgot_password']));
+		$forgotPasswordUrl = uenc($plugin_tx['register']['forgot_password']);
 		$view->hasForgotPasswordLink = $plugin_cf['register']['password_forgotten']
 			&& isset($su) && urldecode($su) != $forgotPasswordUrl;
 		$view->forgotPasswordUrl = "$sn?$forgotPasswordUrl";
@@ -1328,7 +1326,7 @@ function registerloginform()
 		$view->loginIcon = "$imageFolder/submit_new.png";
 		$view->hasRememberMe = $plugin_cf['register']['remember_user'];
 		$view->isRegisterAllowed = $plugin_cf['register']['allowed_register'];
-		$registerUrl = html_entity_decode(preg_replace("/ /", "_", $plugin_tx['register']['register']));
+		$registerUrl = uenc($plugin_tx['register']['register']);
 		$view->registerUrl = "$sn?$registerUrl";
 	} else {
 		// Logout Link and Preferences Link
@@ -1336,7 +1334,7 @@ function registerloginform()
 		$view->isHorizontal = $plugin_cf['register']['login_layout'] === 'horizontal';
 		$view->fullName = $_SESSION['fullname'];
 		$currentUser = Register_currentUser();
-		$userPrefUrl = html_entity_decode(preg_replace("/ /", "_", $plugin_tx['register']['user_prefs']));
+		$userPrefUrl = uenc($plugin_tx['register']['user_prefs']);
 		$view->hasUserPrefs = $currentUser['status'] == 'activated' && isset($su)
 		    && urldecode($su) != $userPrefUrl;
 		$view->userPrefUrl = "?$userPrefUrl";
