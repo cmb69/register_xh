@@ -14,7 +14,7 @@ class ForgotPasswordController extends Controller
 {
     public function defaultAction()
     {
-        $email = htmlspecialchars(isset($_POST['email']) ? $_POST['email'] : '');
+        $email = XH_hsc(isset($_POST['email']) ? $_POST['email'] : '');
         echo '<p>' . $this->lang['reminderexplanation'] . '</p>' . "\n"
             . $this->forgotForm($email);
     }
@@ -26,7 +26,7 @@ class ForgotPasswordController extends Controller
         $ERROR = '';
         $o = '<p>' . $this->lang['reminderexplanation'] . '</p>'."\n";
 
-        $email = htmlspecialchars(isset($_POST['email']) ? $_POST['email'] : "");
+        $email = XH_hsc(isset($_POST['email']) ? $_POST['email'] : "");
 
         if ($email == '') {
             $ERROR .= '<li>' . $this->lang['err_email'] . '</li>'."\n";
@@ -86,7 +86,7 @@ class ForgotPasswordController extends Controller
         $ERROR = '';
         $o = '<p>' . $this->lang['reminderexplanation'] . '</p>'."\n";
 
-        $email = htmlspecialchars(isset($_POST['email']) ? $_POST['email'] : "");
+        $email = XH_hsc(isset($_POST['email']) ? $_POST['email'] : "");
 
         // read user file in CSV format separated by colons
         (new DbService(Register_dataFolder()))->lock(LOCK_EX);

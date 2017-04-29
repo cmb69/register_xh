@@ -23,11 +23,11 @@ class UserPrefsController extends Controller
 
         // Get form data if available
         $action    = isset($_POST['action']) ? $_POST['action'] : "";
-        $oldpassword  = htmlspecialchars(isset($_POST['oldpassword']) ? $_POST['oldpassword'] : "");
-        $name      = htmlspecialchars(isset($_POST['name']) ? $_POST['name'] : "");
-        $password1 = htmlspecialchars(isset($_POST['password1']) ? $_POST['password1'] : "");
-        $password2 = htmlspecialchars(isset($_POST['password2']) ? $_POST['password2'] : "");
-        $email     = htmlspecialchars(isset($_POST['email']) ? $_POST['email'] : "");
+        $oldpassword  = XH_hsc(isset($_POST['oldpassword']) ? $_POST['oldpassword'] : "");
+        $name      = XH_hsc(isset($_POST['name']) ? $_POST['name'] : "");
+        $password1 = XH_hsc(isset($_POST['password1']) ? $_POST['password1'] : "");
+        $password2 = XH_hsc(isset($_POST['password2']) ? $_POST['password2'] : "");
+        $email     = XH_hsc(isset($_POST['email']) ? $_POST['email'] : "");
         $REMOTE_ADDR = isset($_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR'] : "";
 
         // set user name from session

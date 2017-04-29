@@ -27,11 +27,11 @@ class RegistrationController extends Controller
 
         // Get form data if available
         $action    = isset($_POST['action']) ? $_POST['action'] : "";
-        $name      = htmlspecialchars(isset($_POST['name']) ? $_POST['name'] : "");
-        $username  = htmlspecialchars(isset($_POST['username']) ? $_POST['username'] : "");
-        $password1 = htmlspecialchars(isset($_POST['password1']) ? $_POST['password1'] : "");
-        $password2 = htmlspecialchars(isset($_POST['password2']) ? $_POST['password2'] : "");
-        $email     = htmlspecialchars(isset($_POST['email']) ? $_POST['email'] : "");
+        $name      = XH_hsc(isset($_POST['name']) ? $_POST['name'] : "");
+        $username  = XH_hsc(isset($_POST['username']) ? $_POST['username'] : "");
+        $password1 = XH_hsc(isset($_POST['password1']) ? $_POST['password1'] : "");
+        $password2 = XH_hsc(isset($_POST['password2']) ? $_POST['password2'] : "");
+        $email     = XH_hsc(isset($_POST['email']) ? $_POST['email'] : "");
         $captcha   = isset($_POST['captcha']) ? $_POST['captcha'] : "";
         $register_validate  = isset($_POST['register_validate']) ? $_POST['register_validate'] : "";
         $REMOTE_ADDR = isset($_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR'] : "";

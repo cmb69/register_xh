@@ -130,7 +130,7 @@ function getCaptchaHtml($action, $code, $imgW, $imgH, $key, $mode) {
     $captcha = tag('img src="' . sv('REQUEST_URI') . "&amp;" . 'action=' . $action . '&amp;captcha=' . $encCode . '&amp;ip=' . $_SERVER['REMOTE_ADDR'] . '" ' . 'alt="Verify Image" ' . 'width="' . $imgW . '" height="' . $imgH . '"');
     return $captcha;
   } elseif($mode == "formula") {
-    return htmlspecialchars($code, ENT_COMPAT, 'UTF-8');
+    return XH_hsc($code);
   } else
     return "";
 }
