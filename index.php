@@ -151,8 +151,8 @@ function Register_dataFolder()
 	if (!file_exists($folder)) {
 		mkdir($folder, 0777, true);
 		chmod($folder, 0777);
-		registerWriteUsers("{$folder}users.csv", []);
-		registerWriteGroups("{$folder}groups.csv", []);
+		(new Register\DbService($folder))->writeUsers([]);
+		(new Register\DbService($folder))->writeGroups([]);
 	}
 	return $folder;
 }
@@ -224,9 +224,9 @@ function registerLogin()
 //    $passwordHash = md5($secret.$password);
 
 	// read user file in CSV format separated by colons
-	register_lock_users(Register_dataFolder(), LOCK_SH);
-	$userArray = registerReadUsers(Register_dataFolder() . 'users.csv');
-	register_lock_users(Register_dataFolder(), LOCK_UN);
+	(new Register\DbService(Register_dataFolder()))->lock(LOCK_SH);
+	$userArray = (new Register\DbService(Register_dataFolder()))->readUsers();
+	(new Register\DbService(Register_dataFolder()))->lock(LOCK_UN);
 
 	// search user in CSV data
 	$entry = registerSearchUserArray($userArray, 'username', $username);
@@ -362,224 +362,17 @@ function access($groupString)
 }
 
 
-function register_lock_users($dirname, $mode)
-{
-    static $fps = array();
-
-    $fn = $dirname . '/.lock';
-    touch($fn);
-    if ($mode != LOCK_UN) {
-	$fps[$dirname] = fopen($fn, 'r');
-	flock($fps[$dirname], $mode);
-    } else {
-	flock($fps[$dirname], $mode);
-	fclose($fps[$dirname]);
-	unset($fps[$dirname]);
-    }
-}
-
-/*
- *  Read a group csv file into an array.
- */
-function registerReadGroups($filename)
-{
-	global $plugin_cf;
-
-	$groupArray = array();
-	if(is_file($filename))
-	{
-		$fp = fopen($filename, "r");
-		while (!feof($fp))
-		{
-			$line = rtrim(fgets($fp, 4096));
-			if(!empty($line) && strpos($line, '//') !== 0)
-			{
-				$parts = explode('|', $line, 2);
-				$groupname = $parts[0];
-				$loginpage = isset($parts[1]) ? $parts[1] : '';
-				// line must not start with '//' and all fields must be set
-				if (strpos($groupname, "//") === false && $groupname != "")
-				{
-					$entry = array('groupname' => $groupname,
-						       'loginpage' => $loginpage);
-					$groupArray[] = $entry;
-				}
-			}
-		}
-	}
-	fclose($fp);
-	return $groupArray;
-}
-
-/*
- *  Write an array into a group csv file.
- */
-function registerWriteGroups($filename, $array)
-{
-	global $plugin_cf;
-
-	// remove old backup
-	if(is_file($filename . ".bak"))
-    unlink($filename . ".bak");
-	// create new backup
-	$permissions = false;
-	$owner = false;
-	$group = false;
-	if(is_file($filename))
-	{
-		$owner = fileowner($filename);
-		$group = filegroup($filename);
-		$permissions = fileperms($filename);
-		rename($filename, $filename . ".bak");
-	}
-
-	$fp = fopen($filename, "w");
-	if($fp === false)
-    return false;
-
-	// write comment line to file
-	$line = '// Register Plugin Group Definitions'."\n" . '// Line Format:'."\n" . '// groupname|loginpage'."\n";
-	if(!fwrite($fp, $line))
-	{
-		fclose($fp);
-		return false;
-	}
-
-	foreach($array as $entry)
-	{
-		$groupname = $entry['groupname'];
-		$line = "$groupname|$entry[loginpage]\n";
-		if(!fwrite($fp, $line))
-		{
-			fclose($fp);
-			return false;
-		}
-	}
-	fclose($fp);
-
-	// change owner, group and permissions of new file to same as backup file
-	if($owner !== false) $chown = chown($filename, $owner);
-	if($group !== false) $chgrp = chgrp($filename, $group);
-	if($permissions !== false) $chmod = chmod($filename, $permissions);
-	return true;
-}
-
-
 function Register_groupLoginPage($group)
 {
     global $pth, $plugin_tx;
 
-    $groups = registerReadGroups(Register_dataFolder() . 'groups.csv');
+    $groups = (new Register\DbService(Register_dataFolder()))->readGroups();
     foreach ($groups as $rec) {
 	if ($rec['groupname'] == $group) {
 	    return $rec['loginpage'];
 	}
     }
     return false;
-}
-
-/*
- *  Read a csv file into an array.
- */
-function registerReadUsers($filename)
-{
-	global $plugin_cf;
-
-	$userArray = array();
-
-	if(is_file($filename))
-	{
-		$fp = fopen($filename, "r");
-		while (!feof($fp))
-		{
-			$line = fgets($fp, 4096);
-			if($line != "" && strpos($line, '//')=== false)
-			{
-				list($username,$password,$accessgroups,$name,$email,$status) = explode(':', rtrim($line));
-				// line must not start with '//' and all fields must be set
-				if(
-				$username != "" &&
-				$password != "" &&
-				$accessgroups != "" &&
-				$name != "" &&
-				$email != ""/* &&
-				$status != ""*/)
-				{
-					$entry = array(
-					'username' => $username,
-					'password' => $password,
-					'accessgroups' => explode(',', $accessgroups),
-					'name' => $name,
-					'email' => $email,
-					'status' => $status);
-					$userArray[] = $entry;
-				}
-			}
-		}
-	}
-	fclose($fp);
-	return $userArray;
-}
-
-/*
- *  Write an array into a csv file.
- */
-function registerWriteUsers($filename, $array)
-{
-	global $plugin_cf;
-
-	// remove old backup
-	if(is_file($filename . ".bak")) unlink($filename . ".bak");
-
-	// create new backup
-	$permissions = false;
-	$owner = false;
-	$group = false;
-	if(is_file($filename))
-	{
-		$owner = fileowner($filename);
-		$group = filegroup($filename);
-		$permissions = fileperms($filename);
-		rename($filename, $filename . ".bak");
-	}
-
-	$fp = fopen($filename, "w");
-	if($fp === false)
-    return false;
-
-	// write comment line to file
-	$line =
-	'// Register Plugin user Definitions'."\n" .
-	'// Line Format:'."\n" .
-	'// login:password:accessgroup1,accessgroup2,...:fullname:email:status'."\n";
-	if(!fwrite($fp, $line))
-	{
-		fclose($fp);
-		return false;
-	}
-
-	foreach($array as $entry)
-	{
-		$username = $entry['username'];
-		$password = $entry['password'];
-		$accessgroups = implode(',', $entry['accessgroups']);
-		$fullname = $entry['name'];
-		$email = $entry['email'];
-		$status = $entry['status'];
-		$line = "$username:$password:$accessgroups:$fullname:$email:$status"."\n";
-		if(!fwrite($fp, $line))
-		{
-		fclose($fp);
-		return false;
-		}
-	}
-	fclose($fp);
-
-	// change owner, group and permissions of new file to same as backup file
-	if($owner !== false) $chown = chown($filename, $owner);
-	if($group !== false) $chgrp = chgrp($filename, $group);
-	if($permissions !== false) $chmod = chmod($filename, $permissions);
-	return true;
 }
 
 /*
@@ -673,10 +466,10 @@ function Register_currentUser()
 
     $ptx = $plugin_tx['register'];
     if (Register_isLoggedIn()) {
-	register_lock_users(Register_dataFolder(), LOCK_SH);
-	$users = registerReadUsers(Register_dataFolder() . 'users.csv');
+	(new Register\DbService(Register_dataFolder()))->lock(LOCK_SH);
+	$users = (new Register\DbService(Register_dataFolder()))->readUsers();
 	$rec = registerSearchUserArray($users, 'username', $_SESSION['username']);
-	register_lock_users(Register_dataFolder(), LOCK_UN);
+	(new Register\DbService(Register_dataFolder()))->lock(LOCK_UN);
 	return $rec;
     } else {
 	return null;

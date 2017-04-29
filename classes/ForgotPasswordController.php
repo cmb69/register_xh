@@ -40,9 +40,9 @@ class ForgotPasswordController extends Controller
             }
 
             // read user file in CSV format separated by colons
-            register_lock_users(Register_dataFolder(), LOCK_SH);
-            $userArray = registerReadUsers(Register_dataFolder() . 'users.csv');
-            register_lock_users(Register_dataFolder(), LOCK_UN);
+            (new DbService(Register_dataFolder()))->lock(LOCK_SH);
+            $userArray = (new DbService(Register_dataFolder()))->readUsers();
+            (new DbService(Register_dataFolder()))->lock(LOCK_UN);
 
             // search user for email
             $user = registerSearchUserArray($userArray, 'email', $email);
@@ -85,8 +85,8 @@ class ForgotPasswordController extends Controller
               && $this->config['encrypt_password'])
         {
             // read user file in CSV format separated by colons
-            register_lock_users(Register_dataFolder(), LOCK_EX);
-            $userArray = registerReadUsers(Register_dataFolder() . 'users.csv');
+            (new DbService(Register_dataFolder()))->lock(LOCK_EX);
+            $userArray = (new DbService(Register_dataFolder()))->readUsers();
 
             // search user for email
             $user = registerSearchUserArray($userArray, 'username', $_GET['username']);
@@ -104,13 +104,13 @@ class ForgotPasswordController extends Controller
                 $password = generateRandomCode(8);
                 $user['password'] = $this->hasher->hashPassword($password);
                 $userArray = registerReplaceUserEntry($userArray, $user);
-                if (!registerWriteUsers(Register_dataFolder() . 'users.csv', $userArray)) {
+                if (!(new DbService(Register_dataFolder()))->writeUsers($userArray)) {
                     $ERROR .= '<li>' . $this->lang['err_cannot_write_csv']
                         . ' (' . Register_dataFolder() . 'users.csv' . ')'
                         . '</li>'."\n";
                 }
             }
-            register_lock_users(Register_dataFolder(), LOCK_UN);
+            (new DbService(Register_dataFolder()))->lock(LOCK_UN);
 
             if ($ERROR != '') {
                 $o .= '<span class="regi_error">' . $this->lang['error'] . '</span>'."\n"

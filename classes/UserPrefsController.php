@@ -34,8 +34,8 @@ class UserPrefsController extends Controller
         $username = isset($_SESSION['username']) ? $_SESSION['username'] : "";
 
         // read user file in CSV format separated by colons
-        register_lock_users(Register_dataFolder(), LOCK_EX);
-        $userArray = registerReadUsers(Register_dataFolder() . 'users.csv');
+        (new DbService(Register_dataFolder()))->lock(LOCK_EX);
+        $userArray = (new DbService(Register_dataFolder()))->readUsers();
 
         // search user in CSV data
         $entry = registerSearchUserArray($userArray, 'username', $username);
@@ -89,13 +89,13 @@ class UserPrefsController extends Controller
                 $userArray = registerReplaceUserEntry($userArray, $entry);
     
                 // write CSV file if no errors occurred so far
-                if (!registerWriteUsers(Register_dataFolder() . 'users.csv', $userArray)) {
+                if (!(new DbService(Register_dataFolder()))->writeUsers($userArray)) {
                     $ERROR .= '<li>' . $this->lang['err_cannot_write_csv'] .
                         ' (' . Register_dataFolder() . 'users.csv' . ')' .
                         '</li>'."\n";
                 }
             }
-            register_lock_users(Register_dataFolder(), LOCK_UN);
+            (new DbService(Register_dataFolder()))->lock(LOCK_UN);
 
             if($ERROR != '') {
                 $o .= '<span class="regi_error">' . $this->lang['error'] . '</span>'."\n" .
@@ -140,14 +140,14 @@ class UserPrefsController extends Controller
             // read user entry, update it and write it back to CSV file
             if ($ERROR == '') {
                 $userArray = registerDeleteUserEntry($userArray, $username);
-                if (!registerWriteUsers(Register_dataFolder() . 'users.csv', $userArray)) {
+                if (!(new DbService(Register_dataFolder()))->writeUsers($userArray)) {
                     $ERROR .= '<li>' . $this->lang['err_cannot_write_csv'] .
                         ' (' . Register_dataFolder() . 'users.csv' . ')' .
                         '</li>'."\n";
                 }
             }
             // write CSV file if no errors occurred so far
-            register_lock_users(Register_dataFolder(), LOCK_UN);
+            (new DbService(Register_dataFolder()))->lock(LOCK_UN);
 
             if ($ERROR != '') {
                 $o .= '<span class="regi_error">' . $this->lang['error'] . '</span>'."\n" .

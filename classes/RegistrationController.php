@@ -60,8 +60,8 @@ class RegistrationController extends Controller
             $ERROR .= registerCheckColons($name, $username, $password1, $email);
 
             // read user file in CSV format separated by colons
-            register_lock_users(Register_dataFolder(), LOCK_EX);
-            $userArray = registerReadUsers(Register_dataFolder() . 'users.csv');
+            (new DbService(Register_dataFolder()))->lock(LOCK_EX);
+            $userArray = (new DbService(Register_dataFolder()))->readUsers();
 
             // check if user or other user for same email address exists
             if (registerSearchUserArray($userArray, 'username', $username) !== false) {
@@ -86,13 +86,13 @@ class RegistrationController extends Controller
             }
 
             // write CSV file if no errors occurred so far
-            if ($ERROR=="" && !registerWriteUsers(Register_dataFolder() . 'users.csv', $userArray)) {
+            if ($ERROR=="" && !(new DbService(Register_dataFolder()))->writeUsers($userArray)) {
                 $ERROR .= '<li>'
                     . $this->lang['err_cannot_write_csv']
                     . ' (' . Register_dataFolder() . 'users.csv' . ')'
                     . '</li>'."\n";
             }
-            register_lock_users(Register_dataFolder(), LOCK_UN);
+            (new DbService(Register_dataFolder()))->lock(LOCK_UN);
 
             if ($ERROR != '') {
                 $o .= '<span class="regi_error">' . $this->lang['error'] . '</span>'."\n"
@@ -151,8 +151,8 @@ class RegistrationController extends Controller
         $o ='';
 
         // read user file in CSV format separated by colons
-        register_lock_users(Register_dataFolder(), LOCK_EX);
-        $userArray = registerReadUsers(Register_dataFolder() . 'users.csv');
+        (new DbService(Register_dataFolder()))->lock(LOCK_EX);
+        $userArray = (new DbService(Register_dataFolder()))->readUsers();
     
         // check if user or other user for same email address exists
         $entry = registerSearchUserArray($userArray, 'username', $user);
@@ -175,10 +175,10 @@ class RegistrationController extends Controller
             $entry['status'] = "activated";
             $entry['accessgroups'] = array($this->config['group_activated']);
             $userArray = registerReplaceUserEntry($userArray, $entry);
-            registerWriteUsers(Register_dataFolder() . 'users.csv', $userArray);
+            (new DbService(Register_dataFolder()))->writeUsers($userArray);
             $o .= '<b>' . $this->lang['activated'] . '</b>'."\n";
         }
-        register_lock_users(Register_dataFolder(), LOCK_UN);
+        (new DbService(Register_dataFolder()))->lock(LOCK_UN);
         return $o;
     }
 

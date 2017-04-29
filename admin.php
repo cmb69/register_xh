@@ -111,7 +111,7 @@ function Register_groupSelectbox()
     global $pth, $plugin_tx;
 
     $ptx = $plugin_tx['register'];
-    $groups = registerReadGroups(Register_dataFolder() . 'groups.csv');
+    $groups = (new Register\DbService(Register_dataFolder()))->readGroups();
     usort($groups, create_function('$a, $b', 'return strcasecmp($a["groupname"], $b["groupname"]);'));
     $o = '<select id="register_group_selectbox" title="' . $ptx['filter_group'] . '">'
         . '<option value="">' . $ptx['all'] . '</option>';
@@ -204,9 +204,9 @@ function Register_administrateUsers()
     $ERROR = '';
     if ($action != 'saveusers') {
 	if (is_file($fn))  {
-	    register_lock_users(dirname($fn), LOCK_SH);
-	    $users  = registerReadUsers($fn);
-	    register_lock_users(dirname($fn), LOCK_UN);
+	    (new Register\DbService(Register_dataFolder()))->lock(LOCK_SH);
+	    $users  = (new Register\DbService(Register_dataFolder()))->readUsers();
+	    (new Register\DbService(Register_dataFolder()))->lock(LOCK_UN);
 	    $o .= registerAdminUsersForm($users);
 	    $o .= '<div class="register_status">' . count($users) . ' ' . $ptx['entries_in_csv'] .
 		$fn . '</div>';
@@ -217,7 +217,7 @@ function Register_administrateUsers()
     } else {
 	// == Edit Users ==============================================================
 	if (is_file(Register_dataFolder() . 'groups.csv'))
-	    $groups = registerReadGroups(Register_dataFolder() . 'groups.csv');
+	    $groups = (new Register\DbService(Register_dataFolder()))->readGroups();
 	else
 	    $ERROR .= '<li>' . $plugin_tx['register']['err_csv_missing'] .
 		    ' (' . Register_dataFolder() . 'groups.csv' . ')' .
@@ -294,12 +294,12 @@ function Register_administrateUsers()
 
 	// In case that nothing got deleted or added, store back (save got pressed)
 	if (!$deleted && !$added && $ERROR == "") {
-	    register_lock_users(Register_dataFolder(), LOCK_EX);
-	    if (!registerWriteUsers(Register_dataFolder() . 'users.csv', $newusers))
+	    (new Register\DbService(Register_dataFolder()))->lock(LOCK_EX);
+	    if (!(new Register\DbService(Register_dataFolder()))->writeUsers($newusers))
 		$ERROR .= '<li>' . $plugin_tx['register']['err_cannot_write_csv'] .
 			' (' . Register_dataFolder() . 'users.csv' . ')' .
 			'</li>'."\n";
-	    register_lock_users(Register_dataFolder(), LOCK_UN);
+	    (new Register\DbService(Register_dataFolder()))->lock(LOCK_UN);
 
 	    if ($ERROR != '')
 		$e .= $ERROR;
@@ -340,7 +340,7 @@ if (function_exists('XH_wantsPluginAdministration') && XH_wantsPluginAdministrat
 		case 'editgroups':
 		    // read group file in CSV format separated by colons
 		    if (is_file(Register_dataFolder() . 'groups.csv')) {
-			$groups = registerReadGroups(Register_dataFolder() . 'groups.csv');
+			$groups = (new Register\DbService(Register_dataFolder()))->readGroups();
 			$o .= registerAdminGroupsForm($groups);
 			$o .= '<div class="register_status">' . count($groups) . ' ' . $plugin_tx['register']['entries_in_csv'] .
 				Register_dataFolder() . 'groups.csv' . '</div>'."\n";
@@ -383,7 +383,7 @@ if (function_exists('XH_wantsPluginAdministration') && XH_wantsPluginAdministrat
 
 		    // In case that nothing got deleted or added, store back (save got pressed)
 		    if(!$deleted && !$added && $ERROR == "") {
-			if (!registerWriteGroups(Register_dataFolder() . 'groups.csv', $newgroups))
+			if (!(new Register\DbService(Register_dataFolder()))->writeGroups($newgroups))
 			    $ERROR .= '<li>' . $plugin_tx['register']['err_cannot_write_csv'] .
 				    ' (' . Register_dataFolder() . 'groups.csv' . ')' .
 				    '</li>'."\n";
