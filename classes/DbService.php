@@ -116,13 +116,13 @@ class DbService
 
         // change owner, group and permissions of new file to same as backup file
         if ($owner !== false) {
-            $chown = chown($filename, $owner);
+            chown($filename, $owner);
         }
         if ($group !== false) {
-            $chgrp = chgrp($filename, $group);
+            chgrp($filename, $group);
         }
         if ($permissions !== false) {
-            $chmod = chmod($filename, $permissions);
+            chmod($filename, $permissions);
         }
         return true;
     }
@@ -214,13 +214,13 @@ class DbService
 
         // change owner, group and permissions of new file to same as backup file
         if ($owner !== false) {
-            $chown = chown($filename, $owner);
+            chown($filename, $owner);
         }
         if ($group !== false) {
-            $chgrp = chgrp($filename, $group);
+            chgrp($filename, $group);
         }
         if ($permissions !== false) {
-            $chmod = chmod($filename, $permissions);
+            chmod($filename, $permissions);
         }
         return true;
     }
