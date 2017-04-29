@@ -352,7 +352,7 @@ function access($groupString)
 	$groupNames = explode(",", $groupString);
 
 	$o = '';
-	if (!Register_isLoggedIn() || empty(array_intersect($groupNames, $_SESSION['accessgroups']))) {
+	if (!Register_isLoggedIn() || !count(array_intersect($groupNames, $_SESSION['accessgroups']))) {
 		// go to access error page
 		$pageTitle = uenc($plugin_tx['register']['access_error']);
 		header('Location: '.CMSIMPLE_URL.'?'. $pageTitle);
