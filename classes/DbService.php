@@ -93,12 +93,8 @@ class DbService
         }
         // create new backup
         $permissions = false;
-        $owner = false;
-        $group = false;
         if (is_file($filename)) {
-            $owner = fileowner($filename);
-            $group = filegroup($filename);
-            $permissions = fileperms($filename);
+            $permissions = fileperms($filename) & 0777;
             rename($filename, $filename . ".bak");
         }
 
@@ -124,13 +120,7 @@ class DbService
         }
         fclose($fp);
 
-        // change owner, group and permissions of new file to same as backup file
-        if ($owner !== false) {
-            chown($filename, $owner);
-        }
-        if ($group !== false) {
-            chgrp($filename, $group);
-        }
+        // change permissions of new file to same as backup file
         if ($permissions !== false) {
             chmod($filename, $permissions);
         }
@@ -194,12 +184,8 @@ class DbService
 
         // create new backup
         $permissions = false;
-        $owner = false;
-        $group = false;
         if (is_file($filename)) {
-            $owner = fileowner($filename);
-            $group = filegroup($filename);
-            $permissions = fileperms($filename);
+            $permissions = fileperms($filename) & 0777;
             rename($filename, $filename . ".bak");
         }
 
@@ -232,13 +218,7 @@ class DbService
         }
         fclose($fp);
 
-        // change owner, group and permissions of new file to same as backup file
-        if ($owner !== false) {
-            chown($filename, $owner);
-        }
-        if ($group !== false) {
-            chgrp($filename, $group);
-        }
+        // change permissions of new file to same as backup file
         if ($permissions !== false) {
             chmod($filename, $permissions);
         }
