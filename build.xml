@@ -7,6 +7,10 @@
         <include name="classes/*.php"/>
     </fileset>
 
+    <fileset id="unit-tests" dir="tests/unit">
+        <include name="*Test.php"/>
+    </fileset>
+
     <target name="help" description="lists available targets">
         <exec command="phing -l" outputProperty="help"/>
         <echo>${help}</echo>
@@ -34,6 +38,19 @@
         <exec command="phpcompatinfo analyser:run --alias current" logoutput="true"/>
     </target>
 
+    <target name="unit-tests" description="runs all unit tests">
+        <phpunit bootstrap="tests/unit/bootstrap.php" haltonerror="true" haltonfailure="true">
+            <formatter type="plain" usefile="false"/>
+            <batchtest>
+                <fileset refid="unit-tests"/>
+            </batchtest>
+        </phpunit>
+    </target>
+
+    <target name="coverage" description="generates coverage report">
+        <exec command="phpunit --configuration coverage.xml" logoutput="true"/>
+    </target>
+
     <target name="build" description="builds distributable ZIP archive">
         <fail unless="version" message="version is not defined!"/>
         <exec command="git archive -o export.tar HEAD" checkreturn="true"/>
@@ -59,9 +76,11 @@
             <fileset dir="export">
                 <exclude name="build.xml"/>
                 <exclude name="composer.*"/>
+                <exclude name="coverage.xml"/>
                 <exclude name="pax_global_header"/>
                 <exclude name="phpcompatinfo.*"/>
                 <exclude name="README.md"/>
+                <exclude name="tests/**"/>
             </fileset>
         </move>
         <delete dir="export"/>
