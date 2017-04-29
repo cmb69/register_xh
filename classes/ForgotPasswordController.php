@@ -15,23 +15,23 @@ class ForgotPasswordController extends Controller
     public function defaultAction()
     {
         $email = XH_hsc(isset($_POST['email']) ? $_POST['email'] : '');
-        echo '<p>' . $this->lang['reminderexplanation'] . '</p>' . "\n"
-            . $this->forgotForm($email);
+        echo '<p>', $this->lang['reminderexplanation'], '</p>', "\n";
+        $this->prepareForgotForm($email)->render();
     }
 
     public function passwordForgottenAction()
     {
         global $su;
 
-        $ERROR = '';
-        $o = '<p>' . $this->lang['reminderexplanation'] . '</p>'."\n";
+        $errors = [];
+        echo '<p>', $this->lang['reminderexplanation'], '</p>', "\n";
 
         $email = XH_hsc(isset($_POST['email']) ? $_POST['email'] : "");
 
         if ($email == '') {
-            $ERROR .= '<li>' . $this->lang['err_email'] . '</li>'."\n";
+            $errors[] = $this->lang['err_email'];
         } elseif (!preg_match("/^[^\s()<>@,;:\"\/\[\]?=]+@\w[\w-]*(\.\w[\w-]*)*\.[a-z]{2,}$/i", $email)) {
-            $ERROR .= '<li>' . $this->lang['err_email_invalid'] . '</li>'."\n";
+            $errors[] = $this->lang['err_email_invalid'];
         }
 
         // read user file in CSV format separated by colons
@@ -40,19 +40,17 @@ class ForgotPasswordController extends Controller
         (new DbService(Register_dataFolder()))->lock(LOCK_UN);
 
         // search user for email
-        $user = registerSearchUserArray($userArray, 'email', $email);
-        if (!$user) {
-            $ERROR .= '<li>' . $this->lang['err_email_does_not_exist'] . '</li>'."\n";
+        if (!$user = registerSearchUserArray($userArray, 'email', $email)) {
+            $errors[] = $this->lang['err_email_does_not_exist'];
         }
 
         $password = $user['password'];
 
-        if ($ERROR != '') {
-            $o .= '<span class="regi_error">' . $this->lang['error'] . '</span>'."\n"
-                . '<ul class="regi_error">'."\n".$ERROR.'</ul>'."\n";
-            // Form Creation
-            $o .= $this->forgotForm($email);
-            echo $o;
+        if (!empty($errors)) {
+            $view = new View('error');
+            $view->errors = $errors;
+            $view->render();
+            $this->prepareForgotForm($email)->render();
         } else {
             // prepare email content for user data email
             $content = $this->lang['emailtext1'] . "\n\n"
@@ -76,15 +74,14 @@ class ForgotPasswordController extends Controller
                 $content,
                 array('From: ' . $this->config['senderemail'])
             );
-            $o .= '<b>' . $this->lang['remindersent'] . '</b>';
-            echo $o;
+            echo '<b>', $this->lang['remindersent'], '</b>';
         }
     }
 
     public function resetPasswordAction()
     {
-        $ERROR = '';
-        $o = '<p>' . $this->lang['reminderexplanation'] . '</p>'."\n";
+        $errors = [];
+        echo '<p>', $this->lang['reminderexplanation'], '</p>', "\n";
 
         $email = XH_hsc(isset($_POST['email']) ? $_POST['email'] : "");
 
@@ -95,32 +92,31 @@ class ForgotPasswordController extends Controller
         // search user for email
         $user = registerSearchUserArray($userArray, 'username', $_GET['username']);
         if (!$user) {
-            $ERROR .= '<li>' . $this->lang['err_username_does_not_exist'] . '</li>'."\n";
+            $errors[] = $this->lang['err_username_does_not_exist'];
         }
 
         if ($user['password'] != stsl($_GET['captcha'])) {
-            $ERROR .= '<li>' . $this->lang['err_status_invalid'] . '</li>';
+            $errors[] = $this->lang['err_status_invalid'];
         }
 
         // in case of encrypted password a new random password will be generated
         // and its value be written back to the CSV file
-        if ($ERROR == '') {
+        if (empty($errors)) {
             $password = generateRandomCode(8);
             $user['password'] = $this->hasher->hashPassword($password);
             $userArray = registerReplaceUserEntry($userArray, $user);
             if (!(new DbService(Register_dataFolder()))->writeUsers($userArray)) {
-                $ERROR .= '<li>' . $this->lang['err_cannot_write_csv']
-                    . ' (' . Register_dataFolder() . 'users.csv' . ')'
-                    . '</li>'."\n";
+                $errors[] = $this->lang['err_cannot_write_csv']
+                    . ' (' . Register_dataFolder() . 'users.csv' . ')';
             }
         }
         (new DbService(Register_dataFolder()))->lock(LOCK_UN);
 
-        if ($ERROR != '') {
-            $o .= '<span class="regi_error">' . $this->lang['error'] . '</span>'."\n"
-                . '<ul class="regi_error">'."\n".$ERROR.'</ul>'."\n";
-            $o .= $this->forgotForm($email);
-            echo $o;
+        if (!empty($errors)) {
+            $view = new View('errror');
+            $view->errors = $errors;
+            $view->render();
+            $this->prepareForgotForm($email)->render();
         } else {
             // prepare email content for user data email
             $content = $this->lang['emailtext1'] . "\n\n"
@@ -136,16 +132,19 @@ class ForgotPasswordController extends Controller
                 $content,
                 array('From: ' . $this->config['senderemail'])
             );
-            $o .= '<b>' . $this->lang['remindersent'] . '</b>';
-            echo $o;
+            echo '<b>', $this->lang['remindersent'], '</b>';
         }
     }
 
-    private function forgotForm($email)
+    /**
+     * @param string $email
+     * @return View
+     */
+    private function prepareForgotForm($email)
     {
         $view = new View('forgotten-form');
         $view->actionUrl = sv('REQUEST_URI');
         $view->email = $email;
-        return (string) $view;
+        return $view;
     }
 }
