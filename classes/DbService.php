@@ -55,20 +55,30 @@ class DbService
             $fp = fopen($filename, "r");
             while (!feof($fp)) {
                 $line = rtrim(fgets($fp, 4096));
-                if (!empty($line) && strpos($line, '//') !== 0) {
-                    $parts = explode('|', $line, 2);
-                    $groupname = $parts[0];
-                    $loginpage = isset($parts[1]) ? $parts[1] : '';
-                    // line must not start with '//' and all fields must be set
-                    if (strpos($groupname, "//") === false && $groupname != "") {
-                        $entry = array('groupname' => $groupname, 'loginpage' => $loginpage);
-                        $groupArray[] = $entry;
-                    }
+                if ($entry = $this->readGroupLine($line)) {
+                    $groupArray[] = $entry;
                 }
             }
         }
         fclose($fp);
         return $groupArray;
+    }
+
+    /**
+     * @var string $line
+     * @return ?array
+     */
+    private function readGroupLine($line)
+    {
+        if (!empty($line) && strpos($line, '//') !== 0) {
+            $parts = explode('|', $line, 2);
+            $groupname = $parts[0];
+            $loginpage = isset($parts[1]) ? $parts[1] : '';
+            // line must not start with '//' and all fields must be set
+            if (strpos($groupname, "//") === false && $groupname != "") {
+                return array('groupname' => $groupname, 'loginpage' => $loginpage);
+            }
+        }
     }
 
     /**
@@ -140,18 +150,7 @@ class DbService
             while (!feof($fp)) {
                 $line = fgets($fp, 4096);
                 if ($line != "" && strpos($line, '//')=== false) {
-                    list($username,$password,$accessgroups,$name,$email,$status) = explode(':', rtrim($line));
-                    // line must not start with '//' and all fields must be set
-                    if ($username != "" && $password != "" && $accessgroups != ""
-                            && $name != "" && $email != ""/* && $status != ""*/) {
-                        $entry = array(
-                            'username' => $username,
-                            'password' => $password,
-                            'accessgroups' => explode(',', $accessgroups),
-                            'name' => $name,
-                            'email' => $email,
-                            'status' => $status
-                        );
+                    if ($entry = $this->readUserLine($line)) {
                         $userArray[] = $entry;
                     }
                 }
@@ -159,6 +158,27 @@ class DbService
         }
         fclose($fp);
         return $userArray;
+    }
+
+    /**
+     * @param string $line
+     * @return ?array
+     */
+    private function readUserLine($line)
+    {
+        list($username,$password,$accessgroups,$name,$email,$status) = explode(':', rtrim($line));
+        // line must not start with '//' and all fields must be set
+        if ($username != "" && $password != "" && $accessgroups != ""
+                && $name != "" && $email != ""/* && $status != ""*/) {
+            return array(
+                'username' => $username,
+                'password' => $password,
+                'accessgroups' => explode(',', $accessgroups),
+                'name' => $name,
+                'email' => $email,
+                'status' => $status
+            );
+        }
     }
 
     /**
