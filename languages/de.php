@@ -91,12 +91,17 @@ $plugin_tx['register']['js_confirmLeave']="Ungespeicherte Änderungen gehen verl
 $plugin_tx['register']['js_newPassword']="Neues Kennwort (darf nur alphanumerische Zeichen und Unterstriche enthalten):";
 $plugin_tx['register']['js_tooManyUsers']="Es gibt zu viele Benutzer!";
 
+$plugin_tx['register']['syscheck_extension']="die PHP-Erweiterung '%s' geladen ist";
+$plugin_tx['register']['syscheck_fail']="Fehler";
+$plugin_tx['register']['syscheck_hashing']="Passwörter gehasht werden";
+$plugin_tx['register']['syscheck_message']="Prüfe, dass %1\$s … %2\$s";
+$plugin_tx['register']['syscheck_phpversion']="die PHP-Version ≥ %s";
+$plugin_tx['register']['syscheck_plugin']="das CMSIMPLE_XH Plugin '%s' installiert ist";
+$plugin_tx['register']['syscheck_success']="OK";
 $plugin_tx['register']['syscheck_title']="System-Prüfung";
-$plugin_tx['register']['syscheck_phpversion']="PHP Version ≥ %s";
-$plugin_tx['register']['syscheck_extension']="Erweiterung '%s' geladen";
-$plugin_tx['register']['syscheck_phpversion']="CMSimple_XH Version ≥ %s";
-$plugin_tx['register']['syscheck_encryption']="Kennwort-Verschlüsselung aktiviert";
-$plugin_tx['register']['syscheck_writable']="Ordner '%s' beschreibbar";
+$plugin_tx['register']['syscheck_warning']="Warnung";
+$plugin_tx['register']['syscheck_writable']="'%s' schreibbar ist";
+$plugin_tx['register']['syscheck_xhversion']="die CMSimple_XH-Version ≥ %s";
 
 $plugin_tx['register']['cf_allowed_register']="Ob sich neue Mitglieder selbst registrieren können.";
 $plugin_tx['register']['cf_captcha_mode']="<b>none</b> deaktiviert das Captcha. <b>formula</b> aktiviert ein formelbasiertes Captcha.</b> <b>image</b> aktiviert ein bildbasiertes Captcha.";

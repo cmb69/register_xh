@@ -91,12 +91,17 @@ $plugin_tx['register']['js_confirmLeave']="Unsaved changes will be lost!";
 $plugin_tx['register']['js_newPassword']="New Password (may contain only alphanumeric characters and underscores):";
 $plugin_tx['register']['js_tooManyUsers']="There are too many users!";
 
+$plugin_tx['register']['syscheck_extension']="the PHP extension '%s' is loaded";
+$plugin_tx['register']['syscheck_fail']="failure";
+$plugin_tx['register']['syscheck_hashing']="password hashing is enabled";
+$plugin_tx['register']['syscheck_message']="Checking that %1\$s … %2\$s";
+$plugin_tx['register']['syscheck_phpversion']="PHP version ≥ %s";
+$plugin_tx['register']['syscheck_plugin']="the CMSimple_XH plugin '%s' is installed";
+$plugin_tx['register']['syscheck_success']="okay";
 $plugin_tx['register']['syscheck_title']="System check";
-$plugin_tx['register']['syscheck_phpversion']="PHP version &ge; %s";
-$plugin_tx['register']['syscheck_extension']="Extension '%s' loaded";
-$plugin_tx['register']['syscheck_xhversion']="CMSimple_XH version &ge; %s";
-$plugin_tx['register']['syscheck_encryption']="Password encryption enabled";
-$plugin_tx['register']['syscheck_writable']="Folder '%s' writable";
+$plugin_tx['register']['syscheck_warning']="warning";
+$plugin_tx['register']['syscheck_writable']="'%s' is writable";
+$plugin_tx['register']['syscheck_xhversion']="CMSimple_XH version ≥ %s";
 
 $plugin_tx['register']['cf_allowed_register']="Whether new members may register themselves.";
 $plugin_tx['register']['cf_captcha_mode']="<b>none</b> deactivates captcha. <b>formula</b> activates a formula based captcha.</b> <b>image</b> activates a image based captcha.";
