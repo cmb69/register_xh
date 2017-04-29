@@ -84,7 +84,7 @@ if(!($edit&&$adm) && isset($su))
 		{
 		$title = $plugin_tx['register']['forgot_password'];
 		$o .= "\n\n".'<h4>' . $title . '</h4>'."\n";
-		$o .= (new Register\ForgotPasswordController)->forgotPassword();
+		$o .= registerForgotPassword();
 		}
   // Handling of user preferences page
 	} elseif($su == uenc($plugin_tx['register']['user_prefs']))
@@ -540,7 +540,25 @@ function registerUser()
  */
 function registerForgotPassword()
 {
-	return (new Register\ForgotPasswordController)->forgotPassword();
+	global $plugin_cf;
+
+	// In case user is logged in, no password forgotten page is shown
+	if (Register_isLoggedIn()) {
+		header('Location: ' . CMSIMPLE_URL);
+		exit;
+	}
+	$controller = new Register\ForgotPasswordController;
+	if (isset($_POST['action']) && $_POST['action'] === "forgotten_password") {
+		$action = 'passwordForgottenAction';
+	} elseif (isset($_GET['action']) && $_GET['action'] === 'registerResetPassword'
+			&& $plugin_cf['register']['encrypt_password']) {
+		$action = 'resetPasswordAction';
+	} else {
+		$action = 'defaultAction';
+	}
+	ob_start();
+	$controller->{$action}();
+	return ob_get_clean();
 }
 
 /*
