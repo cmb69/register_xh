@@ -22,7 +22,12 @@
         <button onclick="register.addRow()"><?=$this->text('user_add')?></button>
         <input id="register_toggle_details" type="checkbox" onclick="register.toggleDetails()" style="padding-left: 1em">
         <label for="register_toggle_details"><?=$this->text('details')?></label>
-        <?=$this->groupSelect()?>
+        <select id="register_group_selectbox" title="<?=$this->text('filter_group')?>">
+            <option value=""><?=$this->text('all')?></option>
+<?php foreach ($this->groups as $group):?>
+            <option value="<?=$this->escape($group['groupname'])?>"><?=$this->escape($group['groupname'])?></option>
+<?php endforeach?>
+        </select>
     </div>
     <form id="register_user_form" method="post" action="<?=$this->actionUrl()?>">
         <input type="hidden" value="saveusers" name="action">

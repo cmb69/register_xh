@@ -69,260 +69,12 @@ function register_system_check() { // RELEASE-TODO
 }
 
 
-function Register_pageSelectbox($loginpage, $n)
-{
-    global $cl, $h, $u, $l, $plugin_tx;
-
-    $o = '<select name="grouploginpage[' . $n . ']"><option>' . $plugin_tx['register']['label_none'] . '</option>';
-    for ($i = 0; $i < $cl; $i++) {
-	$sel = $u[$i] == $loginpage ? ' selected="selected"' : '';
-	$o .= '<option value="' . $u[$i] . '"' . $sel . '>'
-	    . str_repeat('&nbsp;', 3 * ($l[$i] - 1)) . $h[$i] . '</option>';
-    }
-    $o .= '</select>';
-    return $o;
-}
-
-
-function registerAdminGroupsForm($groups)  {
-    global $tx, $pth, $sn;
-
-    $imageFolder = "{$pth['folder']['plugins']}register/images";
-
-	$view = new Register\View('admin-groups');
-	$view->actionUrl = "$sn?&register";
-	$view->addIcon = "$imageFolder/add.png";
-	$view->deleteIcon = "$imageFolder/delete.png";
-	$view->saveLabel = ucfirst($tx['action']['save']);
-	$view->groups = $groups;
-	$selects = [];
-	foreach ($groups as $i => $entry) {
-		$selects[] = new Register\HtmlString(Register_pageSelectbox($entry['loginpage'], $i));
-	}
-	$view->selects = $selects;
-    return (string) $view;
-}
-
-
-function Register_groupSelectbox()
-{
-    global $pth, $plugin_tx;
-
-    $ptx = $plugin_tx['register'];
-    $groups = (new Register\DbService(Register_dataFolder()))->readGroups();
-    usort($groups, function ($a, $b) {
-		return strcasecmp($a['groupname'], $b['groupname']);
-	});
-    $o = '<select id="register_group_selectbox" title="' . $ptx['filter_group'] . '">'
-        . '<option value="">' . $ptx['all'] . '</option>';
-    foreach ($groups as $group) {
-        $o .= '<option value="' . $group['groupname'] . '">' . $group['groupname'] . '</option>';
-    }
-    $o .= '</select>';
-    return $o;
-}
-
-
-/**
- * Returns the status selectbox.
- *
- * @param  string $value  The selected value.
- * @param  int $n  The running number.
- * @return string  The (X)HTML.
- */
-function Register_statusSelectbox($value, $n = null)
-{
-    global $plugin_tx;
-
-    $ptx = $plugin_tx['register'];
-    $o = '<select name="status[' . $n . ']">';
-    $opts = array('activated' => $ptx['status_activated'],
-		  'locked' => $ptx['status_locked']);
-    if (empty($value) || array_key_exists($value, $opts)) {
-	$opts[''] = $ptx['status_deactivated'];
-    } else {
-	$opts[$value] = $ptx['status_not_yet_activated'];
-    }
-    foreach ($opts as $opt => $label) {
-	$sel = $opt == $value ? ' selected="selected"' : '';
-	$o .= '<option value="' . $opt . '"' . $sel . '>' . $label . '</option>';
-    }
-    $o .= '</select>';
-    return $o;
-}
-
-
-function registerAdminUsersForm($users) {
-    global $tx, $pth, $sn, $hjs, $plugin_cf, $plugin_tx;
-
-    $ptx = $plugin_tx['register'];
-    $imageFolder = $pth['folder']['plugins'] . 'register/images';
-
-    $jsKeys = array('name', 'username', 'password', 'accessgroups', 'status',
-		    'email', 'prefsemailsubject');
-    $txts = array();
-    foreach ($plugin_tx['register'] as $key => $val) {
-	$val = addcslashes($val, "\0..\037\"\$");
-        if (strpos($key, 'js_') === 0) {
-            $txts[] = substr($key, 3) . ':"' . $val . '"';
-        } elseif (in_array($key, $jsKeys)) {
-	    $txts[] = "$key:\"$val\"";
-	}
-    }
-
-    $hjs .= '<script type="text/javascript" src="' . $pth['folder']['plugins'] . 'register/admin.min.js"></script>'
-        . '<script type="text/javascript">register.tx={' . implode(',', $txts) . '};'
-	. 'register.maxNumberOfUsers=' . Register_maxRecords(7, 4) . ';</script>';
-
-	$view = new Register\View('admin-users');
-	$view->saveLabel = ucfirst($tx['action']['save']);
-	$view->deleteIcon = "$imageFolder/delete.png";
-	$view->mailIcon = "$imageFolder/mail.png";
-	$view->defaultGroup = $plugin_cf['register']['group_default'];
-	$view->statusSelectActivated = new Register\HtmlString(Register_statusSelectbox('activated'));
-	$view->groupSelect = new Register\HtmlString(Register_groupSelectbox());
-	$view->actionUrl = "$sn?&register";
-	$view->users = $users;
-	$groupStrings = $statusSelects = [];	
-	foreach ($users as $i => $entry) {
-		$groupStrings[] = implode(",", $entry['accessgroups']);
-		$statusSelects[] = new Register\HtmlString(Register_statusSelectbox($entry['status'], $i));
-	}
-	$view->groupStrings = $groupStrings;
-	$view->statusSelects = $statusSelects;
-    return (string) $view;
-}
-
-
-function Register_administrateUsers()
-{
-    global $action, $pth, $e, $plugin_cf, $plugin_tx, $_Register_hasher;
-
-    $ptx = $plugin_tx['register'];
-    $fn = Register_dataFolder() . 'users.csv';
-    $o = '';
-    $ERROR = '';
-    if ($action != 'saveusers') {
-	if (is_file($fn))  {
-	    (new Register\DbService(Register_dataFolder()))->lock(LOCK_SH);
-	    $users  = (new Register\DbService(Register_dataFolder()))->readUsers();
-	    (new Register\DbService(Register_dataFolder()))->lock(LOCK_UN);
-	    $o .= registerAdminUsersForm($users);
-	    $o .= '<div class="register_status">' . count($users) . ' ' . $ptx['entries_in_csv'] .
-		$fn . '</div>';
-	} else {
-	    $o .= '<div class="register_status">' . $ptx['err_csv_missing']
-		. ' (' . $fn . ')' . '</div>';
-	}
-    } else {
-	// == Edit Users ==============================================================
-	if (is_file(Register_dataFolder() . 'groups.csv'))
-	    $groups = (new Register\DbService(Register_dataFolder()))->readGroups();
-	else
-	    $ERROR .= '<li>' . $plugin_tx['register']['err_csv_missing'] .
-		    ' (' . Register_dataFolder() . 'groups.csv' . ')' .
-		    '</li>'."\n";
-
-	// put all available group Ids in an array for easier handling
-	$groupIds = array();
-	foreach($groups as $entry)
-	$groupIds[] = $entry['groupname'];
-
-	$delete      = isset($_POST['delete'])       ? $_POST['delete']       : '';
-	$add         = isset($_POST['add'])          ? $_POST['add']          : '';
-	$username    = isset($_POST['username'])     ? $_POST['username']     : '';
-	$password    = isset($_POST['password'])     ? $_POST['password']     : '';
-	$oldpassword = isset($_POST['oldpassword'])  ? $_POST['oldpassword']  : '';
-	$name        = isset($_POST['name'])         ? $_POST['name']         : '';
-	$email       = isset($_POST['email'])        ? $_POST['email']        : '';
-	$groupString = isset($_POST['accessgroups']) ? $_POST['accessgroups'] : '';
-	$status      = isset($_POST['status'])       ? $_POST['status']       : '';
-
-	$deleted = false;
-	$added   = false;
-
-	$newusers = array();
-	foreach ($username as $j => $i) {
-	    if (!isset($delete[$j]) || $delete[$j] == '') {
-		$userGroups = explode(",", $groupString[$j]);
-		// Error Checking
-		$ENTRY_ERROR = '';
-		if ($plugin_cf['register']['encrypt_password'] && $password[$j] == $oldpassword[$j])
-		    $ENTRY_ERROR .= registerCheckEntry($name[$j], $username[$j], "dummy", "dummy", $email[$j]);
-		else
-		    $ENTRY_ERROR .= registerCheckEntry($name[$j], $username[$j], $password[$j], $password[$j], $email[$j]);
-		$ENTRY_ERROR .= registerCheckColons($name[$j], $username[$j], $password[$j], $email[$j]);
-		if (registerSearchUserArray($newusers, 'username', $username[$j]) !== false)
-		    $ENTRY_ERROR .= '<li>' . $plugin_tx['register']['err_username_exists'] . '</li>'."\n";
-		if (registerSearchUserArray($newusers, 'email', $email) !== false)
-		    $ENTRY_ERROR .= '<li>' . $plugin_tx['register']['err_email_exists'] . '</li>'."\n";
-		foreach ($userGroups as $groupName) {
-		    if (!in_array($groupName, $groupIds))
-			$ENTRY_ERROR .= '<li>' . $plugin_tx['register']['err_group_does_not_exist'] . ' (' . $groupName . ')</li>'."\n";
-		}
-		if ($ENTRY_ERROR != '')
-		    $ERROR .= '<li>' . $plugin_tx['register']['error_in_user'] . '"' . $username[$j] . '"' .
-			    '<ul class="error">'.$ENTRY_ERROR.'</ul></li>'."\n";
-
-		if (empty($ENTRY_ERROR) && $plugin_cf['register']['encrypt_password'] && $password[$j] != $oldpassword[$j])
-		    $password[$j] = $_Register_hasher->HashPassword($password[$j]);
-		$entry = array(
-			'username'     => $username[$j],
-			'password'     => $password[$j],
-			'accessgroups' => $userGroups,
-			'name'         => $name[$j],
-			'email'        => $email[$j],
-			'status'       => $status[$j]);
-		$newusers[] = $entry;
-	    } else {
-		$deleted = true;
-	    }
-	}
-	if ($add <> '') {
-	    $entry = array(
-		    'username'     => "NewUser",
-		    'password'     => "",
-		    'accessgroups' => array($plugin_cf['register']['group_default']),
-		    'name'         => "Name Lastname",
-		    'email'        => "user@domain.com",
-		    'status'       => "activated");
-	    $newusers[] = $entry;
-	    $added = true;
-	}
-
-	$o .= registerAdminUsersForm($newusers);
-
-	// In case that nothing got deleted or added, store back (save got pressed)
-	if (!$deleted && !$added && $ERROR == "") {
-	    (new Register\DbService(Register_dataFolder()))->lock(LOCK_EX);
-	    if (!(new Register\DbService(Register_dataFolder()))->writeUsers($newusers))
-		$ERROR .= '<li>' . $plugin_tx['register']['err_cannot_write_csv'] .
-			' (' . Register_dataFolder() . 'users.csv' . ')' .
-			'</li>'."\n";
-	    (new Register\DbService(Register_dataFolder()))->lock(LOCK_UN);
-
-	    if ($ERROR != '')
-		$e .= $ERROR;
-	    else
-		$o .= '<div class="register_status">'  . $plugin_tx['register']['csv_written'] .
-			' (' . Register_dataFolder() . 'users.csv' . ')' .
-			'.</div>'."\n";
-	}
-	elseif ($ERROR != '')
-	    $e .= $ERROR;
-    }
-    return $o;
-}
-
-
 /**
  * Handle the plugin administration.
  */
 if (function_exists('XH_wantsPluginAdministration') && XH_wantsPluginAdministration('register')
 	|| isset($register) && $register === 'true'
 ) {
-    $ERROR = '';
-
     $o .= print_plugin_admin('off');
     pluginmenu('ROW');
     pluginmenu('TAB', '?&amp;register&amp;admin=plugin_main&amp;action=editgroups', '', $plugin_tx['register']['mnu_group_admin']);
@@ -333,106 +85,27 @@ if (function_exists('XH_wantsPluginAdministration') && XH_wantsPluginAdministrat
 	    $o .= register_version().tag('hr').register_system_check();
 	    break;
 	case 'plugin_main':
+		$temp = new Register\MainAdminController;
+		ob_start();
 	    switch ($action) {
 		case 'editusers':
-		    $o .= Register_administrateUsers();
-		    break;
-		case 'editgroups':
-		    // read group file in CSV format separated by colons
-		    if (is_file(Register_dataFolder() . 'groups.csv')) {
-			$groups = (new Register\DbService(Register_dataFolder()))->readGroups();
-			$o .= registerAdminGroupsForm($groups);
-			$o .= '<div class="register_status">' . count($groups) . ' ' . $plugin_tx['register']['entries_in_csv'] .
-				Register_dataFolder() . 'groups.csv' . '</div>'."\n";
-		    } else {
-			$o .= '<div class="register_status">' . $plugin_tx['register']['err_csv_missing'] .
-				' (' . Register_dataFolder() . 'groups.csv' . ')' .
-				'</div>'."\n";
-		    }
-		    break;
-		case 'savegroups':
-		    // == Edit Groups =============================================================
-		    $delete      = isset($_POST['delete'])       ? $_POST['delete']       : '';
-		    $add         = isset($_POST['add'])          ? $_POST['add']          : '';
-		    $groupname   = isset($_POST['groupname'])    ? $_POST['groupname']    : '';
-
-		    $deleted = false;
-		    $added   = false;
-
-		    $newgroups = array();
-		    foreach ($groupname as $j => $i) {
-			if(!preg_match("/^[A-Za-z0-9_-]+$/", $groupname[$j]))
-			$ERROR = '<li>' . $plugin_tx['register']['err_group_illegal'] . '</li>'."\n";
-
-			if (!isset($delete[$j]) || $delete[$j] == '') {
-			    $entry = array('groupname' => $groupname[$j],
-					   'loginpage' => $_POST['grouploginpage'][$j]);
-			    $newgroups[] = $entry;
-			} else {
-			    $deleted = true;
-			}
-		    }
-		    if($add <> '') {
-			$entry = array('groupname' => "NewGroup",
-				       'loginpage' => '');
-			$newgroups[] = $entry;
-			$added = true;
-		    }
-
-		    $o .= registerAdminGroupsForm($newgroups);
-
-		    // In case that nothing got deleted or added, store back (save got pressed)
-		    if(!$deleted && !$added && $ERROR == "") {
-			if (!(new Register\DbService(Register_dataFolder()))->writeGroups($newgroups))
-			    $ERROR .= '<li>' . $plugin_tx['register']['err_cannot_write_csv'] .
-				    ' (' . Register_dataFolder() . 'groups.csv' . ')' .
-				    '</li>'."\n";
-
-			if($ERROR != '')
-			    $e .= $ERROR;
-			else
-			    $o .= '<div class="register_status">'  . $plugin_tx['register']['csv_written'] .
-				    ' (' . Register_dataFolder() . 'groups.csv' . ')' .
-				    '.</div>'."\n";
-		    } elseif ($ERROR != '')
-			$e .= $ERROR;
+		    $temp->editUsersAction();
 		    break;
 		case 'saveusers':
-		    $o .= Register_administrateUsers();
+		    $temp->saveUsersAction();
+		    break;
+		case 'editgroups':
+			$temp->editGroupsAction();
+		    break;
+		case 'savegroups':
+			$temp->saveGroupsAction();
 		    break;
 	    }
+		$o .= ob_get_clean();
 	    break;
 	default:
 	    $o .= plugin_admin_common($action, $admin, $plugin);
     }
-}
-
-/**
- * Returns the maximum number of records that may be successfully submitted from
- * a form.
- *
- * Takes into account <var>max_input_vars</var>,
- * <var>suhosin.post.max_vars</var> and <var>suhosin.request.max_vars</var>.
- * If none of these is set, <var>PHP_INT_MAX</var> is returned.
- *
- * @param int $varsPerRecord  Number of POST variables per record.
- * @param int $additionalVars Number of additional POST and GET variables.
- *
- * @return int
- */
-function Register_maxRecords($varsPerRecord, $additionalVars)
-{
-    $miv = ini_get('max_input_vars');
-    $pmv = ini_get('suhosin.post.max_vars');
-    $rmv = ini_get('suhosin.request.max_vars');
-    foreach (array('miv', 'pmv', 'rmv') as $var) {
-        if (!$$var) {
-            $$var = PHP_INT_MAX;
-        }
-    }
-    $maxVars = min($miv, $pmv, $rmv);
-    $maxRecords = intval(($maxVars - $additionalVars) / $varsPerRecord);
-    return $maxRecords;
 }
 
 ?>
