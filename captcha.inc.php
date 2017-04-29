@@ -18,23 +18,6 @@ if (!defined('CMSIMPLE_XH_VERSION')) {
 
 
 /*
- * Check for GD Extension to allow Captcha image generation
- */
-function checkGD() {
-  $CheckGD = get_extension_funcs("gd");
-  if(!$CheckGD) {
-    $o = "<b>'$plugin' plugin Error :</b>\n" .
-      "GD image library not installed!<br><br>\n" .
-      "<b>Solution:</b>\n" .
-      "Your server does not meet the requirements for the " .
-      "'$plugin' plugin, install the GD lib";
-    return $o;
-    exit;
-  }
-}
-
-
-/*
  *  Encrypt a string using a specific key.
  */
 function md5_encrypt($s,$key) {

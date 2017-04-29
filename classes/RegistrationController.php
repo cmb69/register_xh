@@ -22,8 +22,6 @@ class RegistrationController extends Controller
             exit;
         }
 
-        checkGD();
-    
         $ERROR = '';
         $o = '';
 

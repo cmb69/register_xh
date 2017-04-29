@@ -22,8 +22,6 @@ class ForgotPasswordController extends Controller
             exit;
         }
 
-        checkGD();
-
         $ERROR = '';
         $o = '<p>' . $this->lang['reminderexplanation'] . '</p>'."\n";
 
