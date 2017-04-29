@@ -82,8 +82,7 @@ class ForgotPasswordController extends Controller
                 return $o;
             }
         } elseif (isset($_GET['action']) && $action == 'registerResetPassword'
-              && $this->config['encrypt_password'])
-        {
+                && $this->config['encrypt_password']) {
             // read user file in CSV format separated by colons
             (new DbService(Register_dataFolder()))->lock(LOCK_EX);
             $userArray = (new DbService(Register_dataFolder()))->readUsers();

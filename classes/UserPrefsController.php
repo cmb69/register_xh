@@ -17,7 +17,7 @@ class UserPrefsController extends Controller
         $ERROR = '';
         $o = '';
     
-        if(!Register_isLoggedIn()) {
+        if (!Register_isLoggedIn()) {
             return $this->lang['access_error_text'];
         }
 
@@ -97,7 +97,7 @@ class UserPrefsController extends Controller
             }
             (new DbService(Register_dataFolder()))->lock(LOCK_UN);
 
-            if($ERROR != '') {
+            if ($ERROR != '') {
                 $o .= '<span class="regi_error">' . $this->lang['error'] . '</span>'."\n" .
                     '<ul class="regi_error">'."\n".$ERROR.'</ul>'."\n";
             } else {

@@ -75,13 +75,23 @@ class RegistrationController extends Controller
             $status = generateRandomCode((int)$this->config['captcha_chars']);
             if ($this->config['encrypt_password']) {
                 $userArray = registerAddUser(
-                    $userArray, $username, $this->hasher->hashPassword($password1),
-                    array($this->config['group_default']), $name, $email, $status
+                    $userArray,
+                    $username,
+                    $this->hasher->hashPassword($password1),
+                    array($this->config['group_default']),
+                    $name,
+                    $email,
+                    $status
                 );
             } else {
                 $userArray = registerAddUser(
-                    $userArray, $username, $password1,
-                    array($this->config['group_default']), $name, $email, $status
+                    $userArray,
+                    $username,
+                    $password1,
+                    array($this->config['group_default']),
+                    $name,
+                    $email,
+                    $status
                 );
             }
 
@@ -164,7 +174,8 @@ class RegistrationController extends Controller
             }
             $status = md5_decrypt($captcha, $this->config['captcha_crypt']);
             if ($status != $entry['status']) {
-                $ERROR .= '<li>' . $this->lang['err_status_invalid'] . "($status&ne;" . $entry['status'] . ')</li>'."\n";
+                $ERROR .= '<li>' . $this->lang['err_status_invalid']
+                    . "($status&ne;" . $entry['status'] . ')</li>'."\n";
             }
         }
 

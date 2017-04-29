@@ -142,9 +142,8 @@ class DbService
                 if ($line != "" && strpos($line, '//')=== false) {
                     list($username,$password,$accessgroups,$name,$email,$status) = explode(':', rtrim($line));
                     // line must not start with '//' and all fields must be set
-                    if ( $username != "" && $password != "" && $accessgroups != ""
-                        && $name != "" && $email != ""/* && $status != ""*/
-                    ) {
+                    if ($username != "" && $password != "" && $accessgroups != ""
+                            && $name != "" && $email != ""/* && $status != ""*/) {
                         $entry = array(
                             'username' => $username,
                             'password' => $password,

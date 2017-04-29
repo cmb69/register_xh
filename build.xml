@@ -12,6 +12,15 @@
         <echo>${help}</echo>
     </target>
 
+    <target name="sniff" description="checks adherence to PSR-2 CS">
+        <phpcodesniffer standard="PSR2" format="full">
+            <fileset dir=".">
+                <include name="classes/*.php"/>
+                <exclude name="classes/PasswordHash.php"/>
+            </fileset>
+        </phpcodesniffer>
+    </target>
+
     <target name="compat" description="checks PHP requirements">
         <exec command="phpcompatinfo analyser:run --alias current" logoutput="true"/>
     </target>
