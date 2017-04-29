@@ -89,8 +89,6 @@ $plugin_tx['register']['cf_senderemail']="E-mail-konto til administrator";
 $plugin_tx['register']['syscheck_title']="System check";
 $plugin_tx['register']['syscheck_phpversion']="PHP version ≥ %s";
 $plugin_tx['register']['syscheck_extension']="Extension '%s' loaded";
-$plugin_tx['register']['syscheck_encoding']="Tegnkoding 'UTF-8' konfigureret";
-$plugin_tx['register']['syscheck_magic_quotes']="Magic quotes runtime off";
 $plugin_tx['register']['syscheck_writable']="Mappen '%s' skrivebar";
 
 ?>

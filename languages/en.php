@@ -94,8 +94,7 @@ $plugin_tx['register']['js_tooManyUsers']="There are too many users!";
 $plugin_tx['register']['syscheck_title']="System check";
 $plugin_tx['register']['syscheck_phpversion']="PHP version &ge; %s";
 $plugin_tx['register']['syscheck_extension']="Extension '%s' loaded";
-$plugin_tx['register']['syscheck_encoding']="Encoding 'UTF-8' configured";
-$plugin_tx['register']['syscheck_magic_quotes']="Magic quotes runtime off";
+$plugin_tx['register']['syscheck_xhversion']="CMSimple_XH version &ge; %s";
 $plugin_tx['register']['syscheck_encryption']="Password encryption enabled";
 $plugin_tx['register']['syscheck_writable']="Folder '%s' writable";
 
