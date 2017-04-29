@@ -366,7 +366,7 @@ if (function_exists('XH_wantsPluginAdministration') && XH_wantsPluginAdministrat
 
 			if (!isset($delete[$j]) || $delete[$j] == '') {
 			    $entry = array('groupname' => $groupname[$j],
-					   'loginpage' => stsl($_POST['grouploginpage'][$j]));
+					   'loginpage' => $_POST['grouploginpage'][$j]);
 			    $newgroups[] = $entry;
 			} else {
 			    $deleted = true;

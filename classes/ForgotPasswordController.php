@@ -95,7 +95,7 @@ class ForgotPasswordController extends Controller
             $errors[] = $this->lang['err_username_does_not_exist'];
         }
 
-        if ($user['password'] != stsl($_GET['captcha'])) {
+        if ($user['password'] != $_GET['captcha']) {
             $errors[] = $this->lang['err_status_invalid'];
         }
 
