@@ -112,7 +112,9 @@ function Register_groupSelectbox()
 
     $ptx = $plugin_tx['register'];
     $groups = (new Register\DbService(Register_dataFolder()))->readGroups();
-    usort($groups, create_function('$a, $b', 'return strcasecmp($a["groupname"], $b["groupname"]);'));
+    usort($groups, function ($a, $b) {
+		return strcasecmp($a['groupname'], $b['groupname']);
+	});
     $o = '<select id="register_group_selectbox" title="' . $ptx['filter_group'] . '">'
         . '<option value="">' . $ptx['all'] . '</option>';
     foreach ($groups as $group) {

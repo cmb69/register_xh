@@ -47,7 +47,9 @@ class RegistrationController extends Controller
                 } elseif ($this->config['captcha_mode'] == "formula") {
                     $formula = md5_decrypt($captcha, $this->config['captcha_crypt']);
                     $addends = explode('+', $formula);
-                    $addends = array_filter($addends, create_function('$x', 'return is_numeric(trim($x));'));
+                    $addends = array_filter($addends, function ($x) {
+                        return is_numeric(trim($x));
+                    });
                     $code = array_sum($addends);
                 }
 
