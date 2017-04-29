@@ -20,6 +20,7 @@ define('REGISTER_VERSION', '@REGISTER_VERSION@');
 
 $_Register_hasher = new Register\PasswordHash(10, false);
 
+(new Register\Plugin)->run();
 
 /****************************************************************************
  *	Direct Calls															*
