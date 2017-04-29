@@ -155,9 +155,8 @@ function Register_statusSelectbox($value, $n = null)
 function registerAdminUsersForm($users) {
     global $tx, $pth, $sn, $hjs, $plugin_cf, $plugin_tx;
 
-    $plugin = basename(dirname(__FILE__),"/");
     $ptx = $plugin_tx['register'];
-    $imageFolder = $pth['folder']['plugins'] . $plugin . '/images';
+    $imageFolder = $pth['folder']['plugins'] . 'register/images';
 
     $jsKeys = array('name', 'username', 'password', 'accessgroups', 'status',
 		    'email', 'prefsemailsubject');
@@ -179,7 +178,7 @@ function registerAdminUsersForm($users) {
 	$view->saveLabel = ucfirst($tx['action']['save']);
 	$view->deleteIcon = "$imageFolder/delete.png";
 	$view->mailIcon = "$imageFolder/mail.png";
-	$view->defaultGroup = $plugin_cf[$plugin]['group_default'];
+	$view->defaultGroup = $plugin_cf['register']['group_default'];
 	$view->statusSelectActivated = new Register\HtmlString(Register_statusSelectbox('activated'));
 	$view->groupSelect = new Register\HtmlString(Register_groupSelectbox());
 	$view->actionUrl = "$sn?&register";
@@ -326,8 +325,8 @@ if (function_exists('XH_wantsPluginAdministration') && XH_wantsPluginAdministrat
 
     $o .= print_plugin_admin('off');
     pluginmenu('ROW');
-    pluginmenu('TAB', '?&amp;register&amp;admin=plugin_main&amp;action=editgroups', '', $plugin_tx[$plugin]['mnu_group_admin']);
-    pluginmenu('TAB', '?&amp;register&amp;admin=plugin_main&amp;action=editusers', '', $plugin_tx[$plugin]['mnu_user_admin']);
+    pluginmenu('TAB', '?&amp;register&amp;admin=plugin_main&amp;action=editgroups', '', $plugin_tx['register']['mnu_group_admin']);
+    pluginmenu('TAB', '?&amp;register&amp;admin=plugin_main&amp;action=editusers', '', $plugin_tx['register']['mnu_user_admin']);
     $o .= pluginmenu('SHOW');
     switch ($admin) {
 	case '':
@@ -343,10 +342,10 @@ if (function_exists('XH_wantsPluginAdministration') && XH_wantsPluginAdministrat
 		    if (is_file(Register_dataFolder() . 'groups.csv')) {
 			$groups = registerReadGroups(Register_dataFolder() . 'groups.csv');
 			$o .= registerAdminGroupsForm($groups);
-			$o .= '<div class="register_status">' . count($groups) . ' ' . $plugin_tx[$plugin]['entries_in_csv'] .
+			$o .= '<div class="register_status">' . count($groups) . ' ' . $plugin_tx['register']['entries_in_csv'] .
 				Register_dataFolder() . 'groups.csv' . '</div>'."\n";
 		    } else {
-			$o .= '<div class="register_status">' . $plugin_tx[$plugin]['err_csv_missing'] .
+			$o .= '<div class="register_status">' . $plugin_tx['register']['err_csv_missing'] .
 				' (' . Register_dataFolder() . 'groups.csv' . ')' .
 				'</div>'."\n";
 		    }
@@ -363,7 +362,7 @@ if (function_exists('XH_wantsPluginAdministration') && XH_wantsPluginAdministrat
 		    $newgroups = array();
 		    foreach ($groupname as $j => $i) {
 			if(!preg_match("/^[A-Za-z0-9_-]+$/", $groupname[$j]))
-			$ERROR = '<li>' . $plugin_tx[$plugin]['err_group_illegal'] . '</li>'."\n";
+			$ERROR = '<li>' . $plugin_tx['register']['err_group_illegal'] . '</li>'."\n";
 
 			if (!isset($delete[$j]) || $delete[$j] == '') {
 			    $entry = array('groupname' => $groupname[$j],
@@ -385,14 +384,14 @@ if (function_exists('XH_wantsPluginAdministration') && XH_wantsPluginAdministrat
 		    // In case that nothing got deleted or added, store back (save got pressed)
 		    if(!$deleted && !$added && $ERROR == "") {
 			if (!registerWriteGroups(Register_dataFolder() . 'groups.csv', $newgroups))
-			    $ERROR .= '<li>' . $plugin_tx[$plugin]['err_cannot_write_csv'] .
+			    $ERROR .= '<li>' . $plugin_tx['register']['err_cannot_write_csv'] .
 				    ' (' . Register_dataFolder() . 'groups.csv' . ')' .
 				    '</li>'."\n";
 
 			if($ERROR != '')
 			    $e .= $ERROR;
 			else
-			    $o .= '<div class="register_status">'  . $plugin_tx[$plugin]['csv_written'] .
+			    $o .= '<div class="register_status">'  . $plugin_tx['register']['csv_written'] .
 				    ' (' . Register_dataFolder() . 'groups.csv' . ')' .
 				    '.</div>'."\n";
 		    } elseif ($ERROR != '')

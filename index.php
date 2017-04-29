@@ -35,12 +35,10 @@ if ($plugin_cf['register']['login_all_subsites']) {
 if(session_id() == "")
   session_start();
 
-$plugin = basename(dirname(__FILE__),"/");
-
 
 if(!defined('CAPTCHA_LOADED'))
 {
-	$captchaInclude = $pth['folder']['plugins'] . $plugin . "/captcha.inc.php";
+	$captchaInclude = $pth['folder']['plugins'] . "register/captcha.inc.php";
 	if(!@include($captchaInclude)) die('Captcha functions file ' . $captchaInclude . ' missing');
 	if(CAPTCHA_LOADED != '1.2') die('Captcha functions already loaded, but of wrong version ' . CAPTCHA_LOADED);
 }
@@ -50,13 +48,13 @@ if(isset($_GET['action']))
 {
 	if($_GET['action'] == 'register_captcha' && isset($_GET['captcha']) && isset($_GET['ip']))
 	{
-		$fontFolder = $pth['folder']['plugins'] . $plugin . '/font/';
+		$fontFolder = $pth['folder']['plugins'] . 'register/font/';
 		generateCaptchaImage($_GET['captcha'],
-		(int)$plugin_cf[$plugin]['captcha_image_width'],
-		(int)$plugin_cf[$plugin]['captcha_image_height'],
-		(int)$plugin_cf[$plugin]['captcha_chars'],
-		$fontFolder . $plugin_cf[$plugin]['captcha_font'],
-		$plugin_cf[$plugin]['captcha_crypt']);
+		(int)$plugin_cf['register']['captcha_image_width'],
+		(int)$plugin_cf['register']['captcha_image_height'],
+		(int)$plugin_cf['register']['captcha_chars'],
+		$fontFolder . $plugin_cf['register']['captcha_font'],
+		$plugin_cf['register']['captcha_crypt']);
 	}
 }
 
@@ -68,75 +66,75 @@ if(isset($_GET['action']))
 if(!($edit&&$adm) && isset($su))
 {
 	// Handling of registration page
-	if($su == uenc($plugin_tx[$plugin]['register'])
-	&& $plugin_cf[$plugin]['allowed_register'])
+	if($su == uenc($plugin_tx['register']['register'])
+	&& $plugin_cf['register']['allowed_register'])
 	{
-		if(!in_array($plugin_tx[$plugin]['register'], $h))
+		if(!in_array($plugin_tx['register']['register'], $h))
 		{
-		$title = $plugin_tx[$plugin]['register'];
-		$o .= "\n\n".'<h4>' . $title . '</h4>'."\n".'<p>'. $plugin_tx[$plugin]['register_form1'].'</p>'."\n";
+		$title = $plugin_tx['register']['register'];
+		$o .= "\n\n".'<h4>' . $title . '</h4>'."\n".'<p>'. $plugin_tx['register']['register_form1'].'</p>'."\n";
 		$o .= registerUser();
 		}
 	// Handling of forgotten password page
 	}
 	elseif ($plugin_cf['register']['password_forgotten']
-		&& $su == uenc($plugin_tx[$plugin]['forgot_password']))
+		&& $su == uenc($plugin_tx['register']['forgot_password']))
 	{
-		if(!in_array($plugin_tx[$plugin]['forgot_password'], $h))
+		if(!in_array($plugin_tx['register']['forgot_password'], $h))
 		{
-		$title = $plugin_tx[$plugin]['forgot_password'];
+		$title = $plugin_tx['register']['forgot_password'];
 		$o .= "\n\n".'<h4>' . $title . '</h4>'."\n";
 		$o .= registerForgotPassword();
 		}
   // Handling of user preferences page
-	} elseif($su == uenc($plugin_tx[$plugin]['user_prefs']))
+	} elseif($su == uenc($plugin_tx['register']['user_prefs']))
 	{
-		if(!in_array($plugin_tx[$plugin]['user_prefs'], $h))
+		if(!in_array($plugin_tx['register']['user_prefs'], $h))
 		{
-			$title = $plugin_tx[$plugin]['user_prefs'];
+			$title = $plugin_tx['register']['user_prefs'];
 			$o .= "\n\n".'<h4>' . $title . '</h4>'."\n";
 			$o .= registerUserPrefs();
 		}
 
 	// Handling of login error page
-	} elseif($su == uenc($plugin_tx[$plugin]['login_error']))
+	} elseif($su == uenc($plugin_tx['register']['login_error']))
 	{
 		header('HTTP/1.1 403 Forbidden');
-		if(!in_array($plugin_tx[$plugin]['login_error'], $h))
+		if(!in_array($plugin_tx['register']['login_error'], $h))
 		{
-			$title = $plugin_tx[$plugin]['login_error'];
+			$title = $plugin_tx['register']['login_error'];
 			$o .= "\n\n".'<h4>' . $title . '</h4>'."\n";
-			$o .= $plugin_tx[$plugin]['login_error_text'];
+			$o .= $plugin_tx['register']['login_error_text'];
 		}
 
 	// Handling of logout page
-	} elseif($su == uenc($plugin_tx[$plugin]['loggedout']))
+	} elseif($su == uenc($plugin_tx['register']['loggedout']))
 	{
-		if(!in_array($plugin_tx[$plugin]['loggedout'], $h))
+		if(!in_array($plugin_tx['register']['loggedout'], $h))
 		{
-			$title = $plugin_tx[$plugin]['loggedout'];
+			$title = $plugin_tx['register']['loggedout'];
 			$o .= "\n\n".'<h4>' . $title . '</h4>'."\n";
-			$o .= $plugin_tx[$plugin]['loggedout_text'];
+			$o .= $plugin_tx['register']['loggedout_text'];
 		}
 
 	// Handling of login page
 	}
-	elseif($su == uenc($plugin_tx[$plugin]['loggedin']))
+	elseif($su == uenc($plugin_tx['register']['loggedin']))
 	{
-		if(!in_array($plugin_tx[$plugin]['loggedin'], $h))
+		if(!in_array($plugin_tx['register']['loggedin'], $h))
 		{
-			$title = $plugin_tx[$plugin]['loggedin'];
+			$title = $plugin_tx['register']['loggedin'];
 			$o .= "\n\n".'<h4>' . $title . '</h4>'."\n";
-			$o .= $plugin_tx[$plugin]['loggedin_text'];
+			$o .= $plugin_tx['register']['loggedin_text'];
 		}
-	} elseif($su == uenc($plugin_tx[$plugin]['access_error']))
+	} elseif($su == uenc($plugin_tx['register']['access_error']))
 	{
 		header('HTTP/1.1 403 Forbidden');
-		if(!in_array($plugin_tx[$plugin]['access_error'], $h))
+		if(!in_array($plugin_tx['register']['access_error'], $h))
 		{
-			$title = $plugin_tx[$plugin]['access_error'];
+			$title = $plugin_tx['register']['access_error'];
 			$o .= "\n\n".'<h4>' . $title . '</h4>'."\n";
-			$o .= $plugin_tx[$plugin]['access_error_text'];
+			$o .= $plugin_tx['register']['access_error_text'];
 		}
 	}
 }
@@ -175,7 +173,7 @@ function Register_isLoggedIn()
 
 // Handling of login/logout =====================================================
 
-if ($plugin_cf[$plugin]['remember_user'] && isset($_COOKIE['username'], $_COOKIE['password']) && !Register_isLoggedIn()) {
+if ($plugin_cf['register']['remember_user'] && isset($_COOKIE['username'], $_COOKIE['password']) && !Register_isLoggedIn()) {
 	$function = "registerlogin";
 }
 if (!Register_isLoggedIn() && $function == "registerlogin") {
@@ -185,7 +183,7 @@ if (Register_isLoggedIn() && $function == "registerlogout") {
 	registerLogout();
 }
 
-if (!($edit&&$adm) && $plugin_cf[$plugin]['hide_pages'])
+if (!($edit&&$adm) && $plugin_cf['register']['hide_pages'])
 {
 	if (Register_isLoggedIn()) {
 		registerRemoveHiddenPages($_SESSION['accessgroups']);
@@ -204,7 +202,7 @@ if (!($edit&&$adm) && $plugin_cf[$plugin]['hide_pages'])
 function registerLogin()
 {
 	global $pth, $plugin_cf, $plugin_tx, $h, $sn, $su, $_Register_hasher;
-	$plugin = basename(dirname(__FILE__),"/");
+
 	//$secret = "LoginSecretWord";
 	$rememberPeriod = 24*60*60*100;
 
@@ -213,7 +211,7 @@ function registerLogin()
 	$remember = htmlspecialchars(isset($_POST['remember']) ? $_POST['remember'] : "");
 
 	// encrypt password if configured that way
-	//if(preg_match('/true/i', $plugin_cf[$plugin]['encrypt_password'])) $password = crypt($password, $password);
+	//if(preg_match('/true/i', $plugin_cf['register']['encrypt_password'])) $password = crypt($password, $password);
 
 	// set username and password in case cookies are set
 	if ($plugin_cf['register']['remember_user']
@@ -265,7 +263,7 @@ function registerLogin()
 		if ($glp = Register_groupLoginPage($entry['accessgroups'][0])) {
 		    $loginPage = '?' . $glp;
 		} else {
-		    $loginPage = '?'. uenc($plugin_tx[$plugin]['loggedin']);
+		    $loginPage = '?'. uenc($plugin_tx['register']['loggedin']);
 		}
 		header('Location: ' . CMSIMPLE_URL . $loginPage);
 		exit;
@@ -284,7 +282,7 @@ function registerLogin()
 		XH_logMessage('error', 'register', 'login', "$username wrong password");
 
 		// go to login error page
-		$errorTitle = uenc($plugin_tx[$plugin]['login_error']);
+		$errorTitle = uenc($plugin_tx['register']['login_error']);
 		header('Location: ' . CMSIMPLE_URL . '?' . $errorTitle);
 		exit;
 	}
@@ -297,7 +295,6 @@ function registerLogout()
 {
 	global $_COOKIE, $plugin_cf, $plugin_tx, $sn, $h, $pth;
 
-	$plugin = basename(dirname(__FILE__),"/");
 	$rememberPeriod = 24*60*60*100;
 
 	$username = isset($_SESSION['username']) ? $_SESSION['username'] : '';
@@ -319,7 +316,7 @@ function registerLogout()
 	XH_logMessage('info', 'register', 'logout', "$username logged out");
 
     // go to logout page
-	$logoutTitle = uenc($plugin_tx[$plugin]['loggedout']);
+	$logoutTitle = uenc($plugin_tx['register']['loggedout']);
 	header('Location: ' . CMSIMPLE_URL . '?' . $logoutTitle);
 	exit;
 }
@@ -349,7 +346,6 @@ function registerRemoveHiddenPages($userGroups) {
 function access($groupString)
 {
 	global $plugin_tx, $sn;
-	$plugin = basename(dirname(__FILE__),"/");
 
 	// remove spaces etc.
 	$groupString = preg_replace("/[ \t\r\n]*/", '', $groupString);
@@ -358,7 +354,7 @@ function access($groupString)
 	$o = '';
 	if (!Register_isLoggedIn() || empty(array_intersect($groupNames, $_SESSION['accessgroups']))) {
 		// go to access error page
-		$pageTitle = uenc($plugin_tx[$plugin]['access_error']);
+		$pageTitle = uenc($plugin_tx['register']['access_error']);
 		header('Location: '.CMSIMPLE_URL.'?'. $pageTitle);
 		exit;
 	}
@@ -370,8 +366,8 @@ function access($groupString)
  */
 function registerActivateUser($user, $captcha)
 {
-	GLOBAL $plugin_tx,$plugin_cf,$pth;
-	$plugin = basename(dirname(__FILE__),"/");
+	global $plugin_tx,$plugin_cf,$pth;
+
 	$ERROR = '';
 	$o ='';
 
@@ -383,29 +379,29 @@ function registerActivateUser($user, $captcha)
 	$entry = registerSearchUserArray($userArray, 'username', $user);
 	if($entry === false)
 	{
-		$ERROR .= '<li>' . $plugin_tx[$plugin]['err_username_notfound'] . $user . '</li>'."\n";
+		$ERROR .= '<li>' . $plugin_tx['register']['err_username_notfound'] . $user . '</li>'."\n";
 	}
 	else
 	{
 		if(!isset($entry['status']) || $entry['status'] == "")
-		$ERROR .= '<li>' . $plugin_tx[$plugin]['err_status_empty'] . '</li>'."\n";
-		$status = md5_decrypt($captcha, $plugin_cf[$plugin]['captcha_crypt']);
+		$ERROR .= '<li>' . $plugin_tx['register']['err_status_empty'] . '</li>'."\n";
+		$status = md5_decrypt($captcha, $plugin_cf['register']['captcha_crypt']);
 		if($status != $entry['status'])
-		$ERROR .= '<li>' . $plugin_tx[$plugin]['err_status_invalid'] . "($status&ne;" . $entry['status'] . ')</li>'."\n";
+		$ERROR .= '<li>' . $plugin_tx['register']['err_status_invalid'] . "($status&ne;" . $entry['status'] . ')</li>'."\n";
 	}
 
 	if($ERROR != "")
 	{
-		$o .= '<span class="regi_error">' . $plugin_tx[$plugin]['error'] . '</span>'."\n".
+		$o .= '<span class="regi_error">' . $plugin_tx['register']['error'] . '</span>'."\n".
 		'<ul class="regi_error">'."\n".$ERROR.'</ul>'."\n";
 	}
 	else
 	{
 		$entry['status'] = "activated";
-		$entry['accessgroups'] = array($plugin_cf[$plugin]['group_activated']);
+		$entry['accessgroups'] = array($plugin_cf['register']['group_activated']);
 		$userArray = registerReplaceUserEntry($userArray, $entry);
 		registerWriteUsers(Register_dataFolder() . 'users.csv', $userArray);
-		$o .= '<b>' . $plugin_tx[$plugin]['activated'] . '</b>'."\n";
+		$o .= '<b>' . $plugin_tx['register']['activated'] . '</b>'."\n";
 	}
 	register_lock_users(Register_dataFolder(), LOCK_UN);
   return $o;
@@ -433,8 +429,8 @@ function register_lock_users($dirname, $mode)
  */
 function registerReadGroups($filename)
 {
-	GLOBAL $plugin_cf;
-	$plugin = basename(dirname(__FILE__),"/");
+	global $plugin_cf;
+
 	$groupArray = array();
 	if(is_file($filename))
 	{
@@ -466,8 +462,7 @@ function registerReadGroups($filename)
  */
 function registerWriteGroups($filename, $array)
 {
-	GLOBAL $plugin_cf;
-	$plugin = basename(dirname(__FILE__),"/");
+	global $plugin_cf;
 
 	// remove old backup
 	if(is_file($filename . ".bak"))
@@ -534,8 +529,8 @@ function Register_groupLoginPage($group)
  */
 function registerReadUsers($filename)
 {
-	GLOBAL $plugin_cf;
-	$plugin = basename(dirname(__FILE__),"/");
+	global $plugin_cf;
+
 	$userArray = array();
 
 	if(is_file($filename))
@@ -577,8 +572,7 @@ function registerReadUsers($filename)
  */
 function registerWriteUsers($filename, $array)
 {
-	GLOBAL $plugin_cf;
-	$plugin = basename(dirname(__FILE__),"/");
+	global $plugin_cf;
 
 	// remove old backup
 	if(is_file($filename . ".bak")) unlink($filename . ".bak");
@@ -740,27 +734,27 @@ function Register_currentUser()
  */
 function registerCheckEntry($name, $username, $password1, $password2, $email)
 {
-	GLOBAL $plugin_tx,$plugin_cf;
-	$plugin = basename(dirname(__FILE__),"/");
+	global $plugin_tx,$plugin_cf;
+
 	$ERROR = '';
 
 	// check for empty or illegal/wrong fields
 	if(empty($name))
-	$ERROR .= '<li>' . $plugin_tx[$plugin]['err_name'] . '</li>'."\n";
+	$ERROR .= '<li>' . $plugin_tx['register']['err_name'] . '</li>'."\n";
 	if($username == '')
-	$ERROR .= '<li>' . $plugin_tx[$plugin]['err_username'] . '</li>'."\n";
+	$ERROR .= '<li>' . $plugin_tx['register']['err_username'] . '</li>'."\n";
 	elseif(!preg_match("/^[A-Za-z0-9_]+$/", $username))
-	$ERROR .= '<li>' . $plugin_tx[$plugin]['err_username_illegal'] . '</li>'."\n";
+	$ERROR .= '<li>' . $plugin_tx['register']['err_username_illegal'] . '</li>'."\n";
 	if($password1 == '')
-	$ERROR .= '<li>' . $plugin_tx[$plugin]['err_password'] . '</li>'."\n";
+	$ERROR .= '<li>' . $plugin_tx['register']['err_password'] . '</li>'."\n";
 	elseif(!preg_match("/^[A-Za-z0-9_]+$/", $password1))
-	$ERROR .= '<li>' . $plugin_tx[$plugin]['err_password_illegal'] . '</li>'."\n";
+	$ERROR .= '<li>' . $plugin_tx['register']['err_password_illegal'] . '</li>'."\n";
 	if($password2 == '' || $password1 != $password2)
-    $ERROR .= '<li>' . $plugin_tx[$plugin]['err_password2'] . '</li>'."\n";
+    $ERROR .= '<li>' . $plugin_tx['register']['err_password2'] . '</li>'."\n";
 	if($email == '')
-    $ERROR .= '<li>' . $plugin_tx[$plugin]['err_email'] . '</li>'."\n";
+    $ERROR .= '<li>' . $plugin_tx['register']['err_email'] . '</li>'."\n";
 	elseif (!preg_match("/^[^\s()<>@,;:\"\/\[\]?=]+@\w[\w-]*(\.\w[\w-]*)*\.[a-z]{2,}$/i",$email))
-	$ERROR .= '<li>' . $plugin_tx[$plugin]['err_email_invalid'] . '</li>'."\n";
+	$ERROR .= '<li>' . $plugin_tx['register']['err_email_invalid'] . '</li>'."\n";
 	return $ERROR;
 }
 
@@ -769,18 +763,18 @@ function registerCheckEntry($name, $username, $password1, $password2, $email)
  */
 function registerCheckColons($name, $username, $password1, $email)
 {
-	GLOBAL $plugin_tx,$plugin_cf;
-	$plugin = basename(dirname(__FILE__),"/");
+	global $plugin_tx,$plugin_cf;
+
 	$ERROR = '';
 
 	if(strpos($name, ":") !== false)
-	$ERROR .= '<li>' . $plugin_tx[$plugin]['name'] . ' ' . $plugin_tx[$plugin]['err_colon'] . '</li>'."\n";
+	$ERROR .= '<li>' . $plugin_tx['register']['name'] . ' ' . $plugin_tx['register']['err_colon'] . '</li>'."\n";
 	if(strpos($username, ":") !== false)
-	$ERROR .= '<li>' . $plugin_tx[$plugin]['username'] . ' ' . $plugin_tx[$plugin]['err_colon'] . '</li>'."\n";
+	$ERROR .= '<li>' . $plugin_tx['register']['username'] . ' ' . $plugin_tx['register']['err_colon'] . '</li>'."\n";
 	if(strpos($password1, ":") !== false)
-	$ERROR .= '<li>' . $plugin_tx[$plugin]['password'] . ' ' . $plugin_tx[$plugin]['err_colon'] . '</li>'."\n";
+	$ERROR .= '<li>' . $plugin_tx['register']['password'] . ' ' . $plugin_tx['register']['err_colon'] . '</li>'."\n";
 	if(strpos($email, ":") !== false)
-	$ERROR .= '<li>' . $plugin_tx[$plugin]['email'] . ' ' . $plugin_tx[$plugin]['err_colon'] . '</li>'."\n";
+	$ERROR .= '<li>' . $plugin_tx['register']['email'] . ' ' . $plugin_tx['register']['err_colon'] . '</li>'."\n";
 	return $ERROR;
 }
 
@@ -825,8 +819,6 @@ function registerUser()
 {
 	global $su, $pth, $sn, $plugin_tx, $plugin_cf, $_Register_hasher;
 
-	$plugin = basename(dirname(__FILE__),"/");
-
 	// In case user is logged in, no registration page is shown
 	if (Register_isLoggedIn()) {
 		header('Location: ' . CMSIMPLE_URL);
@@ -853,19 +845,19 @@ function registerUser()
 	if(isset($_POST['action']) && $action == "register_user")
 	{
 		$ERROR .= registerCheckEntry($name, $username, $password1, $password2, $email);
-		if($plugin_cf[$plugin]['captcha_mode'] != "none")
+		if($plugin_cf['register']['captcha_mode'] != "none")
 		{
-			if($plugin_cf[$plugin]['captcha_mode'] == "image")
-			$code = md5_decrypt($captcha, $plugin_cf[$plugin]['captcha_crypt']);
-			elseif($plugin_cf[$plugin]['captcha_mode'] == "formula") {
-                            $formula = md5_decrypt($captcha, $plugin_cf[$plugin]['captcha_crypt']);
+			if($plugin_cf['register']['captcha_mode'] == "image")
+			$code = md5_decrypt($captcha, $plugin_cf['register']['captcha_crypt']);
+			elseif($plugin_cf['register']['captcha_mode'] == "formula") {
+                            $formula = md5_decrypt($captcha, $plugin_cf['register']['captcha_crypt']);
                             $addends = explode('+', $formula);
                             $addends = array_filter($addends, create_function('$x', 'return is_numeric(trim($x));'));
                             $code = array_sum($addends);
 			}
 
 			if($register_validate == '' || strtolower($register_validate) != $code)
-			$ERROR .= '<li>' . $plugin_tx[$plugin]['err_validation'] . '</li>';
+			$ERROR .= '<li>' . $plugin_tx['register']['err_validation'] . '</li>';
 		}
 
 		// check for colons in fields
@@ -877,58 +869,58 @@ function registerUser()
 
 		// check if user or other user for same email address exists
 		if(registerSearchUserArray($userArray, 'username', $username) !== false)
-		$ERROR .= '<li>' . $plugin_tx[$plugin]['err_username_exists'] . '</li>'."\n";
+		$ERROR .= '<li>' . $plugin_tx['register']['err_username_exists'] . '</li>'."\n";
 		if(registerSearchUserArray($userArray, 'email', $email) !== false)
-		$ERROR .= '<li>' . $plugin_tx[$plugin]['err_email_exists'] . '</li>'."\n";
+		$ERROR .= '<li>' . $plugin_tx['register']['err_email_exists'] . '</li>'."\n";
 
 		// generate another captcha code for the user activation email
-		$status = generateRandomCode((int)$plugin_cf[$plugin]['captcha_chars']);
-		if ($plugin_cf[$plugin]['encrypt_password'])
+		$status = generateRandomCode((int)$plugin_cf['register']['captcha_chars']);
+		if ($plugin_cf['register']['encrypt_password'])
 		$userArray = registerAddUser($userArray, $username, $_Register_hasher->HashPassword($password1),
-		array($plugin_cf[$plugin]['group_default']), $name, $email, $status);
+		array($plugin_cf['register']['group_default']), $name, $email, $status);
 		else
 		$userArray = registerAddUser($userArray, $username, $password1,
-		array($plugin_cf[$plugin]['group_default']), $name, $email, $status);
+		array($plugin_cf['register']['group_default']), $name, $email, $status);
 
 		// write CSV file if no errors occurred so far
 		if($ERROR=="" && !registerWriteUsers(Register_dataFolder() . 'users.csv', $userArray))
 		$ERROR .= '<li>' .
-		$plugin_tx[$plugin]['err_cannot_write_csv'] .
+		$plugin_tx['register']['err_cannot_write_csv'] .
 		' (' . Register_dataFolder() . 'users.csv' . ')' .
 		'</li>'."\n";
 		register_lock_users(Register_dataFolder(), LOCK_UN);
 
 		if($ERROR != "")
 		{
-			$o .= '<span class="regi_error">' . $plugin_tx[$plugin]['error'] . '</span>'."\n" .
+			$o .= '<span class="regi_error">' . $plugin_tx['register']['error'] . '</span>'."\n" .
 			'<ul class="regi_error">'."\n".$ERROR.'</ul>'."\n";
 		}
 			else
 		{
 
 			// prepare email content for registration activation
-			$content = $plugin_tx[$plugin]['emailtext1'] . "\n\n" .
-			' ' . $plugin_tx[$plugin]['name'] . ": $name \n" .
-			' ' . $plugin_tx[$plugin]['username'] . ": $username \n" .
-			//' ' . $plugin_tx[$plugin]['password'] . ": $password1 \n" .
-			' ' . $plugin_tx[$plugin]['email'] . ": $email \n" .
-			' ' . $plugin_tx[$plugin]['fromip'] . ": $REMOTE_ADDR \n\n" .
-			$plugin_tx[$plugin]['emailtext2'] . "\n\n" .
+			$content = $plugin_tx['register']['emailtext1'] . "\n\n" .
+			' ' . $plugin_tx['register']['name'] . ": $name \n" .
+			' ' . $plugin_tx['register']['username'] . ": $username \n" .
+			//' ' . $plugin_tx['register']['password'] . ": $password1 \n" .
+			' ' . $plugin_tx['register']['email'] . ": $email \n" .
+			' ' . $plugin_tx['register']['fromip'] . ": $REMOTE_ADDR \n\n" .
+			$plugin_tx['register']['emailtext2'] . "\n\n" .
 			CMSIMPLE_URL . '?' . $su . '&' .
 			'action=registerActivateUser&username='.$username.'&captcha=' .
-			md5_encrypt($status, $plugin_cf[$plugin]['captcha_crypt']);
+			md5_encrypt($status, $plugin_cf['register']['captcha_crypt']);
 
 			// send activation email
 			(new Register\MailService)->sendMail(
 				$email,
-				$plugin_tx[$plugin]['emailsubject'] . ' ' . $_SERVER['SERVER_NAME'],
+				$plugin_tx['register']['emailsubject'] . ' ' . $_SERVER['SERVER_NAME'],
 				$content,
 				array(
-					'From: ' . $plugin_cf[$plugin]['senderemail'],
-					'Cc: '  . $plugin_cf[$plugin]['senderemail']
+					'From: ' . $plugin_cf['register']['senderemail'],
+					'Cc: '  . $plugin_cf['register']['senderemail']
 				)
 			);
-			$o .= '<b>' . $plugin_tx[$plugin]['registered'] . '</b>';
+			$o .= '<b>' . $plugin_tx['register']['registered'] . '</b>';
 			return $o;
 		}
 	} elseif(isset($_GET['action']) && $_GET['action'] == 'registerActivateUser' &&
@@ -940,15 +932,15 @@ function registerUser()
 	}
 
 	// Form Creation
-	if($captcha == '' || md5_decrypt($captcha, $plugin_cf[$plugin]['captcha_crypt']) == '')
+	if($captcha == '' || md5_decrypt($captcha, $plugin_cf['register']['captcha_crypt']) == '')
 	{
-		if($plugin_cf[$plugin]['captcha_mode'] == "image") $code = generateRandomCode((int)$plugin_cf[$plugin]['captcha_chars']);
-		else if($plugin_cf[$plugin]['captcha_mode'] == "formula") $code = generateCaptchaFormula((int)$plugin_cf[$plugin]['captcha_chars']);
+		if($plugin_cf['register']['captcha_mode'] == "image") $code = generateRandomCode((int)$plugin_cf['register']['captcha_chars']);
+		else if($plugin_cf['register']['captcha_mode'] == "formula") $code = generateCaptchaFormula((int)$plugin_cf['register']['captcha_chars']);
 		else
 		$code = '';
 	}
 	else
-	$code = md5_decrypt($captcha, $plugin_cf[$plugin]['captcha_crypt']);
+	$code = md5_decrypt($captcha, $plugin_cf['register']['captcha_crypt']);
 	$o .= registerForm($code, $name, $username, $password1, $password2, $email);
 	return $o;
 }
@@ -971,8 +963,6 @@ function registerForgotPassword()
 {
 	global $pth, $sn, $su, $plugin_tx, $plugin_cf, $_Register_hasher;
 
-	$plugin = basename(dirname(__FILE__),"/");
-
 	// In case user is logged in, no password forgotten page is shown
 	if(Register_isLoggedIn()) {
 		header('Location: ' . CMSIMPLE_URL);
@@ -982,7 +972,7 @@ function registerForgotPassword()
 	checkGD();
 
 	$ERROR = '';
-	$o = '<p>' . $plugin_tx[$plugin]['reminderexplanation'] . '</p>'."\n";
+	$o = '<p>' . $plugin_tx['register']['reminderexplanation'] . '</p>'."\n";
 
 	// Get form data if available
 	$action    = isset($_REQUEST['action']) ? $_REQUEST['action'] : "";
@@ -991,9 +981,9 @@ function registerForgotPassword()
 	// Form Handling
 	if(isset($_POST['action']) && $action == "forgotten_password")
 	{
-		if($email == '') $ERROR .= '<li>' . $plugin_tx[$plugin]['err_email'] . '</li>'."\n";
+		if($email == '') $ERROR .= '<li>' . $plugin_tx['register']['err_email'] . '</li>'."\n";
 		elseif (!preg_match("/^[^\s()<>@,;:\"\/\[\]?=]+@\w[\w-]*(\.\w[\w-]*)*\.[a-z]{2,}$/i",$email))
-		$ERROR .= '<li>' . $plugin_tx[$plugin]['err_email_invalid'] . '</li>'."\n";
+		$ERROR .= '<li>' . $plugin_tx['register']['err_email_invalid'] . '</li>'."\n";
 
 		// read user file in CSV format separated by colons
 		register_lock_users(Register_dataFolder(), LOCK_SH);
@@ -1002,27 +992,27 @@ function registerForgotPassword()
 
 		// search user for email
 		$user = registerSearchUserArray($userArray, 'email', $email);
-		if(!$user) $ERROR .= '<li>' . $plugin_tx[$plugin]['err_email_does_not_exist'] . '</li>'."\n";
+		if(!$user) $ERROR .= '<li>' . $plugin_tx['register']['err_email_does_not_exist'] . '</li>'."\n";
 
 		$password = $user['password'];
 
 		if($ERROR != "")
 		{
-		$o .= '<span class="regi_error">' . $plugin_tx[$plugin]['error'] . '</span>'."\n" .
+		$o .= '<span class="regi_error">' . $plugin_tx['register']['error'] . '</span>'."\n" .
 		'<ul class="regi_error">'."\n".$ERROR.'</ul>'."\n";
 		}
 		else
 		{
 			// prepare email content for user data email
-			$content = $plugin_tx[$plugin]['emailtext1'] . "\n\n"
-			    . ' ' . $plugin_tx[$plugin]['name'] . ": " . $user['name'] . "\n"
-			    . ' ' . $plugin_tx[$plugin]['username'] . ": " . $user['username'] . "\n";
-			if (!$plugin_cf[$plugin]['encrypt_password']) {
-			    $content .= ' ' . $plugin_tx[$plugin]['password'] . ": " . $password . "\n";
+			$content = $plugin_tx['register']['emailtext1'] . "\n\n"
+			    . ' ' . $plugin_tx['register']['name'] . ": " . $user['name'] . "\n"
+			    . ' ' . $plugin_tx['register']['username'] . ": " . $user['username'] . "\n";
+			if (!$plugin_cf['register']['encrypt_password']) {
+			    $content .= ' ' . $plugin_tx['register']['password'] . ": " . $password . "\n";
 			}
-			$content .= ' ' . $plugin_tx[$plugin]['email'] . ": " . $user['email'] . "\n";
-			if ($plugin_cf[$plugin]['encrypt_password']) {
-			    $content .= "\n" . $plugin_tx[$plugin]['emailtext3'] ."\n\n"
+			$content .= ' ' . $plugin_tx['register']['email'] . ": " . $user['email'] . "\n";
+			if ($plugin_cf['register']['encrypt_password']) {
+			    $content .= "\n" . $plugin_tx['register']['emailtext3'] ."\n\n"
 				. CMSIMPLE_URL . '?' . $su . '&'
 				. 'action=registerResetPassword&username=' . urlencode($user['username']) . '&captcha='
 				. urlencode($user['password']);
@@ -1031,15 +1021,15 @@ function registerForgotPassword()
 			// send reminder email
 			(new Register\MailService)->sendMail(
 				$email,
-				$plugin_tx[$plugin]['reminderemailsubject'] . ' ' . $_SERVER['SERVER_NAME'],
+				$plugin_tx['register']['reminderemailsubject'] . ' ' . $_SERVER['SERVER_NAME'],
 				$content,
-				array('From: ' . $plugin_cf[$plugin]['senderemail'])
+				array('From: ' . $plugin_cf['register']['senderemail'])
 			);
-			$o .= '<b>' . $plugin_tx[$plugin]['remindersent'] . '</b>';
+			$o .= '<b>' . $plugin_tx['register']['remindersent'] . '</b>';
 			return $o;
 		}
 	} elseif (isset($_GET['action']) && $action == 'registerResetPassword'
-		  && $plugin_cf[$plugin]['encrypt_password'])
+		  && $plugin_cf['register']['encrypt_password'])
 	{
 		// read user file in CSV format separated by colons
 		register_lock_users(Register_dataFolder(), LOCK_EX);
@@ -1047,10 +1037,10 @@ function registerForgotPassword()
 
 		// search user for email
 		$user = registerSearchUserArray($userArray, 'username', $_GET['username']);
-		if(!$user) $ERROR .= '<li>' . $plugin_tx[$plugin]['err_username_does_not_exist'] . '</li>'."\n";
+		if(!$user) $ERROR .= '<li>' . $plugin_tx['register']['err_username_does_not_exist'] . '</li>'."\n";
 
 		if ($user['password'] != stsl($_GET['captcha'])) {
-		    $ERROR .= '<li>' . $plugin_tx[$plugin]['err_status_invalid'] . '</li>';
+		    $ERROR .= '<li>' . $plugin_tx['register']['err_status_invalid'] . '</li>';
 		}
 
 		// in case of encrypted password a new random password will be generated
@@ -1061,7 +1051,7 @@ function registerForgotPassword()
 			$user['password'] = $_Register_hasher->HashPassword($password);
 			$userArray = registerReplaceUserEntry($userArray, $user);
 			if(!registerWriteUsers(Register_dataFolder() . 'users.csv', $userArray))
-			$ERROR .= '<li>' . $plugin_tx[$plugin]['err_cannot_write_csv'] .
+			$ERROR .= '<li>' . $plugin_tx['register']['err_cannot_write_csv'] .
 			' (' . Register_dataFolder() . 'users.csv' . ')' .
 			'</li>'."\n";
 		}
@@ -1069,26 +1059,26 @@ function registerForgotPassword()
 
 		if($ERROR != "")
 		{
-		$o .= '<span class="regi_error">' . $plugin_tx[$plugin]['error'] . '</span>'."\n" .
+		$o .= '<span class="regi_error">' . $plugin_tx['register']['error'] . '</span>'."\n" .
 		'<ul class="regi_error">'."\n".$ERROR.'</ul>'."\n";
 		}
 		else
 		{
 			// prepare email content for user data email
-			$content = $plugin_tx[$plugin]['emailtext1'] . "\n\n"
-			    . ' ' . $plugin_tx[$plugin]['name'] . ": " . $user['name'] . "\n"
-			    . ' ' . $plugin_tx[$plugin]['username'] . ": " . $user['username'] . "\n"
-			    . ' ' . $plugin_tx[$plugin]['password'] . ": " . $password . "\n"
-			    . ' ' . $plugin_tx[$plugin]['email'] . ": " . $user['email'] . "\n";
+			$content = $plugin_tx['register']['emailtext1'] . "\n\n"
+			    . ' ' . $plugin_tx['register']['name'] . ": " . $user['name'] . "\n"
+			    . ' ' . $plugin_tx['register']['username'] . ": " . $user['username'] . "\n"
+			    . ' ' . $plugin_tx['register']['password'] . ": " . $password . "\n"
+			    . ' ' . $plugin_tx['register']['email'] . ": " . $user['email'] . "\n";
 
 			// send reminder email
 			(new Register\MailService)->sendMail(
 				$user['email'],
-				$plugin_tx[$plugin]['reminderemailsubject'] . ' ' . $_SERVER['SERVER_NAME'],
+				$plugin_tx['register']['reminderemailsubject'] . ' ' . $_SERVER['SERVER_NAME'],
 				$content,
-				array('From: ' . $plugin_cf[$plugin]['senderemail'])
+				array('From: ' . $plugin_cf['register']['senderemail'])
 			);
-			$o .= '<b>' . $plugin_tx[$plugin]['remindersent'] . '</b>';
+			$o .= '<b>' . $plugin_tx['register']['remindersent'] . '</b>';
 			return $o;
 		}
 	}
@@ -1117,14 +1107,13 @@ function registerUserPrefsForm($name, $email)
  */
 function registerUserPrefs()
 {
-	GLOBAL $plugin_tx,$plugin_cf,$pth, $sn, $_Register_hasher;
-	$plugin = basename(dirname(__FILE__),"/");
+	global $plugin_tx,$plugin_cf,$pth, $sn, $_Register_hasher;
 
 	$ERROR = '';
 	$o = '';
 
 	if(!Register_isLoggedIn()) {
-		return $plugin_tx[$plugin]['access_error_text'];
+		return $plugin_tx['register']['access_error_text'];
 	}
 
 	// Get form data if available
@@ -1146,12 +1135,12 @@ function registerUserPrefs()
 	// search user in CSV data
 	$entry = registerSearchUserArray($userArray, 'username', $username);
 	if($entry === false)
-	die($plugin_tx[$plugin]['err_username_does_not_exist'] . " ('" . $username . "')");
+	die($plugin_tx['register']['err_username_does_not_exist'] . " ('" . $username . "')");
 
 	// Test if user is locked
 	if ($entry['status'] == "locked")
 	{
-	$o .= '<span class=regi_error>' . $plugin_tx[$plugin]['user_locked'] . ':' .$username.'</span>'."\n";
+	$o .= '<span class=regi_error>' . $plugin_tx['register']['user_locked'] . ':' .$username.'</span>'."\n";
 	return $o;
 	}
 
@@ -1159,12 +1148,12 @@ function registerUserPrefs()
 	if($username!="" && isset($_POST['submit']) && $action == "edit_user_prefs")
 	{
 		// check that old password got entered correctly
-		if (!$plugin_cf[$plugin]['encrypt_password'] &&
+		if (!$plugin_cf['register']['encrypt_password'] &&
 		$oldpassword != $entry['password'])
-		$ERROR .= '<li>' . $plugin_tx[$plugin]['err_old_password_wrong'] . '</li>'."\n";
-		elseif ($plugin_cf[$plugin]['encrypt_password'] &&
+		$ERROR .= '<li>' . $plugin_tx['register']['err_old_password_wrong'] . '</li>'."\n";
+		elseif ($plugin_cf['register']['encrypt_password'] &&
 		!$_Register_hasher->CheckPassword($oldpassword, $entry['password']))
-		$ERROR .= '<li>' . $plugin_tx[$plugin]['err_old_password_wrong'] . '</li>'."\n";
+		$ERROR .= '<li>' . $plugin_tx['register']['err_old_password_wrong'] . '</li>'."\n";
 
 		if($password1 == "" && $password2 == "")
 		{
@@ -1183,7 +1172,7 @@ function registerUserPrefs()
 		// read user entry, update it and write it back to CSV file
 		if($ERROR=="")
 		{
-			if ($plugin_cf[$plugin]['encrypt_password'])
+			if ($plugin_cf['register']['encrypt_password'])
 			$entry['password'] = $_Register_hasher->HashPassword($password1);
 			else
 			$entry['password'] = $password1;
@@ -1193,7 +1182,7 @@ function registerUserPrefs()
 
 			// write CSV file if no errors occurred so far
 			if(!registerWriteUsers(Register_dataFolder() . 'users.csv', $userArray))
-			$ERROR .= '<li>' . $plugin_tx[$plugin]['err_cannot_write_csv'] .
+			$ERROR .= '<li>' . $plugin_tx['register']['err_cannot_write_csv'] .
 			' (' . Register_dataFolder() . 'users.csv' . ')' .
 			'</li>'."\n";
 		}
@@ -1201,7 +1190,7 @@ function registerUserPrefs()
 
 		if($ERROR != '')
 		{
-			$o .= '<span class="regi_error">' . $plugin_tx[$plugin]['error'] . '</span>'."\n" .
+			$o .= '<span class="regi_error">' . $plugin_tx['register']['error'] . '</span>'."\n" .
 			'<ul class="regi_error">'."\n".$ERROR.'</ul>'."\n";
 		}
 		else
@@ -1212,24 +1201,24 @@ function registerUserPrefs()
 			$_SESSION['fullname'] = $name;
 
 			// prepare email for user information about updates
-			$content = $plugin_tx[$plugin]['emailprefsupdated'] . "\n\n" .
-			' ' . $plugin_tx[$plugin]['name'] . ': '.$name."\n" .
-			' ' . $plugin_tx[$plugin]['username'] . ': '.$username."\n" .
-			//' ' . $plugin_tx[$plugin]['password'] . ': '.$password1."\n" .
-			' ' . $plugin_tx[$plugin]['email'] . ': '.$email."\n" .
-			' ' . $plugin_tx[$plugin]['fromip'] . ': '.$REMOTE_ADDR."\n";
+			$content = $plugin_tx['register']['emailprefsupdated'] . "\n\n" .
+			' ' . $plugin_tx['register']['name'] . ': '.$name."\n" .
+			' ' . $plugin_tx['register']['username'] . ': '.$username."\n" .
+			//' ' . $plugin_tx['register']['password'] . ': '.$password1."\n" .
+			' ' . $plugin_tx['register']['email'] . ': '.$email."\n" .
+			' ' . $plugin_tx['register']['fromip'] . ': '.$REMOTE_ADDR."\n";
 
 			// send update email
 			(new Register\MailService)->sendMail(
 				$email,
-				$plugin_tx[$plugin]['prefsemailsubject'] . ' ' . $_SERVER['SERVER_NAME'],
+				$plugin_tx['register']['prefsemailsubject'] . ' ' . $_SERVER['SERVER_NAME'],
 				$content,
 				array(
-					'From: ' . $plugin_cf[$plugin]['senderemail'],
-					'Cc: '  . $oldemail . ', ' . $plugin_cf[$plugin]['senderemail']
+					'From: ' . $plugin_cf['register']['senderemail'],
+					'Cc: '  . $oldemail . ', ' . $plugin_cf['register']['senderemail']
 				)
 			);
-			$o .= '<b>' . $plugin_tx[$plugin]['prefsupdated'] . '</b>';
+			$o .= '<b>' . $plugin_tx['register']['prefsupdated'] . '</b>';
 			return $o;
 		}
 	}
@@ -1238,18 +1227,18 @@ function registerUserPrefs()
 
 		// Form Handling - Delete User ================================================
 		// check that old password got entered correctly
-		if (!$plugin_cf[$plugin]['encrypt_password'] && $oldpassword != $entry['password'])
-		$ERROR .= '<li>' . $plugin_tx[$plugin]['err_old_password_wrong'] . '</li>'."\n";
-		elseif ($plugin_cf[$plugin]['encrypt_password']
+		if (!$plugin_cf['register']['encrypt_password'] && $oldpassword != $entry['password'])
+		$ERROR .= '<li>' . $plugin_tx['register']['err_old_password_wrong'] . '</li>'."\n";
+		elseif ($plugin_cf['register']['encrypt_password']
 		       && !$_Register_hasher->CheckPassword($oldpassword, $entry['password']))
-		$ERROR .= '<li>' . $plugin_tx[$plugin]['err_old_password_wrong'] . '</li>'."\n";
+		$ERROR .= '<li>' . $plugin_tx['register']['err_old_password_wrong'] . '</li>'."\n";
 
 		// read user entry, update it and write it back to CSV file
 		if($ERROR=="")
 		{
 			$userArray = registerDeleteUserEntry($userArray, $username);
 			if(!registerWriteUsers(Register_dataFolder() . 'users.csv', $userArray))
-			$ERROR .= '<li>' . $plugin_tx[$plugin]['err_cannot_write_csv'] .
+			$ERROR .= '<li>' . $plugin_tx['register']['err_cannot_write_csv'] .
 			' (' . Register_dataFolder() . 'users.csv' . ')' .
 			'</li>'."\n";
 		}
@@ -1258,7 +1247,7 @@ function registerUserPrefs()
 
 		if($ERROR != "")
 		{
-		$o .= '<span class="regi_error">' . $plugin_tx[$plugin]['error'] . '</span>'."\n" .
+		$o .= '<span class="regi_error">' . $plugin_tx['register']['error'] . '</span>'."\n" .
         '<ul class="regi_error">'."\n".$ERROR.'</ul>'."\n";
 		}
 		else
@@ -1287,7 +1276,7 @@ function registerUserPrefs()
 
 			XH_logMessage('info', 'register', 'logout', "$username deleted and logged out");
 
-			$o .= '<b>' . $plugin_tx[$plugin]['user_deleted'] . ': '.$username.'</b>'."\n";
+			$o .= '<b>' . $plugin_tx['register']['user_deleted'] . ': '.$username.'</b>'."\n";
 			return $o;
 		}
 	}
@@ -1308,6 +1297,7 @@ function registerUserPrefs()
 function registerloginform()
 {
 	global $plugin_cf, $plugin_tx, $pth, $sn, $su;
+
 	$imageFolder = "{$pth['folder']['plugins']}register/images";
 
 	// If logged in show user preferences link, otherwise register and forgot email links.
