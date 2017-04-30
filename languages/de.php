@@ -58,7 +58,6 @@ $plugin_tx['register']['err_email']="Bitte geben Sie Ihre E-Mail-Adresse an.";
 $plugin_tx['register']['err_email_invalid']="Die von Ihnen eingegebene E-Mail-Adresse ist nicht gültig.";
 $plugin_tx['register']['err_email_exists']="Ein Benutzer für die von Ihnen eingegebene E-Mail-Adresse existiert bereits.";
 $plugin_tx['register']['err_email_does_not_exist']="Ein Benutzer für die von Ihnen eingegebene E-Mail-Adresse existiert nicht.";
-$plugin_tx['register']['err_validation']="Bestätigungscode falsch.";
 $plugin_tx['register']['err_colon']="darf keinen Doppelpunkt enthalten.";
 $plugin_tx['register']['err_group_does_not_exist']="Gruppe existiert nicht.";
 $plugin_tx['register']['err_csv_missing']="Die CSV-Datei existiert nicht.";
@@ -104,7 +103,6 @@ $plugin_tx['register']['syscheck_writable']="'%s' schreibbar ist";
 $plugin_tx['register']['syscheck_xhversion']="die CMSimple_XH-Version ≥ %s";
 
 $plugin_tx['register']['cf_allowed_register']="Ob sich neue Mitglieder selbst registrieren können.";
-$plugin_tx['register']['cf_captcha_mode']="<b>none</b> deaktiviert das Captcha. <b>formula</b> aktiviert ein formelbasiertes Captcha.</b> <b>image</b> aktiviert ein bildbasiertes Captcha.";
 $plugin_tx['register']['cf_encrypt_password']="Vom Deaktiveren des Passwort-Hashing wird unbedingt abgeraten!";
 $plugin_tx['register']['cf_fix_mail_headers']="Ob Probleme mit einigen fehlerhaften Mail Transfer Agents behoben werden sollen. Aktivieren Sie diese Option, wenn Sie die E-Mails nicht empfangen oder wenn ein Teil der Header-Informationen (z.B. \"MIME-Version: 1.0\") im Rumpf der E-Mail erscheint.";
 $plugin_tx['register']['cf_group_activated']="Der Status neuer Mitglieder (Gruppe nach Registrierung und Account Aktivierung).";

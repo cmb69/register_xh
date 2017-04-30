@@ -58,7 +58,6 @@ $plugin_tx['register']['err_email']="Please enter your email address.";
 $plugin_tx['register']['err_email_invalid']="The given email address is invalid.";
 $plugin_tx['register']['err_email_exists']="A user with the given email address exists already.";
 $plugin_tx['register']['err_email_does_not_exist']="A user with the given email address does not exist.";
-$plugin_tx['register']['err_validation']="Confirmation code wrong.";
 $plugin_tx['register']['err_colon']="must not contain a colon.";
 $plugin_tx['register']['err_group_does_not_exist']="Group does not exist.";
 $plugin_tx['register']['err_csv_missing']="The CSV file does not exist.";
@@ -104,7 +103,6 @@ $plugin_tx['register']['syscheck_writable']="'%s' is writable";
 $plugin_tx['register']['syscheck_xhversion']="CMSimple_XH version ≥ %s";
 
 $plugin_tx['register']['cf_allowed_register']="Whether new members may register themselves.";
-$plugin_tx['register']['cf_captcha_mode']="<b>none</b> deactivates captcha. <b>formula</b> activates a formula based captcha.</b> <b>image</b> activates a image based captcha.";
 $plugin_tx['register']['cf_encrypt_password']="Disabling password hashing is strongly discouraged!";
 $plugin_tx['register']['cf_fix_mail_headers']="Whether to fix problems with some buggy mail transfer agents. Enable it, if you don't receive the emails or if some header information (e.g. \"MIME-Version: 1.0\") is visible in the body of the mail.";
 $plugin_tx['register']['cf_group_activated']="The status of new members (group after registration and account activation).";

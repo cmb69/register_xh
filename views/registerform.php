@@ -4,7 +4,6 @@
             <tr>
                 <td>
                     <input type="hidden" name="action" value="register_user">
-                    <input type="hidden" name="captcha" value="<?=$this->captcha()?>">
                     <?=$this->text('name')?>
                 </td>
                 <td colspan="2"><input class="text" name="name" type="text" size="35" value="<?=$this->name()?>"></td>
@@ -25,13 +24,6 @@
                 <td><?=$this->text('email')?></td>
                 <td colspan="2"><input class="text" name="email" type="text" size="35" value="<?=$this->email()?>"></td>
             </tr>
-<?php if ($this->hasCaptcha):?>
-            <tr>
-                <td><?=$this->text('code')?></td>
-                <td><input class="text" name="register_validate" type="text" size="10" value=""></td>
-                <td><?=$this->captchaHtml()?></td>
-            </tr>
-<?php endif?>
             <tr>
                 <td colspan="3"><input class="submit" type="submit" value="<?=$this->text('register')?>"></td>
             </tr>
