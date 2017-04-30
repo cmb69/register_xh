@@ -112,10 +112,6 @@ class UserPrefsController extends Controller
             $view->render();
             echo $this->userPrefsForm($name, $email);
         } else {
-            // update session variables
-            $_SESSION['email'] = $email;
-            $_SESSION['fullname'] = $name;
-
             // prepare email for user information about updates
             $content = $this->lang['emailprefsupdated'] . "\n\n" .
                 ' ' . $this->lang['name'] . ': '.$name."\n" .
@@ -197,15 +193,8 @@ class UserPrefsController extends Controller
 
             $username = isset($_SESSION['username']) ? $_SESSION['username'] : '';
 
-            // clear all session variables
-            //$_SESSION = array();
-
             // end session
             unset($_SESSION['username']);
-            unset($_SESSION['fullname']);
-            unset($_SESSION['email']);
-            unset($_SESSION['accessgroups']);
-            unset($_SESSION['sessionnr']);
             unset($_SESSION['register_sn']);
 
             // clear cookies

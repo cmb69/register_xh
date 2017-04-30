@@ -55,13 +55,8 @@ function Register_isLoggedIn()
 {
 	return isset(
 			$_SESSION['username'],
-			$_SESSION['fullname'],
-			$_SESSION['email'],
-			$_SESSION['accessgroups'],
-			$_SESSION['sessionnr'],
 			$_SESSION['register_sn']
 		)
-		&& $_SESSION['sessionnr'] == session_id()
 		&& $_SESSION['register_sn'] == REGISTER_SESSION_NAME;
 }
 
@@ -73,8 +68,9 @@ if ($plugin_cf['register']['remember_user'] && isset($_COOKIE['username'], $_COO
 
 if (!($edit&&$adm) && $plugin_cf['register']['hide_pages'])
 {
+	$temp = Register_currentUser();
 	if (Register_isLoggedIn()) {
-		registerRemoveHiddenPages($_SESSION['accessgroups']);
+		registerRemoveHiddenPages($temp['accessgroups']);
 	} else {
 		registerRemoveHiddenPages(array());
 	}
@@ -114,8 +110,9 @@ function access($groupString)
 	$groupString = preg_replace("/[ \t\r\n]*/", '', $groupString);
 	$groupNames = explode(",", $groupString);
 
+	$user = Register_currentUser();
 	$o = '';
-	if (!Register_isLoggedIn() || !count(array_intersect($groupNames, $_SESSION['accessgroups']))) {
+	if (!Register_isLoggedIn() || !count(array_intersect($groupNames, $user['accessgroups']))) {
 		// go to access error page
 		$pageTitle = uenc($plugin_tx['register']['access_error']);
 		header('Location: '.CMSIMPLE_URL.'?'. $pageTitle);
@@ -221,22 +218,24 @@ function registerDeleteUserEntry($array, $username)
 /**
  * Returns the user record, if the user is logged in, otherwise null.
  *
- * @return array
+ * @return ?array
  */
 function Register_currentUser()
 {
-    global $pth, $plugin_tx;
+    static $user = null;
 
-    $ptx = $plugin_tx['register'];
-    if (Register_isLoggedIn()) {
-	(new Register\DbService(Register_dataFolder()))->lock(LOCK_SH);
-	$users = (new Register\DbService(Register_dataFolder()))->readUsers();
-	$rec = registerSearchUserArray($users, 'username', $_SESSION['username']);
-	(new Register\DbService(Register_dataFolder()))->lock(LOCK_UN);
-	return $rec;
-    } else {
-	return null;
-    }
+	if (!$user) {
+		if (Register_isLoggedIn()) {
+			(new Register\DbService(Register_dataFolder()))->lock(LOCK_SH);
+			$users = (new Register\DbService(Register_dataFolder()))->readUsers();
+			$rec = registerSearchUserArray($users, 'username', $_SESSION['username']);
+			(new Register\DbService(Register_dataFolder()))->lock(LOCK_UN);
+			$user = $rec;
+		} else {
+			$user = null;
+		}
+	}
+	return $user;
 }
 
 /**
@@ -402,8 +401,9 @@ function registerloginform()
 		// Logout Link and Preferences Link
 		$view = new Register\View('loggedin-area');
 		$view->isHorizontal = $plugin_cf['register']['login_layout'] === 'horizontal';
-		$view->fullName = $_SESSION['fullname'];
-		$currentUser = Register_currentUser();
+		$user = Register_currentUser();
+		$view->fullName = $user['name'];
+		$currentUser = $user;
 		$userPrefUrl = uenc($plugin_tx['register']['user_prefs']);
 		$view->hasUserPrefs = $currentUser['status'] == 'activated' && isset($su)
 		    && urldecode($su) != $userPrefUrl;

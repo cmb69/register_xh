@@ -47,11 +47,7 @@ class LoginController extends Controller
                 setcookie("password", $entry['password'], time() + $rememberPeriod, "/");
             }
 
-            $_SESSION['sessionnr']    = session_id();
             $_SESSION['username']     = $entry['username'];
-            $_SESSION['fullname']     = $entry['name'];
-            $_SESSION['accessgroups'] = $entry['accessgroups'];
-            $_SESSION['email']        = $entry['email'];
             $_SESSION['register_sn']  = REGISTER_SESSION_NAME;
 
             XH_logMessage('info', 'register', 'login', "$username logged in");
@@ -88,10 +84,6 @@ class LoginController extends Controller
     
         // end session
         unset($_SESSION['username']);
-        unset($_SESSION['fullname']);
-        unset($_SESSION['email']);
-        unset($_SESSION['accessgroups']);
-        unset($_SESSION['sessionnr']);
         unset($_SESSION['register_sn']);
     
         // clear cookies
