@@ -29,10 +29,10 @@ abstract class Controller
 
     public function __construct()
     {
-        global $plugin_cf, $plugin_tx, $_Register_hasher;
+        global $plugin_cf, $plugin_tx;
 
         $this->config = $plugin_cf['register'];
         $this->lang = $plugin_tx['register'];
-        $this->hasher = $_Register_hasher;
+        $this->hasher = new PasswordHash(10, false);
     }
 }

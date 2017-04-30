@@ -32,8 +32,14 @@ class Plugin
 
     public function run()
     {
-        global $edit;
+        global $edit, $function;
 
+        if (!Register_isLoggedIn() && $function === 'registerlogin') {
+            (new LoginController)->loginAction();
+        }
+        if (Register_isLoggedIn() && $function === 'registerlogout') {
+            (new LoginController)->logoutAction();
+        }
         if (!(XH_ADM && $edit)) {
             $this->handleImplicitPages();
         }

@@ -18,8 +18,6 @@ if (!defined('CMSIMPLE_XH_VERSION')) {
 define('REGISTER_VERSION', '@REGISTER_VERSION@');
 
 
-$_Register_hasher = new Register\PasswordHash(10, false);
-
 /****************************************************************************
  *	Direct Calls															*
  ****************************************************************************/
@@ -72,12 +70,6 @@ function Register_isLoggedIn()
 if ($plugin_cf['register']['remember_user'] && isset($_COOKIE['username'], $_COOKIE['password']) && !Register_isLoggedIn()) {
 	$function = "registerlogin";
 }
-if (!Register_isLoggedIn() && $function == "registerlogin") {
-	registerLogin();
-}
-if (Register_isLoggedIn() && $function == "registerlogout") {
-	registerLogout();
-}
 
 if (!($edit&&$adm) && $plugin_cf['register']['hide_pages'])
 {
@@ -91,131 +83,6 @@ if (!($edit&&$adm) && $plugin_cf['register']['hide_pages'])
 /****************************************************************************
  *	Function Definitions					*
  ****************************************************************************/
-
-/*
- * Login as user
- */
-function registerLogin()
-{
-	global $pth, $plugin_cf, $plugin_tx, $h, $sn, $su, $_Register_hasher;
-
-	//$secret = "LoginSecretWord";
-	$rememberPeriod = 24*60*60*100;
-
-	$username = isset($_POST['username']) ? $_POST['username'] : '';
-	$password = isset($_POST['password']) ? $_POST['password'] : '';
-	$remember = isset($_POST['remember']) ? $_POST['remember'] : '';
-
-	// encrypt password if configured that way
-	//if(preg_match('/true/i', $plugin_cf['register']['encrypt_password'])) $password = crypt($password, $password);
-
-	// set username and password in case cookies are set
-	if ($plugin_cf['register']['remember_user']
-	    && isset($_COOKIE['username'], $_COOKIE['password']))
-	{
-		$username     = $_COOKIE['username'];
-		$passwordHash = $_COOKIE['password'];
-	}
-//	else
-//    $passwordHash = md5($secret.$password);
-
-	// read user file in CSV format separated by colons
-	(new Register\DbService(Register_dataFolder()))->lock(LOCK_SH);
-	$userArray = (new Register\DbService(Register_dataFolder()))->readUsers();
-	(new Register\DbService(Register_dataFolder()))->lock(LOCK_UN);
-
-	// search user in CSV data
-	$entry = registerSearchUserArray($userArray, 'username', $username);
-
-	// check password and set session variables
-	if ($entry && $entry['username'] == $username
-	    && ($entry['status'] == 'activated' || $entry['status'] == 'locked')
-	    && (!isset($passwordHash) || $passwordHash == $entry['password'])
-	    && (isset($passwordHash)
-		|| ($plugin_cf['register']['encrypt_password']
-		    ? $_Register_hasher->CheckPassword($password, $entry['password'])
-		    : $password == $entry['password']))) {
-
-// Login Success ------------------------------------------------------------
-
-		// set cookies if requested by user
-		if ($plugin_cf['register']['remember_user']
-		    && isset($_POST['remember']))
-		{
-			setcookie("username", $username,     time() + $rememberPeriod, "/");
-			setcookie("password", $entry['password'], time() + $rememberPeriod, "/");
-		}
-
-		$_SESSION['sessionnr']    = session_id();
-		$_SESSION['username']     = $entry['username'];
-		$_SESSION['fullname']     = $entry['name'];
-		$_SESSION['accessgroups'] = $entry['accessgroups'];
-		$_SESSION['email']        = $entry['email'];
-		$_SESSION['register_sn']  = REGISTER_SESSION_NAME;
-
-		XH_logMessage('info', 'register', 'login', "$username logged in");
-
-		// go to login page if exists or to default page otherwise
-		if ($glp = Register_groupLoginPage($entry['accessgroups'][0])) {
-		    $loginPage = '?' . $glp;
-		} else {
-		    $loginPage = '?'. uenc($plugin_tx['register']['loggedin']);
-		}
-		header('Location: ' . CMSIMPLE_URL . $loginPage);
-		exit;
-
-	}
-	else
-	{
-		// Login Error --------------------------------------------------------------
-		// clear cookies
-		if(isset($_COOKIE['username'], $_COOKIE['password']))
-		{
-			setcookie("username", "", time() - $rememberPeriod, "/");
-			setcookie("password", "", time() - $rememberPeriod, "/");
-		}
-
-		XH_logMessage('error', 'register', 'login', "$username wrong password");
-
-		// go to login error page
-		$errorTitle = uenc($plugin_tx['register']['login_error']);
-		header('Location: ' . CMSIMPLE_URL . '?' . $errorTitle);
-		exit;
-	}
-}
-
-/*
- * Logout user
- */
-function registerLogout()
-{
-	global $_COOKIE, $plugin_cf, $plugin_tx, $sn, $h, $pth;
-
-	$rememberPeriod = 24*60*60*100;
-
-	$username = isset($_SESSION['username']) ? $_SESSION['username'] : '';
-
-	// end session
-	unset($_SESSION['username']);
-	unset($_SESSION['fullname']);
-	unset($_SESSION['email']);
-	unset($_SESSION['accessgroups']);
-	unset($_SESSION['sessionnr']);
-	unset($_SESSION['register_sn']);
-
-	// clear cookies
-	if(isset($_COOKIE['username'], $_COOKIE['password']))
-	{
-		setcookie("username", "", time() - $rememberPeriod, "/");
-		setcookie("password", "", time() - $rememberPeriod, "/");
-	}
-	XH_logMessage('info', 'register', 'logout', "$username logged out");
-
-    // go to logout page
-	$logoutTitle = uenc($plugin_tx['register']['loggedout']);
-	header('Location: ' . CMSIMPLE_URL . '?' . $logoutTitle);
-	exit;
-}
 
 /*
  * Remove access restricted pages. Supported are multiple groups per page and
