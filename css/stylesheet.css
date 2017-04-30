@@ -94,10 +94,6 @@ div.regi_loggedin_logout_ver {float: left; width: 100%; padding: 2px 0;}
 .regi_logoutimage {float: left; border: 0; margin: 0 8px 0 0;}
 
 
-/* error styles */
-
-.regi_error {color: red;}
-
 /* Admin area */
 
 .register_admin_main {margin-bottom: 1em}
@@ -116,9 +112,6 @@ div.register_admin_main a img {border: none}
 th.register_sort_asc {background: url("./sort-asc.png") no-repeat right}
 th.register_sort_desc {background: url("./sort-desc.png") no-repeat right}
 #register_user_table input[type="text"], #register_user_table select, #register_user_table button {width: 95%} /* if necessary, adjust the width to your template */
-
-div.register_status {font-weight: bold}
-
 
 img.register_plugin_icon {display: block; float: left; margin: 0 20px 0 0}
 p.register_license {clear: both; text-align: justify}

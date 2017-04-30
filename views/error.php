@@ -1,6 +1,8 @@
-<span class="regi_error"><?=$this->text('error')?></span>
-<ul class="regi_error">
+<div class="xh_fail">
+    <span><?=$this->text('error')?></span>
+    <ul>
 <?php foreach ($this->errors as $error):?>
-    <li><?=$this->escape($error)?></li>
+        <li><?=$this->escape($error)?></li>
 <?php endforeach?>
-</ul>
+    </ul>
+</div>

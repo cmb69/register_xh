@@ -14,7 +14,7 @@ class UserPrefsController extends Controller
 {
     public function registerUserPrefs()
     {
-        $ERROR = '';
+        $errors = [];
         $o = '';
     
         if (!Register_isLoggedIn()) {
@@ -45,7 +45,7 @@ class UserPrefsController extends Controller
 
         // Test if user is locked
         if ($entry['status'] == "locked") {
-            $o .= '<span class=regi_error>' . $this->lang['user_locked'] . ':' .$username.'</span>'."\n";
+            $o .= XH_message('fail', $this->lang['user_locked'] . ':' .$username);
             return $o;
         }
 
@@ -53,11 +53,11 @@ class UserPrefsController extends Controller
         if ($username!="" && isset($_POST['submit']) && $action == "edit_user_prefs") {
             // check that old password got entered correctly
             if (!$this->config['encrypt_password'] && $oldpassword != $entry['password']) {
-                $ERROR .= '<li>' . $this->lang['err_old_password_wrong'] . '</li>'."\n";
+                $errors[] = $this->lang['err_old_password_wrong'];
             } elseif ($this->config['encrypt_password']
                 && !$this->hasher->checkPassword($oldpassword, $entry['password'])
             ) {
-                $ERROR .= '<li>' . $this->lang['err_old_password_wrong'] . '</li>'."\n";
+                $errors[] = $this->lang['err_old_password_wrong'];
             }
 
             if ($password1 == "" && $password2 == "") {
@@ -71,14 +71,14 @@ class UserPrefsController extends Controller
                 $name = $entry['name'];
             }
 
-            $ERROR .= registerCheckEntry($name, $username, $password1, $password2, $email);
+            $errors = array_merge($errors, registerCheckEntry($name, $username, $password1, $password2, $email));
     
             // check for colons in fields
-            $ERROR .= registerCheckColons($name, $username, $password1, $email);
+            $errors = array_merge($errors, registerCheckColons($name, $username, $password1, $email));
             $oldemail = $entry['email'];
 
             // read user entry, update it and write it back to CSV file
-            if ($ERROR == '') {
+            if (empty($errors)) {
                 if ($this->config['encrypt_password']) {
                     $entry['password'] = $this->hasher->hashPassword($password1);
                 } else {
@@ -90,16 +90,15 @@ class UserPrefsController extends Controller
     
                 // write CSV file if no errors occurred so far
                 if (!(new DbService(Register_dataFolder()))->writeUsers($userArray)) {
-                    $ERROR .= '<li>' . $this->lang['err_cannot_write_csv'] .
-                        ' (' . Register_dataFolder() . 'users.csv' . ')' .
-                        '</li>'."\n";
+                    $errors[] = $this->lang['err_cannot_write_csv'] .' (' . Register_dataFolder() . 'users.csv' . ')';
                 }
             }
             (new DbService(Register_dataFolder()))->lock(LOCK_UN);
 
-            if ($ERROR != '') {
-                $o .= '<span class="regi_error">' . $this->lang['error'] . '</span>'."\n" .
-                    '<ul class="regi_error">'."\n".$ERROR.'</ul>'."\n";
+            if (!empty($errors)) {
+                $view = new View('error');
+                $view->errors = $errors;
+                $o .= $view;
             } else {
                 // update session variables
                 $_SESSION['email'] = $email;
@@ -130,28 +129,27 @@ class UserPrefsController extends Controller
             // Form Handling - Delete User ================================================
             // check that old password got entered correctly
             if (!$this->config['encrypt_password'] && $oldpassword != $entry['password']) {
-                $ERROR .= '<li>' . $this->lang['err_old_password_wrong'] . '</li>'."\n";
+                $errors[] = $this->lang['err_old_password_wrong'];
             } elseif ($this->config['encrypt_password']
                 && !$this->hasher->checkPassword($oldpassword, $entry['password'])
             ) {
-                $ERROR .= '<li>' . $this->lang['err_old_password_wrong'] . '</li>'."\n";
+                $errors[] = $this->lang['err_old_password_wrong'];
             }
 
             // read user entry, update it and write it back to CSV file
-            if ($ERROR == '') {
+            if (empty($errors)) {
                 $userArray = registerDeleteUserEntry($userArray, $username);
                 if (!(new DbService(Register_dataFolder()))->writeUsers($userArray)) {
-                    $ERROR .= '<li>' . $this->lang['err_cannot_write_csv'] .
-                        ' (' . Register_dataFolder() . 'users.csv' . ')' .
-                        '</li>'."\n";
+                    $errors[] = $this->lang['err_cannot_write_csv'] . ' (' . Register_dataFolder() . 'users.csv' . ')';
                 }
             }
             // write CSV file if no errors occurred so far
             (new DbService(Register_dataFolder()))->lock(LOCK_UN);
 
-            if ($ERROR != '') {
-                $o .= '<span class="regi_error">' . $this->lang['error'] . '</span>'."\n" .
-                    '<ul class="regi_error">'."\n".$ERROR.'</ul>'."\n";
+            if (!empty($errors)) {
+                $view = new View('error');
+                $view->errors = $errors;
+                $o .= $view;
             } else {
                 $rememberPeriod = 24*60*60*100;
 

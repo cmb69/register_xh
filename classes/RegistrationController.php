@@ -22,7 +22,7 @@ class RegistrationController extends Controller
             exit;
         }
 
-        $ERROR = '';
+        $errors = [];
         $o = '';
 
         // Get form data if available
@@ -38,7 +38,10 @@ class RegistrationController extends Controller
 
         // Form Handling
         if (isset($_POST['action']) && $action == "register_user") {
-            $ERROR .= registerCheckEntry($name, $username, $password1, $password2, $email);
+            $errors = array_merge(
+                $errors,
+                registerCheckEntry($name, $username, $password1, $password2, $email)
+            );
             if ($this->config['captcha_mode'] != "none") {
                 if ($this->config['captcha_mode'] == "image") {
                     $code = md5_decrypt($captcha, $this->config['captcha_crypt']);
@@ -52,12 +55,12 @@ class RegistrationController extends Controller
                 }
 
                 if ($register_validate == '' || strtolower($register_validate) != $code) {
-                    $ERROR .= '<li>' . $this->lang['err_validation'] . '</li>';
+                    $errors[] = $this->lang['err_validation'];
                 }
             }
 
             // check for colons in fields
-            $ERROR .= registerCheckColons($name, $username, $password1, $email);
+            $errors = array_merge($errors, registerCheckColons($name, $username, $password1, $email));
 
             // read user file in CSV format separated by colons
             (new DbService(Register_dataFolder()))->lock(LOCK_EX);
@@ -65,10 +68,10 @@ class RegistrationController extends Controller
 
             // check if user or other user for same email address exists
             if (registerSearchUserArray($userArray, 'username', $username) !== false) {
-                $ERROR .= '<li>' . $this->lang['err_username_exists'] . '</li>'."\n";
+                $errors[] = $this->lang['err_username_exists'];
             }
             if (registerSearchUserArray($userArray, 'email', $email) !== false) {
-                $ERROR .= '<li>' . $this->lang['err_email_exists'] . '</li>'."\n";
+                $errors[] = $this->lang['err_email_exists'];
             }
 
             // generate another captcha code for the user activation email
@@ -96,17 +99,15 @@ class RegistrationController extends Controller
             }
 
             // write CSV file if no errors occurred so far
-            if ($ERROR=="" && !(new DbService(Register_dataFolder()))->writeUsers($userArray)) {
-                $ERROR .= '<li>'
-                    . $this->lang['err_cannot_write_csv']
-                    . ' (' . Register_dataFolder() . 'users.csv' . ')'
-                    . '</li>'."\n";
+            if (empty($errors) && !(new DbService(Register_dataFolder()))->writeUsers($userArray)) {
+                $errors[] = $this->lang['err_cannot_write_csv'] . ' (' . Register_dataFolder() . 'users.csv' . ')';
             }
             (new DbService(Register_dataFolder()))->lock(LOCK_UN);
 
-            if ($ERROR != '') {
-                $o .= '<span class="regi_error">' . $this->lang['error'] . '</span>'."\n"
-                    . '<ul class="regi_error">'."\n".$ERROR.'</ul>'."\n";
+            if (!empty($errors)) {
+                $view = new View('error');
+                $view->errors = $errors;
+                $o .= $view;
             } else {
                 // prepare email content for registration activation
                 $content = $this->lang['emailtext1'] . "\n\n"
@@ -157,7 +158,7 @@ class RegistrationController extends Controller
 
     private function activateUser($user, $captcha)
     {
-        $ERROR = '';
+        $errors = [];
         $o ='';
 
         // read user file in CSV format separated by colons
@@ -167,21 +168,22 @@ class RegistrationController extends Controller
         // check if user or other user for same email address exists
         $entry = registerSearchUserArray($userArray, 'username', $user);
         if ($entry === false) {
-            $ERROR .= '<li>' . $this->lang['err_username_notfound'] . $user . '</li>'."\n";
+            $errors[] = $this->lang['err_username_notfound'] . $user;
         } else {
             if (!isset($entry['status']) || $entry['status'] == "") {
-                $ERROR .= '<li>' . $this->lang['err_status_empty'] . '</li>'."\n";
+                $errors[] = $this->lang['err_status_empty'];
             }
             $status = md5_decrypt($captcha, $this->config['captcha_crypt']);
             if ($status != $entry['status']) {
-                $ERROR .= '<li>' . $this->lang['err_status_invalid']
-                    . "($status&ne;" . $entry['status'] . ')</li>'."\n";
+                $errors[] = $this->lang['err_status_invalid']
+                    . "($status&ne;" . $entry['status'] . ')';
             }
         }
 
-        if ($ERROR != '') {
-            $o .= '<span class="regi_error">' . $this->lang['error'] . '</span>'."\n"
-                . '<ul class="regi_error">'."\n".$ERROR.'</ul>'."\n";
+        if (!empty($errors)) {
+            $view = new View('error');
+            $view->errors = $errors;
+            $o .= $view;
         } else {
             $entry['status'] = "activated";
             $entry['accessgroups'] = array($this->config['group_activated']);

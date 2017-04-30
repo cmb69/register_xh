@@ -20,25 +20,19 @@ class MainAdminController extends Controller
             $users  = (new DbService(Register_dataFolder()))->readUsers();
             (new DbService(Register_dataFolder()))->lock(LOCK_UN);
             $this->prepareUsersForm($users)->render();
-            echo '<div class="register_status">', count($users), ' ',
-                $this->lang['entries_in_csv'], $fn, '</div>';
+            echo XH_message('info', count($users) . ' ' . $this->lang['entries_in_csv'] . $fn);
         } else {
-            echo '<div class="register_status">', $this->lang['err_csv_missing'],
-                ' (', $fn, ')', '</div>';
+            echo XH_message('fail', $this->lang['err_csv_missing'] . ' (' . $fn . ')');
         }
     }
 
     public function saveUsersAction()
     {
-        global $e;
-
-        $ERROR = '';
+        $errors = [];
         if (is_file(Register_dataFolder() . 'groups.csv')) {
             $groups = (new DbService(Register_dataFolder()))->readGroups();
         } else {
-            $ERROR .= '<li>' . $this->lang['err_csv_missing']
-                . ' (' . Register_dataFolder() . 'groups.csv' . ')'
-                . '</li>'."\n";
+            $errors[] = $this->lang['err_csv_missing'] . ' (' . Register_dataFolder() . 'groups.csv' . ')';
         }
 
         // put all available group Ids in an array for easier handling
@@ -65,37 +59,41 @@ class MainAdminController extends Controller
             if (!isset($delete[$j]) || $delete[$j] == '') {
                 $userGroups = explode(",", $groupString[$j]);
                 // Error Checking
-                $ENTRY_ERROR = '';
+                $entryErrors = [];
                 if ($this->config['encrypt_password'] && $password[$j] == $oldpassword[$j]) {
-                    $ENTRY_ERROR .= registerCheckEntry($name[$j], $username[$j], "dummy", "dummy", $email[$j]);
+                    $entryErrors = array_merge(
+                        $entryErrors,
+                        registerCheckEntry($name[$j], $username[$j], "dummy", "dummy", $email[$j])
+                    );
                 } else {
-                    $ENTRY_ERROR .= registerCheckEntry(
-                        $name[$j],
-                        $username[$j],
-                        $password[$j],
-                        $password[$j],
-                        $email[$j]
+                    $entryErrors = array_merge(
+                        $entryErrors,
+                        registerCheckEntry($name[$j], $username[$j], $password[$j], $password[$j], $email[$j])
                     );
                 }
-                $ENTRY_ERROR .= registerCheckColons($name[$j], $username[$j], $password[$j], $email[$j]);
+                $entryErrors = array_merge(
+                    $entryErrors,
+                    registerCheckColons($name[$j], $username[$j], $password[$j], $email[$j])
+                );
                 if (registerSearchUserArray($newusers, 'username', $username[$j]) !== false) {
-                    $ENTRY_ERROR .= '<li>' . $this->lang['err_username_exists'] . '</li>'."\n";
+                    $entryErrors[] = $this->lang['err_username_exists'];
                 }
                 if (registerSearchUserArray($newusers, 'email', $email) !== false) {
-                    $ENTRY_ERROR .= '<li>' . $this->lang['err_email_exists'] . '</li>'."\n";
+                    $entryErrors[] = $this->lang['err_email_exists'];
                 }
                 foreach ($userGroups as $groupName) {
                     if (!in_array($groupName, $groupIds)) {
-                        $ENTRY_ERROR .= '<li>' . $this->lang['err_group_does_not_exist']
-                            . ' (' . $groupName . ')</li>'."\n";
+                        $entryErrors[] = $this->lang['err_group_does_not_exist'] . ' (' . $groupName . ')';
                     }
                 }
-                if ($ENTRY_ERROR != '') {
-                    $ERROR .= '<li>' . $this->lang['error_in_user'] . '"' . $username[$j] . '"' .
-                        '<ul class="error">'.$ENTRY_ERROR.'</ul></li>'."\n";
+                if (!empty($entryErrors)) {
+                    $view = new View('user-error');
+                    $view->username = $username[$j];
+                    $view->errors = $entryErrors;
+                    $errors[] = new HtmlString($view);
                 }
         
-                if (empty($ENTRY_ERROR) && $this->config['encrypt_password'] && $password[$j] != $oldpassword[$j]) {
+                if (empty($entryErrors) && $this->config['encrypt_password'] && $password[$j] != $oldpassword[$j]) {
                     $password[$j] = $this->hasher->hashPassword($password[$j]);
                 }
                 $entry = array(
@@ -104,7 +102,8 @@ class MainAdminController extends Controller
                     'accessgroups' => $userGroups,
                     'name'         => $name[$j],
                     'email'        => $email[$j],
-                    'status'       => $status[$j]);
+                    'status'       => $status[$j]
+                );
                 $newusers[] = $entry;
             } else {
                 $deleted = true;
@@ -117,32 +116,40 @@ class MainAdminController extends Controller
                 'accessgroups' => array($this->config['group_default']),
                 'name'         => "Name Lastname",
                 'email'        => "user@domain.com",
-                'status'       => "activated");
+                'status'       => "activated"
+            );
             $newusers[] = $entry;
             $added = true;
         }
 
-        $this->prepareUsersForm($newusers)->render();
-
         // In case that nothing got deleted or added, store back (save got pressed)
-        if (!$deleted && !$added && $ERROR == "") {
+        if (!$deleted && !$added && empty($errors)) {
             (new DbService(Register_dataFolder()))->lock(LOCK_EX);
             if (!(new DbService(Register_dataFolder()))->writeUsers($newusers)) {
-                $ERROR .= '<li>' . $this->lang['err_cannot_write_csv'] .
-                    ' (' . Register_dataFolder() . 'users.csv' . ')' .
-                    '</li>'."\n";
+                $errors[] = $this->lang['err_cannot_write_csv'] . ' (' . Register_dataFolder() . 'users.csv' . ')';
             }
             (new DbService(Register_dataFolder()))->lock(LOCK_UN);
 
-            if ($ERROR != '') {
-                $e .= $ERROR;
+            if (!empty($errors)) {
+                $this->renderErrorView($errors);
             } else {
-                echo '<div class="register_status">',  $this->lang['csv_written'],
-                    ' (', Register_dataFolder(), 'users.csv', ')', '.</div>'."\n";
+                echo XH_message(
+                    'success',
+                    $this->lang['csv_written'] . ' (' . Register_dataFolder() . 'users.csv' . ')'
+                );
             }
-        } elseif ($ERROR != '') {
-            $e .= $ERROR;
+        } elseif (!empty($errors)) {
+            $this->renderErrorView($errors);
         }
+
+        $this->prepareUsersForm($newusers)->render();
+    }
+
+    private function renderErrorView(array $errors)
+    {
+        $view = new View('error');
+        $view->errors = $errors;
+        $view->render();
     }
 
     /**
@@ -258,19 +265,15 @@ class MainAdminController extends Controller
         if (is_file($filename)) {
             $groups = (new DbService(Register_dataFolder()))->readGroups();
             echo $this->prepareGroupsForm($groups);
-            echo '<div class="register_status">', count($groups), ' ', $this->lang['entries_in_csv'],
-                $filename, '</div>', "\n";
+            echo XH_message('info', count($groups) . ' ' . $this->lang['entries_in_csv'] . $filename);
         } else {
-            echo '<div class="register_status">', $this->lang['err_csv_missing'],
-                ' (', $filename, ')', '</div>', "\n";
+            echo XH_message('fail', $this->lang['err_csv_missing'] . ' (' . $filename . ')');
         }
     }
 
     public function saveGroupsAction()
     {
-        global $e;
-
-        $ERROR = '';
+        $errors = [];
 
         $delete      = isset($_POST['delete'])       ? $_POST['delete']       : '';
         $add         = isset($_POST['add'])          ? $_POST['add']          : '';
@@ -282,7 +285,7 @@ class MainAdminController extends Controller
         $newgroups = array();
         foreach (array_keys($groupname) as $j) {
             if (!preg_match("/^[A-Za-z0-9_-]+$/", $groupname[$j])) {
-                $ERROR .= '<li>' . $this->lang['err_group_illegal'] . '</li>'."\n";
+                $errors[] = $this->lang['err_group_illegal'];
             }
 
             if (!isset($delete[$j]) || $delete[$j] == '') {
@@ -298,23 +301,24 @@ class MainAdminController extends Controller
             $added = true;
         }
 
-        echo $this->prepareGroupsForm($newgroups);
-
         // In case that nothing got deleted or added, store back (save got pressed)
-        if (!$deleted && !$added && $ERROR == "") {
+        if (!$deleted && !$added && empty($errors)) {
             if (!(new DbService(Register_dataFolder()))->writeGroups($newgroups)) {
-                $ERROR .= '<li>' . $this->lang['err_cannot_write_csv'] .
-                    ' (' . Register_dataFolder() . 'groups.csv' . ')' . '</li>' . "\n";
+                $errors .= $this->lang['err_cannot_write_csv'] . ' (' . Register_dataFolder() . 'groups.csv' . ')';
             }
-            if ($ERROR != '') {
-                $e .= $ERROR;
+            if (!empty($errors)) {
+                $this->renderErrorView($errors);
             } else {
-                echo '<div class="register_status">',  $this->lang['csv_written'],
-                    ' (', Register_dataFolder(), 'groups.csv', ')', '.</div>', "\n";
+                echo XH_message(
+                    'success',
+                    $this->lang['csv_written'] . '(' . Register_dataFolder() . 'groups.csv' . ')'
+                );
             }
-        } elseif ($ERROR != '') {
-            $e .= $ERROR;
+        } elseif (!empty($errors)) {
+            $this->renderErrorView($errors);
         }
+
+        echo $this->prepareGroupsForm($newgroups);
     }
 
     /**

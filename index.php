@@ -477,55 +477,64 @@ function Register_currentUser()
     }
 }
 
-/*
- *  Check entry for completeness.
+/**
+ * @param string $name
+ * @param string $username
+ * @param string $password1
+ * @param string $password2
+ * @param string $email
+ * @return string[]
  */
 function registerCheckEntry($name, $username, $password1, $password2, $email)
 {
-	global $plugin_tx,$plugin_cf;
+	global $plugin_tx;
 
-	$ERROR = '';
+	$errors = [];
 
 	// check for empty or illegal/wrong fields
-	if(empty($name))
-	$ERROR .= '<li>' . $plugin_tx['register']['err_name'] . '</li>'."\n";
-	if($username == '')
-	$ERROR .= '<li>' . $plugin_tx['register']['err_username'] . '</li>'."\n";
-	elseif(!preg_match("/^[A-Za-z0-9_]+$/", $username))
-	$ERROR .= '<li>' . $plugin_tx['register']['err_username_illegal'] . '</li>'."\n";
-	if($password1 == '')
-	$ERROR .= '<li>' . $plugin_tx['register']['err_password'] . '</li>'."\n";
-	elseif(!preg_match("/^[A-Za-z0-9_]+$/", $password1))
-	$ERROR .= '<li>' . $plugin_tx['register']['err_password_illegal'] . '</li>'."\n";
-	if($password2 == '' || $password1 != $password2)
-    $ERROR .= '<li>' . $plugin_tx['register']['err_password2'] . '</li>'."\n";
-	if($email == '')
-    $ERROR .= '<li>' . $plugin_tx['register']['err_email'] . '</li>'."\n";
-	elseif (!preg_match("/^[^\s()<>@,;:\"\/\[\]?=]+@\w[\w-]*(\.\w[\w-]*)*\.[a-z]{2,}$/i",$email))
-	$ERROR .= '<li>' . $plugin_tx['register']['err_email_invalid'] . '</li>'."\n";
-	return $ERROR;
+	if (empty($name)) {
+		$errors[] = $plugin_tx['register']['err_name'];
+	}
+	if ($username == '') {
+		$errors[] = $plugin_tx['register']['err_username'];
+	} elseif (!preg_match("/^[A-Za-z0-9_]+$/", $username)) {
+		$errors[] = $plugin_tx['register']['err_username_illegal'];
+	}
+	if ($password1 == '') {
+		$errors[] = $plugin_tx['register']['err_password'];
+	} elseif (!preg_match("/^[A-Za-z0-9_]+$/", $password1)) {
+		$errors[] = $plugin_tx['register']['err_password_illegal'];
+	}
+	if ($password2 == '' || $password1 != $password2) {
+		$errors[] = $plugin_tx['register']['err_password2'];
+	}
+	if ($email == '') {
+		$errors[] = $plugin_tx['register']['err_email'];
+	} elseif (!preg_match("/^[^\s()<>@,;:\"\/\[\]?=]+@\w[\w-]*(\.\w[\w-]*)*\.[a-z]{2,}$/i",$email)) {
+		$errors[] = $plugin_tx['register']['err_email_invalid'];
+	}
+	return $errors;
 }
 
-/*
- *  Check entry for contained colons.
+/**
+ * @param string $name
+ * @param string $username
+ * @param string $password1
+ * @param string $email
+ * @return string[]
  */
-function registerCheckColons($name, $username, $password1, $email)
+function registerCheckColons($name, $username, $password, $email)
 {
-	global $plugin_tx,$plugin_cf;
+	global $plugin_tx;
 
-	$ERROR = '';
-
-	if(strpos($name, ":") !== false)
-	$ERROR .= '<li>' . $plugin_tx['register']['name'] . ' ' . $plugin_tx['register']['err_colon'] . '</li>'."\n";
-	if(strpos($username, ":") !== false)
-	$ERROR .= '<li>' . $plugin_tx['register']['username'] . ' ' . $plugin_tx['register']['err_colon'] . '</li>'."\n";
-	if(strpos($password1, ":") !== false)
-	$ERROR .= '<li>' . $plugin_tx['register']['password'] . ' ' . $plugin_tx['register']['err_colon'] . '</li>'."\n";
-	if(strpos($email, ":") !== false)
-	$ERROR .= '<li>' . $plugin_tx['register']['email'] . ' ' . $plugin_tx['register']['err_colon'] . '</li>'."\n";
-	return $ERROR;
+	$errors = [];
+	foreach (['name', 'username', 'password', 'email'] as $field) {
+		if (strpos($$field, ":") !== false) {
+			$errors[] = $plugin_tx['register'][$field] . ' ' . $plugin_tx['register']['err_colon'];
+		}
+	}
+	return $errors;
 }
-
 
 /*
  * Function to create and handle register form (Top Level Function).
