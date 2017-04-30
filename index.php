@@ -20,8 +20,6 @@ define('REGISTER_VERSION', '@REGISTER_VERSION@');
 
 $_Register_hasher = new Register\PasswordHash(10, false);
 
-(new Register\Plugin)->run();
-
 /****************************************************************************
  *	Direct Calls															*
  ****************************************************************************/
@@ -36,109 +34,6 @@ if ($plugin_cf['register']['login_all_subsites']) {
 if(session_id() == "")
   session_start();
 
-
-if(!defined('CAPTCHA_LOADED'))
-{
-	$captchaInclude = $pth['folder']['plugins'] . "register/captcha.inc.php";
-	if(!@include($captchaInclude)) die('Captcha functions file ' . $captchaInclude . ' missing');
-	if(CAPTCHA_LOADED != '1.2') die('Captcha functions already loaded, but of wrong version ' . CAPTCHA_LOADED);
-}
-
-// Handling of Captcha Image Generation =========================================
-if(isset($_GET['action']))
-{
-	if($_GET['action'] == 'register_captcha' && isset($_GET['captcha']) && isset($_GET['ip']))
-	{
-		$fontFolder = $pth['folder']['plugins'] . 'register/font/';
-		generateCaptchaImage($_GET['captcha'],
-		(int)$plugin_cf['register']['captcha_image_width'],
-		(int)$plugin_cf['register']['captcha_image_height'],
-		(int)$plugin_cf['register']['captcha_chars'],
-		$fontFolder . $plugin_cf['register']['captcha_font'],
-		$plugin_cf['register']['captcha_crypt']);
-	}
-}
-
-// Handling of implicit pages ===================================================
-// Please note that all pages listed here have a default variant, but can also
-// be defined by the user. In that case the user has to insert the according
-// CMSimple scripting functions.
-
-if(!($edit&&$adm) && isset($su))
-{
-	// Handling of registration page
-	if($su == uenc($plugin_tx['register']['register'])
-	&& $plugin_cf['register']['allowed_register'])
-	{
-		if(!in_array($plugin_tx['register']['register'], $h))
-		{
-		$title = $plugin_tx['register']['register'];
-		$o .= "\n\n".'<h4>' . $title . '</h4>'."\n".'<p>'. $plugin_tx['register']['register_form1'].'</p>'."\n";
-		$o .= registerUser();
-		}
-	// Handling of forgotten password page
-	}
-	elseif ($plugin_cf['register']['password_forgotten']
-		&& $su == uenc($plugin_tx['register']['forgot_password']))
-	{
-		if(!in_array($plugin_tx['register']['forgot_password'], $h))
-		{
-		$title = $plugin_tx['register']['forgot_password'];
-		$o .= "\n\n".'<h4>' . $title . '</h4>'."\n";
-		$o .= registerForgotPassword();
-		}
-  // Handling of user preferences page
-	} elseif($su == uenc($plugin_tx['register']['user_prefs']))
-	{
-		if(!in_array($plugin_tx['register']['user_prefs'], $h))
-		{
-			$title = $plugin_tx['register']['user_prefs'];
-			$o .= "\n\n".'<h4>' . $title . '</h4>'."\n";
-			$o .= (new Register\UserPrefsController)->registerUserPrefs();
-		}
-
-	// Handling of login error page
-	} elseif($su == uenc($plugin_tx['register']['login_error']))
-	{
-		header('HTTP/1.1 403 Forbidden');
-		if(!in_array($plugin_tx['register']['login_error'], $h))
-		{
-			$title = $plugin_tx['register']['login_error'];
-			$o .= "\n\n".'<h4>' . $title . '</h4>'."\n";
-			$o .= $plugin_tx['register']['login_error_text'];
-		}
-
-	// Handling of logout page
-	} elseif($su == uenc($plugin_tx['register']['loggedout']))
-	{
-		if(!in_array($plugin_tx['register']['loggedout'], $h))
-		{
-			$title = $plugin_tx['register']['loggedout'];
-			$o .= "\n\n".'<h4>' . $title . '</h4>'."\n";
-			$o .= $plugin_tx['register']['loggedout_text'];
-		}
-
-	// Handling of login page
-	}
-	elseif($su == uenc($plugin_tx['register']['loggedin']))
-	{
-		if(!in_array($plugin_tx['register']['loggedin'], $h))
-		{
-			$title = $plugin_tx['register']['loggedin'];
-			$o .= "\n\n".'<h4>' . $title . '</h4>'."\n";
-			$o .= $plugin_tx['register']['loggedin_text'];
-		}
-	} elseif($su == uenc($plugin_tx['register']['access_error']))
-	{
-		header('HTTP/1.1 403 Forbidden');
-		if(!in_array($plugin_tx['register']['access_error'], $h))
-		{
-			$title = $plugin_tx['register']['access_error'];
-			$o .= "\n\n".'<h4>' . $title . '</h4>'."\n";
-			$o .= $plugin_tx['register']['access_error_text'];
-		}
-	}
-}
 
 function Register_dataFolder()
 {
@@ -542,7 +437,22 @@ function registerCheckColons($name, $username, $password, $email)
  */
 function registerUser()
 {
-	return (new Register\RegistrationController)->register();
+	// In case user is logged in, no registration page is shown
+	if (Register_isLoggedIn()) {
+		header('Location: ' . CMSIMPLE_URL);
+		exit;
+	}
+	$controller = new Register\RegistrationController;
+	if (isset($_POST['action']) && $_POST['action'] === 'register_user') {
+		$action = 'registerUserAction';
+	} elseif (isset($_GET['action']) && $_GET['action'] === 'register_activate_user') {
+		$action = 'activateUserAction';
+	} else {
+		$action = 'defaultAction';
+	}
+	ob_start();
+	$controller->{$action}();
+	return ob_get_clean();
 }
 
 /*
@@ -577,7 +487,22 @@ function registerForgotPassword()
  */
 function registerUserPrefs()
 {
-	return (new Register\UserPrefsController)->registerUserPrefs();
+	global $plugin_tx;
+
+	if (!Register_isLoggedIn()) {
+		return XH_message('fail', $plugin_tx['register']['access_error_text']);
+	}
+	$controller = new Register\UserPrefsController;
+	if (isset($_POST['action']) && $_POST['action'] === 'edit_user_prefs' && isset($_POST['submit'])) {
+		$action = 'editAction';
+	} elseif (isset($_POST['action']) && $_POST['action'] === 'edit_user_prefs' && isset($_POST['delete'])) {
+		$action = 'deleteAction';
+	} else {
+		$action = 'defaultAction';
+	}
+	ob_start();
+	$controller->{$action}();
+	return ob_get_clean();
 }
 
 /*
@@ -645,5 +570,7 @@ function registeradminmodelink()
     trigger_error('registeradminmodelink() is deprecated', E_USER_WARNING);
     return FALSE;
 }
+
+(new Register\Plugin)->run();
 
 ?>

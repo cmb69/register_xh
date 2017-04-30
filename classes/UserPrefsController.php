@@ -12,17 +12,30 @@ namespace Register;
 
 class UserPrefsController extends Controller
 {
-    public function registerUserPrefs()
+    public function defaultAction()
+    {
+        $username = isset($_SESSION['username']) ? $_SESSION['username'] : '';
+
+        (new DbService(Register_dataFolder()))->lock(LOCK_EX);
+        $userArray = (new DbService(Register_dataFolder()))->readUsers();
+
+        $entry = registerSearchUserArray($userArray, 'username', $username);
+        if ($entry === false) {
+            echo XH_message('fail', $this->lang['err_username_does_not_exist'] . " ('" . $username . "')");
+        } elseif ($entry['status'] == "locked") {
+            echo XH_message('fail', $this->lang['user_locked'] . ':' .$username);
+        } else {
+            $email = $entry['email'];
+            $name  = $entry['name'];
+
+            echo $this->userPrefsForm($name, $email);
+        }
+    }
+
+    public function editAction()
     {
         $errors = [];
-        $o = '';
-    
-        if (!Register_isLoggedIn()) {
-            return $this->lang['access_error_text'];
-        }
-
         // Get form data if available
-        $action    = isset($_POST['action']) ? $_POST['action'] : "";
         $oldpassword  = XH_hsc(isset($_POST['oldpassword']) ? $_POST['oldpassword'] : "");
         $name      = XH_hsc(isset($_POST['name']) ? $_POST['name'] : "");
         $password1 = XH_hsc(isset($_POST['password1']) ? $_POST['password1'] : "");
@@ -40,151 +53,172 @@ class UserPrefsController extends Controller
         // search user in CSV data
         $entry = registerSearchUserArray($userArray, 'username', $username);
         if ($entry === false) {
-            die($this->lang['err_username_does_not_exist'] . " ('" . $username . "')");
+            echo XH_message('fail', $this->lang['err_username_does_not_exist'] . " ('" . $username . "')");
+            return;
         }
 
         // Test if user is locked
         if ($entry['status'] == "locked") {
-            $o .= XH_message('fail', $this->lang['user_locked'] . ':' .$username);
-            return $o;
+            echo XH_message('fail', $this->lang['user_locked'] . ':' .$username);
+            return;
         }
 
-        // Form Handling - Change User ================================================
-        if ($username!="" && isset($_POST['submit']) && $action == "edit_user_prefs") {
-            // check that old password got entered correctly
-            if (!$this->config['encrypt_password'] && $oldpassword != $entry['password']) {
-                $errors[] = $this->lang['err_old_password_wrong'];
-            } elseif ($this->config['encrypt_password']
-                && !$this->hasher->checkPassword($oldpassword, $entry['password'])
-            ) {
-                $errors[] = $this->lang['err_old_password_wrong'];
-            }
+        // check that old password got entered correctly
+        if (!$this->config['encrypt_password'] && $oldpassword != $entry['password']) {
+            $errors[] = $this->lang['err_old_password_wrong'];
+        } elseif ($this->config['encrypt_password']
+            && !$this->hasher->checkPassword($oldpassword, $entry['password'])
+        ) {
+            $errors[] = $this->lang['err_old_password_wrong'];
+        }
 
-            if ($password1 == "" && $password2 == "") {
-                $password1 = $oldpassword;
-                $password2 = $oldpassword;
-            }
-            if ($email == "") {
-                $email = $entry['email'];
-            }
-            if ($name == "") {
-                $name = $entry['name'];
-            }
-
-            $errors = array_merge($errors, registerCheckEntry($name, $username, $password1, $password2, $email));
-    
-            // check for colons in fields
-            $errors = array_merge($errors, registerCheckColons($name, $username, $password1, $email));
-            $oldemail = $entry['email'];
-
-            // read user entry, update it and write it back to CSV file
-            if (empty($errors)) {
-                if ($this->config['encrypt_password']) {
-                    $entry['password'] = $this->hasher->hashPassword($password1);
-                } else {
-                    $entry['password'] = $password1;
-                }
-                $entry['email']    = $email;
-                $entry['name']     = $name;
-                $userArray = registerReplaceUserEntry($userArray, $entry);
-    
-                // write CSV file if no errors occurred so far
-                if (!(new DbService(Register_dataFolder()))->writeUsers($userArray)) {
-                    $errors[] = $this->lang['err_cannot_write_csv'] .' (' . Register_dataFolder() . 'users.csv' . ')';
-                }
-            }
-            (new DbService(Register_dataFolder()))->lock(LOCK_UN);
-
-            if (!empty($errors)) {
-                $view = new View('error');
-                $view->errors = $errors;
-                $o .= $view;
-            } else {
-                // update session variables
-                $_SESSION['email'] = $email;
-                $_SESSION['fullname'] = $name;
-
-                // prepare email for user information about updates
-                $content = $this->lang['emailprefsupdated'] . "\n\n" .
-                    ' ' . $this->lang['name'] . ': '.$name."\n" .
-                    ' ' . $this->lang['username'] . ': '.$username."\n" .
-                    //' ' . $this->lang['password'] . ': '.$password1."\n" .
-                    ' ' . $this->lang['email'] . ': '.$email."\n" .
-                    ' ' . $this->lang['fromip'] . ': '.$REMOTE_ADDR."\n";
-    
-                // send update email
-                (new MailService)->sendMail(
-                    $email,
-                    $this->lang['prefsemailsubject'] . ' ' . $_SERVER['SERVER_NAME'],
-                    $content,
-                    array(
-                        'From: ' . $this->config['senderemail'],
-                        'Cc: '  . $oldemail . ', ' . $this->config['senderemail']
-                    )
-                );
-                $o .= '<b>' . $this->lang['prefsupdated'] . '</b>';
-                return $o;
-            }
-        } elseif ($username!='' && isset($_POST['delete']) && $action == "edit_user_prefs") {
-            // Form Handling - Delete User ================================================
-            // check that old password got entered correctly
-            if (!$this->config['encrypt_password'] && $oldpassword != $entry['password']) {
-                $errors[] = $this->lang['err_old_password_wrong'];
-            } elseif ($this->config['encrypt_password']
-                && !$this->hasher->checkPassword($oldpassword, $entry['password'])
-            ) {
-                $errors[] = $this->lang['err_old_password_wrong'];
-            }
-
-            // read user entry, update it and write it back to CSV file
-            if (empty($errors)) {
-                $userArray = registerDeleteUserEntry($userArray, $username);
-                if (!(new DbService(Register_dataFolder()))->writeUsers($userArray)) {
-                    $errors[] = $this->lang['err_cannot_write_csv'] . ' (' . Register_dataFolder() . 'users.csv' . ')';
-                }
-            }
-            // write CSV file if no errors occurred so far
-            (new DbService(Register_dataFolder()))->lock(LOCK_UN);
-
-            if (!empty($errors)) {
-                $view = new View('error');
-                $view->errors = $errors;
-                $o .= $view;
-            } else {
-                $rememberPeriod = 24*60*60*100;
-
-                $username = isset($_SESSION['username']) ? $_SESSION['username'] : '';
-
-                // clear all session variables
-                //$_SESSION = array();
-
-                // end session
-                unset($_SESSION['username']);
-                unset($_SESSION['fullname']);
-                unset($_SESSION['email']);
-                unset($_SESSION['accessgroups']);
-                unset($_SESSION['sessionnr']);
-                unset($_SESSION['register_sn']);
-
-                // clear cookies
-                if (isset($_COOKIE['username'], $_COOKIE['password'])) {
-                    setcookie("username", "", time() - $rememberPeriod, "/");
-                    setcookie("password", "", time() - $rememberPeriod, "/");
-                }
-
-                XH_logMessage('info', 'register', 'logout', "$username deleted and logged out");
-
-                $o .= '<b>' . $this->lang['user_deleted'] . ': '.$username.'</b>'."\n";
-                return $o;
-            }
-        } else {
+        if ($password1 == "" && $password2 == "") {
+            $password1 = $oldpassword;
+            $password2 = $oldpassword;
+        }
+        if ($email == "") {
             $email = $entry['email'];
-            $name  = $entry['name'];
+        }
+        if ($name == "") {
+            $name = $entry['name'];
         }
 
-        // Form Creation
-        $o .= $this->userPrefsForm($name, $email);
-        return $o;
+        $errors = array_merge($errors, registerCheckEntry($name, $username, $password1, $password2, $email));
+
+        // check for colons in fields
+        $errors = array_merge($errors, registerCheckColons($name, $username, $password1, $email));
+        $oldemail = $entry['email'];
+
+        // read user entry, update it and write it back to CSV file
+        if (empty($errors)) {
+            if ($this->config['encrypt_password']) {
+                $entry['password'] = $this->hasher->hashPassword($password1);
+            } else {
+                $entry['password'] = $password1;
+            }
+            $entry['email']    = $email;
+            $entry['name']     = $name;
+            $userArray = registerReplaceUserEntry($userArray, $entry);
+
+            // write CSV file if no errors occurred so far
+            if (!(new DbService(Register_dataFolder()))->writeUsers($userArray)) {
+                $errors[] = $this->lang['err_cannot_write_csv'] .' (' . Register_dataFolder() . 'users.csv' . ')';
+            }
+        }
+        (new DbService(Register_dataFolder()))->lock(LOCK_UN);
+
+        if (!empty($errors)) {
+            $view = new View('error');
+            $view->errors = $errors;
+            $view->render();
+            echo $this->userPrefsForm($name, $email);
+        } else {
+            // update session variables
+            $_SESSION['email'] = $email;
+            $_SESSION['fullname'] = $name;
+
+            // prepare email for user information about updates
+            $content = $this->lang['emailprefsupdated'] . "\n\n" .
+                ' ' . $this->lang['name'] . ': '.$name."\n" .
+                ' ' . $this->lang['username'] . ': '.$username."\n" .
+                //' ' . $this->lang['password'] . ': '.$password1."\n" .
+                ' ' . $this->lang['email'] . ': '.$email."\n" .
+                ' ' . $this->lang['fromip'] . ': '.$REMOTE_ADDR."\n";
+
+            // send update email
+            (new MailService)->sendMail(
+                $email,
+                $this->lang['prefsemailsubject'] . ' ' . $_SERVER['SERVER_NAME'],
+                $content,
+                array(
+                    'From: ' . $this->config['senderemail'],
+                    'Cc: '  . $oldemail . ', ' . $this->config['senderemail']
+                )
+            );
+            echo XH_message('success', $this->lang['prefsupdated']);
+        }
+    }
+
+    public function deleteAction()
+    {
+        $errors = [];
+    
+        // Get form data if available
+        $oldpassword  = XH_hsc(isset($_POST['oldpassword']) ? $_POST['oldpassword'] : "");
+        $name      = XH_hsc(isset($_POST['name']) ? $_POST['name'] : "");
+        $email     = XH_hsc(isset($_POST['email']) ? $_POST['email'] : "");
+
+        // set user name from session
+        $username = isset($_SESSION['username']) ? $_SESSION['username'] : "";
+
+        // read user file in CSV format separated by colons
+        (new DbService(Register_dataFolder()))->lock(LOCK_EX);
+        $userArray = (new DbService(Register_dataFolder()))->readUsers();
+
+        // search user in CSV data
+        $entry = registerSearchUserArray($userArray, 'username', $username);
+        if ($entry === false) {
+            echo XH_message('fail', $this->lang['err_username_does_not_exist'] . " ('" . $username . "')");
+            return;
+        }
+
+        // Test if user is locked
+        if ($entry['status'] == "locked") {
+            echo XH_message('fail', $this->lang['user_locked'] . ':' .$username);
+            return;
+        }
+
+        // Form Handling - Delete User ================================================
+        // check that old password got entered correctly
+        if (!$this->config['encrypt_password'] && $oldpassword != $entry['password']) {
+            $errors[] = $this->lang['err_old_password_wrong'];
+        } elseif ($this->config['encrypt_password']
+            && !$this->hasher->checkPassword($oldpassword, $entry['password'])
+        ) {
+            $errors[] = $this->lang['err_old_password_wrong'];
+        }
+
+        // read user entry, update it and write it back to CSV file
+        if (empty($errors)) {
+            $userArray = registerDeleteUserEntry($userArray, $username);
+            if (!(new DbService(Register_dataFolder()))->writeUsers($userArray)) {
+                $errors[] = $this->lang['err_cannot_write_csv'] . ' (' . Register_dataFolder() . 'users.csv' . ')';
+            }
+        }
+        // write CSV file if no errors occurred so far
+        (new DbService(Register_dataFolder()))->lock(LOCK_UN);
+
+        if (!empty($errors)) {
+            $view = new View('error');
+            $view->errors = $errors;
+            $view->render();
+            echo $this->userPrefsForm($name, $email);
+        } else {
+            $rememberPeriod = 24*60*60*100;
+
+            $username = isset($_SESSION['username']) ? $_SESSION['username'] : '';
+
+            // clear all session variables
+            //$_SESSION = array();
+
+            // end session
+            unset($_SESSION['username']);
+            unset($_SESSION['fullname']);
+            unset($_SESSION['email']);
+            unset($_SESSION['accessgroups']);
+            unset($_SESSION['sessionnr']);
+            unset($_SESSION['register_sn']);
+
+            // clear cookies
+            if (isset($_COOKIE['username'], $_COOKIE['password'])) {
+                setcookie("username", "", time() - $rememberPeriod, "/");
+                setcookie("password", "", time() - $rememberPeriod, "/");
+            }
+
+            XH_logMessage('info', 'register', 'logout', "$username deleted and logged out");
+
+            echo XH_message('success', $this->lang['user_deleted'] . ': '.$username);
+        }
     }
 
     private function userPrefsForm($name, $email)

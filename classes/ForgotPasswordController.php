@@ -15,7 +15,6 @@ class ForgotPasswordController extends Controller
     public function defaultAction()
     {
         $email = XH_hsc(isset($_POST['email']) ? $_POST['email'] : '');
-        echo '<p>', $this->lang['reminderexplanation'], '</p>', "\n";
         $this->prepareForgotForm($email)->render();
     }
 
@@ -24,7 +23,6 @@ class ForgotPasswordController extends Controller
         global $su;
 
         $errors = [];
-        echo '<p>', $this->lang['reminderexplanation'], '</p>', "\n";
 
         $email = XH_hsc(isset($_POST['email']) ? $_POST['email'] : "");
 
@@ -63,7 +61,7 @@ class ForgotPasswordController extends Controller
             if ($this->config['encrypt_password']) {
                 $content .= "\n" . $this->lang['emailtext3'] ."\n\n"
                     . CMSIMPLE_URL . '?' . $su . '&'
-                    . 'action=registerResetPassword&username=' . urlencode($user['username']) . '&captcha='
+                    . 'action=registerResetPassword&username=' . urlencode($user['username']) . '&nonce='
                     . urlencode($user['password']);
             }
 
@@ -81,7 +79,6 @@ class ForgotPasswordController extends Controller
     public function resetPasswordAction()
     {
         $errors = [];
-        echo '<p>', $this->lang['reminderexplanation'], '</p>', "\n";
 
         $email = XH_hsc(isset($_POST['email']) ? $_POST['email'] : "");
 
@@ -95,14 +92,14 @@ class ForgotPasswordController extends Controller
             $errors[] = $this->lang['err_username_does_not_exist'];
         }
 
-        if ($user['password'] != $_GET['captcha']) {
+        if ($user['password'] != $_GET['nonce']) {
             $errors[] = $this->lang['err_status_invalid'];
         }
 
         // in case of encrypted password a new random password will be generated
         // and its value be written back to the CSV file
         if (empty($errors)) {
-            $password = generateRandomCode(8);
+            $password = base64_encode($this->hasher->get_random_bytes(8));
             $user['password'] = $this->hasher->hashPassword($password);
             $userArray = registerReplaceUserEntry($userArray, $user);
             if (!(new DbService(Register_dataFolder()))->writeUsers($userArray)) {
