@@ -1,6 +1,5 @@
 <?php
 
-$plugin_tx['register']['down_link']="nach unten <span style=\"font-size: 24px;\">&dArr;</span>";
 $plugin_tx['register']['groupname']="Gruppenname";
 $plugin_tx['register']['name']="Vollständiger Name";
 $plugin_tx['register']['username']="Benutzername";
@@ -30,7 +29,7 @@ $plugin_tx['register']['send']="Abschicken";
 $plugin_tx['register']['change']="Ändern";
 $plugin_tx['register']['change_password']="Kennwort ändern...";
 $plugin_tx['register']['fromip']="Von IP-Adresse";
-$plugin_tx['register']['remember']="Benutzer&nbsp;merken";
+$plugin_tx['register']['remember']="Benutzer merken";
 $plugin_tx['register']['login']="Login";
 $plugin_tx['register']['logout']="Logout";
 $plugin_tx['register']['loggedin']="Angemeldet";
@@ -66,7 +65,7 @@ $plugin_tx['register']['err_status_empty']="Der Status Ihres Benutzernamens ist 
 $plugin_tx['register']['err_status_invalid']="Der von Ihnen angegebene Aktivierungcode ist ungültig.";
 $plugin_tx['register']['err_group_illegal']="Die Gruppennamen dürfen nur folgende Zeichen enthalten: A-Z, a-z, 0-9, '_', '-'.";
 $plugin_tx['register']['registered']="Sie sind erfolgreich registriert worden. Das Benutzerkonto muss nun noch vom Administrator freigeschaltet werden.";
-$plugin_tx['register']['register_form1']="Neu registrierte Mitglieder erhalten den Status &quot;Gast&quot; und bekommen erst einmal nicht mehr zu sehen als vorher. Dieser Status kann nur vom Administrator geändert werden. Unberechtigte Registrierungen sind also zwecklos und werden umgehend gelöscht.";
+$plugin_tx['register']['register_form1']="Neu registrierte Mitglieder erhalten den Status \"Gast\" und bekommen erst einmal nicht mehr zu sehen als vorher. Dieser Status kann nur vom Administrator geändert werden. Unberechtigte Registrierungen sind also zwecklos und werden umgehend gelöscht.";
 $plugin_tx['register']['register_form2']="Die Registrierung kann ein paar Sekunden dauern, bitte haben Sie etwas Geduld, bis Sie die Meldung zur erfolgreichen Registrierung erhalten.";
 $plugin_tx['register']['activated']="Sie haben Ihren Zugang erfolgreich aktiviert.";
 $plugin_tx['register']['emailsubject']="Ihr Benutzerkonto bei";
@@ -109,7 +108,7 @@ $plugin_tx['register']['cf_group_activated']="Der Status neuer Mitglieder (Grupp
 $plugin_tx['register']['cf_group_default']="Der Status neuer Mitglieder (Gruppe nach Registrierung, aber vor der Account Aktivierung).";
 $plugin_tx['register']['cf_hide_pages']="Ob versteckt Seiten, zu denen das Mitglied keinen Zugang hat, in der Navigation angezeigt werden sollen.";
 $plugin_tx['register']['cf_login_all_subsites']="Ob es einen einzigen Satz von Mitgliedern für alle Sprachen gibt; andernfalls hat jede Sprache ihren eigenen Satz.";
-$plugin_tx['register']['cf_login_layout']="<b>horizontal</b> erzeugt ein horizontales Login Formular, leer oder alles andere erzeugt ein vertikales Login Formular.";
+$plugin_tx['register']['cf_login_layout']="<i>horizontal</i> erzeugt ein horizontales Login Formular, leer oder alles andere erzeugt ein vertikales Login Formular.";
 $plugin_tx['register']['cf_remember_user']="Ob die \"Benutzer merken\" Checkbox unterhalb des Login Formulars angezeigt werden soll.";
 $plugin_tx['register']['cf_senderemail']="Die E-Mail-Adresse des Administrators";
 $plugin_tx['register']['cf_password_forgotten']="Ob der \"Kennwort vergessen\" Link im Login Formular angezeigt werden soll.";

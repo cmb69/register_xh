@@ -1,6 +1,5 @@
 <?php
 
-$plugin_tx['register']['down_link']="down <span style=\"font-size: 24px;\">&dArr;</span>";
 $plugin_tx['register']['groupname']="Groupname";
 $plugin_tx['register']['name']="Full Name";
 $plugin_tx['register']['username']="Username";
@@ -30,7 +29,7 @@ $plugin_tx['register']['send']="Send";
 $plugin_tx['register']['change']="Change";
 $plugin_tx['register']['change_password']="Change Password...";
 $plugin_tx['register']['fromip']="From IP-Address";
-$plugin_tx['register']['remember']="Remember&nbsp;User";
+$plugin_tx['register']['remember']="Remember User";
 $plugin_tx['register']['login']="Login";
 $plugin_tx['register']['logout']="Logout";
 $plugin_tx['register']['loggedin']="Logged in";
@@ -66,7 +65,7 @@ $plugin_tx['register']['err_status_empty']="The status of your username is empty
 $plugin_tx['register']['err_status_invalid']="The entered validation code is invalid.";
 $plugin_tx['register']['err_group_illegal']="The group name must contain only following characters: A-Z, a-z, 0-9, '_', '-'.";
 $plugin_tx['register']['registered']="You have been registered successfully. An email has been sent to you containing a link to activate your new account.";
-$plugin_tx['register']['register_form1']="New registered members get the Status &quot;Guest&quot; and can see not more as before. The Status can be changed by admin only.";
+$plugin_tx['register']['register_form1']="New registered members get the Status \"Guest\" and can see not more as before. The Status can be changed by admin only.";
 $plugin_tx['register']['register_form2']="The registration maybe need some seconds, please wait for the success message.";
 $plugin_tx['register']['activated']="You have successfully activated your new account.";
 $plugin_tx['register']['emailsubject']="Account activation for";
@@ -109,7 +108,7 @@ $plugin_tx['register']['cf_group_activated']="The status of new members (group a
 $plugin_tx['register']['cf_group_default']="The status of new members (default group for user after registration, but before account activation).";
 $plugin_tx['register']['cf_hide_pages']="Whether to hide pages in the table of contents to which the user does not have access.";
 $plugin_tx['register']['cf_login_all_subsites']="Whether there is a single set of users for all languages; otherwise each language has its own set.";
-$plugin_tx['register']['cf_login_layout']="<b>horizontal</b> creates a horizontal login form, empty or all others creates a vertical login form.";
+$plugin_tx['register']['cf_login_layout']="<i>horizontal</i> creates a horizontal login form, empty or all others creates a vertical login form.";
 $plugin_tx['register']['cf_remember_user']="Whether the remember user checkbox shall be shown below the login form.";
 $plugin_tx['register']['cf_senderemail']="The e-mail account of the administrator";
 $plugin_tx['register']['cf_password_forgotten']="Whether the password forgotten link shall be shown in the login form.";

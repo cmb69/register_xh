@@ -1,6 +1,5 @@
 <?php
 
-$plugin_tx['register']['down_link']="dolů <span style=\"font-size: 24px;\">&dArr;</span>";
 $plugin_tx['register']['groupname']="Název skupiny";
 $plugin_tx['register']['name']="Jméno a příjmení";
 $plugin_tx['register']['username']="Uživatelské jméno";
@@ -21,7 +20,7 @@ $plugin_tx['register']['admin_mode']="Správcovský režim";
 $plugin_tx['register']['send']="Odeslat";
 $plugin_tx['register']['change']="Změnit";
 $plugin_tx['register']['fromip']="Z IP-Adresy";
-$plugin_tx['register']['remember']="Zapamatovat&nbsp;uživatele";
+$plugin_tx['register']['remember']="Zapamatovat uživatele";
 $plugin_tx['register']['login']="Přihlásit";
 $plugin_tx['register']['logout']="Odhlásit";
 $plugin_tx['register']['loggedin']="Přihlášen";
@@ -56,7 +55,7 @@ $plugin_tx['register']['err_status_empty']="Status Vašeho uživatelského jmén
 $plugin_tx['register']['err_status_invalid']="Uvedený kontrolní kód je chybný.";
 $plugin_tx['register']['err_group_illegal']="Název skupiny může obsahovat pouze znaky: A-Z, a-z, 0-9, '_', '-'.";
 $plugin_tx['register']['registered']="Byli jste úspěšně zaregistrováni.<br>Byl Vám odeslán email s odkazem, který Vám umožní aktivovat přístup.";
-$plugin_tx['register']['register_form1']="Noví uživatelé dostávají při registraci status &quot;Guest&quot; a jejich přístup na stránku zůstává nezměněn. Tento status může změnit jen správce stránky.";
+$plugin_tx['register']['register_form1']="Noví uživatelé dostávají při registraci status \"Guest\" a jejich přístup na stránku zůstává nezměněn. Tento status může změnit jen správce stránky.";
 $plugin_tx['register']['register_form2']="Registrace může trvat několik sekund. Vyčkejte na její úspešné dokončení.";
 $plugin_tx['register']['activated']="Úspešně jste aktivovali Váš účet.";
 $plugin_tx['register']['emailsubject']="Aktivace účtu pro";
@@ -78,10 +77,9 @@ $plugin_tx['register']['syscheck_title']="Kontrola systému";
 $plugin_tx['register']['syscheck_phpversion']="PHP verze ≥ %s";
 $plugin_tx['register']['syscheck_extension']="Rozšíření '%s' načteno";
 $plugin_tx['register']['syscheck_writable']="Adresář '%s' umožňuje zápis";
-$plugin_tx['register']['cf_allowed_register']="<b>true</b>umožňuje registraci pro nové členy.</b>";
 $plugin_tx['register']['cf_group_activated']="Status nových členů (skupina po registraci a aktivaci účtu).";
 $plugin_tx['register']['cf_group_default']="Stav nových členů (výchozí skupina uživatele po registraci, ale před aktivací účtu).";
-$plugin_tx['register']['cf_login_layout']="<b>horizontal</b> vytváří horizontální přihlašovací formulář, nevyplněno, nebo cokoli jiného vytvoří vertikální přihlašovací formulář.";
+$plugin_tx['register']['cf_login_layout']="<i>horizontal</i> vytváří horizontální přihlašovací formulář, nevyplněno, nebo cokoli jiného vytvoří vertikální přihlašovací formulář.";
 $plugin_tx['register']['cf_senderemail']="E-mailový účet správce";
 
 ?>
