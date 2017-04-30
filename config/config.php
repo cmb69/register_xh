@@ -1,7 +1,6 @@
 <?php
 
 $plugin_cf['register']['allowed_register']="true";
-$plugin_cf['register']['encrypt_password']="true";
 $plugin_cf['register']['fix_mail_headers']="";
 $plugin_cf['register']['group_activated']="guest";
 $plugin_cf['register']['group_default']="guest";

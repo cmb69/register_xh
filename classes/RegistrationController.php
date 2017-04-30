@@ -50,27 +50,15 @@ class RegistrationController extends Controller
 
         // generate a nonce for the user activation
         $status = bin2hex($this->hasher->get_random_bytes(16));
-        if ($this->config['encrypt_password']) {
-            $userArray = registerAddUser(
-                $userArray,
-                $username,
-                $this->hasher->hashPassword($password1),
-                array($this->config['group_default']),
-                $name,
-                $email,
-                $status
-            );
-        } else {
-            $userArray = registerAddUser(
-                $userArray,
-                $username,
-                $password1,
-                array($this->config['group_default']),
-                $name,
-                $email,
-                $status
-            );
-        }
+        $userArray = registerAddUser(
+            $userArray,
+            $username,
+            $this->hasher->hashPassword($password1),
+            array($this->config['group_default']),
+            $name,
+            $email,
+            $status
+        );
 
         // write CSV file if no errors occurred so far
         if (empty($errors) && !(new DbService(Register_dataFolder()))->writeUsers($userArray)) {

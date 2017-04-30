@@ -42,8 +42,6 @@ class ForgotPasswordController extends Controller
             $errors[] = $this->lang['err_email_does_not_exist'];
         }
 
-        $password = $user['password'];
-
         if (!empty($errors)) {
             $view = new View('error');
             $view->errors = $errors;
@@ -54,16 +52,11 @@ class ForgotPasswordController extends Controller
             $content = $this->lang['emailtext1'] . "\n\n"
                 . ' ' . $this->lang['name'] . ": " . $user['name'] . "\n"
                 . ' ' . $this->lang['username'] . ": " . $user['username'] . "\n";
-            if (!$this->config['encrypt_password']) {
-                $content .= ' ' . $this->lang['password'] . ": " . $password . "\n";
-            }
             $content .= ' ' . $this->lang['email'] . ": " . $user['email'] . "\n";
-            if ($this->config['encrypt_password']) {
-                $content .= "\n" . $this->lang['emailtext3'] ."\n\n"
-                    . CMSIMPLE_URL . '?' . $su . '&'
-                    . 'action=registerResetPassword&username=' . urlencode($user['username']) . '&nonce='
-                    . urlencode($user['password']);
-            }
+            $content .= "\n" . $this->lang['emailtext3'] ."\n\n"
+                . CMSIMPLE_URL . '?' . $su . '&'
+                . 'action=registerResetPassword&username=' . urlencode($user['username']) . '&nonce='
+                . urlencode($user['password']);
 
             // send reminder email
             (new MailService)->sendMail(

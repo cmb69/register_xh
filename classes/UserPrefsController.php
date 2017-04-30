@@ -63,11 +63,7 @@ class UserPrefsController extends Controller
         }
 
         // check that old password got entered correctly
-        if (!$this->config['encrypt_password'] && $oldpassword != $entry['password']) {
-            $errors[] = $this->lang['err_old_password_wrong'];
-        } elseif ($this->config['encrypt_password']
-            && !$this->hasher->checkPassword($oldpassword, $entry['password'])
-        ) {
+        if (!$this->hasher->checkPassword($oldpassword, $entry['password'])) {
             $errors[] = $this->lang['err_old_password_wrong'];
         }
 
@@ -90,11 +86,7 @@ class UserPrefsController extends Controller
 
         // read user entry, update it and write it back to CSV file
         if (empty($errors)) {
-            if ($this->config['encrypt_password']) {
-                $entry['password'] = $this->hasher->hashPassword($password1);
-            } else {
-                $entry['password'] = $password1;
-            }
+            $entry['password'] = $this->hasher->hashPassword($password1);
             $entry['email']    = $email;
             $entry['name']     = $name;
             $userArray = registerReplaceUserEntry($userArray, $entry);
@@ -164,12 +156,7 @@ class UserPrefsController extends Controller
         }
 
         // Form Handling - Delete User ================================================
-        // check that old password got entered correctly
-        if (!$this->config['encrypt_password'] && $oldpassword != $entry['password']) {
-            $errors[] = $this->lang['err_old_password_wrong'];
-        } elseif ($this->config['encrypt_password']
-            && !$this->hasher->checkPassword($oldpassword, $entry['password'])
-        ) {
+        if (!$this->hasher->checkPassword($oldpassword, $entry['password'])) {
             $errors[] = $this->lang['err_old_password_wrong'];
         }
 

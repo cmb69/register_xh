@@ -91,7 +91,6 @@ $plugin_tx['register']['js_tooManyUsers']="Es gibt zu viele Benutzer!";
 
 $plugin_tx['register']['syscheck_extension']="die PHP-Erweiterung '%s' geladen ist";
 $plugin_tx['register']['syscheck_fail']="Fehler";
-$plugin_tx['register']['syscheck_hashing']="Passwörter gehasht werden";
 $plugin_tx['register']['syscheck_message']="Prüfe, dass %1\$s … %2\$s";
 $plugin_tx['register']['syscheck_phpversion']="die PHP-Version ≥ %s";
 $plugin_tx['register']['syscheck_plugin']="das CMSIMPLE_XH Plugin '%s' installiert ist";
@@ -102,7 +101,6 @@ $plugin_tx['register']['syscheck_writable']="'%s' schreibbar ist";
 $plugin_tx['register']['syscheck_xhversion']="die CMSimple_XH-Version ≥ %s";
 
 $plugin_tx['register']['cf_allowed_register']="Ob sich neue Mitglieder selbst registrieren können.";
-$plugin_tx['register']['cf_encrypt_password']="Vom Deaktiveren des Passwort-Hashing wird unbedingt abgeraten!";
 $plugin_tx['register']['cf_fix_mail_headers']="Ob Probleme mit einigen fehlerhaften Mail Transfer Agents behoben werden sollen. Aktivieren Sie diese Option, wenn Sie die E-Mails nicht empfangen oder wenn ein Teil der Header-Informationen (z.B. \"MIME-Version: 1.0\") im Rumpf der E-Mail erscheint.";
 $plugin_tx['register']['cf_group_activated']="Der Status neuer Mitglieder (Gruppe nach Registrierung und Account Aktivierung).";
 $plugin_tx['register']['cf_group_default']="Der Status neuer Mitglieder (Gruppe nach Registrierung, aber vor der Account Aktivierung).";

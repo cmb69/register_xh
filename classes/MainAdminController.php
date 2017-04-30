@@ -60,7 +60,7 @@ class MainAdminController extends Controller
                 $userGroups = explode(",", $groupString[$j]);
                 // Error Checking
                 $entryErrors = [];
-                if ($this->config['encrypt_password'] && $password[$j] == $oldpassword[$j]) {
+                if ($password[$j] == $oldpassword[$j]) {
                     $entryErrors = array_merge(
                         $entryErrors,
                         registerCheckEntry($name[$j], $username[$j], "dummy", "dummy", $email[$j])
@@ -93,7 +93,7 @@ class MainAdminController extends Controller
                     $errors[] = new HtmlString($view);
                 }
         
-                if (empty($entryErrors) && $this->config['encrypt_password'] && $password[$j] != $oldpassword[$j]) {
+                if (empty($entryErrors) && $password[$j] != $oldpassword[$j]) {
                     $password[$j] = $this->hasher->hashPassword($password[$j]);
                 }
                 $entry = array(

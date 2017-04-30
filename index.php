@@ -326,8 +326,6 @@ function registerUser()
  */
 function registerForgotPassword()
 {
-	global $plugin_cf;
-
 	// In case user is logged in, no password forgotten page is shown
 	if (Register_isLoggedIn()) {
 		header('Location: ' . CMSIMPLE_URL);
@@ -336,8 +334,7 @@ function registerForgotPassword()
 	$controller = new Register\ForgotPasswordController;
 	if (isset($_POST['action']) && $_POST['action'] === "forgotten_password") {
 		$action = 'passwordForgottenAction';
-	} elseif (isset($_GET['action']) && $_GET['action'] === 'registerResetPassword'
-			&& $plugin_cf['register']['encrypt_password']) {
+	} elseif (isset($_GET['action']) && $_GET['action'] === registerResetPassword) {
 		$action = 'resetPasswordAction';
 	} else {
 		$action = 'defaultAction';

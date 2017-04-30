@@ -44,7 +44,6 @@ class SystemCheckService
             $this->checkExtension('gd', false),
             $this->checkExtension('session'),
             $this->checkXhVersion('1.6'),
-            $this->checkPasswordHashing(),
             $this->checkWritability("$this->pluginFolder/css/"),
             $this->checkWritability("$this->pluginFolder/config/"),
             $this->checkWritability("$this->pluginFolder/languages/"),
@@ -100,19 +99,6 @@ class SystemCheckService
     //    $stateLabel = $this->lang["syscheck_$state"];
     //    return (object) compact('state', 'label', 'stateLabel');
     //}
-
-    /**
-     * @return object
-     */
-    private function checkPasswordHashing()
-    {
-        global $plugin_cf;
-
-        $state = $plugin_cf['register']['encrypt_password'] ? 'success' : 'warning';
-        $label = sprintf($this->lang['syscheck_hashing']);
-        $stateLabel = $this->lang["syscheck_$state"];
-        return (object) compact('state', 'label', 'stateLabel');
-    }
 
     /**
      * @param string $folder

@@ -91,7 +91,6 @@ $plugin_tx['register']['js_tooManyUsers']="There are too many users!";
 
 $plugin_tx['register']['syscheck_extension']="the PHP extension '%s' is loaded";
 $plugin_tx['register']['syscheck_fail']="failure";
-$plugin_tx['register']['syscheck_hashing']="password hashing is enabled";
 $plugin_tx['register']['syscheck_message']="Checking that %1\$s … %2\$s";
 $plugin_tx['register']['syscheck_phpversion']="PHP version ≥ %s";
 $plugin_tx['register']['syscheck_plugin']="the CMSimple_XH plugin '%s' is installed";
@@ -102,7 +101,6 @@ $plugin_tx['register']['syscheck_writable']="'%s' is writable";
 $plugin_tx['register']['syscheck_xhversion']="CMSimple_XH version ≥ %s";
 
 $plugin_tx['register']['cf_allowed_register']="Whether new members may register themselves.";
-$plugin_tx['register']['cf_encrypt_password']="Disabling password hashing is strongly discouraged!";
 $plugin_tx['register']['cf_fix_mail_headers']="Whether to fix problems with some buggy mail transfer agents. Enable it, if you don't receive the emails or if some header information (e.g. \"MIME-Version: 1.0\") is visible in the body of the mail.";
 $plugin_tx['register']['cf_group_activated']="The status of new members (group after registration and account activation).";
 $plugin_tx['register']['cf_group_default']="The status of new members (default group for user after registration, but before account activation).";
