@@ -36,12 +36,11 @@ class UserPrefsController extends Controller
     {
         $errors = [];
         // Get form data if available
-        $oldpassword  = XH_hsc(isset($_POST['oldpassword']) ? $_POST['oldpassword'] : "");
-        $name      = XH_hsc(isset($_POST['name']) ? $_POST['name'] : "");
-        $password1 = XH_hsc(isset($_POST['password1']) ? $_POST['password1'] : "");
-        $password2 = XH_hsc(isset($_POST['password2']) ? $_POST['password2'] : "");
-        $email     = XH_hsc(isset($_POST['email']) ? $_POST['email'] : "");
-        $REMOTE_ADDR = isset($_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR'] : "";
+        $oldpassword  = isset($_POST['oldpassword']) ? $_POST['oldpassword'] : '';
+        $name      = isset($_POST['name']) ? $_POST['name'] : '';
+        $password1 = isset($_POST['password1']) ? $_POST['password1'] : '';
+        $password2 = isset($_POST['password2']) ? $_POST['password2'] : '';
+        $email     = isset($_POST['email']) ? $_POST['email'] : '';
 
         // set user name from session
         $username = isset($_SESSION['username']) ? $_SESSION['username'] : "";
@@ -123,7 +122,7 @@ class UserPrefsController extends Controller
                 ' ' . $this->lang['username'] . ': '.$username."\n" .
                 //' ' . $this->lang['password'] . ': '.$password1."\n" .
                 ' ' . $this->lang['email'] . ': '.$email."\n" .
-                ' ' . $this->lang['fromip'] . ': '.$REMOTE_ADDR."\n";
+                ' ' . $this->lang['fromip'] . ': '. $_SERVER['REMOTE_ADDR'] ."\n";
 
             // send update email
             (new MailService)->sendMail(
@@ -144,9 +143,9 @@ class UserPrefsController extends Controller
         $errors = [];
     
         // Get form data if available
-        $oldpassword  = XH_hsc(isset($_POST['oldpassword']) ? $_POST['oldpassword'] : "");
-        $name      = XH_hsc(isset($_POST['name']) ? $_POST['name'] : "");
-        $email     = XH_hsc(isset($_POST['email']) ? $_POST['email'] : "");
+        $oldpassword  = isset($_POST['oldpassword']) ? $_POST['oldpassword'] : '';
+        $name      = isset($_POST['name']) ? $_POST['name'] : '';
+        $email     = isset($_POST['email']) ? $_POST['email'] : '';
 
         // set user name from session
         $username = isset($_SESSION['username']) ? $_SESSION['username'] : "";

@@ -22,12 +22,11 @@ class RegistrationController extends Controller
         global $su;
 
         $errors = [];
-        $name      = XH_hsc(isset($_POST['name']) ? $_POST['name'] : "");
-        $username  = XH_hsc(isset($_POST['username']) ? $_POST['username'] : "");
-        $password1 = XH_hsc(isset($_POST['password1']) ? $_POST['password1'] : "");
-        $password2 = XH_hsc(isset($_POST['password2']) ? $_POST['password2'] : "");
-        $email     = XH_hsc(isset($_POST['email']) ? $_POST['email'] : "");
-        $REMOTE_ADDR = isset($_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR'] : "";
+        $name      = isset($_POST['name']) ? $_POST['name'] : '';
+        $username  = isset($_POST['username']) ? $_POST['username'] : '';
+        $password1 = isset($_POST['password1']) ? $_POST['password1'] : '';
+        $password2 = isset($_POST['password2']) ? $_POST['password2'] : '';
+        $email     = isset($_POST['email']) ? $_POST['email'] : '';
 
         $errors = array_merge(
             $errors,
@@ -90,7 +89,7 @@ class RegistrationController extends Controller
                 . ' ' . $this->lang['name'] . ": $name \n"
                 . ' ' . $this->lang['username'] . ": $username \n"
                 . ' ' . $this->lang['email'] . ": $email \n"
-                . ' ' . $this->lang['fromip'] . ": $REMOTE_ADDR \n\n"
+                . ' ' . $this->lang['fromip'] . ": {$_SERVER['REMOTE_ADDR']} \n\n"
                 . $this->lang['emailtext2'] . "\n\n"
                 . CMSIMPLE_URL . '?' . $su . '&'
                 . 'action=register_activate_user&username='.$username.'&nonce='
@@ -113,11 +112,11 @@ class RegistrationController extends Controller
     public function activateUserAction()
     {
         // Get form data if available
-        $name      = XH_hsc(isset($_POST['name']) ? $_POST['name'] : "");
-        $username  = XH_hsc(isset($_POST['username']) ? $_POST['username'] : "");
-        $password1 = XH_hsc(isset($_POST['password1']) ? $_POST['password1'] : "");
-        $password2 = XH_hsc(isset($_POST['password2']) ? $_POST['password2'] : "");
-        $email     = XH_hsc(isset($_POST['email']) ? $_POST['email'] : "");
+        $name      = isset($_POST['name']) ? $_POST['name'] : '';
+        $username  = isset($_POST['username']) ? $_POST['username'] : '';
+        $password1 = isset($_POST['password1']) ? $_POST['password1'] : '';
+        $password2 = isset($_POST['password2']) ? $_POST['password2'] : '';
+        $email     = isset($_POST['email']) ? $_POST['email'] : '';
 
         if (isset($_GET['username']) && isset($_GET['nonce'])) {
             echo $this->activateUser($_GET['username'], $_GET['nonce']);

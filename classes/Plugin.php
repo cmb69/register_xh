@@ -197,13 +197,22 @@ class Plugin
 
     private function handleAdministration()
     {
-        global $o, $admin, $action, $plugin_tx;
+        global $o, $admin, $action;
 
-        $ptx = $plugin_tx['register'];
         $o .= print_plugin_admin('off');
         pluginmenu('ROW');
-        pluginmenu('TAB', '?&amp;register&amp;admin=plugin_main&amp;action=editgroups', '', $ptx['mnu_group_admin']);
-        pluginmenu('TAB', '?&amp;register&amp;admin=plugin_main&amp;action=editusers', '', $ptx['mnu_user_admin']);
+        pluginmenu(
+            'TAB',
+            '?&amp;register&amp;admin=plugin_main&amp;action=editgroups',
+            '',
+            XH_hsc($this->lang['mnu_group_admin'])
+        );
+        pluginmenu(
+            'TAB',
+            '?&amp;register&amp;admin=plugin_main&amp;action=editusers',
+            '',
+            XH_hsc($this->lang['mnu_user_admin'])
+        );
         $o .= pluginmenu('SHOW');
         switch ($admin) {
             case '':
