@@ -349,7 +349,7 @@ class MainAdminController extends Controller
     {
         global $cl, $h, $u, $l;
     
-        $o = '<select name="grouploginpage[' . $n . ']"><option>' . $this->lang['label_none'] . '</option>';
+        $o = '<select name="grouploginpage[' . $n . ']"><option value="">' . $this->lang['label_none'] . '</option>';
         for ($i = 0; $i < $cl; $i++) {
             $sel = $u[$i] == $loginpage ? ' selected="selected"' : '';
             $o .= '<option value="' . $u[$i] . '"' . $sel . '>'
