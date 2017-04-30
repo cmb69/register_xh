@@ -102,9 +102,9 @@ function registerLogin()
 	//$secret = "LoginSecretWord";
 	$rememberPeriod = 24*60*60*100;
 
-	$username = XH_hsc(isset($_POST['username']) ? $_POST['username'] : "");
-	$password = XH_hsc(isset($_POST['password']) ? $_POST['password'] : "");
-	$remember = XH_hsc(isset($_POST['remember']) ? $_POST['remember'] : "");
+	$username = isset($_POST['username']) ? $_POST['username'] : '';
+	$password = isset($_POST['password']) ? $_POST['password'] : '';
+	$remember = isset($_POST['remember']) ? $_POST['remember'] : '';
 
 	// encrypt password if configured that way
 	//if(preg_match('/true/i', $plugin_cf['register']['encrypt_password'])) $password = crypt($password, $password);
