@@ -60,29 +60,27 @@ function Register_dataFolder()
 	return $folder;
 }
 
+/**
+ * @return bool
+ */
 function Register_isLoggedIn()
 {
-	return isset(
-			$_SESSION['username'],
-			$_SESSION['register_sn']
-		)
-		&& $_SESSION['register_sn'] == REGISTER_SESSION_NAME;
+	return (bool) Register_currentUser();
 }
 
 // Handling of login/logout =====================================================
 
 if ($plugin_cf['register']['remember_user']
-        && isset($_COOKIE['register_username'], $_COOKIE['register_password']) && !Register_isLoggedIn()) {
+		&& isset($_COOKIE['register_username'], $_COOKIE['register_password']) && !Register_isLoggedIn()) {
 	$function = "registerlogin";
 }
 
 if (!($edit&&$adm) && $plugin_cf['register']['hide_pages'])
 {
-	$temp = Register_currentUser();
-	if (Register_isLoggedIn()) {
+	if ($temp = Register_currentUser()) {
 		registerRemoveHiddenPages($temp->accessgroups);
 	} else {
-		registerRemoveHiddenPages(array());
+		registerRemoveHiddenPages([]);
 	}
 }
 
@@ -235,17 +233,33 @@ function Register_currentUser()
     static $user = null;
 
 	if (!$user) {
-		if (Register_isLoggedIn()) {
+		if (isset($_SESSION['username'], $_SESSION['register_sn'])
+				&& $_SESSION['register_sn'] == REGISTER_SESSION_NAME) {
 			(new Register\DbService(Register_dataFolder()))->lock(LOCK_SH);
 			$users = (new Register\DbService(Register_dataFolder()))->readUsers();
 			$rec = registerSearchUserArray($users, 'username', $_SESSION['username']);
 			(new Register\DbService(Register_dataFolder()))->lock(LOCK_UN);
-			$user = $rec;
+			if ($rec) {
+				$user = $rec;
+			} else {
+				Register_logout();
+				$user = null;
+			}
 		} else {
 			$user = null;
 		}
 	}
 	return $user;
+}
+
+function Register_logout()
+{
+	session_regenerate_id(true);
+	unset($_SESSION['username'], $_SESSION['register_sn']);
+	if (isset($_COOKIE['register_username'], $_COOKIE['register_password'])) {
+		setcookie('register_username', '', 0, CMSIMPLE_ROOT);
+		setcookie('register_password', '', 0, CMSIMPLE_ROOT);
+	}
 }
 
 /**

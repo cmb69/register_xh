@@ -79,19 +79,8 @@ class LoginController extends Controller
 
     public function logoutAction()
     {
-        $rememberPeriod = 24*60*60*100;
-    
         $username = isset($_SESSION['username']) ? $_SESSION['username'] : '';
-    
-        session_regenerate_id(true);
-
-        unset($_SESSION['username'], $_SESSION['register_sn']);
-    
-        // clear cookies
-        if (isset($_COOKIE['register_username'], $_COOKIE['register_password'])) {
-            setcookie('register_username', '', 0, CMSIMPLE_ROOT);
-            setcookie('register_password', '', 0, CMSIMPLE_ROOT);
-        }
+        Register_logout();
         XH_logMessage('info', 'register', 'logout', "$username logged out");
     
         $logoutTitle = uenc($this->lang['loggedout']);
