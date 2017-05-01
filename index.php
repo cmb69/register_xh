@@ -35,10 +35,14 @@ if(session_id() == "")
 
 function Register_dataFolder()
 {
-	global $plugin_cf, $pth;
+	global $sl, $cf, $plugin_cf, $pth;
 
 	if ($plugin_cf['register']['login_all_subsites']) {
-		$folder = "{$pth['folder']['content']}{$pth['folder']['base']}register/";
+		if ($sl === $cf['language']['default']) {
+			$folder = "{$pth['folder']['content']}register/";
+		} else {
+			$folder = dirname($pth['folder']['content']) . "/register/";
+		}
 	} else {
 		$folder = "{$pth['folder']['content']}register/";
 	}
