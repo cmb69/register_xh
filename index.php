@@ -111,21 +111,21 @@ function registerRemoveHiddenPages($userGroups) {
  */
 function access($groupString)
 {
-	global $plugin_tx, $sn;
+	global $plugin_tx, $sn, $function;
 
 	// remove spaces etc.
 	$groupString = preg_replace("/[ \t\r\n]*/", '', $groupString);
 	$groupNames = explode(",", $groupString);
 
 	$user = Register_currentUser();
-	$o = '';
-	if (!Register_isLoggedIn() || !count(array_intersect($groupNames, $user->accessgroups))) {
+	if ($function !== 'search'
+			&& (!Register_isLoggedIn() || !count(array_intersect($groupNames, $user->accessgroups)))) {
 		// go to access error page
 		$pageTitle = uenc($plugin_tx['register']['access_error']);
 		header('Location: '.CMSIMPLE_URL.'?'. $pageTitle);
 		exit;
 	}
-	return $o;
+	return '';
 }
 
 
