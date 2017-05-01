@@ -12,6 +12,19 @@ namespace Register;
 
 class MainAdminController extends Controller
 {
+    /**
+     * @var XH_CSRFProtection
+     */
+    private $csrfProtector;
+
+    public function __construct()
+    {
+        global $_XH_csrfProtection;
+
+        parent::__construct();
+        $this->csrfProtector = $_XH_csrfProtection;
+    }
+
     public function editUsersAction()
     {
         $fn = Register_dataFolder() . 'users.csv';
@@ -28,6 +41,7 @@ class MainAdminController extends Controller
 
     public function saveUsersAction()
     {
+        $this->csrfProtector->check();
         $errors = [];
         if (is_file(Register_dataFolder() . 'groups.csv')) {
             $groups = (new DbService(Register_dataFolder()))->readGroups();
@@ -175,6 +189,7 @@ class MainAdminController extends Controller
             . 'register.maxNumberOfUsers=' . $this->calcMaxRecords(7, 4) . ';</script>';
 
         $view = new View('admin-users');
+        $view->csrfTokenInput = new HtmlString($this->csrfProtector->tokenInput());
         $view->saveLabel = ucfirst($tx['action']['save']);
         $view->defaultGroup = $this->config['group_default'];
         $view->statusSelectActivated = new HtmlString($this->statusSelectbox('activated'));
@@ -269,6 +284,7 @@ class MainAdminController extends Controller
 
     public function saveGroupsAction()
     {
+        $this->csrfProtector->check();
         $errors = [];
 
         $delete      = isset($_POST['delete'])       ? $_POST['delete']       : [];
@@ -325,6 +341,7 @@ class MainAdminController extends Controller
         global $tx, $sn;
     
         $view = new View('admin-groups');
+        $view->csrfTokenInput = new HtmlString($this->csrfProtector->tokenInput());
         $view->actionUrl = "$sn?&register";
         $view->saveLabel = ucfirst($tx['action']['save']);
         $view->groups = $groups;

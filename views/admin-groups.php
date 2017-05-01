@@ -3,6 +3,7 @@
     <form method="POST" action="<?=$this->actionUrl()?>">
         <input type="hidden" value="savegroups" name="action">
         <input type="hidden" value="plugin_main" name="admin">
+        <?=$this->csrfTokenInput()?>
         <table>
             <tr>
                 <th><?=$this->text('groupname')?></th>

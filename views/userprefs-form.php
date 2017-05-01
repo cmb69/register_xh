@@ -1,6 +1,7 @@
 <div class="regi_settings">
     <form method="post" action="<?=$this->actionUrl?>" target="_self">
         <input type="hidden" name="action" value="edit_user_prefs">
+        <?=$this->csrfTokenInput()?>
         <table style="margin: auto;">
             <tr>
                 <td><?=$this->text('name')?></td>

@@ -10,8 +10,26 @@
 
 namespace Register;
 
+use XH_CSRFProtection;
+
 class UserPrefsController extends Controller
 {
+    /**
+     * @var XH_CSRFProtection
+     */
+    private $csrfProtector;
+
+    public function __construct()
+    {
+        global $pth;
+
+        parent::__construct();
+        if (!class_exists('\\XH_CSRFProtection')) {
+            include_once $pth['folder']['classes'] . 'CSRFProtection.php';
+        }
+        $this->csrfProtector = new XH_CSRFProtection('register_csrf_token', false);
+    }
+
     public function defaultAction()
     {
         $username = isset($_SESSION['username']) ? $_SESSION['username'] : '';
@@ -31,6 +49,7 @@ class UserPrefsController extends Controller
 
     public function editAction()
     {
+        $this->csrfProtector->check();
         $errors = [];
         // Get form data if available
         $oldpassword  = isset($_POST['oldpassword']) ? $_POST['oldpassword'] : '';
@@ -125,6 +144,7 @@ class UserPrefsController extends Controller
 
     public function deleteAction()
     {
+        $this->csrfProtector->check();
         $errors = [];
     
         // Get form data if available
@@ -200,7 +220,10 @@ class UserPrefsController extends Controller
      */
     private function prepareForm($name, $email)
     {
+        $csrfTokenInput = $this->csrfProtector->tokenInput();
+        $this->csrfProtector->store();
         $view = new View('userprefs-form');
+        $view->csrfTokenInput = new HtmlString($csrfTokenInput);
         $view->actionUrl = sv('REQUEST_URI');
         $view->name = $name;
         $view->email = $email;

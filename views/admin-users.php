@@ -32,6 +32,7 @@
     <form id="register_user_form" method="post" action="<?=$this->actionUrl()?>">
         <input type="hidden" value="saveusers" name="action">
         <input type="hidden" value="plugin_main" name="admin">
+        <?=$this->csrfTokenInput()?>
         <table id="register_user_table">
             <tr>
                 <th></th>
