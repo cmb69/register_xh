@@ -65,7 +65,7 @@ class ForgotPasswordController extends Controller
                 $content,
                 array('From: ' . $this->config['senderemail'])
             );
-            echo '<b>', $this->lang['remindersent'], '</b>';
+            echo XH_message('success', $this->lang['remindersent']);
         }
     }
 
@@ -122,7 +122,7 @@ class ForgotPasswordController extends Controller
                 $content,
                 array('From: ' . $this->config['senderemail'])
             );
-            echo '<b>', $this->lang['remindersent'], '</b>';
+            echo XH_message('success', $this->lang['remindersent']);
         }
     }
 
