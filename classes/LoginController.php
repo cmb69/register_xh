@@ -45,6 +45,8 @@ class LoginController extends Controller
                 setcookie("password", $entry->password, time() + $rememberPeriod, "/");
             }
 
+            session_regenerate_id(true);
+
             $_SESSION['username']     = $entry->username;
             $_SESSION['register_sn']  = REGISTER_SESSION_NAME;
 
@@ -80,9 +82,9 @@ class LoginController extends Controller
     
         $username = isset($_SESSION['username']) ? $_SESSION['username'] : '';
     
-        // end session
-        unset($_SESSION['username']);
-        unset($_SESSION['register_sn']);
+        session_regenerate_id(true);
+
+        unset($_SESSION['username'], $_SESSION['register_sn']);
     
         // clear cookies
         if (isset($_COOKIE['username'], $_COOKIE['password'])) {
