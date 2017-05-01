@@ -53,7 +53,9 @@ function Register_dataFolder()
 		mkdir($folder, 0777, true);
 		chmod($folder, 0777);
 		(new Register\DbService($folder))->writeUsers([]);
-		(new Register\DbService($folder))->writeGroups([(object) ['groupname' => $plugin_cf['register']['group_default'], 'loginpage' => '']]);
+		(new Register\DbService($folder))->writeGroups(
+			[(object) ['groupname' => $plugin_cf['register']['group_default'], 'loginpage' => '']]
+		);
 	}
 	return $folder;
 }
