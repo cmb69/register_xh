@@ -29,8 +29,11 @@ if ($plugin_cf['register']['login_all_subsites']) {
 	define('REGISTER_SESSION_NAME', CMSIMPLE_ROOT . $sl);
 }
 
-if(session_id() == "")
-  session_start();
+if (function_exists('XH_startSession')) {
+    XH_startSession();
+} elseif (session_id() === '') {
+    session_start();
+}
 
 
 function Register_dataFolder()
