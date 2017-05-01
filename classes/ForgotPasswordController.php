@@ -50,13 +50,13 @@ class ForgotPasswordController extends Controller
         } else {
             // prepare email content for user data email
             $content = $this->lang['emailtext1'] . "\n\n"
-                . ' ' . $this->lang['name'] . ": " . $user['name'] . "\n"
-                . ' ' . $this->lang['username'] . ": " . $user['username'] . "\n";
-            $content .= ' ' . $this->lang['email'] . ": " . $user['email'] . "\n";
+                . ' ' . $this->lang['name'] . ": " . $user->name . "\n"
+                . ' ' . $this->lang['username'] . ": " . $user->username . "\n";
+            $content .= ' ' . $this->lang['email'] . ": " . $user->email . "\n";
             $content .= "\n" . $this->lang['emailtext3'] ."\n\n"
                 . CMSIMPLE_URL . '?' . $su . '&'
-                . 'action=registerResetPassword&username=' . urlencode($user['username']) . '&nonce='
-                . urlencode($user['password']);
+                . 'action=registerResetPassword&username=' . urlencode($user->username) . '&nonce='
+                . urlencode($user->password);
 
             // send reminder email
             (new MailService)->sendMail(
@@ -85,7 +85,7 @@ class ForgotPasswordController extends Controller
             $errors[] = $this->lang['err_username_does_not_exist'];
         }
 
-        if ($user['password'] != $_GET['nonce']) {
+        if ($user->password != $_GET['nonce']) {
             $errors[] = $this->lang['err_status_invalid'];
         }
 
@@ -93,7 +93,7 @@ class ForgotPasswordController extends Controller
         // and its value be written back to the CSV file
         if (empty($errors)) {
             $password = base64_encode($this->hasher->get_random_bytes(8));
-            $user['password'] = $this->hasher->hashPassword($password);
+            $user->password = $this->hasher->hashPassword($password);
             $userArray = registerReplaceUserEntry($userArray, $user);
             if (!(new DbService(Register_dataFolder()))->writeUsers($userArray)) {
                 $errors[] = $this->lang['err_cannot_write_csv']
@@ -103,21 +103,21 @@ class ForgotPasswordController extends Controller
         (new DbService(Register_dataFolder()))->lock(LOCK_UN);
 
         if (!empty($errors)) {
-            $view = new View('errror');
+            $view = new View('error');
             $view->errors = $errors;
             $view->render();
             $this->prepareForgotForm($email)->render();
         } else {
             // prepare email content for user data email
             $content = $this->lang['emailtext1'] . "\n\n"
-                . ' ' . $this->lang['name'] . ": " . $user['name'] . "\n"
-                . ' ' . $this->lang['username'] . ": " . $user['username'] . "\n"
+                . ' ' . $this->lang['name'] . ": " . $user->name . "\n"
+                . ' ' . $this->lang['username'] . ": " . $user->username . "\n"
                 . ' ' . $this->lang['password'] . ": " . $password . "\n"
-                . ' ' . $this->lang['email'] . ": " . $user['email'] . "\n";
+                . ' ' . $this->lang['email'] . ": " . $user->email . "\n";
 
             // send reminder email
             (new MailService)->sendMail(
-                $user['email'],
+                $user->email,
                 $this->lang['reminderemailsubject'] . ' ' . $_SERVER['SERVER_NAME'],
                 $content,
                 array('From: ' . $this->config['senderemail'])

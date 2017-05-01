@@ -59,8 +59,8 @@ class DbService
                     $groupArray[] = $entry;
                 }
             }
+            fclose($fp);
         }
-        fclose($fp);
         return $groupArray;
     }
 
@@ -76,7 +76,7 @@ class DbService
             $loginpage = isset($parts[1]) ? $parts[1] : '';
             // line must not start with '//' and all fields must be set
             if (strpos($groupname, "//") === false && $groupname != "") {
-                return array('groupname' => $groupname, 'loginpage' => $loginpage);
+                return (object) compact('groupname', 'loginpage');
             }
         }
     }
@@ -111,8 +111,8 @@ class DbService
         }
 
         foreach ($array as $entry) {
-            $groupname = $entry['groupname'];
-            $line = "$groupname|$entry[loginpage]\n";
+            $groupname = $entry->groupname;
+            $line = "$groupname|$entry->loginpage\n";
             if (!fwrite($fp, $line)) {
                 fclose($fp);
                 return false;
@@ -128,7 +128,7 @@ class DbService
     }
 
     /**
-     * @return array
+     * @return object[]
      */
     public function readUsers()
     {
@@ -145,14 +145,14 @@ class DbService
                     }
                 }
             }
+            fclose($fp);
         }
-        fclose($fp);
         return $userArray;
     }
 
     /**
      * @param string $line
-     * @return ?array
+     * @return ?object
      */
     private function readUserLine($line)
     {
@@ -160,7 +160,7 @@ class DbService
         // line must not start with '//' and all fields must be set
         if ($username != "" && $password != "" && $accessgroups != ""
                 && $name != "" && $email != ""/* && $status != ""*/) {
-            return array(
+            return (object) array(
                 'username' => $username,
                 'password' => $password,
                 'accessgroups' => explode(',', $accessgroups),
@@ -204,12 +204,12 @@ class DbService
         }
 
         foreach ($array as $entry) {
-            $username = $entry['username'];
-            $password = $entry['password'];
-            $accessgroups = implode(',', $entry['accessgroups']);
-            $fullname = $entry['name'];
-            $email = $entry['email'];
-            $status = $entry['status'];
+            $username = $entry->username;
+            $password = $entry->password;
+            $accessgroups = implode(',', $entry->accessgroups);
+            $fullname = $entry->name;
+            $email = $entry->email;
+            $status = $entry->status;
             $line = "$username:$password:$accessgroups:$fullname:$email:$status"."\n";
             if (!fwrite($fp, $line)) {
                 fclose($fp);

@@ -70,7 +70,7 @@ if (!($edit&&$adm) && $plugin_cf['register']['hide_pages'])
 {
 	$temp = Register_currentUser();
 	if (Register_isLoggedIn()) {
-		registerRemoveHiddenPages($temp['accessgroups']);
+		registerRemoveHiddenPages($temp->accessgroups);
 	} else {
 		registerRemoveHiddenPages(array());
 	}
@@ -112,7 +112,7 @@ function access($groupString)
 
 	$user = Register_currentUser();
 	$o = '';
-	if (!Register_isLoggedIn() || !count(array_intersect($groupNames, $user['accessgroups']))) {
+	if (!Register_isLoggedIn() || !count(array_intersect($groupNames, $user->accessgroups))) {
 		// go to access error page
 		$pageTitle = uenc($plugin_tx['register']['access_error']);
 		header('Location: '.CMSIMPLE_URL.'?'. $pageTitle);
@@ -128,8 +128,8 @@ function Register_groupLoginPage($group)
 
     $groups = (new Register\DbService(Register_dataFolder()))->readGroups();
     foreach ($groups as $rec) {
-	if ($rec['groupname'] == $group) {
-	    return $rec['loginpage'];
+	if ($rec->groupname == $group) {
+	    return $rec->loginpage;
 	}
     }
     return false;
@@ -138,9 +138,9 @@ function Register_groupLoginPage($group)
 /*
  *  Add new user to array.
  */
-function registerAddUser($array, $username, $password, $accessgroups, $name, $email, $status)
+function registerAddUser(array $array, $username, $password, $accessgroups, $name, $email, $status)
 {
-	$entry = array(
+	$entry = (object) array(
 	'username' => $username,
 	'password' => $password,
 	'accessgroups' => $accessgroups,
@@ -163,11 +163,11 @@ function registerAddUser($array, $username, $password, $accessgroups, $name, $em
  *   false		in case of no value found
  *   $entry		found user entry
  */
-function registerSearchUserArray($array, $key, $value)
+function registerSearchUserArray(array $array, $key, $value)
 {
 	foreach($array as $entry)
 	{
-		if(isset($entry[$key]) && $entry[$key] == $value)
+		if(isset($entry->{$key}) && $entry->{$key} == $value)
 		return $entry;
 	}
 	return false;
@@ -182,13 +182,13 @@ function registerSearchUserArray($array, $key, $value)
  *  Returns:
  *   $newarray	updated array
  */
-function registerReplaceUserEntry($array, $newentry)
+function registerReplaceUserEntry(array $array, stdClass $newentry)
 {
 	$newarray = array();
-	$username = $newentry['username'];
+	$username = $newentry->username;
 	foreach($array as $entry)
 	{
-	if(isset($entry['username']) && $entry['username'] == $username) $newarray[] = $newentry;
+	if(isset($entry->username) && $entry->username == $username) $newarray[] = $newentry;
 	else
 	$newarray[] = $entry;
 	}
@@ -204,12 +204,12 @@ function registerReplaceUserEntry($array, $newentry)
  *  Returns:
  *   $newarray	updated array
  */
-function registerDeleteUserEntry($array, $username)
+function registerDeleteUserEntry(array $array, $username)
 {
 	$newarray = array();
 	foreach($array as $entry)
 	{
-		if(isset($entry['username']) && $entry['username'] != $username) $newarray[] = $entry;
+		if(isset($entry->username) && $entry->username != $username) $newarray[] = $entry;
 	}
 	return $newarray;
 }
@@ -218,7 +218,7 @@ function registerDeleteUserEntry($array, $username)
 /**
  * Returns the user record, if the user is logged in, otherwise null.
  *
- * @return ?array
+ * @return ?object
  */
 function Register_currentUser()
 {
@@ -332,9 +332,9 @@ function registerForgotPassword()
 		exit;
 	}
 	$controller = new Register\ForgotPasswordController;
-	if (isset($_POST['action']) && $_POST['action'] === "forgotten_password") {
+	if (isset($_POST['action']) && $_POST['action'] === 'forgotten_password') {
 		$action = 'passwordForgottenAction';
-	} elseif (isset($_GET['action']) && $_GET['action'] === registerResetPassword) {
+	} elseif (isset($_GET['action']) && $_GET['action'] === 'registerResetPassword') {
 		$action = 'resetPasswordAction';
 	} else {
 		$action = 'defaultAction';
@@ -395,10 +395,10 @@ function registerloginform()
 		$view = new Register\View('loggedin-area');
 		$view->isHorizontal = $plugin_cf['register']['login_layout'] === 'horizontal';
 		$user = Register_currentUser();
-		$view->fullName = $user['name'];
+		$view->fullName = $user->name;
 		$currentUser = $user;
 		$userPrefUrl = uenc($plugin_tx['register']['user_prefs']);
-		$view->hasUserPrefs = $currentUser['status'] == 'activated' && isset($su)
+		$view->hasUserPrefs = $currentUser->status == 'activated' && isset($su)
 		    && urldecode($su) != $userPrefUrl;
 		$view->userPrefUrl = "?$userPrefUrl";
 		$view->logoutUrl = "$sn?&function=registerlogout";

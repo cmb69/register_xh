@@ -22,11 +22,11 @@ class UserPrefsController extends Controller
         $entry = registerSearchUserArray($userArray, 'username', $username);
         if ($entry === false) {
             echo XH_message('fail', $this->lang['err_username_does_not_exist'] . " ('" . $username . "')");
-        } elseif ($entry['status'] == "locked") {
+        } elseif ($entry->status == "locked") {
             echo XH_message('fail', $this->lang['user_locked'] . ':' .$username);
         } else {
-            $email = $entry['email'];
-            $name  = $entry['name'];
+            $email = $entry->email;
+            $name  = $entry->name;
 
             echo $this->userPrefsForm($name, $email);
         }
@@ -57,13 +57,13 @@ class UserPrefsController extends Controller
         }
 
         // Test if user is locked
-        if ($entry['status'] == "locked") {
+        if ($entry->status == "locked") {
             echo XH_message('fail', $this->lang['user_locked'] . ':' .$username);
             return;
         }
 
         // check that old password got entered correctly
-        if (!$this->hasher->checkPassword($oldpassword, $entry['password'])) {
+        if (!$this->hasher->checkPassword($oldpassword, $entry->password)) {
             $errors[] = $this->lang['err_old_password_wrong'];
         }
 
@@ -72,23 +72,23 @@ class UserPrefsController extends Controller
             $password2 = $oldpassword;
         }
         if ($email == "") {
-            $email = $entry['email'];
+            $email = $entry->email;
         }
         if ($name == "") {
-            $name = $entry['name'];
+            $name = $entry->name;
         }
 
         $errors = array_merge($errors, registerCheckEntry($name, $username, $password1, $password2, $email));
 
         // check for colons in fields
         $errors = array_merge($errors, registerCheckColons($name, $username, $password1, $email));
-        $oldemail = $entry['email'];
+        $oldemail = $entry->email;
 
         // read user entry, update it and write it back to CSV file
         if (empty($errors)) {
-            $entry['password'] = $this->hasher->hashPassword($password1);
-            $entry['email']    = $email;
-            $entry['name']     = $name;
+            $entry->password = $this->hasher->hashPassword($password1);
+            $entry->email    = $email;
+            $entry->name     = $name;
             $userArray = registerReplaceUserEntry($userArray, $entry);
 
             // write CSV file if no errors occurred so far
@@ -150,13 +150,13 @@ class UserPrefsController extends Controller
         }
 
         // Test if user is locked
-        if ($entry['status'] == "locked") {
+        if ($entry->status == "locked") {
             echo XH_message('fail', $this->lang['user_locked'] . ':' .$username);
             return;
         }
 
         // Form Handling - Delete User ================================================
-        if (!$this->hasher->checkPassword($oldpassword, $entry['password'])) {
+        if (!$this->hasher->checkPassword($oldpassword, $entry->password)) {
             $errors[] = $this->lang['err_old_password_wrong'];
         }
 

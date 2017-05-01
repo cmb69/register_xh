@@ -11,7 +11,7 @@
             </tr>
 <?php foreach ($this->groups as $i => $entry):?>
             <tr>
-                <td><input type="text" size="10" value="<?=$this->escape($entry['groupname'])?>" name="groupname[<?=$this->escape($i)?>]"></td>
+                <td><input type="text" size="10" value="<?=$this->escape($entry->groupname)?>" name="groupname[<?=$this->escape($i)?>]"></td>
                 <td><?=$this->escape($this->selects[$i])?></td>
                 <td><button name="delete[<?=$this->escape($i)?>]" value="1"><i class="fa fa-minus"></i></td>
             </tr>

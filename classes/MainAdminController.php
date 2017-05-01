@@ -38,7 +38,7 @@ class MainAdminController extends Controller
         // put all available group Ids in an array for easier handling
         $groupIds = array();
         foreach ($groups as $entry) {
-            $groupIds[] = $entry['groupname'];
+            $groupIds[] = $entry->groupname;
         }
 
         $delete      = isset($_POST['delete'])       ? $_POST['delete']       : '';
@@ -96,7 +96,7 @@ class MainAdminController extends Controller
                 if (empty($entryErrors) && $password[$j] != $oldpassword[$j]) {
                     $password[$j] = $this->hasher->hashPassword($password[$j]);
                 }
-                $entry = array(
+                $entry = (object) array(
                     'username'     => $username[$j],
                     'password'     => $password[$j],
                     'accessgroups' => $userGroups,
@@ -110,7 +110,7 @@ class MainAdminController extends Controller
             }
         }
         if ($add <> '') {
-            $entry = array(
+            $entry = (object) array(
                 'username'     => "NewUser",
                 'password'     => "",
                 'accessgroups' => array($this->config['group_default']),
@@ -183,8 +183,8 @@ class MainAdminController extends Controller
         $view->users = $users;
         $groupStrings = $statusSelects = [];
         foreach ($users as $i => $entry) {
-            $groupStrings[] = implode(",", $entry['accessgroups']);
-            $statusSelects[] = new HtmlString($this->statusSelectbox($entry['status'], $i));
+            $groupStrings[] = implode(",", $entry->accessgroups);
+            $statusSelects[] = new HtmlString($this->statusSelectbox($entry->status, $i));
         }
         $view->groupStrings = $groupStrings;
         $view->statusSelects = $statusSelects;
@@ -198,7 +198,7 @@ class MainAdminController extends Controller
     {
         $groups = (new DbService(Register_dataFolder()))->readGroups();
         usort($groups, function ($a, $b) {
-            return strcasecmp($a['groupname'], $b['groupname']);
+            return strcasecmp($a->groupname, $b->groupname);
         });
         return $groups;
     }
@@ -285,14 +285,14 @@ class MainAdminController extends Controller
             }
 
             if (!isset($delete[$j]) || $delete[$j] == '') {
-                $entry = array('groupname' => $groupname[$j], 'loginpage' => $_POST['grouploginpage'][$j]);
+                $entry = (object) ['groupname' => $groupname[$j], 'loginpage' => $_POST['grouploginpage'][$j]];
                 $newgroups[] = $entry;
             } else {
                 $deleted = true;
             }
         }
         if ($add <> '') {
-            $entry = array('groupname' => "NewGroup", 'loginpage' => '');
+            $entry = (object) ['groupname' => "NewGroup", 'loginpage' => ''];
             $newgroups[] = $entry;
             $added = true;
         }
@@ -330,7 +330,7 @@ class MainAdminController extends Controller
         $view->groups = $groups;
         $selects = [];
         foreach ($groups as $i => $entry) {
-            $selects[] = new HtmlString($this->pageSelectbox($entry['loginpage'], $i));
+            $selects[] = new HtmlString($this->pageSelectbox($entry->loginpage, $i));
         }
         $view->selects = $selects;
         return $view;

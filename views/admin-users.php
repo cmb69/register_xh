@@ -25,7 +25,7 @@
         <select id="register_group_selectbox" title="<?=$this->text('filter_group')?>">
             <option value=""><?=$this->text('all')?></option>
 <?php foreach ($this->groups as $group):?>
-            <option value="<?=$this->escape($group['groupname'])?>"><?=$this->escape($group['groupname'])?></option>
+            <option value="<?=$this->escape($group->groupname)?>"><?=$this->escape($group->groupname)?></option>
 <?php endforeach?>
         </select>
     </div>
@@ -48,18 +48,18 @@
 <?php foreach ($this->users as $i => $entry):?>
             <tr id="register_user_<?=$this->escape($i)?>">
                 <td><button title="<?=$this->text('user_delete')?>" onclick="register.removeRow(this); return false"><i class="fa fa-minus"></i></button></td>
-                <td><input type="text" value="<?=$this->escape($entry['name'])?>" name="name[<?=$this->escape($i)?>]"></td>
+                <td><input type="text" value="<?=$this->escape($entry->name)?>" name="name[<?=$this->escape($i)?>]"></td>
                 <td><input type="text" value="<?=$this->escape($this->groupStrings[$i])?>" name="accessgroups[<?=$this->escape($i)?>]"></td>
                 <td><?=$this->escape($this->statusSelects[$i])?></td>
             </tr>
             <tr class="register_second_row">
                 <td><button type="button" onclick="register.mailTo(this)" title="<?=$this->text('email')?>"><i class="fa fa-envelope"></i></button></td>
-                <td><input type="text" value="<?=$this->escape($entry['username'])?>" name="username[<?=$this->escape($i)?>]"></td>
-                <td><input type="text" value="<?=$this->escape($entry['email'])?>" name="email[<?=$this->escape($i)?>]"></td>
+                <td><input type="text" value="<?=$this->escape($entry->username)?>" name="username[<?=$this->escape($i)?>]"></td>
+                <td><input type="text" value="<?=$this->escape($entry->email)?>" name="email[<?=$this->escape($i)?>]"></td>
                 <td>
                     <button onclick="register.changePassword(this.nextElementSibling); return false"><?=$this->text('change_password')?></button>
-                    <input type="hidden" value="<?=$this->escape($entry['password'])?>" name="password[<?=$this->escape($i)?>]">
-                    <input type="hidden" value="<?=$this->escape($entry['password'])?>" name="oldpassword[<?=$this->escape($i)?>]">
+                    <input type="hidden" value="<?=$this->escape($entry->password)?>" name="password[<?=$this->escape($i)?>]">
+                    <input type="hidden" value="<?=$this->escape($entry->password)?>" name="oldpassword[<?=$this->escape($i)?>]">
                 </td>
             </tr>
 <?php endforeach?>

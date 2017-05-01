@@ -27,7 +27,7 @@ class DbServiceTest extends PHPUnit_Framework_TestCase
     public function testWriteAndReadGroups()
     {
         $expected = array(
-            ['groupname' => 'admin', 'loginpage' => '']
+            (object) ['groupname' => 'admin', 'loginpage' => '']
         );
         $this->subject->writeGroups($expected);
         $actual = $this->subject->readGroups();
@@ -37,7 +37,7 @@ class DbServiceTest extends PHPUnit_Framework_TestCase
     public function testWriteAndReadUsers()
     {
         $expected = array(
-            array(
+            (object) array(
                 'username' => 'cmb',
                 'password' => 'test',
                 'accessgroups' => ['admin', 'guest'],

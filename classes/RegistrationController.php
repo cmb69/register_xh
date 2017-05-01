@@ -127,12 +127,12 @@ class RegistrationController extends Controller
         if ($entry === false) {
             $errors[] = $this->lang['err_username_notfound'] . $user;
         } else {
-            if (!isset($entry['status']) || $entry['status'] == "") {
+            if (!isset($entry->status) || $entry->status == "") {
                 $errors[] = $this->lang['err_status_empty'];
             }
-            if ($nonce != $entry['status']) {
+            if ($nonce != $entry->status) {
                 $errors[] = $this->lang['err_status_invalid']
-                    . "($nonce&ne;" . $entry['status'] . ')';
+                    . "($nonce&ne;" . $entry->status . ')';
             }
         }
 
@@ -141,8 +141,8 @@ class RegistrationController extends Controller
             $view->errors = $errors;
             $o .= $view;
         } else {
-            $entry['status'] = "activated";
-            $entry['accessgroups'] = array($this->config['group_activated']);
+            $entry->status = "activated";
+            $entry->accessgroups = array($this->config['group_activated']);
             $userArray = registerReplaceUserEntry($userArray, $entry);
             (new DbService(Register_dataFolder()))->writeUsers($userArray);
             $o .= XH_message('success', $this->lang['activated']);

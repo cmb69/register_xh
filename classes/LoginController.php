@@ -34,24 +34,24 @@ class LoginController extends Controller
         $entry = registerSearchUserArray($userArray, 'username', $username);
 
         // check password and set session variables
-        if ($entry && $entry['username'] == $username
-                && ($entry['status'] == 'activated' || $entry['status'] == 'locked')
-                && (!isset($passwordHash) || $passwordHash == $entry['password'])
+        if ($entry && $entry->username == $username
+                && ($entry->status == 'activated' || $entry->status == 'locked')
+                && (!isset($passwordHash) || $passwordHash == $entry->password)
                 && (isset($passwordHash)
-                || ($this->hasher->checkPassword($password, $entry['password'])))) {
+                || ($this->hasher->checkPassword($password, $entry->password)))) {
             // set cookies if requested by user
             if ($this->config['remember_user'] && isset($_POST['remember'])) {
                 setcookie("username", $username, time() + $rememberPeriod, "/");
-                setcookie("password", $entry['password'], time() + $rememberPeriod, "/");
+                setcookie("password", $entry->password, time() + $rememberPeriod, "/");
             }
 
-            $_SESSION['username']     = $entry['username'];
+            $_SESSION['username']     = $entry->username;
             $_SESSION['register_sn']  = REGISTER_SESSION_NAME;
 
             XH_logMessage('info', 'register', 'login', "$username logged in");
 
             // go to login page if exists or to default page otherwise
-            if ($glp = Register_groupLoginPage($entry['accessgroups'][0])) {
+            if ($glp = Register_groupLoginPage($entry->accessgroups[0])) {
                 $loginPage = '?' . $glp;
             } else {
                 $loginPage = '?'. uenc($this->lang['loggedin']);
