@@ -55,15 +55,15 @@ class MainAdminController extends Controller
             $groupIds[] = $entry->groupname;
         }
 
-        $delete      = isset($_POST['delete'])       ? $_POST['delete']       : '';
+        $delete      = isset($_POST['delete'])       ? $_POST['delete']       : [];
         $add         = isset($_POST['add'])          ? $_POST['add']          : '';
-        $username    = isset($_POST['username'])     ? $_POST['username']     : '';
-        $password    = isset($_POST['password'])     ? $_POST['password']     : '';
-        $oldpassword = isset($_POST['oldpassword'])  ? $_POST['oldpassword']  : '';
-        $name        = isset($_POST['name'])         ? $_POST['name']         : '';
-        $email       = isset($_POST['email'])        ? $_POST['email']        : '';
-        $groupString = isset($_POST['accessgroups']) ? $_POST['accessgroups'] : '';
-        $status      = isset($_POST['status'])       ? $_POST['status']       : '';
+        $username    = isset($_POST['username'])     ? $_POST['username']     : [];
+        $password    = isset($_POST['password'])     ? $_POST['password']     : [];
+        $oldpassword = isset($_POST['oldpassword'])  ? $_POST['oldpassword']  : [];
+        $name        = isset($_POST['name'])         ? $_POST['name']         : [];
+        $email       = isset($_POST['email'])        ? $_POST['email']        : [];
+        $groupString = isset($_POST['accessgroups']) ? $_POST['accessgroups'] : [];
+        $status      = isset($_POST['status'])       ? $_POST['status']       : [];
 
         $deleted = false;
         $added   = false;
