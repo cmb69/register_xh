@@ -2,7 +2,7 @@ Register_XH – a CMSimple_XH plugin
 ==================================
 
 [![stable: 1.4pl](https://img.shields.io/badge/stable-1.4pl4-green.svg)](https://github.com/cmb69/register_xh/releases/tag/1.4pl4)
-[![beta: 1.5beta5](https://img.shields.io/badge/beta-1.5beta5-red.svg)](https://github.com/cmb69/register_xh/releases/tag/1.5beta5)
+[![RC: 1.5rc1](https://img.shields.io/badge/RC-1.5rc1-yellow.svg)](https://github.com/cmb69/register_xh/releases/tag/1.5rc1)
 
 Copyright (c) 2007 Carsten Heinelt (http://cmsimple.heinelt.eu/)  
 Copyright (c) 2010-2012 Gert Ebersbach (http://www.ge-webdesign.de/cmsimpleplugins/)  
