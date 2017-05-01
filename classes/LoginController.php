@@ -20,9 +20,10 @@ class LoginController extends Controller
         $password = isset($_POST['password']) ? $_POST['password'] : '';
 
         // set username and password in case cookies are set
-        if ($this->config['remember_user'] && isset($_COOKIE['username'], $_COOKIE['password'])) {
-            $username     = $_COOKIE['username'];
-            $passwordHash = $_COOKIE['password'];
+        if ($this->config['remember_user']
+                && isset($_COOKIE['register_username'], $_COOKIE['register_password'])) {
+            $username     = $_COOKIE['register_username'];
+            $passwordHash = $_COOKIE['register_password'];
         }
     
         // read user file in CSV format separated by colons
@@ -41,8 +42,8 @@ class LoginController extends Controller
                 || ($this->hasher->checkPassword($password, $entry->password)))) {
             // set cookies if requested by user
             if ($this->config['remember_user'] && isset($_POST['remember'])) {
-                setcookie("username", $username, time() + $rememberPeriod, "/");
-                setcookie("password", $entry->password, time() + $rememberPeriod, "/");
+                setcookie('register_username', $username, time() + $rememberPeriod, CMSIMPLE_ROOT);
+                setcookie('register_password', $entry->password, time() + $rememberPeriod, CMSIMPLE_ROOT);
             }
 
             session_regenerate_id(true);
@@ -62,9 +63,9 @@ class LoginController extends Controller
             exit;
         } else {
             // clear cookies
-            if (isset($_COOKIE['username'], $_COOKIE['password'])) {
-                setcookie("username", "", time() - $rememberPeriod, "/");
-                setcookie("password", "", time() - $rememberPeriod, "/");
+            if (isset($_COOKIE['register_username'], $_COOKIE['register_password'])) {
+                setcookie('register_username', '', 0, CMSIMPLE_ROOT);
+                setcookie('register_password', '', 0, CMSIMPLE_ROOT);
             }
 
             XH_logMessage('error', 'register', 'login', "$username wrong password");
@@ -87,9 +88,9 @@ class LoginController extends Controller
         unset($_SESSION['username'], $_SESSION['register_sn']);
     
         // clear cookies
-        if (isset($_COOKIE['username'], $_COOKIE['password'])) {
-            setcookie("username", "", time() - $rememberPeriod, "/");
-            setcookie("password", "", time() - $rememberPeriod, "/");
+        if (isset($_COOKIE['register_username'], $_COOKIE['register_password'])) {
+            setcookie('register_username', '', 0, CMSIMPLE_ROOT);
+            setcookie('register_password', '', 0, CMSIMPLE_ROOT);
         }
         XH_logMessage('info', 'register', 'logout', "$username logged out");
     

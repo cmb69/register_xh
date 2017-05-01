@@ -193,8 +193,6 @@ class UserPrefsController extends Controller
             $view->render();
             $this->prepareForm($name, $email)->render();
         } else {
-            $rememberPeriod = 24*60*60*100;
-
             $username = isset($_SESSION['username']) ? $_SESSION['username'] : '';
 
             session_regenerate_id(true);
@@ -202,9 +200,9 @@ class UserPrefsController extends Controller
             unset($_SESSION['username'], $_SESSION['register_sn']);
 
             // clear cookies
-            if (isset($_COOKIE['username'], $_COOKIE['password'])) {
-                setcookie("username", "", time() - $rememberPeriod, "/");
-                setcookie("password", "", time() - $rememberPeriod, "/");
+            if (isset($_COOKIE['register_username'], $_COOKIE['register_password'])) {
+                setcookie('register_username', '', 0, CMSIMPLE_ROOT);
+                setcookie('register_password', '', 0, CMSIMPLE_ROOT);
             }
 
             XH_logMessage('info', 'register', 'logout', "$username deleted and logged out");

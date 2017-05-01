@@ -71,7 +71,8 @@ function Register_isLoggedIn()
 
 // Handling of login/logout =====================================================
 
-if ($plugin_cf['register']['remember_user'] && isset($_COOKIE['username'], $_COOKIE['password']) && !Register_isLoggedIn()) {
+if ($plugin_cf['register']['remember_user']
+        && isset($_COOKIE['register_username'], $_COOKIE['register_password']) && !Register_isLoggedIn()) {
 	$function = "registerlogin";
 }
 
