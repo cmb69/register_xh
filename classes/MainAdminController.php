@@ -40,7 +40,7 @@ class MainAdminController extends Controller
         foreach ($groups as $entry) {
             $groupIds[] = $entry['groupname'];
         }
-    
+
         $delete      = isset($_POST['delete'])       ? $_POST['delete']       : '';
         $add         = isset($_POST['add'])          ? $_POST['add']          : '';
         $username    = isset($_POST['username'])     ? $_POST['username']     : '';
@@ -159,8 +159,6 @@ class MainAdminController extends Controller
     {
         global $tx, $pth, $sn, $hjs;
 
-        $imageFolder = $pth['folder']['plugins'] . 'register/images';
-
         $jsKeys = ['name', 'username', 'password', 'accessgroups', 'status', 'email', 'prefsemailsubject'];
         $txts = array();
         foreach ($this->lang as $key => $val) {
@@ -178,8 +176,6 @@ class MainAdminController extends Controller
 
         $view = new View('admin-users');
         $view->saveLabel = ucfirst($tx['action']['save']);
-        $view->deleteIcon = "$imageFolder/delete.png";
-        $view->mailIcon = "$imageFolder/mail.png";
         $view->defaultGroup = $this->config['group_default'];
         $view->statusSelectActivated = new HtmlString($this->statusSelectbox('activated'));
         $view->groups = $this->findGroups();
@@ -326,14 +322,10 @@ class MainAdminController extends Controller
      */
     private function prepareGroupsForm(array $groups)
     {
-        global $tx, $pth, $sn;
-    
-        $imageFolder = "{$pth['folder']['plugins']}register/images";
+        global $tx, $sn;
     
         $view = new View('admin-groups');
         $view->actionUrl = "$sn?&register";
-        $view->addIcon = "$imageFolder/add.png";
-        $view->deleteIcon = "$imageFolder/delete.png";
         $view->saveLabel = ucfirst($tx['action']['save']);
         $view->groups = $groups;
         $selects = [];

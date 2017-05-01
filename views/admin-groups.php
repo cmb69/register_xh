@@ -7,13 +7,13 @@
             <tr>
                 <th><?=$this->text('groupname')?></th>
                 <th><?=$this->text('login')?></th>
-                <th><input type="image" src="<?=$this->addIcon()?>" style="width: 16px; height: 16px;" name="add[0]" alt="Add entry."></th>
+                <th><button name="add[0]"><i class="fa fa-plus"></i></button></th>
             </tr>
 <?php foreach ($this->groups as $i => $entry):?>
             <tr>
                 <td><input type="text" size="10" value="<?=$this->escape($entry['groupname'])?>" name="groupname[<?=$this->escape($i)?>]"></td>
                 <td><?=$this->escape($this->selects[$i])?></td>
-                <td><input type="image" src="<?=$this->deleteIcon()?>" style="width: 16px; height: 16px;" name="delete[<?=$this->escape($i)?>]" alt="Delete Entry"></td>
+                <td><button name="delete[<?=$this->escape($i)?>]" value="1"><i class="fa fa-minus"></i></td>
             </tr>
 <?php endforeach?>
         </table>

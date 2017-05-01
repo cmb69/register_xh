@@ -373,9 +373,7 @@ function registerUserPrefs()
  */
 function registerloginform()
 {
-	global $plugin_cf, $plugin_tx, $pth, $sn, $su;
-
-	$imageFolder = "{$pth['folder']['plugins']}register/images";
+	global $plugin_cf, $plugin_tx, $sn, $su;
 
 	// If logged in show user preferences link, otherwise register and forgot email links.
 
@@ -388,8 +386,6 @@ function registerloginform()
 		$view->hasForgotPasswordLink = $plugin_cf['register']['password_forgotten']
 			&& isset($su) && urldecode($su) != $forgotPasswordUrl;
 		$view->forgotPasswordUrl = "$sn?$forgotPasswordUrl";
-		$view->forgotPasswordIcon = "$imageFolder/forgot_new.png";
-		$view->loginIcon = "$imageFolder/submit_new.png";
 		$view->hasRememberMe = $plugin_cf['register']['remember_user'];
 		$view->isRegisterAllowed = $plugin_cf['register']['allowed_register'];
 		$registerUrl = uenc($plugin_tx['register']['register']);
@@ -405,9 +401,7 @@ function registerloginform()
 		$view->hasUserPrefs = $currentUser['status'] == 'activated' && isset($su)
 		    && urldecode($su) != $userPrefUrl;
 		$view->userPrefUrl = "?$userPrefUrl";
-		$view->userPrefIcon = "$imageFolder/preferences_new.png";
 		$view->logoutUrl = "$sn?&function=registerlogout";
-		$view->logoutIcon = "$imageFolder/logout_new.png";
 	}
 	return (string) $view;
 }

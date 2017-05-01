@@ -88,12 +88,6 @@ div.regi_loggedin_logout_ver {float: left; width: 100%; padding: 2px 0;}
 .regi_loggedin_loggedinarea_ver a:hover { color: white; font-size: 8pt; text-decoration: none;}
  */
 
-/* loggedin form images */
-
-.regi_settingsimage {float: left; border: 0; margin: 0 8px 0 0;}
-.regi_logoutimage {float: left; border: 0; margin: 0 8px 0 0;}
-
-
 /* Admin area */
 
 .register_admin_main {margin-bottom: 1em}
@@ -109,8 +103,9 @@ div.register_admin_main table img {width: 16px; height: 16px; cursor: pointer}
 div.register_admin_main a img {border: none}
 
 #register_user_table {margin: 1em 0; width:100%}
-th.register_sort_asc {background: url("./sort-asc.png") no-repeat right}
-th.register_sort_desc {background: url("./sort-desc.png") no-repeat right}
+#register_user_table th.register_sort:after {content: "\f0dc"; font-family: FontAwesome; padding-left: 1em}
+#register_user_table th.register_sort_asc:after {content: "\f0de"; font-family: FontAwesome; padding-left: 1em}
+#register_user_table th.register_sort_desc:after {content: "\f0dd"; font-family: FontAwesome; padding-left: 1em}
 #register_user_table input[type="text"], #register_user_table select, #register_user_table button {width: 95%} /* if necessary, adjust the width to your template */
 
 img.register_plugin_icon {display: block; float: left; margin: 0 20px 0 0}

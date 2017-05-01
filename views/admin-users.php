@@ -2,7 +2,7 @@
 <div class="register_admin_main">
     <table>
         <tr id="register_user_template" style="display: none">
-            <td><img src="<?=$this->deleteIcon()?>" alt="<?=$this->text('user_delete')?>" title="<?=$this->text('user_delete')?>" onclick="register.removeRow(this); return false"></td>
+            <td><button title="<?=$this->text('user_delete')?>" onclick="register.removeRow(this); return false"><i class="fa fa-minus"></i></button></td>
             <td><input type="text" value="" name="name[]"></td>
             <td><input type="text" value="<?=$this->defaultGroup()?>" name="accessgroups[]"></td>
             <td><?=$this->statusSelectActivated()?></td>
@@ -35,25 +35,25 @@
         <table id="register_user_table">
             <tr>
                 <th></th>
-                <th onclick="register.sort(this, 'name')" style="cursor: pointer"><?=$this->text('name')?></th>
-                <th onclick="register.sort(this, 'accessgroups')" style="cursor: pointer"><?=$this->text('accessgroups')?></th>
-                <th onclick="register.sort(this, 'status')" style="cursor: pointer"><?=$this->text('status')?></th>
+                <th class="register_sort" onclick="register.sort(this, 'name')" style="cursor: pointer"><?=$this->text('name')?></th>
+                <th class="register_sort" onclick="register.sort(this, 'accessgroups')" style="cursor: pointer"><?=$this->text('accessgroups')?></th>
+                <th class="register_sort" onclick="register.sort(this, 'status')" style="cursor: pointer"><?=$this->text('status')?></th>
             </tr>
             <tr class="register_second_row">
                 <th></th>
-                <th onclick="register.sort(this, 'username')" style="cursor: pointer"><?=$this->text('username')?></th>
-                <th onclick="register.sort(this, 'email')" style="cursor: pointer"><?=$this->text('email')?></th>
+                <th class="register_sort" onclick="register.sort(this, 'username')" style="cursor: pointer"><?=$this->text('username')?></th>
+                <th class="register_sort" onclick="register.sort(this, 'email')" style="cursor: pointer"><?=$this->text('email')?></th>
                 <th><?=$this->text('password')?></th>
             </tr>
 <?php foreach ($this->users as $i => $entry):?>
             <tr id="register_user_<?=$this->escape($i)?>">
-                <td><img src="<?=$this->deleteIcon()?>" alt="<?=$this->text('user_delete')?>" title="<?=$this->text('user_delete')?>" onclick="register.removeRow(this); return false"></td>
+                <td><button title="<?=$this->text('user_delete')?>" onclick="register.removeRow(this); return false"><i class="fa fa-minus"></i></button></td>
                 <td><input type="text" value="<?=$this->escape($entry['name'])?>" name="name[<?=$this->escape($i)?>]"></td>
                 <td><input type="text" value="<?=$this->escape($this->groupStrings[$i])?>" name="accessgroups[<?=$this->escape($i)?>]"></td>
                 <td><?=$this->escape($this->statusSelects[$i])?></td>
             </tr>
             <tr class="register_second_row">
-                <td><a onclick="register.mailTo(this)"><img src="<?=$this->mailIcon()?>" alt="<?=$this->text('email')?>" title="<?=$this->text('email')?>"></a></td>
+                <td><button type="button" onclick="register.mailTo(this)" title="<?=$this->text('email')?>"><i class="fa fa-envelope"></i></button></td>
                 <td><input type="text" value="<?=$this->escape($entry['username'])?>" name="username[<?=$this->escape($i)?>]"></td>
                 <td><input type="text" value="<?=$this->escape($entry['email'])?>" name="email[<?=$this->escape($i)?>]"></td>
                 <td>

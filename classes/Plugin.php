@@ -10,6 +10,8 @@
 
 namespace Register;
 
+use Fa\RequireCommand as RequireFaCommand;
+
 class Plugin
 {
     /**
@@ -34,6 +36,9 @@ class Plugin
     {
         global $edit, $function;
 
+        if (class_exists('Fa\\RequireCommand')) {
+            (new RequireFaCommand)->execute();
+        }
         if (!Register_isLoggedIn() && $function === 'registerlogin') {
             (new LoginController)->loginAction();
         }

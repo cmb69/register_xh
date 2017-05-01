@@ -16,8 +16,9 @@
     <div class="regi_loggedin_settings_ver">
 <?php endif?>
 <?php if ($this->hasUserPrefs):?>
-        <a href="<?=$this->userPrefUrl()?>">
-            <img class="regi_settingsimage" src="<?=$this->userPrefIcon?>" alt="<?=$this->text('user_prefs')?>"><?=$this->text('user_prefs')?>
+        <a href="<?=$this->userPrefUrl()?>" title="<?=$this->text('user_prefs')?>">
+            <i class="fa fa-wrench"></i>
+            <?=$this->text('user_prefs')?>
         </a>
 <?php endif?>
     </div>
@@ -26,8 +27,9 @@
 <?php else:?>
     <div class="regi_loggedin_logout_ver">
 <?php endif?>
-        <a href="<?=$this->logoutUrl()?>">
-            <img class="regi_logoutimage" src="<?=$this->logoutIcon()?>" alt="<?=$this->text('logout')?>"><?=$this->text('logout')?>
+        <a href="<?=$this->logoutUrl()?>" title="<?=$this->text('logout')?>">
+            <i class="fa fa-sign-out"></i>
+            <?=$this->text('logout')?>
         </a>
     </div>
     <div style="clear: both;"></div>
