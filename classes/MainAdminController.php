@@ -271,9 +271,9 @@ class MainAdminController extends Controller
     {
         $errors = [];
 
-        $delete      = isset($_POST['delete'])       ? $_POST['delete']       : '';
+        $delete      = isset($_POST['delete'])       ? $_POST['delete']       : [];
         $add         = isset($_POST['add'])          ? $_POST['add']          : '';
-        $groupname   = isset($_POST['groupname'])    ? $_POST['groupname']    : '';
+        $groupname   = isset($_POST['groupname'])    ? $_POST['groupname']    : [];
 
         $deleted = false;
         $added   = false;
