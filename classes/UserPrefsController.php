@@ -25,10 +25,7 @@ class UserPrefsController extends Controller
         } elseif ($entry->status == "locked") {
             echo XH_message('fail', $this->lang['user_locked'] . ':' .$username);
         } else {
-            $email = $entry->email;
-            $name  = $entry->name;
-
-            echo $this->userPrefsForm($name, $email);
+            $this->prepareForm($entry->name, $entry->email)->render();
         }
     }
 
@@ -102,7 +99,7 @@ class UserPrefsController extends Controller
             $view = new View('error');
             $view->errors = $errors;
             $view->render();
-            echo $this->userPrefsForm($name, $email);
+            $this->prepareForm($name, $email)->render();
         } else {
             // prepare email for user information about updates
             $content = $this->lang['emailprefsupdated'] . "\n\n" .
@@ -174,7 +171,7 @@ class UserPrefsController extends Controller
             $view = new View('error');
             $view->errors = $errors;
             $view->render();
-            echo $this->userPrefsForm($name, $email);
+            $this->prepareForm($name, $email)->render();
         } else {
             $rememberPeriod = 24*60*60*100;
 
@@ -196,12 +193,17 @@ class UserPrefsController extends Controller
         }
     }
 
-    private function userPrefsForm($name, $email)
+    /**
+     * @param string $name
+     * @param string $email
+     * @return View
+     */
+    private function prepareForm($name, $email)
     {
         $view = new View('userprefs-form');
         $view->actionUrl = sv('REQUEST_URI');
         $view->name = $name;
         $view->email = $email;
-        return (string) $view;
+        return $view;
     }
 }
