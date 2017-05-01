@@ -131,8 +131,7 @@ class RegistrationController extends Controller
                 $errors[] = $this->lang['err_status_empty'];
             }
             if ($nonce != $entry->status) {
-                $errors[] = $this->lang['err_status_invalid']
-                    . "($nonce&ne;" . $entry->status . ')';
+                $errors[] = $this->lang['err_status_invalid'];
             }
         }
 
