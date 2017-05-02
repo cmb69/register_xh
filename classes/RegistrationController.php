@@ -79,9 +79,9 @@ class RegistrationController extends Controller
                 . ' ' . $this->lang['email'] . ": $email \n"
                 . ' ' . $this->lang['fromip'] . ": {$_SERVER['REMOTE_ADDR']} \n\n"
                 . $this->lang['emailtext2'] . "\n\n"
-                . CMSIMPLE_URL . '?' . $su . '&'
+                . '<' . CMSIMPLE_URL . '?' . $su . '&'
                 . 'action=register_activate_user&username='.$username.'&nonce='
-                . $status;
+                . $status . '>';
 
             // send activation email
             (new MailService)->sendMail(

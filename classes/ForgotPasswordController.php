@@ -54,9 +54,9 @@ class ForgotPasswordController extends Controller
                 . ' ' . $this->lang['username'] . ": " . $user->username . "\n";
             $content .= ' ' . $this->lang['email'] . ": " . $user->email . "\n";
             $content .= "\n" . $this->lang['emailtext3'] ."\n\n"
-                . CMSIMPLE_URL . '?' . $su . '&'
+                . '<' . CMSIMPLE_URL . '?' . $su . '&'
                 . 'action=registerResetPassword&username=' . urlencode($user->username) . '&nonce='
-                . urlencode($user->password);
+                . urlencode($user->password) . '>';
 
             // send reminder email
             (new MailService)->sendMail(
