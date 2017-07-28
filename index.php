@@ -96,7 +96,7 @@ function registerRemoveHiddenPages($userGroups) {
     global $cl, $c;
 
     for ($i = 0; $i < $cl; $i++) {
-	if (preg_match('/(?:#CMSimple |{{{PLUGIN:)access\((.*?)\);(?:#|}}})/isu', $c[$i], $matches)) {
+	if (preg_match('/(?:#CMSimple\s+|{{{.*?)access\((.*?)\)\s*;?\s*(?:#|}}})/isu', $c[$i], $matches)) {
             if ($arg = trim($matches[1], "\"'")) {
 		$groups = array_map('trim', explode(',', $arg));
 		if (count(array_intersect($groups, $userGroups)) == 0) {
