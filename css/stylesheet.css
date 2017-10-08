@@ -90,14 +90,14 @@ div.regi_loggedin_logout_ver {float: left; width: 100%; padding: 2px 0;}
 
 /* Admin area */
 
-.register_admin_main {margin-bottom: 1em}
+.register_admin_main {margin-bottom: 1em; overflow-x: auto}
 
 #register_toggle_details {margin: 0 0.2em 0 1em}
 #register_group_selectbox {margin-left: 1em}
 
 div.register_admin_main table {margin-bottom: 1em}
 div.register_admin_main table th {text-align: center; font-weight: bold}
-div.register_admin_main table input {width: 20em}
+div.register_admin_main table input {}
 div.register_admin_main table img {width: 16px; height: 16px; cursor: pointer}
 
 div.register_admin_main a img {border: none}
