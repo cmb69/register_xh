@@ -200,10 +200,7 @@ class Plugin
      */
     private function isAdministrationRequested()
     {
-        global $register;
-
-        return function_exists('XH_wantsPluginAdministration') && XH_wantsPluginAdministration('register')
-            || isset($register) && $register === 'true';
+        return XH_wantsPluginAdministration('register');
     }
 
     private function handleAdministration()
