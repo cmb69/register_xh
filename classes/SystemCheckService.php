@@ -43,7 +43,7 @@ class SystemCheckService
             $this->checkPhpVersion('5.4.0'),
             $this->checkExtension('gd', false),
             $this->checkExtension('session'),
-            $this->checkXhVersion('1.6'),
+            $this->checkXhVersion('1.7'),
             $this->checkPlugin('fa'),
             $this->checkWritability("$this->pluginFolder/css/"),
             $this->checkWritability("$this->pluginFolder/config/"),
