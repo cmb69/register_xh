@@ -123,7 +123,7 @@ class MainAdminController extends Controller
                 $deleted = true;
             }
         }
-        if ($add <> '') {
+        if ($add != '') {
             $entry = (object) array(
                 'username'     => "NewUser",
                 'password'     => "",
@@ -307,7 +307,7 @@ class MainAdminController extends Controller
                 $deleted = true;
             }
         }
-        if ($add <> '') {
+        if ($add != '') {
             $entry = (object) ['groupname' => "NewGroup", 'loginpage' => ''];
             $newgroups[] = $entry;
             $added = true;
