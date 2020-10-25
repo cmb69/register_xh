@@ -37,10 +37,14 @@ function Register_dataFolder()
     } else {
         $folder = "{$pth['folder']['content']}register/";
     }
-    if (!file_exists($folder)) {
+    if (!is_dir($folder)) {
         mkdir($folder, 0777, true);
         chmod($folder, 0777);
+    }
+    if (!is_file("{$folder}users.csv")) {
         (new Register\DbService($folder))->writeUsers([]);
+    }
+    if (!is_file("{$folder}groups.csv")) {
         (new Register\DbService($folder))->writeGroups(
             [(object) ['groupname' => $plugin_cf['register']['group_default'], 'loginpage' => '']]
         );
