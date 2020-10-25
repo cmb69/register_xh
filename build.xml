@@ -20,7 +20,6 @@
         <phpcodesniffer standard="PSR2" format="full">
             <fileset dir=".">
                 <include name="classes/*.php"/>
-                <exclude name="classes/PasswordHash.php"/>
             </fileset>
         </phpcodesniffer>
     </target>
@@ -29,7 +28,6 @@
         <phpmd>
             <fileset dir=".">
                 <include name="classes/*.php"/>
-                <exclude name="classes/PasswordHash.php"/>
             </fileset>
          </phpmd>
     </target>

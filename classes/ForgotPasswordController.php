@@ -92,8 +92,8 @@ class ForgotPasswordController extends Controller
         // in case of encrypted password a new random password will be generated
         // and its value be written back to the CSV file
         if (empty($errors)) {
-            $password = base64_encode($this->hasher->get_random_bytes(8));
-            $user->password = $this->hasher->hashPassword($password);
+            $password = base64_encode(random_bytes(8));
+            $user->password = password_hash($password, PASSWORD_DEFAULT);
             $userArray = registerReplaceUserEntry($userArray, $user);
             if (!(new DbService(Register_dataFolder()))->writeUsers($userArray)) {
                 $errors[] = $this->lang['err_cannot_write_csv']

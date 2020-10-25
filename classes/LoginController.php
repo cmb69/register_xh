@@ -39,7 +39,7 @@ class LoginController extends Controller
                 && ($entry->status == 'activated' || $entry->status == 'locked')
                 && (!isset($passwordHash) || $passwordHash == $entry->password)
                 && (isset($passwordHash)
-                || ($this->hasher->checkPassword($password, $entry->password)))) {
+                || (password_verify($password, $entry->password)))) {
             // set cookies if requested by user
             if ($this->config['remember_user'] && isset($_POST['remember'])) {
                 setcookie('register_username', $username, time() + $rememberPeriod, CMSIMPLE_ROOT);

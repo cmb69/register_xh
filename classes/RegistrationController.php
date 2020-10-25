@@ -49,11 +49,11 @@ class RegistrationController extends Controller
         }
 
         // generate a nonce for the user activation
-        $status = bin2hex($this->hasher->get_random_bytes(16));
+        $status = bin2hex(random_bytes(16));
         $userArray = registerAddUser(
             $userArray,
             $username,
-            $this->hasher->hashPassword($password1),
+            password_hash($password1, PASSWORD_DEFAULT),
             array($this->config['group_default']),
             $name,
             $email,

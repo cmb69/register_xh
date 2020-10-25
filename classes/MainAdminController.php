@@ -108,7 +108,7 @@ class MainAdminController extends Controller
                 }
         
                 if (empty($entryErrors) && $password[$j] != $oldpassword[$j]) {
-                    $password[$j] = $this->hasher->hashPassword($password[$j]);
+                    $password[$j] = password_hash($password[$j], PASSWORD_DEFAULT);
                 }
                 $entry = (object) array(
                     'username'     => $username[$j],
