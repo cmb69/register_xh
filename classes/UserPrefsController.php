@@ -24,6 +24,7 @@ class UserPrefsController extends Controller
         global $pth;
 
         parent::__construct();
+        XH_startSession();
         if (!class_exists('\\XH_CSRFProtection')) {
             include_once $pth['folder']['classes'] . 'CSRFProtection.php';
         }

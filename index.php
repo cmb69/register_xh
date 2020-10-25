@@ -24,9 +24,6 @@ if ($plugin_cf['register']['login_all_subsites']) {
     define('REGISTER_SESSION_NAME', CMSIMPLE_ROOT . $sl);
 }
 
-XH_startSession();
-
-
 function Register_dataFolder()
 {
     global $sl, $cf, $plugin_cf, $pth;
@@ -217,9 +214,15 @@ function registerDeleteUserEntry(array $array, $username)
  */
 function Register_currentUser()
 {
+    global $pth;
     static $user = null;
 
     if (!$user) {
+        // it would be nice if XH had an API to get the session name without starting a session
+        $sessionfile = $pth['folder']['cmsimple'] . '.sessionname';
+        if (is_file($sessionfile) && isset($_COOKIE[file_get_contents($sessionfile)])) {
+            XH_startSession();
+        }
         if (isset($_SESSION['username'], $_SESSION['register_sn'])
                 && $_SESSION['register_sn'] == REGISTER_SESSION_NAME) {
             (new Register\DbService(Register_dataFolder()))->lock(LOCK_SH);
@@ -241,6 +244,7 @@ function Register_currentUser()
 
 function Register_logout()
 {
+    XH_startSession();
     session_regenerate_id(true);
     unset($_SESSION['username'], $_SESSION['register_sn']);
     if (isset($_COOKIE['register_username'], $_COOKIE['register_password'])) {

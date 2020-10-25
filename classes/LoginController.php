@@ -46,6 +46,7 @@ class LoginController extends Controller
                 setcookie('register_password', $entry->password, time() + $rememberPeriod, CMSIMPLE_ROOT);
             }
 
+            XH_startSession();
             session_regenerate_id(true);
 
             $_SESSION['username']     = $entry->username;
@@ -79,6 +80,7 @@ class LoginController extends Controller
 
     public function logoutAction()
     {
+        XH_startSession();
         $username = isset($_SESSION['username']) ? $_SESSION['username'] : '';
         Register_logout();
         XH_logMessage('info', 'register', 'logout', "$username logged out");
