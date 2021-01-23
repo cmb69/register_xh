@@ -15,7 +15,7 @@ if (!defined('CMSIMPLE_XH_VERSION')) {
 }
 
 
-define('REGISTER_VERSION', '@REGISTER_VERSION@');
+define('REGISTER_VERSION', '1.6');
 
 
 if ($plugin_cf['register']['login_all_subsites']) {
