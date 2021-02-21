@@ -106,7 +106,9 @@ class MainAdminController extends Controller
                     $view->errors = $entryErrors;
                     $errors[] = new HtmlString($view);
                 }
-        
+                if ($password[$j] == '') {
+                    $password[$j] = base64_encode(random_bytes(16));
+                }
                 if (empty($entryErrors) && $password[$j] != $oldpassword[$j]) {
                     $password[$j] = password_hash($password[$j], PASSWORD_DEFAULT);
                 }
