@@ -5,7 +5,7 @@ Register_XH – a CMSimple_XH plugin
 
 Copyright (c) 2007 Carsten Heinelt (http://cmsimple.heinelt.eu/)  
 Copyright (c) 2010-2012 Gert Ebersbach (http://www.ge-webdesign.de/cmsimpleplugins/)  
-Copyright (c) 2012-2017 Christoph M. Becker (http://3-magi.net/)
+Copyright (c) 2012-2021 Christoph M. Becker (http://3-magi.net/)
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of
 this software and associated documentation files (the "Software"), to use, copy
