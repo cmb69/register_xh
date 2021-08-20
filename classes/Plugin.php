@@ -255,10 +255,7 @@ class Plugin
      */
     private function renderInfo()
     {
-        global $pth;
-    
         $view = new View('info');
-        $view->logo = "{$pth['folder']['plugins']}register/register.png";
         $view->version = REGISTER_VERSION;
         $view->checks = (new SystemCheckService)->getChecks();
         return (string) $view;
