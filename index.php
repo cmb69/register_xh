@@ -67,8 +67,7 @@ if ($plugin_cf['register']['remember_user']
     $function = "registerlogin";
 }
 
-if (!($edit&&$adm) && $plugin_cf['register']['hide_pages'])
-{
+if (!($edit&&$adm) && $plugin_cf['register']['hide_pages']) {
     if ($temp = Register_currentUser()) {
         registerRemoveHiddenPages($temp->accessgroups);
     } else {
@@ -80,18 +79,19 @@ if (!($edit&&$adm) && $plugin_cf['register']['hide_pages'])
  * Remove access restricted pages. Supported are multiple groups per page and
  * multiple user groups.
  */
-function registerRemoveHiddenPages($userGroups) {
+function registerRemoveHiddenPages($userGroups)
+{
     global $cl, $c;
 
     for ($i = 0; $i < $cl; $i++) {
-    if (preg_match('/(?:#CMSimple\s+|{{{.*?)access\((.*?)\)\s*;?\s*(?:#|}}})/isu', $c[$i], $matches)) {
+        if (preg_match('/(?:#CMSimple\s+|{{{.*?)access\((.*?)\)\s*;?\s*(?:#|}}})/isu', $c[$i], $matches)) {
             if ($arg = trim($matches[1], "\"'")) {
-        $groups = array_map('trim', explode(',', $arg));
-        if (count(array_intersect($groups, $userGroups)) == 0) {
-            $c[$i]= "#CMSimple hide# {{{PLUGIN:access('$arg');}}}";
+                $groups = array_map('trim', explode(',', $arg));
+                if (count(array_intersect($groups, $userGroups)) == 0) {
+                    $c[$i]= "#CMSimple hide# {{{PLUGIN:access('$arg');}}}";
+                }
+            }
         }
-        }
-    }
     }
 }
 
@@ -124,9 +124,9 @@ function Register_groupLoginPage($group)
 
     $groups = (new Register\DbService(Register_dataFolder()))->readGroups();
     foreach ($groups as $rec) {
-    if ($rec->groupname == $group) {
-        return $rec->loginpage;
-    }
+        if ($rec->groupname == $group) {
+            return $rec->loginpage;
+        }
     }
     return false;
 }
@@ -161,10 +161,10 @@ function registerAddUser(array $array, $username, $password, $accessgroups, $nam
  */
 function registerSearchUserArray(array $array, $key, $value)
 {
-    foreach($array as $entry)
-    {
-        if(isset($entry->{$key}) && $entry->{$key} == $value)
-        return $entry;
+    foreach ($array as $entry) {
+        if (isset($entry->{$key}) && $entry->{$key} == $value) {
+            return $entry;
+        }
     }
     return false;
 }
@@ -182,11 +182,12 @@ function registerReplaceUserEntry(array $array, stdClass $newentry)
 {
     $newarray = array();
     $username = $newentry->username;
-    foreach($array as $entry)
-    {
-    if(isset($entry->username) && $entry->username == $username) $newarray[] = $newentry;
-    else
-    $newarray[] = $entry;
+    foreach ($array as $entry) {
+        if (isset($entry->username) && $entry->username == $username) {
+            $newarray[] = $newentry;
+        } else {
+            $newarray[] = $entry;
+        }
     }
     return $newarray;
 }
@@ -203,9 +204,10 @@ function registerReplaceUserEntry(array $array, stdClass $newentry)
 function registerDeleteUserEntry(array $array, $username)
 {
     $newarray = array();
-    foreach($array as $entry)
-    {
-        if(isset($entry->username) && $entry->username != $username) $newarray[] = $entry;
+    foreach ($array as $entry) {
+        if (isset($entry->username) && $entry->username != $username) {
+            $newarray[] = $entry;
+        }
     }
     return $newarray;
 }
@@ -290,7 +292,7 @@ function registerCheckEntry($name, $username, $password1, $password2, $email)
     }
     if ($email == '') {
         $errors[] = $plugin_tx['register']['err_email'];
-    } elseif (!preg_match("/^[^\s()<>@,;:\"\/\[\]?=]+@\w[\w-]*(\.\w[\w-]*)*\.[a-z]{2,}$/i",$email)) {
+    } elseif (!preg_match("/^[^\s()<>@,;:\"\/\[\]?=]+@\w[\w-]*(\.\w[\w-]*)*\.[a-z]{2,}$/i", $email)) {
         $errors[] = $plugin_tx['register']['err_email_invalid'];
     }
     return $errors;
@@ -445,9 +447,7 @@ function Register_loggedInForm()
 function registeradminmodelink()
 {
     trigger_error('registeradminmodelink() is deprecated', E_USER_WARNING);
-    return FALSE;
+    return false;
 }
 
 Register\Plugin::run();
-
-?>
