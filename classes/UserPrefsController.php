@@ -10,7 +10,7 @@
 
 namespace Register;
 
-use XH_CSRFProtection;
+use XH\CSRFProtection;
 
 class UserPrefsController extends Controller
 {
@@ -28,7 +28,7 @@ class UserPrefsController extends Controller
         if (!class_exists('\\XH_CSRFProtection')) {
             include_once $pth['folder']['classes'] . 'CSRFProtection.php';
         }
-        $this->csrfProtector = new XH_CSRFProtection('register_csrf_token', false);
+        $this->csrfProtector = new CSRFProtection('register_csrf_token', false);
     }
 
     public function defaultAction()
