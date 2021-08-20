@@ -25,11 +25,9 @@
     </target>
 
     <target name="mess" description="detects code flaws">
-        <phpmd>
-            <fileset dir=".">
-                <include name="classes/*.php"/>
-            </fileset>
-         </phpmd>
+        <exec executable="phpmd" passthru="true" checkreturn="true">
+            <arg line="classes ansi codesize,unusedcode --ignore-violations-on-exit"/>
+        </exec>
     </target>
 
     <target name="compat" description="checks PHP requirements">
