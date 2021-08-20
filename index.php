@@ -448,6 +448,6 @@ function registeradminmodelink()
     return FALSE;
 }
 
-(new Register\Plugin)->run();
+Register\Plugin::run();
 
 ?>

@@ -14,25 +14,7 @@ use Fa\RequireCommand as RequireFaCommand;
 
 class Plugin
 {
-    /**
-     * @var array
-     */
-    private $config;
-
-    /**
-     * @var array
-     */
-    private $lang;
-
-    public function __construct()
-    {
-        global $plugin_cf, $plugin_tx;
-
-        $this->config = $plugin_cf['register'];
-        $this->lang = $plugin_tx['register'];
-    }
-
-    public function run()
+    public static function run()
     {
         global $edit, $function;
 
@@ -46,136 +28,136 @@ class Plugin
             (new LoginController)->logoutAction();
         }
         if (!(XH_ADM && $edit)) {
-            $this->handleImplicitPages();
+            self::handleImplicitPages();
         }
         if (XH_ADM) {
-            if ($this->isAdministrationRequested()) {
-                $this->handleAdministration();
+            if (self::isAdministrationRequested()) {
+                self::handleAdministration();
             }
         }
     }
 
-    private function handleImplicitPages()
+    private static function handleImplicitPages()
     {
-        global $o, $su;
+        global $o, $su, $plugin_tx;
 
         switch ($su) {
-            case uenc($this->lang['register']):
-                $o .= $this->handleRegistrationPage();
+            case uenc($plugin_tx['register']['register']):
+                $o .= self::handleRegistrationPage();
                 break;
-            case uenc($this->lang['forgot_password']):
-                $o .= $this->handlePasswordForgottenPage();
+            case uenc($plugin_tx['register']['forgot_password']):
+                $o .= self::handlePasswordForgottenPage();
                 break;
-            case uenc($this->lang['user_prefs']):
-                $o .= $this->handleUserPrefsPage();
+            case uenc($plugin_tx['register']['user_prefs']):
+                $o .= self::handleUserPrefsPage();
                 break;
-            case uenc($this->lang['login_error']):
-                $o .= $this->handleLoginErrorPage();
+            case uenc($plugin_tx['register']['login_error']):
+                $o .= self::handleLoginErrorPage();
                 break;
-            case uenc($this->lang['loggedout']):
-                $o .= $this->handleLogoutPage();
+            case uenc($plugin_tx['register']['loggedout']):
+                $o .= self::handleLogoutPage();
                 break;
-            case uenc($this->lang['loggedin']):
-                $o .= $this->handleLoginPage();
+            case uenc($plugin_tx['register']['loggedin']):
+                $o .= self::handleLoginPage();
                 break;
-            case uenc($this->lang['access_error']):
-                $o .= $this->handleAccessErrorPage();
+            case uenc($plugin_tx['register']['access_error']):
+                $o .= self::handleAccessErrorPage();
                 break;
         }
     }
 
-    private function handleRegistrationPage()
+    private static function handleRegistrationPage()
     {
-        global $title, $h;
+        global $title, $h, $plugin_cf, $plugin_tx;
 
-        if ($this->config['allowed_register'] && !in_array($this->lang['register'], $h)) {
-            $title = XH_hsc($this->lang['register']);
-            return $this->preparePageView(
-                $this->lang['register'],
-                $this->lang['register_form1'],
+        if ($plugin_cf['register']['allowed_register'] && !in_array($plugin_tx['register']['register'], $h)) {
+            $title = XH_hsc($plugin_tx['register']['register']);
+            return self::preparePageView(
+                $plugin_tx['register']['register'],
+                $plugin_tx['register']['register_form1'],
                 registerUser()
             );
         }
     }
 
-    private function handlePasswordForgottenPage()
+    private static function handlePasswordForgottenPage()
     {
-        global $title, $h;
+        global $title, $h, $plugin_cf, $plugin_tx;
 
-        if ($this->config['password_forgotten'] && !in_array($this->lang['forgot_password'], $h)) {
-            $title = XH_hsc($this->lang['forgot_password']);
-            return $this->preparePageView(
-                $this->lang['forgot_password'],
-                $this->lang['reminderexplanation'],
+        if ($plugin_cf['register']['password_forgotten'] && !in_array($plugin_tx['register']['forgot_password'], $h)) {
+            $title = XH_hsc($plugin_tx['register']['forgot_password']);
+            return self::preparePageView(
+                $plugin_tx['register']['forgot_password'],
+                $plugin_tx['register']['reminderexplanation'],
                 registerForgotPassword()
             );
         }
     }
 
-    private function handleUserPrefsPage()
+    private static function handleUserPrefsPage()
     {
-        global $title, $h;
+        global $title, $h, $plugin_tx;
 
-        if (!in_array($this->lang['user_prefs'], $h)) {
-            $title = XH_hsc($this->lang['user_prefs']);
-            return $this->preparePageView(
-                $this->lang['user_prefs'],
-                $this->lang['changeexplanation'],
+        if (!in_array($plugin_tx['register']['user_prefs'], $h)) {
+            $title = XH_hsc($plugin_tx['register']['user_prefs']);
+            return self::preparePageView(
+                $plugin_tx['register']['user_prefs'],
+                $plugin_tx['register']['changeexplanation'],
                 registerUserPrefs()
             );
         }
     }
 
-    private function handleLoginErrorPage()
+    private static function handleLoginErrorPage()
     {
-        global $title, $h;
+        global $title, $h, $plugin_tx;
 
         header('HTTP/1.1 403 Forbidden');
-        if (!in_array($this->lang['login_error'], $h)) {
-            $title = $this->lang['login_error'];
-            return $this->preparePageView(
-                $this->lang['login_error'],
-                $this->lang['login_error_text']
+        if (!in_array($plugin_tx['register']['login_error'], $h)) {
+            $title = $plugin_tx['register']['login_error'];
+            return self::preparePageView(
+                $plugin_tx['register']['login_error'],
+                $plugin_tx['register']['login_error_text']
             );
         }
     }
 
-    private function handleLogoutPage()
+    private static function handleLogoutPage()
     {
-        global $title, $h;
+        global $title, $h, $plugin_tx;
 
-        if (!in_array($this->lang['loggedout'], $h)) {
-            $title = $this->lang['loggedout'];
-            return $this->preparePageView(
-                $this->lang['loggedout'],
-                $this->lang['loggedout_text']
+        if (!in_array($plugin_tx['register']['loggedout'], $h)) {
+            $title = $plugin_tx['register']['loggedout'];
+            return self::preparePageView(
+                $plugin_tx['register']['loggedout'],
+                $plugin_tx['register']['loggedout_text']
             );
         }
     }
 
-    private function handleLoginPage()
+    private static function handleLoginPage()
     {
-        global $title, $h;
+        global $title, $h, $plugin_tx;
 
-        if (!in_array($this->lang['loggedin'], $h)) {
-            $title = $this->lang['loggedin'];
-            return $this->preparePageView(
-                $this->lang['loggedin'],
-                $this->lang['loggedin_text']
+        if (!in_array($plugin_tx['register']['loggedin'], $h)) {
+            $title = $plugin_tx['register']['loggedin'];
+            return self::preparePageView(
+                $plugin_tx['register']['loggedin'],
+                $plugin_tx['register']['loggedin_text']
             );
         }
     }
 
-    private function handleAccessErrorPage()
+    private static function handleAccessErrorPage()
     {
-        global $title, $h;
+        global $title, $h, $plugin_tx;
 
         header('HTTP/1.1 403 Forbidden');
-        if (!in_array($this->lang['access_error'], $h)) {
-            $title = $this->lang['access_error'];
-            return $this->preparePageView(
-                $this->lang['access_error'],
-                $this->lang['access_error_text']
+        if (!in_array($plugin_tx['register']['access_error'], $h)) {
+            $title = $plugin_tx['register']['access_error'];
+            return self::preparePageView(
+                $plugin_tx['register']['access_error'],
+                $plugin_tx['register']['access_error_text']
             );
         }
     }
@@ -186,7 +168,7 @@ class Plugin
      * @param string $more
      * @return View
      */
-    private function preparePageView($title, $intro, $more = '')
+    private static function preparePageView($title, $intro, $more = '')
     {
         $view = new View('page');
         $view->title = $title;
@@ -198,14 +180,14 @@ class Plugin
     /**
      * @return bool
      */
-    private function isAdministrationRequested()
+    private static function isAdministrationRequested()
     {
         return XH_wantsPluginAdministration('register');
     }
 
-    private function handleAdministration()
+    private static function handleAdministration()
     {
-        global $o, $admin, $action;
+        global $o, $admin, $action, $plugin_tx;
 
         $o .= print_plugin_admin('off');
         pluginmenu('ROW');
@@ -213,18 +195,18 @@ class Plugin
             'TAB',
             '?&amp;register&amp;admin=plugin_main&amp;action=editgroups',
             '',
-            XH_hsc($this->lang['mnu_group_admin'])
+            XH_hsc($plugin_tx['register']['mnu_group_admin'])
         );
         pluginmenu(
             'TAB',
             '?&amp;register&amp;admin=plugin_main&amp;action=editusers',
             '',
-            XH_hsc($this->lang['mnu_user_admin'])
+            XH_hsc($plugin_tx['register']['mnu_user_admin'])
         );
         $o .= pluginmenu('SHOW');
         switch ($admin) {
             case '':
-                $o .= $this->renderInfo();
+                $o .= self::renderInfo();
                 break;
             case 'plugin_main':
                 $temp = new MainAdminController;
@@ -253,7 +235,7 @@ class Plugin
     /**
      * @return string
      */
-    private function renderInfo()
+    private static function renderInfo()
     {
         $view = new View('info');
         $view->version = REGISTER_VERSION;
