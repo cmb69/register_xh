@@ -2,3 +2,4 @@
 /tests/coverage
 /composer.lock
 /tools
+/.phpunit.result.cache

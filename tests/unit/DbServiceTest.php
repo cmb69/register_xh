@@ -2,11 +2,11 @@
 
 namespace Register;
 
-use PHPUnit_Framework_TestCase;
+use PHPUnit\Framework\TestCase;
 use org\bovigo\vfs\vfsStream;
 use org\bovigo\vfs\vfsStreamDirectory;
 
-class DbServiceTest extends PHPUnit_Framework_TestCase
+class DbServiceTest extends TestCase
 {
     /**
      * @var vfsStreamDirectory
@@ -18,7 +18,7 @@ class DbServiceTest extends PHPUnit_Framework_TestCase
      */
     private $subject;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->root = vfsStream::setup('root');
         $this->subject = new DbService(vfsStream::url('root/'));
