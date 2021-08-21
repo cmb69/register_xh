@@ -50,7 +50,7 @@ class LoginController extends Controller
             session_regenerate_id(true);
 
             $_SESSION['username']     = $entry->username;
-            $_SESSION['register_sn']  = REGISTER_SESSION_NAME;
+            $_SESSION['register_sn']  = Register_sessionName();
 
             XH_logMessage('info', 'register', 'login', "$username logged in");
 

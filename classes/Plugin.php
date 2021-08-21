@@ -14,6 +14,8 @@ use Fa\RequireCommand as RequireFaCommand;
 
 class Plugin
 {
+    const VERSION = "1.6";
+
     public static function run()
     {
         global $edit, $function;
@@ -238,7 +240,7 @@ class Plugin
     private static function renderInfo()
     {
         $view = new View('info');
-        $view->version = REGISTER_VERSION;
+        $view->version = self::VERSION;
         $view->checks = (new SystemCheckService)->getChecks();
         return (string) $view;
     }

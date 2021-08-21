@@ -15,15 +15,6 @@ if (!defined('CMSIMPLE_XH_VERSION')) {
 }
 
 
-define('REGISTER_VERSION', '1.6');
-
-
-if ($plugin_cf['register']['login_all_subsites']) {
-    define('REGISTER_SESSION_NAME', CMSIMPLE_ROOT);
-} else {
-    define('REGISTER_SESSION_NAME', CMSIMPLE_ROOT . $sl);
-}
-
 // Handling of login/logout =====================================================
 
 if ($plugin_cf['register']['remember_user']

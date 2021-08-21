@@ -197,7 +197,7 @@ function Register_currentUser()
             XH_startSession();
         }
         if (isset($_SESSION['username'], $_SESSION['register_sn'])
-                && $_SESSION['register_sn'] == REGISTER_SESSION_NAME) {
+                && $_SESSION['register_sn'] == Register_sessionName()) {
             (new Register\DbService(Register_dataFolder()))->lock(LOCK_SH);
             $users = (new Register\DbService(Register_dataFolder()))->readUsers();
             $rec = registerSearchUserArray($users, 'username', $_SESSION['username']);
@@ -413,4 +413,15 @@ function registeradminmodelink()
 {
     trigger_error('registeradminmodelink() is deprecated', E_USER_WARNING);
     return false;
+}
+
+function Register_sessionName()
+{
+    global $sl, $plugin_cf;
+
+    if ($plugin_cf['register']['login_all_subsites']) {
+        return CMSIMPLE_ROOT;
+    } else {
+        return CMSIMPLE_ROOT . $sl;
+    }
 }
