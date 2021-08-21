@@ -1,335 +1,137 @@
 <!DOCTYPE html>
-<html lang="en">
-
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<meta http-equiv="content-type" content="text/html;charset=utf-8">
-<title>Register_XH – User Manual</title>
-<link rel="stylesheet" type="text/css" href="./stylesheet.css">
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Register_XH – User Manual</title>
+  <style type="text/css">
+    body {
+        font-family: Georgia, serif;
+        line-height: 1.5;
+        margin-left: auto;
+        margin-right: auto;
+        padding-left: 0.5em;
+        padding-right: 0.5em;
+        background: #ffffe1;
+        max-width: 32em;
+    }
+    p {
+        text-align: justify;
+    }
+    pre {
+        color: black;
+        background: #ffe;
+        overflow: auto;
+        padding: 0.2em 0.5em;
+        border: 1px solid silver;
+    }
+  </style>
 </head>
-
 <body>
-
-<article>
-<h1>Register_XH – User Manual</h1>
-<img src="../register.png" class="logo" alt="Users">
-<p>
-    Register_XH facilitates to restrict access to certain CMSimple_XH pages to
-    registered users. Therefore it has a simple user and group management as
-    well as a login form, with the optional possibility for visitors to register
-    per email. It is used by some other plugins to add user management (e.g. <a
-    href="http://3-magi.net/?CMSimple_XH/Chat_XH">Chat_XH</a> and <a
-    href="http://3-magi.net/?CMSimple_XH/Forum_XH">Forum_XH</a>).
-</p>
-
-<nav id="nav">
-<h2>Table of Contents</h2>
+<h1 id="register_xh">Register_XH</h1>
+<p>Register_XH facilitates to restrict access to certain CMSimple_XH pages to registered users. Therefore it has a simple user and group management as well as a login form, with the optional possibility for visitors to register per email. It is used by some other plugins to add user management (e.g. <a href="https://github.com/cmb69/chat_xh">Chat_XH</a> and <a href="https://github.com/cmb69/forum_xh">Forum_XH</a>).</p>
 <ul>
-<!--<li><a href="#notice">Important Notice</a></li>-->
 <li><a href="#requirements">Requirements</a></li>
+<li><a href="#download">Download</a></li>
 <li><a href="#installation">Installation</a></li>
 <li><a href="#settings">Settings</a></li>
 <li><a href="#usage">Usage</a>
 <ul>
-<li><a href="#usage-administration">User and Group Administration</a></li>
-<li><a href="#usage-loginform">Login Form</a></li>
-<li><a href="#usage-access">Access to CMSimple Pages</a></li>
-<li><a href="#usage-pages">Special Pages</a></li>
+<li><a href="#user-and-group-administration">User and Group Administration</a></li>
+<li><a href="#login-form">Login Form</a></li>
+<li><a href="#access-to-pages">Access to Pages</a></li>
+<li><a href="#special-pages">Special Pages</a></li>
 </ul></li>
 <li><a href="#limitations">Limitations</a></li>
+<li><a href="#troubleshooting">Troubleshooting</a></li>
 <li><a href="#license">License</a></li>
 <li><a href="#credits">Credits</a></li>
 </ul>
-</nav>
-
-<!--
-<section id="notice">
-<h2>Important Notice</h2>
-<p class="important">
-    Register_XH couldn't be tested so far in various environments. It is a beta
-    version. Use with caution!
-</p>
-</section>
--->
-
-<section id="requirements">
-<h2>Requirements</h2>
-<p>
-    Register_XH requires CMSimple_XH ≥ 1.7 with the <a
-    href="http://3-magi.net/?CMSimple_XH/Fa_XH">Fa_XH</a> plugin and PHP ≥
-    7.0.2.
-</p>
-</section>
-
-<section id="installation">
-<h2>Installation</h2>
-<p>
-    The installation is done as with many other CMSimple_XH plugins. See the <a
-    href="http://www.cmsimple-xh.org/wiki/doku.php/installation"> CMSimple_XH
-    wiki</a> for further details.
-</p>
-<ol>
-<li class="important">
-    Backup the data on your server.
-</li>
-<li>
-    Unzip the distribution on your computer.
-</li>
-<li>
-    Upload the whole directory <code>register/</code> to your server into
-    CMSimple_XH's plugins directory.
-</li>
-<li>
-    Set write permissions to the subdirectories <code>config/</code>,
-    <code>css/</code> and <code>languages/</code>.
-</li>
-<li class="important">
-    Navigate to <i>Plugins</i> → <i>Register</i> in the back-end to check if all
-    requirements are fulfilled.
-</li>
+<h2 id="requirements">Requirements</h2>
+<p>Register_XH is a plugin for <a href="https://cmsimple-xh.org/">CMSimple_XH</a>. It requires CMSimple_XH ≥ 1.7.0 with the <a href="https://github.com/cmb69/fa_xh">Fa_XH plugin</a> and PHP ≥ 7.0.2.</p>
+<h2 id="download">Download</h2>
+<p>The <a href="https://github.com/cmb69/register_xh/releases/latest">lastest release</a> is available for download on Github.</p>
+<h2 id="installation">Installation</h2>
+<p>The installation is done as with many other CMSimple_XH plugins.</p>
+<ol type="1">
+<li>Backup the data on your server.</li>
+<li>Unzip the distribution on your computer.</li>
+<li>Upload the whole directory <code>register/</code> to your server into the <code>plugins/</code> directory of CMSimple_XH.</li>
+<li>Set write permissions to the subdirectories <code>config/</code>, <code>css/</code> and <code>languages/</code>.</li>
+<li>Navigate to <code>Plugins</code> → <code>Register</code> in the back-end to check if all requirements are fulfilled.</li>
 </ol>
-</section>
-
-<section id="settings">
-<h2>Settings</h2>
-<p>
-    The plugin's configuration is done as with many other CMSimple_XH plugins in
-    the website's back-end. Select <i>Plugins</i> → <i>Register</i>.
-</p>
-<p>
-    You can change the default settings of Register_XH under <i>Config</i>.
-    Hints for the options will be displayed when hovering over the help icon
-    with your mouse.
-</p>
-<p>
-    Localization is done under <em>Language</em>. You can translate the character
-    strings to your own language if there is no appropriate language file available,
-    or customize them according to your needs.
-</p>
-<p>
-    The look of Register_XH can be customized under <i>Stylesheet</i>.
-</p>
-</section>
-
-<section id="usage">
-<h2>Usage</h2>
-
-<section id="usage-administration">
-<h3>User and Group Administration</h3>
-<p>
-    The first thing you should do is to adjust the user groups according to your
-    needs. You can do this under <i>Plugins</i> → <i>Register</i> → <i>Group
-    administration</i>. You can administrate the users under <i>Plugins</i> →
-    <i>Register</i> → <i>User administration</i>. Both screens should be pretty
-    much self explaining, but some notes about the latter seem appropriate:
-</p>
+<h2 id="settings">Settings</h2>
+<p>The configuration of the plugin is done as with many other CMSimple_XH plugins in the back-end of the Website. Go to <code>Plugins</code> → <code>Register</code>.</p>
+<p>You can change the default settings of Register_XH under <code>Config</code>. Hints for the options will be displayed when hovering over the help icon with your mouse.</p>
+<p>Localization is done under <code>Language</code>. You can translate the character strings to your own language if there is no appropriate language file available, or customize them according to your needs.</p>
+<p>The look of Register_XH can be customized under <code>Stylesheet</code>.</p>
+<h2 id="usage">Usage</h2>
+<h3 id="user-and-group-administration">User and Group Administration</h3>
+<p>The first thing you should do is to adjust the user groups according to your needs. You can do this under <code>Plugins</code> → <code>Register</code> → <code>Group administration</code>. You can administrate the users under <code>Plugins</code> → <code>Register</code> → <code>User administration</code>. Both screens should be pretty much self explaining, but some notes about the latter seem to be in order:</p>
 <ul>
-<li>
-    The selectbox allows to filter the users by an access group. When you add a
-    new user, the filter is reset, as you might not be able to see the new user
-    record otherwise. When you save the data all user records will be saved,
-    even if they are filtered out.
-</li>
-<li>
-    You can sort the user records by clicking on the respective column heading.
-</li>
-<li>
-    The status can have one of the following values (the label of the values are
-    language specific, and can be changed in the language settings):
-<dl>
-<dt>activated</dt>
-<dd>The user has the full priviledges according to his groups.</dd>
-<dt>locked</dt>
-<dd>The user has the full priviledges according to his groups, but may not change his preferences.</dd>
-<dt>deactivated</dt>
-<dd>The user account is (temporarily) deactivated.</dd>
-<dt>not yet activated</dt>
-<dd>The user has registered, but the account has not been activated.</dd>
-</dl>
-</li>
-<li>
-    In both group as well as user administration adding or deleting a user is
-    temporary; to make the changes permanent, you have to explicitly save them.
-</li>
+<li><p>The selectbox allows to filter the users by an access group. When you add a new user, the filter is reset, as you might not be able to see the new user record otherwise. When you save the data all user records will be saved, even if they are filtered out.</p></li>
+<li><p>You can sort the user records by clicking on the respective column heading.</p></li>
+<li><p>The status can have one of the following values (the label of the values are language specific, and can be changed in the language settings):</p>
+<ul>
+<li><code>activated</code>: the user has the full privileges according to his groups</li>
+<li><code>locked</code>: the user has the full privileges according to his groups, but may not change his preferences</li>
+<li><code>deactivated</code>: the user account is (temporarily) deactivated</li>
+<li><code>not yet activated</code>: the user has registered, but the account has not been activated</li>
+</ul></li>
+<li><p>In both group as well as user administration adding or deleting a user is temporary; to make the changes permanent, you have to explicitly save them.</p></li>
 </ul>
-<p>
-    Please note also, that the possibility to switch to admin mode after being
-    logged in as registered admin has been removed. The call to
-    <code>registeradminmodelink()</code> is now deprecated and doesn't return
-    the link anymore. Plugins should not offer any backdoor to circumvent the
-    core's login security.
-</p>
-</section>
-
-<section id="usage-loginform">
-<h3>Login Form</h3>
-<p>
-    To offer the user the possibility to log in and optionally register first,
-    the <i>login form</i> must be displayed. You can put it in the template, so it's
-    shown on all pages:
-</p>
-<pre>&lt;?=registerloginform()?&gt;</pre>
-<p>
-    Alternatively you can put it on one or several CMSimple pages:
-</p>
-<pre>{{{registerloginform()}}}</pre>
-<p>
-    In this case you might want to add the <i>logged in</i> form to the
-    template. You can do so with the following call:
-</p>
-<pre>&lt;?=Register_loggedInForm()?&gt;</pre>
-<p>
-    If users forgot their password, they can request an email with intructions
-    to reset their password. If registration of new users is allowed, they can
-    register themselves, and an email with the activation link will be sent to
-    them, so they can activate their account and log in nearly immediately. All
-    this happens without requiring any actions from the admin, who will still
-    receive copies of the emails to be informed.
-</p>
-<p>
-    After successful login users can edit their user preferences, i.e. name,
-    email address and password. Unregistering, i.e. deleting the account, is
-    also possible via the preferences screen.
-</p>
-<p>
-    Note that all login and logout attempts will be logged in CMSimple_XH's
-    logfile.
-</p>
-</section>
-
-<section id="usage-access">
-<h3>Access to CMSimple Pages</h3>
-<p>
-    To restrict the access to a CMSimple page to certain user groups, you have
-    to enter on that page:
-</p>
-<pre>{{{access('LIST-OF-GROUPS')}}}</pre>
-<p>
-    <code>LIST-OF-GROUPS</code> is a comma separated list of access groups that
-    will have access to the page. For example:
-</p>
-<pre>{{{access('admin,member,guest')}}}</pre>
-<p>
-    or
-</p>
-<pre>{{{access('admin')}}}</pre>
-</section>
-
-<section id="usage-pages">
-<h3>Special Pages</h3>
-<p>
-    Register_XH dynamically adds some special pages to CMSimple_XH, if these do
-    not already exist. Usually you don't have to care about this, but you can
-    use the feature to create your own pages with the respective heading, if you
-    want to customize any of these pages beyond what's possible with adjusting
-    the related language strings. The headings of these pages are specified by
-    the <strong>actual values</strong> of the following language strings and the
-    pages should contain the respective plugin call:
-</p>
-<dl>
-<dt><i>register</i></dt>
-<dd>The page where users can register for a new account.</dd>
-<dd><pre>{{{registerUser()}}}</pre></dd>
-<dt><i>forgot_password</i></dt>
-<dd>The page where a user can request an email which allows to reset his password.</dd>
-<dd><pre>{{{registerForgotPassword()}}}</pre></dd>
-<dt><i>user_prefs</i></dt>
-<dd>The page where a user can change his account setting.</dd>
-<dd><pre>{{{registerUserPrefs()}}}</pre></dd>
-<dt><i>login_error</i></dt>
-<dd>The page where a user is informed about an invalid login attempt.</dd>
-<dd>n/a</dd>
-<dt><i>loggedout</i></dt>
-<dd>The page that is displayed after a user has logged out.</dd>
-<dd>n/a</dd>
-<dt><i>loggedin</i></dt>
-<dd>The page that is displayed after a user has logged in.</dd>
-<dd>n/a</dd>
-<dt><i>access_error</i></dt>
-<dd>The page that is displayed when a user browses to a page he is not allowed to access.</dd>
-<dd>n/a</dd>
-</dl>
-<p>
-    Please note that the handling and recognition of these pages is a bit sloppy
-    currently (e.g. it doesn't matter on which menu level they are defined), but
-    this is likely to change in the future.
-</p>
-</section>
-
-</section>
-
-<section id="limitations">
-<h2>Limitations</h2>
-<p>
-    If any CMSimple_XH page inadvertently has a heading that is used for one of
-    the <a href="#usage-pages">special Register_XH pages</a>, the plugin might
-    not work as expected.
-</p>
-<p>
-    Depending on the PHP ini settings <code>max_input_vars</code>,
-    <code>suhosin.post.max_vars</code> and <code>suhosin.request.max_vars</code>
-    there is a limit on the maximum number of users that can be administrated in
-    the plugin back-end. In a default configuration of PHP ≥ 5.3.9 at most 142
-    users are allowed. The plugin checks this limit, and does not permit more
-    users to be added. If this limit is exceeded, you have to administrate the
-    users in <code>users.csv</code> manually.
-</p>
-</section>
-
-<section id="license">
-<h2>License</h2>
-<p>
-    Register_XH is licensed as <a href="../LICENSE">freeware</a>.
-</p>
-<p>
-    Copyright © 2007 <a href="http://cmsimple.heinelt.eu/">Carsten Heinelt</a><br>
-    Copyright © 2010-2012 <a href="http://www.ge-webdesign.de/cmsimpleplugins/">Gert Ebersbach</a><br>
-    Copyright © 2012-2021 Christoph M. Becker
-</p>
-<p>
-    Slovak translation © 2012 Dr. Martin Sereday<br>
-    Czech translation © 2012 Josef Němec<br>
-    Danish translation © 2012 Jens Maegard<br>
-    Russian translation © 2012 Lubomyr Kydray
-</p>
-</section>
-
-<section id="credits">
-<h2>Credits</h2>
-<p>
-    Register was developed in 2007 by <a
-    href="http://cmsimple.heinelt.eu/">Carsten Heinelt</a> based on Michael
-    Svarrer's <a
-    href="http://cmsimplewiki-com.keil-portal.de/doku.php?id=plugins:memberpages">Memberpages
-    plugin</a>.. In 2010 he gave permission to <a
-    href="http://www.ge-webdesign.de/cmsimpleplugins/">Gert Ebersbach</a> to
-    adapt it to CMSimple_XH and to further improve it. The plugin was then
-    distributed as Register_mod_XH. In 2012 Gert Ebersbach discontinued the
-    developement, and gave me the permission to maintain and distribute the
-    plugin. <em>Many thanks to Carsten Heinelt and Gert Ebersbach for their good
-    work and the permission to further maintain the plugin</em>!
-</p>
-<p>
-    The plugin logo is designed by <a
-    href="http://www.dellustrations.com/">Wendell Fernandes</a>. Many thanks for
-    publishing this icon as freeware.
-</p>
-<p>
-    Many thanks to the community at the <a
-    href="http://www.cmsimpleforum.com">CMSimple forum</a> for tips, suggestions
-    and testing. Particularly I want to thank Holger for finding a severe flaw,
-    and for his suggestion to improve the user administration, kmsmei for
-    reporting a security issue, and of course Joe for many good suggestions.
-</p>
-<p>
-    And last but not least many thanks to <a href="http://www.harteg.dk">Peter
-    Harteg</a>, the "father" of CMSimple, and all developers of <a
-    href="http://www.cmsimple-xh.org/">CMSimple_XH</a> without whom this amazing
-    CMS wouldn't exist.
-</p>
-</section>
-
-</article>
-
+<p>Please note also, that the possibility to switch to admin mode after being logged in as registered admin has been removed. The call to <code>registeradminmodelink()</code> is now deprecated and does not return the link anymore. Plugins should not offer any backdoor to circumvent the login security of CMSimple_XH.</p>
+<h3 id="login-form">Login Form</h3>
+<p>To offer the user the possibility to log in and optionally register first, the <em>login form</em> must be displayed. You can put it in the template, so it is shown on all pages:</p>
+<pre><code>&lt;?=registerloginform()?&gt;</code></pre>
+<p>Alternatively you can put it on one or several CMSimple_XH pages:</p>
+<pre><code>{{{registerloginform()}}}</code></pre>
+<p>In this case you might want to add the <em>logged in</em> form to the template. You can do so with the following call:</p>
+<pre><code>&lt;?=Register_loggedInForm()?&gt;</code></pre>
+<p>If users forgot their password, they can request an email with intructions to reset their password. If registration of new users is allowed, they can register themselves, and an email with the activation link will be sent to them, so they can activate their account and log in nearly immediately. All this happens without requiring any actions from the admin, who will still receive copies of the emails to be informed.</p>
+<p>After successful login users can edit their user preferences, i.e. name, email address and password. Unregistering, i.e. deleting the account, is also possible via the preferences screen.</p>
+<p>Note that all login and logout attempts will be logged in the logfile of CMSimple_XH.</p>
+<h3 id="access-to-pages">Access to Pages</h3>
+<p>To restrict the access to a CMSimple_XH page to certain user groups, you have to enter on that page:</p>
+<pre><code>{{{access(&#39;LIST-OF-GROUPS&#39;)}}}</code></pre>
+<p><code>LIST-OF-GROUPS</code> is a comma separated list of access groups that will have access to the page. For example:</p>
+<pre><code>{{{access(&#39;admin,member,guest&#39;)}}}</code></pre>
+<p>or</p>
+<pre><code>{{{access(&#39;admin&#39;)}}}</code></pre>
+<h3 id="special-pages">Special Pages</h3>
+<p>Register_XH dynamically adds some special pages to CMSimple_XH, if these do not already exist. Usually you do not have to care about this, but you can use the feature to create your own pages with the respective heading, if you want to customize any of these pages beyond what is possible with adjusting the related language strings. The headings of these pages are specified by the <em>actual values</em> of the following language strings and the pages should contain the respective plugin call, if applicable:</p>
+<ul>
+<li><p><code>register</code>: the page where users can register for a new account</p>
+<pre><code>  {{{registerUser()}}}</code></pre></li>
+<li><p><code>forgot_password</code>: the page where a user can request an email which allows to reset his password</p>
+<pre><code>{{{registerForgotPassword()}}}</code></pre></li>
+<li><p><code>user_prefs</code>: the page where a user can change his account setting</p>
+<pre><code>{{{registerUserPrefs()}}}`</code></pre></li>
+<li><p><code>login_error</code>: the page where a user is informed about an invalid login attempt</p></li>
+<li><p><code>loggedout</code>: the page that is displayed after a user has logged out</p></li>
+<li><p><code>loggedin</code>: the page that is displayed after a user has logged in</p></li>
+<li><p><code>access_error</code>: the page that is displayed when a user browses to a page he is not allowed to access</p></li>
+</ul>
+<p>Please note that the handling and recognition of these pages is a bit sloppy currently (e.g. it does not matter on which menu level they are defined), but this is likely to change in the future.</p>
+<h2 id="limitations">Limitations</h2>
+<p>If any CMSimple_XH page inadvertently has a heading that is used for one of the <a href="#special-pages">special Register_XH pages</a>, the plugin might not work as expected.</p>
+<p>Depending on the PHP ini settings <code>max_input_vars</code>, <code>suhosin.post.max_vars</code> and <code>suhosin.request.max_vars</code> there is a limit on the maximum number of users that can be administrated in the plugin back-end. In a default configuration of PHP ≥ 7.0.2 at most 142 users are allowed. The plugin checks this limit, and does not permit more users to be added. If this limit is exceeded, you have to administrate the users in <code>users.csv</code> manually.</p>
+<h2 id="troubleshooting">Troubleshooting</h2>
+<p>Report bugs and ask for support either on <a href="https://github.com/cmb69/register_xh/issues">Github</a> or in the <a href="https://cmsimpleforum.com/">CMSimple_XH Forum</a>.</p>
+<h2 id="license">License</h2>
+<p>Register_XH is freeware.</p>
+<p>Copyright © 2007 <a href="http://cmsimple.heinelt.eu/">Carsten Heinelt</a><br />
+Copyright © 2010-2012 <a href="https://www.ge-webdesign.de/">Gert Ebersbach</a><br />
+Copyright © 2012-2021 Christoph M. Becker</p>
+<p>Slovak translation © 2012 Dr. Martin Sereday<br />
+Czech translation © 2012 Josef Němec<br />
+Danish translation © 2012 Jens Maegard<br />
+Russian translation © 2012 Lubomyr Kydray</p>
+<h2 id="credits">Credits</h2>
+<p>Register was developed in 2007 by <a href="http://cmsimple.heinelt.eu/">Carsten Heinelt</a> based on the <a href="http://cmsimplewiki-com.keil-portal.de/doku.php?id=plugins:memberpages">Memberpages plugin</a> by Michael Svarrer. In 2010 he gave permission to <a href="https://www.ge-webdesign.de/">Gert Ebersbach</a> to adapt it to CMSimple_XH and to further improve it. The plugin was then distributed as Register_mod_XH. In 2012 Gert Ebersbach discontinued the developement, and gave me the permission to maintain and distribute the plugin. <em>Many thanks to Carsten Heinelt and Gert Ebersbach for their good work and the permission to further maintain the plugin!</em></p>
+<p>The plugin logo is designed by Wendell Fernandes. Many thanks for publishing this icon as freeware.</p>
+<p>Many thanks to the community at the <a href="https://www.cmsimpleforum.com/">CMSimple_XH forum</a> for tips, suggestions and testing. Particularly I want to thank <em>Holger</em> for finding a severe flaw, and for his suggestion to improve the user administration, <em>kmsmei</em> for reporting a security issue, and of course <em>Joe</em> for many good suggestions.</p>
+<p>And last but not least many thanks to <a href="https://www.harteg.dk">Peter Harteg</a>, the “father” of CMSimple, and all developers of <a href="https://cmsimple-xh.org/">CMSimple_XH</a> without whom this amazing CMS would not exist.</p>
 </body>
-
 </html>
