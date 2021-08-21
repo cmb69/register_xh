@@ -15,7 +15,7 @@ use XH\CSRFProtection;
 class UserPrefsController extends Controller
 {
     /**
-     * @var XH_CSRFProtection
+     * @var CSRFProtection
      */
     private $csrfProtector;
 

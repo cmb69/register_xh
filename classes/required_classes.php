@@ -266,7 +266,7 @@ function registerCheckEntry($name, $username, $password1, $password2, $email)
 /**
  * @param string $name
  * @param string $username
- * @param string $password1
+ * @param string $password
  * @param string $email
  * @return string[]
  */

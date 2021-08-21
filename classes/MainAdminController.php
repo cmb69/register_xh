@@ -10,10 +10,12 @@
 
 namespace Register;
 
+use XH\CSRFProtection;
+
 class MainAdminController extends Controller
 {
     /**
-     * @var XH_CSRFProtection
+     * @var CSRFProtection
      */
     private $csrfProtector;
 
@@ -324,7 +326,7 @@ class MainAdminController extends Controller
         // In case that nothing got deleted or added, store back (save got pressed)
         if (!$deleted && !$added && empty($errors)) {
             if (!(new DbService(Register_dataFolder()))->writeGroups($newgroups)) {
-                $errors .= $this->lang['err_cannot_write_csv'] . ' (' . Register_dataFolder() . 'groups.csv' . ')';
+                $errors[] = $this->lang['err_cannot_write_csv'] . ' (' . Register_dataFolder() . 'groups.csv' . ')';
             }
             if (!empty($errors)) {
                 $this->renderErrorView($errors);

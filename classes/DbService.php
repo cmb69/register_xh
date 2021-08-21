@@ -10,6 +10,8 @@
 
 namespace Register;
 
+use stdClass;
+
 class DbService
 {
     /**
@@ -66,7 +68,7 @@ class DbService
 
     /**
      * @var string $line
-     * @return ?array
+     * @return ?stdClass
      */
     private function readGroupLine($line)
     {
@@ -79,6 +81,7 @@ class DbService
                 return (object) compact('groupname', 'loginpage');
             }
         }
+        return null;
     }
 
     /**
@@ -169,6 +172,7 @@ class DbService
                 'status' => $status
             );
         }
+        return null;
     }
 
     /**
