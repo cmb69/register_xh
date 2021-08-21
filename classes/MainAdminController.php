@@ -46,6 +46,7 @@ class MainAdminController extends Controller
         if (is_file(Register_dataFolder() . 'groups.csv')) {
             $groups = (new DbService(Register_dataFolder()))->readGroups();
         } else {
+            $groups = [];
             $errors[] = $this->lang['err_csv_missing'] . ' (' . Register_dataFolder() . 'groups.csv' . ')';
         }
 

@@ -17,7 +17,7 @@ class Plugin
     const VERSION = "1.6";
 
     public static function run()
-    { 
+    {
         global $edit, $function, $plugin_cf;
 
         if ($plugin_cf['register']['remember_user']
@@ -25,7 +25,7 @@ class Plugin
             $function = "registerlogin";
         }
 
-        if (!($edit && XH_ADM) && $plugin_cf['register']['hide_pages']) {
+        if (!($edit && self::isAdmin()) && $plugin_cf['register']['hide_pages']) {
             if ($temp = Register_currentUser()) {
                 registerRemoveHiddenPages($temp->accessgroups);
             } else {
@@ -42,10 +42,10 @@ class Plugin
         if (Register_isLoggedIn() && $function === 'registerlogout') {
             (new LoginController)->logoutAction();
         }
-        if (!(XH_ADM && $edit)) {
+        if (!(self::isAdmin() && $edit)) {
             self::handleImplicitPages();
         }
-        if (XH_ADM) {
+        if (self::isAdmin()) {
             if (self::isAdministrationRequested()) {
                 self::handleAdministration();
             }
@@ -192,6 +192,11 @@ class Plugin
         return $view;
     }
 
+    private static function isAdmin()
+    {
+        return XH_ADM; // @phpstan-ignore-line
+    }
+
     /**
      * @return bool
      */
@@ -243,7 +248,7 @@ class Plugin
                 $o .= ob_get_clean();
                 break;
             default:
-                $o .= plugin_admin_common($action, $admin, 'register');
+                $o .= plugin_admin_common();
         }
     }
     

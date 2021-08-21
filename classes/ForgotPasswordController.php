@@ -89,6 +89,7 @@ class ForgotPasswordController extends Controller
             $errors[] = $this->lang['err_status_invalid'];
         }
 
+        $password = null;
         // in case of encrypted password a new random password will be generated
         // and its value be written back to the CSV file
         if (empty($errors)) {
