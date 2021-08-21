@@ -69,7 +69,7 @@ function registerRemoveHiddenPages($userGroups)
  */
 function access($groupString)
 {
-    global $plugin_tx, $sn, $function;
+    global $plugin_tx, $function;
 
     // remove spaces etc.
     $groupString = preg_replace("/[ \t\r\n]*/", '', $groupString);
@@ -88,8 +88,6 @@ function access($groupString)
 
 function Register_groupLoginPage($group)
 {
-    global $pth, $plugin_tx;
-
     $groups = (new Register\DbService(Register_dataFolder()))->readGroups();
     foreach ($groups as $rec) {
         if ($rec->groupname == $group) {
