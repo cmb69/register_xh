@@ -366,28 +366,31 @@ function registerloginform()
     if (!Register_isLoggedIn()) {
         // Begin register- and loginarea and user fields
         $view = new Register\View('loginform');
-        $view->isHorizontal = $plugin_cf['register']['login_layout'] === 'horizontal';
-        $view->actionUrl = sv('REQUEST_URI');
         $forgotPasswordUrl = uenc($plugin_tx['register']['forgot_password']);
-        $view->hasForgotPasswordLink = $plugin_cf['register']['password_forgotten']
-            && isset($su) && urldecode($su) != $forgotPasswordUrl;
-        $view->forgotPasswordUrl = "$sn?$forgotPasswordUrl";
-        $view->hasRememberMe = $plugin_cf['register']['remember_user'];
-        $view->isRegisterAllowed = $plugin_cf['register']['allowed_register'];
         $registerUrl = uenc($plugin_tx['register']['register']);
-        $view->registerUrl = "$sn?$registerUrl";
+        $view->setData([
+            'isHorizontal' => $plugin_cf['register']['login_layout'] === 'horizontal',
+            'actionUrl' => sv('REQUEST_URI'),
+            'hasForgotPasswordLink' => $plugin_cf['register']['password_forgotten']
+                && isset($su) && urldecode($su) != $forgotPasswordUrl,
+            'forgotPasswordUrl' => "$sn?$forgotPasswordUrl",
+            'hasRememberMe' => $plugin_cf['register']['remember_user'],
+            'isRegisterAllowed' => $plugin_cf['register']['allowed_register'],
+            'registerUrl' => "$sn?$registerUrl",
+        ]);
     } else {
         // Logout Link and Preferences Link
         $view = new Register\View('loggedin-area');
-        $view->isHorizontal = $plugin_cf['register']['login_layout'] === 'horizontal';
         $user = Register_currentUser();
-        $view->fullName = $user->name;
-        $currentUser = $user;
         $userPrefUrl = uenc($plugin_tx['register']['user_prefs']);
-        $view->hasUserPrefs = $currentUser->status == 'activated' && isset($su)
-            && urldecode($su) != $userPrefUrl;
-        $view->userPrefUrl = "?$userPrefUrl";
-        $view->logoutUrl = "$sn?&function=registerlogout";
+        $view->setData([
+            'isHorizontal' => $plugin_cf['register']['login_layout'] === 'horizontal',
+            'fullName' => $user->name,
+            'hasUserPrefs' => $user->status == 'activated' && isset($su)
+                && urldecode($su) != $userPrefUrl,
+            'userPrefUrl' => "?$userPrefUrl",
+            'logoutUrl' => "$sn?&function=registerlogout",
+        ]);
     }
     return (string) $view;
 }

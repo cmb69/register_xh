@@ -117,7 +117,7 @@ class UserPrefsController extends Controller
 
         if (!empty($errors)) {
             $view = new View('error');
-            $view->errors = $errors;
+            $view->setData(['errors' => $errors]);
             $view->render();
             $this->prepareForm($name, $email)->render();
         } else {
@@ -190,7 +190,7 @@ class UserPrefsController extends Controller
 
         if (!empty($errors)) {
             $view = new View('error');
-            $view->errors = $errors;
+            $view->setData(['errors' => $errors]);
             $view->render();
             $this->prepareForm($name, $email)->render();
         } else {
@@ -211,10 +211,12 @@ class UserPrefsController extends Controller
         $csrfTokenInput = $this->csrfProtector->tokenInput();
         $this->csrfProtector->store();
         $view = new View('userprefs-form');
-        $view->csrfTokenInput = new HtmlString($csrfTokenInput);
-        $view->actionUrl = sv('REQUEST_URI');
-        $view->name = $name;
-        $view->email = $email;
+        $view->setData([
+            'csrfTokenInput' => new HtmlString($csrfTokenInput),
+            'actionUrl' => sv('REQUEST_URI'),
+            'name' => $name,
+            'email' => $email,
+        ]);
         return $view;
     }
 }

@@ -186,9 +186,11 @@ class Plugin
     private static function preparePageView($title, $intro, $more = '')
     {
         $view = new View('page');
-        $view->title = $title;
-        $view->intro = $intro;
-        $view->more = new HtmlString($more);
+        $view->setData([
+            'title' => $title,
+            'intro' => $intro,
+            'more' => new HtmlString($more),
+        ]);
         return $view;
     }
 
@@ -258,8 +260,10 @@ class Plugin
     private static function renderInfo()
     {
         $view = new View('info');
-        $view->version = self::VERSION;
-        $view->checks = (new SystemCheckService)->getChecks();
+        $view->setData([
+            'version' => self::VERSION,
+            'checks' => (new SystemCheckService)->getChecks(),
+        ]);
         return (string) $view;
     }
 }

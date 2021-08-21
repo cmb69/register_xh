@@ -29,12 +29,11 @@ class View
     }
 
     /**
-     * @param string $name
-     * @param mixed $value
+     * @param array $data
      */
-    public function __set($name, $value)
+    public function setData($data)
     {
-        $this->data[$name] = $value;
+        $this->data = $data;
     }
 
     /**

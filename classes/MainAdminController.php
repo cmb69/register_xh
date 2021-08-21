@@ -103,8 +103,10 @@ class MainAdminController extends Controller
                 }
                 if (!empty($entryErrors)) {
                     $view = new View('user-error');
-                    $view->username = $username[$j];
-                    $view->errors = $entryErrors;
+                    $view->setData([
+                        'username' => $username[$j],
+                        'errors' => $entryErrors,
+                    ]);
                     $errors[] = new HtmlString($view);
                 }
                 if ($password[$j] == '') {
@@ -165,7 +167,7 @@ class MainAdminController extends Controller
     private function renderErrorView(array $errors)
     {
         $view = new View('error');
-        $view->errors = $errors;
+        $view->setData(['errors' => $errors]);
         $view->render();
     }
 
@@ -192,20 +194,23 @@ class MainAdminController extends Controller
             . 'register.maxNumberOfUsers=' . $this->calcMaxRecords(7, 4) . ';</script>';
 
         $view = new View('admin-users');
-        $view->csrfTokenInput = new HtmlString($this->csrfProtector->tokenInput());
-        $view->saveLabel = ucfirst($tx['action']['save']);
-        $view->defaultGroup = $this->config['group_default'];
-        $view->statusSelectActivated = new HtmlString($this->statusSelectbox('activated'));
-        $view->groups = $this->findGroups();
-        $view->actionUrl = "$sn?&register";
-        $view->users = $users;
+        $data = [
+            'csrfTokenInput' => new HtmlString($this->csrfProtector->tokenInput()),
+            'saveLabel' => ucfirst($tx['action']['save']),
+            'defaultGroup' => $this->config['group_default'],
+            'statusSelectActivated' => new HtmlString($this->statusSelectbox('activated')),
+            'groups' => $this->findGroups(),
+            'actionUrl' => "$sn?&register",
+            'users' => $users,
+        ];
         $groupStrings = $statusSelects = [];
         foreach ($users as $i => $entry) {
             $groupStrings[] = implode(",", $entry->accessgroups);
             $statusSelects[] = new HtmlString($this->statusSelectbox($entry->status, $i));
         }
-        $view->groupStrings = $groupStrings;
-        $view->statusSelects = $statusSelects;
+        $data['groupStrings'] = $groupStrings;
+        $data['statusSelects'] = $statusSelects;
+        $view->setData($data);
         return $view;
     }
 
@@ -344,15 +349,18 @@ class MainAdminController extends Controller
         global $tx, $sn;
     
         $view = new View('admin-groups');
-        $view->csrfTokenInput = new HtmlString($this->csrfProtector->tokenInput());
-        $view->actionUrl = "$sn?&register";
-        $view->saveLabel = ucfirst($tx['action']['save']);
-        $view->groups = $groups;
+        $data = [
+            'csrfTokenInput' => new HtmlString($this->csrfProtector->tokenInput()),
+            'actionUrl' => "$sn?&register",
+            'saveLabel' => ucfirst($tx['action']['save']),
+            'groups' => $groups,
+        ];
         $selects = [];
         foreach ($groups as $i => $entry) {
             $selects[] = new HtmlString($this->pageSelectbox($entry->loginpage, $i));
         }
-        $view->selects = $selects;
+        $data['selects'] = $selects;
+        $view->setData($data);
         return $view;
     }
 
