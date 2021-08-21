@@ -13,12 +13,12 @@ namespace Register;
 abstract class Controller
 {
     /**
-     * @var array
+     * @var array<string,string>
      */
     protected $config;
 
     /**
-     * @var array
+     * @var array<string,string>
      */
     protected $lang;
 

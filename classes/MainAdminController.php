@@ -10,6 +10,7 @@
 
 namespace Register;
 
+use stdClass;
 use XH\CSRFProtection;
 
 class MainAdminController extends Controller
@@ -27,6 +28,9 @@ class MainAdminController extends Controller
         $this->csrfProtector = $_XH_csrfProtection;
     }
 
+    /**
+     * @return void
+     */
     public function editUsersAction()
     {
         $fn = Register_dataFolder() . 'users.csv';
@@ -41,6 +45,9 @@ class MainAdminController extends Controller
         }
     }
 
+    /**
+     * @return void
+     */
     public function saveUsersAction()
     {
         $this->csrfProtector->check();
@@ -166,6 +173,10 @@ class MainAdminController extends Controller
         $this->prepareUsersForm($newusers)->render();
     }
 
+    /**
+     * @param string[] $errors
+     * @return void
+     */
     private function renderErrorView(array $errors)
     {
         $view = new View('error');
@@ -174,6 +185,7 @@ class MainAdminController extends Controller
     }
 
     /**
+     * @param stdClass[] $users
      * @return View
      */
     private function prepareUsersForm(array $users)
@@ -217,9 +229,9 @@ class MainAdminController extends Controller
     }
 
     /**
-     * @return array
+     * @return stdClass[]
      */
-    private function findGroups()
+    private function findGroups(): array
     {
         $groups = (new DbService(Register_dataFolder()))->readGroups();
         usort($groups, function ($a, $b) {
@@ -280,6 +292,9 @@ class MainAdminController extends Controller
         return $o;
     }
 
+    /**
+     * @return void
+     */
     public function editGroupsAction()
     {
         $filename = Register_dataFolder() . 'groups.csv';
@@ -292,6 +307,9 @@ class MainAdminController extends Controller
         }
     }
 
+    /**
+     * @return void
+     */
     public function saveGroupsAction()
     {
         $this->csrfProtector->check();
@@ -344,6 +362,7 @@ class MainAdminController extends Controller
     }
 
     /**
+     * @param stdClass[] $groups
      * @return View
      */
     private function prepareGroupsForm(array $groups)
@@ -366,8 +385,7 @@ class MainAdminController extends Controller
         return $view;
     }
 
-    
-    private function pageSelectbox($loginpage, $n)
+    private function pageSelectbox(string $loginpage, int $n): string
     {
         global $cl, $h, $u, $l;
     

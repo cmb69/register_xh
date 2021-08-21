@@ -16,7 +16,7 @@ class View
     private $template;
 
     /**
-     * @var array
+     * @var array<string,mixed>
      */
     private $data = array();
 
@@ -29,7 +29,8 @@ class View
     }
 
     /**
-     * @param array $data
+     * @param array<string,mixed> $data
+     * @return void
      */
     public function setData($data)
     {
@@ -56,6 +57,7 @@ class View
 
     /**
      * @param string $name
+     * @param mixed[] $args
      * @return string
      */
     public function __call($name, array $args)
@@ -90,7 +92,7 @@ class View
      * @param string $key
      * @param int $count
      */
-    protected function plural($key, $count)
+    protected function plural($key, $count): string
     {
         global $plugin_tx;
 

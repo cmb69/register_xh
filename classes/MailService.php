@@ -13,7 +13,7 @@ namespace Register;
 class MailService
 {
     /**
-     * @var array
+     * @var array<string,string>
      */
     private $config;
 

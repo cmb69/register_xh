@@ -29,6 +29,7 @@ class DbService
 
     /**
      * @param int $mode
+     * @return void
      */
     public function lock($mode)
     {
@@ -47,9 +48,9 @@ class DbService
     }
 
     /**
-     * @return array
+     * @return stdClass[]
      */
-    public function readGroups()
+    public function readGroups(): array
     {
         $filename = "{$this->dirname}groups.csv";
         $groupArray = array();
@@ -67,10 +68,9 @@ class DbService
     }
 
     /**
-     * @var string $line
      * @return ?stdClass
      */
-    private function readGroupLine($line)
+    private function readGroupLine(string $line)
     {
         if (!empty($line) && strpos($line, '//') !== 0) {
             $parts = explode('|', $line, 2);
@@ -85,6 +85,7 @@ class DbService
     }
 
     /**
+     * @param stdClass[] $array
      * @return bool
      */
     public function writeGroups(array $array)
@@ -176,6 +177,7 @@ class DbService
     }
 
     /**
+     * @param stdClass[] $array
      * @return bool
      */
     public function writeUsers(array $array)

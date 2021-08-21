@@ -12,12 +12,18 @@ namespace Register;
 
 class ForgotPasswordController extends Controller
 {
+    /**
+     * @return void
+     */
     public function defaultAction()
     {
         $email = isset($_POST['email']) ? $_POST['email'] : '';
         $this->prepareForgotForm($email)->render();
     }
 
+    /**
+     * @return void
+     */
     public function passwordForgottenAction()
     {
         global $su;
@@ -69,6 +75,9 @@ class ForgotPasswordController extends Controller
         }
     }
 
+    /**
+     * @return void
+     */
     public function resetPasswordAction()
     {
         $errors = [];

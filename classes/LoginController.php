@@ -12,6 +12,9 @@ namespace Register;
 
 class LoginController extends Controller
 {
+    /**
+     * @return void
+     */
     public function loginAction()
     {
         $rememberPeriod = 24*60*60*100;
@@ -78,6 +81,9 @@ class LoginController extends Controller
         }
     }
 
+    /**
+     * @return void
+     */
     public function logoutAction()
     {
         XH_startSession();

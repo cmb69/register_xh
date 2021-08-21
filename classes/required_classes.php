@@ -8,7 +8,7 @@
  * Copyright (c) 2012-2021 Christoph M. Becker
  */
 
-function Register_dataFolder()
+function Register_dataFolder(): string
 {
     global $sl, $cf, $plugin_cf, $pth;
 
@@ -44,11 +44,15 @@ function Register_isLoggedIn()
     return (bool) Register_currentUser();
 }
 
-/*
- * Remove access restricted pages. Supported are multiple groups per page and
- * multiple user groups.
+/**
+ * Remove access restricted pages
+ *
+ * Supported are multiple groups per page and multiple user groups.
+ *
+ * @param string[] $userGroups
+ * @return void
  */
-function registerRemoveHiddenPages($userGroups)
+function registerRemoveHiddenPages(array $userGroups)
 {
     global $cl, $c;
 
@@ -67,7 +71,7 @@ function registerRemoveHiddenPages($userGroups)
 /*
  * Access function to be called from inside CMSimple scripting tag.
  */
-function access($groupString)
+function access(string $groupString): string
 {
     global $plugin_tx, $function;
 
@@ -86,7 +90,10 @@ function access($groupString)
     return '';
 }
 
-function Register_groupLoginPage($group)
+/**
+ * @return string|false
+ */
+function Register_groupLoginPage(string $group)
 {
     $groups = (new Register\DbService(Register_dataFolder()))->readGroups();
     foreach ($groups as $rec) {
@@ -97,35 +104,43 @@ function Register_groupLoginPage($group)
     return false;
 }
 
-/*
- *  Add new user to array.
+/**
+ * Add new user to array
+ *
+ * @param stdClass[] $array
+ * @param string[] $accessgroups
+ * @return stdClass[]
  */
-function registerAddUser(array $array, $username, $password, $accessgroups, $name, $email, $status)
-{
+function registerAddUser(
+    array $array,
+    string $username,
+    string $password,
+    array $accessgroups,
+    string $name,
+    string $email,
+    string $status
+) {
     $entry = (object) array(
-    'username' => $username,
-    'password' => $password,
-    'accessgroups' => $accessgroups,
-    'name' => $name,
-    'email' => $email,
-    'status' => $status);
+        'username' => $username,
+        'password' => $password,
+        'accessgroups' => $accessgroups,
+        'name' => $name,
+        'email' => $email,
+        'status' => $status,
+    );
 
     $array[] = $entry;
     return $array;
 }
 
-/*
- *  Search array of user entries for key and value.
- *  Arguments:
- *   $array array of user entries
- *   $key   key in user entry to look for
- *   $value value to match user entry key
+/**
+ * Search array of user entries for key and value.
  *
- *  Returns:
- *   false  in case of no value found
- *   $entry found user entry
+ * @param stdClass[] $array
+ * @param mixed $value
+ * @return stdClass|false
  */
-function registerSearchUserArray(array $array, $key, $value)
+function registerSearchUserArray(array $array, string $key, $value)
 {
     foreach ($array as $entry) {
         if (isset($entry->{$key}) && $entry->{$key} == $value) {
@@ -135,16 +150,13 @@ function registerSearchUserArray(array $array, $key, $value)
     return false;
 }
 
-/*
- *  Replace user entry in array.
- *  Arguments:
- *   $array    array of user entries
- *   $newentry user entry to replace
+/**
+ * Replace user entry in array.
  *
- *  Returns:
- *   $newarray updated array
+ * @param stdClass[] $array
+ * @return stdClass[]
  */
-function registerReplaceUserEntry(array $array, stdClass $newentry)
+function registerReplaceUserEntry(array $array, stdClass $newentry): array
 {
     $newarray = array();
     $username = $newentry->username;
@@ -158,16 +170,13 @@ function registerReplaceUserEntry(array $array, stdClass $newentry)
     return $newarray;
 }
 
-/*
- *  Delete user entry in array.
- *  Arguments:
- *   $array    array of user entries
- *   $username username for which entry should get removed in array
+/**
+ * Delete user entry in array.
  *
- *  Returns:
- *   $newarray updated array
+ * @param stdClass[] $array
+ * @return stdClass[]
  */
-function registerDeleteUserEntry(array $array, $username)
+function registerDeleteUserEntry(array $array, string $username): array
 {
     $newarray = array();
     foreach ($array as $entry) {
@@ -213,6 +222,9 @@ function Register_currentUser()
     return $user;
 }
 
+/**
+ * @return void
+ */
 function Register_logout()
 {
     XH_startSession();
@@ -287,7 +299,7 @@ function registerCheckColons($name, $username, $password, $email)
  * Function to create and handle register form (Top Level Function).
  *
  */
-function registerUser()
+function registerUser(): string
 {
     // In case user is logged in, no registration page is shown
     if (Register_isLoggedIn()) {
@@ -307,8 +319,10 @@ function registerUser()
     return ob_get_clean();
 }
 
-/*
+/**
  * Function to create and handle forgotten password form (Top Level Function)
+ *
+ * @return string
  */
 function registerForgotPassword()
 {
@@ -334,7 +348,7 @@ function registerForgotPassword()
  * Function to create and handle user preferences form (Top Level Function).
  *
  */
-function registerUserPrefs()
+function registerUserPrefs(): string
 {
     global $plugin_tx;
 
@@ -357,7 +371,7 @@ function registerUserPrefs()
 /*
  *  This function creates a link to the "Registration" page (Top Level Function).
  */
-function registerloginform()
+function registerloginform(): string
 {
     global $plugin_cf, $plugin_tx, $sn, $su;
 
@@ -410,13 +424,13 @@ function Register_loggedInForm()
 /*
  * This function outputs the full name of the current user (Top Level Function).
  */
-function registeradminmodelink()
+function registeradminmodelink(): string
 {
     trigger_error('registeradminmodelink() is deprecated', E_USER_WARNING);
-    return false;
+    return '';
 }
 
-function Register_sessionName()
+function Register_sessionName(): string
 {
     global $sl, $plugin_cf;
 

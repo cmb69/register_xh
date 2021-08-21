@@ -16,6 +16,9 @@ class Plugin
 {
     const VERSION = "1.6";
 
+    /**
+     * @return void
+     */
     public static function run()
     {
         global $edit, $function, $plugin_cf;
@@ -52,6 +55,9 @@ class Plugin
         }
     }
 
+    /**
+     * @return void
+     */
     private static function handleImplicitPages()
     {
         global $o, $su, $plugin_tx;
@@ -81,6 +87,9 @@ class Plugin
         }
     }
 
+    /**
+     * @return ?View
+     */
     private static function handleRegistrationPage()
     {
         global $title, $h, $plugin_cf, $plugin_tx;
@@ -93,8 +102,12 @@ class Plugin
                 registerUser()
             );
         }
+        return null;
     }
 
+    /**
+     * @return ?View
+     */
     private static function handlePasswordForgottenPage()
     {
         global $title, $h, $plugin_cf, $plugin_tx;
@@ -107,8 +120,12 @@ class Plugin
                 registerForgotPassword()
             );
         }
+        return null;
     }
 
+    /**
+     * @return ?View
+     */
     private static function handleUserPrefsPage()
     {
         global $title, $h, $plugin_tx;
@@ -121,8 +138,12 @@ class Plugin
                 registerUserPrefs()
             );
         }
+        return null;
     }
 
+    /**
+     * @return ?View
+     */
     private static function handleLoginErrorPage()
     {
         global $title, $h, $plugin_tx;
@@ -135,8 +156,12 @@ class Plugin
                 $plugin_tx['register']['login_error_text']
             );
         }
+        return null;
     }
 
+    /**
+     * @return ?View
+     */
     private static function handleLogoutPage()
     {
         global $title, $h, $plugin_tx;
@@ -148,8 +173,12 @@ class Plugin
                 $plugin_tx['register']['loggedout_text']
             );
         }
+        return null;
     }
 
+    /**
+     * @return ?View
+     */
     private static function handleLoginPage()
     {
         global $title, $h, $plugin_tx;
@@ -161,8 +190,12 @@ class Plugin
                 $plugin_tx['register']['loggedin_text']
             );
         }
+        return null;
     }
 
+    /**
+     * @return ?View
+     */
     private static function handleAccessErrorPage()
     {
         global $title, $h, $plugin_tx;
@@ -175,6 +208,7 @@ class Plugin
                 $plugin_tx['register']['access_error_text']
             );
         }
+        return null;
     }
 
     /**
@@ -194,7 +228,7 @@ class Plugin
         return $view;
     }
 
-    private static function isAdmin()
+    private static function isAdmin(): bool
     {
         return XH_ADM; // @phpstan-ignore-line
     }
@@ -207,6 +241,9 @@ class Plugin
         return XH_wantsPluginAdministration('register');
     }
 
+    /**
+     * @return void
+     */
     private static function handleAdministration()
     {
         global $o, $admin, $action, $plugin_tx;

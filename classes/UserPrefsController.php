@@ -31,6 +31,9 @@ class UserPrefsController extends Controller
         $this->csrfProtector = new CSRFProtection('register_csrf_token', false);
     }
 
+    /**
+     * @return void
+     */
     public function defaultAction()
     {
         $username = isset($_SESSION['username']) ? $_SESSION['username'] : '';
@@ -48,6 +51,9 @@ class UserPrefsController extends Controller
         }
     }
 
+    /**
+     * @return void
+     */
     public function editAction()
     {
         $this->csrfProtector->check();
@@ -143,6 +149,9 @@ class UserPrefsController extends Controller
         }
     }
 
+    /**
+     * @return void
+     */
     public function deleteAction()
     {
         $this->csrfProtector->check();

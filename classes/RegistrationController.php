@@ -12,11 +12,17 @@ namespace Register;
 
 class RegistrationController extends Controller
 {
+    /**
+     * @return void
+     */
     public function defaultAction()
     {
         echo $this->form('', '', '', '', '');
     }
 
+    /**
+     * @return void
+     */
     public function registerUserAction()
     {
         global $su;
@@ -97,6 +103,9 @@ class RegistrationController extends Controller
         }
     }
 
+    /**
+     * @return void
+     */
     public function activateUserAction()
     {
         // Get form data if available
@@ -113,7 +122,7 @@ class RegistrationController extends Controller
         }
     }
 
-    private function activateUser($user, $nonce)
+    private function activateUser(string $user, string $nonce): string
     {
         $errors = [];
         $o ='';
@@ -150,7 +159,7 @@ class RegistrationController extends Controller
         return $o;
     }
 
-    private function form($name, $username, $password1, $password2, $email)
+    private function form(string $name, string $username, string $password1, string $password2, string $email): string
     {
         $view = new View('registerform');
         $view->setData([
