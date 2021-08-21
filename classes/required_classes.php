@@ -190,7 +190,7 @@ function registerDeleteUserEntry(array $array, string $username): array
 /**
  * Returns the user record, if the user is logged in, otherwise null.
  *
- * @return ?object
+ * @return ?stdClass
  */
 function Register_currentUser()
 {

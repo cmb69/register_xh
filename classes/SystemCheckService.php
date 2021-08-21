@@ -8,6 +8,8 @@
 
 namespace Register;
 
+use stdClass;
+
 class SystemCheckService
 {
     /**
@@ -35,7 +37,7 @@ class SystemCheckService
     }
 
     /**
-     * @return object[]
+     * @return stdClass[]
      */
     public function getChecks()
     {
@@ -53,7 +55,7 @@ class SystemCheckService
 
     /**
      * @param string $version
-     * @return object
+     * @return stdClass
      */
     private function checkPhpVersion($version)
     {
@@ -66,7 +68,7 @@ class SystemCheckService
     /**
      * @param string $extension
      * @param bool $isMandatory
-     * @return object
+     * @return stdClass
      */
     private function checkExtension($extension, $isMandatory = true)
     {
@@ -78,7 +80,7 @@ class SystemCheckService
 
     /**
      * @param string $version
-     * @return object
+     * @return stdClass
      */
     private function checkXhVersion($version)
     {
@@ -90,7 +92,7 @@ class SystemCheckService
 
     /**
      * @param string $plugin
-     * @return object
+     * @return stdClass
      */
     private function checkPlugin($plugin)
     {
@@ -102,7 +104,7 @@ class SystemCheckService
 
     /**
      * @param string $folder
-     * @return object
+     * @return stdClass
      */
     private function checkWritability($folder)
     {

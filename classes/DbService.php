@@ -132,7 +132,7 @@ class DbService
     }
 
     /**
-     * @return object[]
+     * @return stdClass[]
      */
     public function readUsers()
     {
@@ -156,7 +156,7 @@ class DbService
 
     /**
      * @param string $line
-     * @return ?object
+     * @return ?stdClass
      */
     private function readUserLine($line)
     {
