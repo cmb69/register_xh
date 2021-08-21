@@ -17,8 +17,21 @@ class Plugin
     const VERSION = "1.6";
 
     public static function run()
-    {
-        global $edit, $function;
+    { 
+        global $edit, $function, $plugin_cf;
+
+        if ($plugin_cf['register']['remember_user']
+                && isset($_COOKIE['register_username'], $_COOKIE['register_password']) && !Register_isLoggedIn()) {
+            $function = "registerlogin";
+        }
+
+        if (!($edit && XH_ADM) && $plugin_cf['register']['hide_pages']) {
+            if ($temp = Register_currentUser()) {
+                registerRemoveHiddenPages($temp->accessgroups);
+            } else {
+                registerRemoveHiddenPages([]);
+            }
+        }
 
         if (class_exists('Fa\\RequireCommand')) {
             (new RequireFaCommand)->execute();
