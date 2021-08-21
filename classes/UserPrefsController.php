@@ -21,13 +21,8 @@ class UserPrefsController extends Controller
 
     public function __construct()
     {
-        global $pth;
-
         parent::__construct();
         XH_startSession();
-        if (!class_exists('\\XH_CSRFProtection')) {
-            include_once $pth['folder']['classes'] . 'CSRFProtection.php';
-        }
         $this->csrfProtector = new CSRFProtection('register_csrf_token', false);
     }
 
