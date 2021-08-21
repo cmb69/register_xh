@@ -38,8 +38,8 @@
     </target>
 
     <target name="compat" description="checks PHP requirements">
-        <exec executable="phpcompatinfo" logoutput="true">
-            <arg line="analyser:run --alias current"/>
+        <exec executable="phpcompatinfo" passthru="true" checkreturn="true">
+            <arg line="analyser:run --ansi classes"/>
         </exec>
     </target>
 
@@ -77,7 +77,6 @@
                 <exclude name="build.xml"/>
                 <exclude name="composer.*"/>
                 <exclude name="coverage.xml"/>
-                <exclude name="phpcompatinfo.*"/>
                 <exclude name="phpstan.*"/>
                 <exclude name="README.md"/>
                 <exclude name="tests/**"/>
