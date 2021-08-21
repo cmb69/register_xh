@@ -48,7 +48,7 @@ class DbService
     }
 
     /**
-     * @return stdClass[]
+     * @return UserGroup[]
      */
     public function readGroups(): array
     {
@@ -68,7 +68,7 @@ class DbService
     }
 
     /**
-     * @return ?stdClass
+     * @return ?UserGroup
      */
     private function readGroupLine(string $line)
     {
@@ -78,14 +78,14 @@ class DbService
             $loginpage = isset($parts[1]) ? $parts[1] : '';
             // line must not start with '//' and all fields must be set
             if (strpos($groupname, "//") === false && $groupname != "") {
-                return (object) compact('groupname', 'loginpage');
+                return new UserGroup($groupname, $loginpage);
             }
         }
         return null;
     }
 
     /**
-     * @param stdClass[] $array
+     * @param UserGroup[] $array
      * @return bool
      */
     public function writeGroups(array $array)
@@ -132,7 +132,7 @@ class DbService
     }
 
     /**
-     * @return stdClass[]
+     * @return User[]
      */
     public function readUsers()
     {
@@ -156,7 +156,7 @@ class DbService
 
     /**
      * @param string $line
-     * @return ?stdClass
+     * @return ?User
      */
     private function readUserLine($line)
     {
@@ -164,20 +164,20 @@ class DbService
         // line must not start with '//' and all fields must be set
         if ($username != "" && $password != "" && $accessgroups != ""
                 && $name != "" && $email != ""/* && $status != ""*/) {
-            return (object) array(
-                'username' => $username,
-                'password' => $password,
-                'accessgroups' => explode(',', $accessgroups),
-                'name' => $name,
-                'email' => $email,
-                'status' => $status
+            return new User(
+                $username,
+                $password,
+                explode(',', $accessgroups),
+                $name,
+                $email,
+                $status
             );
         }
         return null;
     }
 
     /**
-     * @param stdClass[] $array
+     * @param User[] $array
      * @return bool
      */
     public function writeUsers(array $array)

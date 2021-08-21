@@ -8,6 +8,9 @@
  * Copyright (c) 2012-2021 Christoph M. Becker
  */
 
+use Register\User;
+use Register\UserGroup;
+
 function Register_dataFolder(): string
 {
     global $sl, $cf, $plugin_cf, $pth;
@@ -30,7 +33,7 @@ function Register_dataFolder(): string
     }
     if (!is_file("{$folder}groups.csv")) {
         (new Register\DbService($folder))->writeGroups(
-            [(object) ['groupname' => $plugin_cf['register']['group_default'], 'loginpage' => '']]
+            [new UserGroup($plugin_cf['register']['group_default'], '')]
         );
     }
     return $folder;
@@ -107,9 +110,9 @@ function Register_groupLoginPage(string $group)
 /**
  * Add new user to array
  *
- * @param stdClass[] $array
+ * @param User[] $array
  * @param string[] $accessgroups
- * @return stdClass[]
+ * @return User[]
  */
 function registerAddUser(
     array $array,
@@ -120,13 +123,13 @@ function registerAddUser(
     string $email,
     string $status
 ) {
-    $entry = (object) array(
-        'username' => $username,
-        'password' => $password,
-        'accessgroups' => $accessgroups,
-        'name' => $name,
-        'email' => $email,
-        'status' => $status,
+    $entry = new User(
+        $username,
+        $password,
+        $accessgroups,
+        $name,
+        $email,
+        $status
     );
 
     $array[] = $entry;
@@ -136,9 +139,9 @@ function registerAddUser(
 /**
  * Search array of user entries for key and value.
  *
- * @param stdClass[] $array
+ * @param User[] $array
  * @param mixed $value
- * @return stdClass|false
+ * @return User|false
  */
 function registerSearchUserArray(array $array, string $key, $value)
 {
@@ -153,10 +156,10 @@ function registerSearchUserArray(array $array, string $key, $value)
 /**
  * Replace user entry in array.
  *
- * @param stdClass[] $array
- * @return stdClass[]
+ * @param User[] $array
+ * @return User[]
  */
-function registerReplaceUserEntry(array $array, stdClass $newentry): array
+function registerReplaceUserEntry(array $array, User $newentry): array
 {
     $newarray = array();
     $username = $newentry->username;
@@ -173,8 +176,8 @@ function registerReplaceUserEntry(array $array, stdClass $newentry): array
 /**
  * Delete user entry in array.
  *
- * @param stdClass[] $array
- * @return stdClass[]
+ * @param User[] $array
+ * @return User[]
  */
 function registerDeleteUserEntry(array $array, string $username): array
 {

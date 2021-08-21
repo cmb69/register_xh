@@ -27,7 +27,7 @@ class DbServiceTest extends TestCase
     public function testWriteAndReadGroups()
     {
         $expected = array(
-            (object) ['groupname' => 'admin', 'loginpage' => '']
+            new UserGroup('admin', '')
         );
         $this->subject->writeGroups($expected);
         $actual = $this->subject->readGroups();
@@ -37,13 +37,13 @@ class DbServiceTest extends TestCase
     public function testWriteAndReadUsers()
     {
         $expected = array(
-            (object) array(
-                'username' => 'cmb',
-                'password' => 'test',
-                'accessgroups' => ['admin', 'guest'],
-                'name' => 'Christoph M. Becker',
-                'email' => 'cmbecker69@gmx.de',
-                'status' => 'activated'
+            new User(
+                'cmb',
+                'test',
+                ['admin', 'guest'],
+                'Christoph M. Becker',
+                'cmbecker69@gmx.de',
+                'activated'
             )
         );
         $this->subject->writeUsers($expected);

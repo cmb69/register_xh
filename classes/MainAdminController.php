@@ -10,7 +10,6 @@
 
 namespace Register;
 
-use stdClass;
 use XH\CSRFProtection;
 
 class MainAdminController extends Controller
@@ -124,13 +123,13 @@ class MainAdminController extends Controller
                 if (empty($entryErrors) && $password[$j] != $oldpassword[$j]) {
                     $password[$j] = password_hash($password[$j], PASSWORD_DEFAULT);
                 }
-                $entry = (object) array(
-                    'username'     => $username[$j],
-                    'password'     => $password[$j],
-                    'accessgroups' => $userGroups,
-                    'name'         => $name[$j],
-                    'email'        => $email[$j],
-                    'status'       => $status[$j]
+                $entry = new User(
+                    $username[$j],
+                    $password[$j],
+                    $userGroups,
+                    $name[$j],
+                    $email[$j],
+                    $status[$j]
                 );
                 $newusers[] = $entry;
             } else {
@@ -138,13 +137,13 @@ class MainAdminController extends Controller
             }
         }
         if ($add != '') {
-            $entry = (object) array(
-                'username'     => "NewUser",
-                'password'     => "",
-                'accessgroups' => array($this->config['group_default']),
-                'name'         => "Name Lastname",
-                'email'        => "user@domain.com",
-                'status'       => "activated"
+            $entry = new User(
+                "NewUser",
+                "",
+                array($this->config['group_default']),
+                "Name Lastname",
+                "user@domain.com",
+                "activated"
             );
             $newusers[] = $entry;
             $added = true;
@@ -185,7 +184,7 @@ class MainAdminController extends Controller
     }
 
     /**
-     * @param stdClass[] $users
+     * @param User[] $users
      * @return View
      */
     private function prepareUsersForm(array $users)
@@ -229,7 +228,7 @@ class MainAdminController extends Controller
     }
 
     /**
-     * @return stdClass[]
+     * @return UserGroup[]
      */
     private function findGroups(): array
     {
@@ -329,14 +328,14 @@ class MainAdminController extends Controller
             }
 
             if (!isset($delete[$j]) || $delete[$j] == '') {
-                $entry = (object) ['groupname' => $groupname[$j], 'loginpage' => $_POST['grouploginpage'][$j]];
+                $entry = new UserGroup($groupname[$j], $_POST['grouploginpage'][$j]);
                 $newgroups[] = $entry;
             } else {
                 $deleted = true;
             }
         }
         if ($add != '') {
-            $entry = (object) ['groupname' => "NewGroup", 'loginpage' => ''];
+            $entry = new UserGroup("NewGroup", '');
             $newgroups[] = $entry;
             $added = true;
         }
@@ -362,7 +361,7 @@ class MainAdminController extends Controller
     }
 
     /**
-     * @param stdClass[] $groups
+     * @param UserGroup[] $groups
      * @return View
      */
     private function prepareGroupsForm(array $groups)
