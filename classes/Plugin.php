@@ -30,9 +30,9 @@ class Plugin
 
         if (!($edit && self::isAdmin()) && $plugin_cf['register']['hide_pages']) {
             if ($temp = Register_currentUser()) {
-                registerRemoveHiddenPages($temp->accessgroups);
+                self::removeHiddenPages($temp->accessgroups);
             } else {
-                registerRemoveHiddenPages([]);
+                self::removeHiddenPages([]);
             }
         }
 
@@ -51,6 +51,30 @@ class Plugin
         if (self::isAdmin()) {
             if (self::isAdministrationRequested()) {
                 self::handleAdministration();
+            }
+        }
+    }
+
+    /**
+     * Remove access restricted pages
+     *
+     * Supported are multiple groups per page and multiple user groups.
+     *
+     * @param string[] $userGroups
+     * @return void
+     */
+    private static function removeHiddenPages(array $userGroups)
+    {
+        global $cl, $c;
+
+        for ($i = 0; $i < $cl; $i++) {
+            if (preg_match('/(?:#CMSimple\s+|{{{.*?)access\((.*?)\)\s*;?\s*(?:#|}}})/isu', $c[$i], $matches)) {
+                if ($arg = trim($matches[1], "\"'")) {
+                    $groups = array_map('trim', explode(',', $arg));
+                    if (count(array_intersect($groups, $userGroups)) == 0) {
+                        $c[$i]= "#CMSimple hide# {{{PLUGIN:access('$arg');}}}";
+                    }
+                }
             }
         }
     }

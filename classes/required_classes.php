@@ -47,30 +47,6 @@ function Register_isLoggedIn()
     return (bool) Register_currentUser();
 }
 
-/**
- * Remove access restricted pages
- *
- * Supported are multiple groups per page and multiple user groups.
- *
- * @param string[] $userGroups
- * @return void
- */
-function registerRemoveHiddenPages(array $userGroups)
-{
-    global $cl, $c;
-
-    for ($i = 0; $i < $cl; $i++) {
-        if (preg_match('/(?:#CMSimple\s+|{{{.*?)access\((.*?)\)\s*;?\s*(?:#|}}})/isu', $c[$i], $matches)) {
-            if ($arg = trim($matches[1], "\"'")) {
-                $groups = array_map('trim', explode(',', $arg));
-                if (count(array_intersect($groups, $userGroups)) == 0) {
-                    $c[$i]= "#CMSimple hide# {{{PLUGIN:access('$arg');}}}";
-                }
-            }
-        }
-    }
-}
-
 /*
  * Access function to be called from inside CMSimple scripting tag.
  */
