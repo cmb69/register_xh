@@ -79,7 +79,7 @@ class View
      * @param string $key
      * @return string
      */
-    protected function text($key)
+    public function text($key)
     {
         global $plugin_tx;
 
@@ -92,7 +92,7 @@ class View
      * @param string $key
      * @param int $count
      */
-    protected function plural($key, $count): string
+    public function plural($key, $count): string
     {
         global $plugin_tx;
 
