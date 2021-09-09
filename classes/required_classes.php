@@ -400,15 +400,6 @@ function Register_loggedInForm()
     return Register_isLoggedIn() ? registerloginform() : '';
 }
 
-/*
- * This function outputs the full name of the current user (Top Level Function).
- */
-function registeradminmodelink(): string
-{
-    trigger_error('registeradminmodelink() is deprecated', E_USER_WARNING);
-    return '';
-}
-
 function Register_sessionName(): string
 {
     global $sl, $plugin_cf;
