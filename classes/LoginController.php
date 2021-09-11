@@ -30,9 +30,10 @@ class LoginController extends Controller
         }
     
         // read user file in CSV format separated by colons
-        (new DbService(Register_dataFolder()))->lock(LOCK_SH);
-        $userArray = (new DbService(Register_dataFolder()))->readUsers();
-        (new DbService(Register_dataFolder()))->lock(LOCK_UN);
+        $dbService = new DbService(Register_dataFolder());
+        $dbService->lock(LOCK_SH);
+        $userArray = $dbService->readUsers();
+        $dbService->lock(LOCK_UN);
 
         // search user in CSV data
         $entry = registerSearchUserArray($userArray, 'username', $username);

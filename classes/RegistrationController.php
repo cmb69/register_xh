@@ -43,8 +43,9 @@ class RegistrationController extends Controller
         $errors = array_merge($errors, registerCheckColons($name, $username, $password1, $email));
 
         // read user file in CSV format separated by colons
-        (new DbService(Register_dataFolder()))->lock(LOCK_EX);
-        $userArray = (new DbService(Register_dataFolder()))->readUsers();
+        $dbService = new DbService(Register_dataFolder());
+        $dbService->lock(LOCK_EX);
+        $userArray = $dbService->readUsers();
 
         // check if user or other user for same email address exists
         if (registerSearchUserArray($userArray, 'username', $username) !== false) {
@@ -67,10 +68,10 @@ class RegistrationController extends Controller
         );
 
         // write CSV file if no errors occurred so far
-        if (empty($errors) && !(new DbService(Register_dataFolder()))->writeUsers($userArray)) {
+        if (empty($errors) && !$dbService->writeUsers($userArray)) {
             $errors[] = $this->lang['err_cannot_write_csv'] . ' (' . Register_dataFolder() . 'users.csv' . ')';
         }
-        (new DbService(Register_dataFolder()))->lock(LOCK_UN);
+        $dbService->lock(LOCK_UN);
 
         if (!empty($errors)) {
             $view = new View('error');
@@ -128,8 +129,9 @@ class RegistrationController extends Controller
         $o ='';
 
         // read user file in CSV format separated by colons
-        (new DbService(Register_dataFolder()))->lock(LOCK_EX);
-        $userArray = (new DbService(Register_dataFolder()))->readUsers();
+        $dbService = new DbService(Register_dataFolder());
+        $dbService->lock(LOCK_EX);
+        $userArray = $dbService->readUsers();
     
         // check if user or other user for same email address exists
         $entry = registerSearchUserArray($userArray, 'username', $user);
@@ -152,10 +154,10 @@ class RegistrationController extends Controller
             $entry->status = "activated";
             $entry->accessgroups = array($this->config['group_activated']);
             $userArray = registerReplaceUserEntry($userArray, $entry);
-            (new DbService(Register_dataFolder()))->writeUsers($userArray);
+            $dbService->writeUsers($userArray);
             $o .= XH_message('success', $this->lang['activated']);
         }
-        (new DbService(Register_dataFolder()))->lock(LOCK_UN);
+        $dbService->lock(LOCK_UN);
         return $o;
     }
 

@@ -34,9 +34,10 @@ class MainAdminController extends Controller
     {
         $fn = Register_dataFolder() . 'users.csv';
         if (is_file($fn)) {
-            (new DbService(Register_dataFolder()))->lock(LOCK_SH);
-            $users  = (new DbService(Register_dataFolder()))->readUsers();
-            (new DbService(Register_dataFolder()))->lock(LOCK_UN);
+            $dbService = new DbService(Register_dataFolder());
+            $dbService->lock(LOCK_SH);
+            $users  = $dbService->readUsers();
+            $dbService->lock(LOCK_UN);
             $this->prepareUsersForm($users)->render();
             echo XH_message('info', count($users) . ' ' . $this->lang['entries_in_csv'] . $fn);
         } else {
@@ -151,11 +152,12 @@ class MainAdminController extends Controller
 
         // In case that nothing got deleted or added, store back (save got pressed)
         if (!$deleted && !$added && empty($errors)) {
-            (new DbService(Register_dataFolder()))->lock(LOCK_EX);
-            if (!(new DbService(Register_dataFolder()))->writeUsers($newusers)) {
+            $dbService = new DbService(Register_dataFolder());
+            $dbService->lock(LOCK_EX);
+            if (!$dbService->writeUsers($newusers)) {
                 $errors[] = $this->lang['err_cannot_write_csv'] . ' (' . Register_dataFolder() . 'users.csv' . ')';
             }
-            (new DbService(Register_dataFolder()))->lock(LOCK_UN);
+            $dbService->lock(LOCK_UN);
 
             if (!empty($errors)) {
                 $this->renderErrorView($errors);

@@ -39,9 +39,10 @@ class ForgotPasswordController extends Controller
         }
 
         // read user file in CSV format separated by colons
-        (new DbService(Register_dataFolder()))->lock(LOCK_SH);
-        $userArray = (new DbService(Register_dataFolder()))->readUsers();
-        (new DbService(Register_dataFolder()))->lock(LOCK_UN);
+        $dbService = new DbService(Register_dataFolder());
+        $dbService->lock(LOCK_SH);
+        $userArray = $dbService->readUsers();
+        $dbService->lock(LOCK_UN);
 
         // search user for email
         if (!$user = registerSearchUserArray($userArray, 'email', $email)) {
@@ -85,8 +86,9 @@ class ForgotPasswordController extends Controller
         $email = isset($_POST['email']) ? $_POST['email'] : '';
 
         // read user file in CSV format separated by colons
-        (new DbService(Register_dataFolder()))->lock(LOCK_EX);
-        $userArray = (new DbService(Register_dataFolder()))->readUsers();
+        $dbService = new DbService(Register_dataFolder());
+        $dbService->lock(LOCK_EX);
+        $userArray = $dbService->readUsers();
 
         // search user for email
         $user = registerSearchUserArray($userArray, 'username', $_GET['username']);
@@ -105,12 +107,12 @@ class ForgotPasswordController extends Controller
             $password = base64_encode(random_bytes(8));
             $user->password = password_hash($password, PASSWORD_DEFAULT);
             $userArray = registerReplaceUserEntry($userArray, $user);
-            if (!(new DbService(Register_dataFolder()))->writeUsers($userArray)) {
+            if (!$dbService->writeUsers($userArray)) {
                 $errors[] = $this->lang['err_cannot_write_csv']
                     . ' (' . Register_dataFolder() . 'users.csv' . ')';
             }
         }
-        (new DbService(Register_dataFolder()))->lock(LOCK_UN);
+        $dbService->lock(LOCK_UN);
 
         if (!empty($errors)) {
             $view = new View('error');

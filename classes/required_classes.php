@@ -187,10 +187,11 @@ function Register_currentUser()
         }
         if (isset($_SESSION['username'], $_SESSION['register_sn'])
                 && $_SESSION['register_sn'] == Register_sessionName()) {
-            (new Register\DbService(Register_dataFolder()))->lock(LOCK_SH);
-            $users = (new Register\DbService(Register_dataFolder()))->readUsers();
+            $dbService = new Register\DbService(Register_dataFolder());
+            $dbService->lock(LOCK_SH);
+            $users = $dbService->readUsers();
             $rec = registerSearchUserArray($users, 'username', $_SESSION['username']);
-            (new Register\DbService(Register_dataFolder()))->lock(LOCK_UN);
+            $dbService->lock(LOCK_UN);
             if ($rec) {
                 $user = $rec;
             } else {
