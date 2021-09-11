@@ -84,6 +84,9 @@ $plugin_tx['register']['mnu_user_admin']="User Administration";
 $plugin_tx['register']['entries_in_csv']="Entries in CSV file ";
 $plugin_tx['register']['csv_written']="CSV file successfully written";
 $plugin_tx['register']['label_none']="--- NONE ---";
+$plugin_tx['register']['label_access']="Access";
+$plugin_tx['register']['hint_accessgroups']="A comma separated list of user groups which have access to this page. Leave empty to grant access to everybody, including visitors.";
+$plugin_tx['register']['label_submit']="Submit";
 
 $plugin_tx['register']['js_confirmLeave']="Unsaved changes will be lost!";
 $plugin_tx['register']['js_newPassword']="New Password (may contain only alphanumeric characters and underscores):";

@@ -132,19 +132,10 @@ CMSimple_XH.
 
 ### Access to Pages
 
-To restrict the access to a CMSimple_XH page to certain user groups, you have
-to enter on that page:
-
-    {{{access('LIST-OF-GROUPS')}}}
-
-`LIST-OF-GROUPS` is a comma separated list of access groups that
-will have access to the page. For example:
-
-    {{{access('admin,member,guest')}}}
-
-or
-
-    {{{access('admin')}}}
+To restrict the access to a CMSimple_XH page to certain user groups,
+you have to enter the group names as comma separated list in the `Access`
+page data tab above the editor.
+If the field is empty, the page is accessible to everybody.
 
 ### Special Pages
 

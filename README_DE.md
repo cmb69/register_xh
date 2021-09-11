@@ -144,18 +144,9 @@ von CMSimple_XH festgehalten werden.
 ### Zugriff auf Seiten
 
 Um den Zugriff auf eine CMSimple_XH-Seite auf bestimmte Benutzergruppen zu
-beschränken, müssen Sie auf dieser eingeben:
-
-    {{{access('LISTE-DER-GRUPPEN')}}}
-
-`LISTE-DER-GRUPPEN` ist eine durch Kommas getrennte Liste der
-Benutzergruppen, die Zugriff auf diese Seite haben sollen. Zum Beispiel:
-
-    {{{access('admin,member,guest')}}}
-
-oder:
-
-    {{{access('admin')}}}
+beschränken, müssen die Namen dieser Gruppen durch Komma getrennt im
+`Zugriff` Page-Data-Reiter oberhalb des Editors eingegeben werden.
+Ist das Feld leer, kann jeder auf die Seite zugreifen.
 
 ### Spezialseiten
 

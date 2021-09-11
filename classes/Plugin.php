@@ -21,7 +21,9 @@ class Plugin
      */
     public static function run()
     {
-        global $edit, $function, $plugin_cf;
+        global $edit, $function, $plugin_cf, $plugin_tx, $pd_router, $pth;
+
+        $pd_router->add_interest("register_access");
 
         if ($plugin_cf['register']['remember_user']
                 && isset($_COOKIE['register_username'], $_COOKIE['register_password']) && !Register_isLoggedIn()) {
@@ -49,6 +51,10 @@ class Plugin
             self::handleImplicitPages();
         }
         if (self::isAdmin()) {
+            $pd_router->add_tab(
+                $plugin_tx["register"]["label_access"],
+                "{$pth['folder']['plugins']}/register/register_pd_view.php"
+            );
             if (self::isAdministrationRequested()) {
                 self::handleAdministration();
             }
@@ -65,15 +71,13 @@ class Plugin
      */
     private static function removeHiddenPages(array $userGroups)
     {
-        global $cl, $c;
+        global $pd_router, $c;
 
-        for ($i = 0; $i < $cl; $i++) {
-            if (preg_match('/(?:#CMSimple\s+|{{{.*?)access\((.*?)\)\s*;?\s*(?:#|}}})/isu', $c[$i], $matches)) {
-                if ($arg = trim($matches[1], "\"'")) {
-                    $groups = array_map('trim', explode(',', $arg));
-                    if (count(array_intersect($groups, $userGroups)) == 0) {
-                        $c[$i]= "#CMSimple hide# {{{PLUGIN:access('$arg');}}}";
-                    }
+        foreach ($pd_router->find_all() as $i => $pd) {
+            if (($arg = trim($pd["register_access"] ?? ""))) {
+                $groups = array_map('trim', explode(',', $arg));
+                if (count(array_intersect($groups, $userGroups)) == 0) {
+                    $c[$i]= "#CMSimple hide# {{{PLUGIN:register_access('$arg');}}}";
                 }
             }
         }

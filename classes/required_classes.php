@@ -8,6 +8,7 @@
  * Copyright (c) 2012-2021 Christoph M. Becker
  */
 
+use Register\PageDataController;
 use Register\User;
 use Register\UserGroup;
 
@@ -47,10 +48,7 @@ function Register_isLoggedIn()
     return (bool) Register_currentUser();
 }
 
-/*
- * Access function to be called from inside CMSimple scripting tag.
- */
-function access(string $groupString): string
+function register_access(string $groupString): string
 {
     global $plugin_tx, $function;
 
@@ -67,6 +65,11 @@ function access(string $groupString): string
         exit;
     }
     return '';
+}
+
+function access(string $groupString): string
+{
+    return register_access($groupString);
 }
 
 /**
@@ -409,4 +412,15 @@ function Register_sessionName(): string
     } else {
         return CMSIMPLE_ROOT . $sl;
     }
+}
+
+/**
+ * @param array<string,string> $pageData
+ * @return string
+ */
+function register_pd_view(array $pageData)
+{
+    ob_start();
+    (new PageDataController($pageData))->execute();
+    return (string) ob_get_clean();
 }

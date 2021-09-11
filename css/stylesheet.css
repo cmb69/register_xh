@@ -110,3 +110,15 @@ div.register_admin_main a img {border: none}
 
 img.register_plugin_icon {display: block; float: left; margin: 0 20px 0 0}
 p.register_license {clear: both; text-align: justify}
+
+/* page data tab */
+#xh_view_register_pd_view .pl_tooltip {
+    float: none;
+    display: inline;
+}
+#xh_view_register_pd_view label {
+    display: inline;
+}
+#xh_view_register_pd_view input[name=register_access] {
+    width: 99%;
+}
