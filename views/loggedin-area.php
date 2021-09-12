@@ -17,7 +17,6 @@
 <?php endif?>
 <?php if ($this->hasUserPrefs):?>
         <a href="<?=$this->userPrefUrl()?>" title="<?=$this->text('user_prefs')?>">
-            <i class="fa fa-wrench"></i>
             <?=$this->text('user_prefs')?>
         </a>
 <?php endif?>
@@ -28,7 +27,6 @@
     <div class="regi_loggedin_logout_ver">
 <?php endif?>
         <a href="<?=$this->logoutUrl()?>" title="<?=$this->text('logout')?>">
-            <i class="fa fa-sign-out"></i>
             <?=$this->text('logout')?>
         </a>
     </div>

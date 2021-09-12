@@ -24,8 +24,7 @@ per email. It is used by some other plugins to add user management (e.g.
 ## Requirements
 
 Register_XH is a plugin for [CMSimple_XH](https://cmsimple-xh.org/).
-It requires CMSimple_XH ≥ 1.7.0 with the [Fa_XH plugin](https://github.com/cmb69/fa_xh)
-and PHP ≥ 7.0.2.
+It requires CMSimple_XH ≥ 1.7.0 and PHP ≥ 7.0.2.
 
 ## Download
 

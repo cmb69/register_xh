@@ -25,8 +25,7 @@ und [Forum_XH](https://github.com/cmb69/forum_xh)).
 ## Voraussetzungen
 
 Register_XH ist ein Plugin für [CMSimple_XH](https://www.cmsimple-xh.org/de/).
-Es benötigt CMSimple_XH ≥ 1.7.0 mit dem [Fa_XH Plugin](https://github.com/cmb69/fa_xh)
-und PHP ≥ 7.0.2.
+Es benötigt CMSimple_XH ≥ 1.7.0 und PHP ≥ 7.0.2.
 
 ## Download
 

@@ -45,7 +45,6 @@ class SystemCheckService
             $this->checkPhpVersion('7.0.2'),
             $this->checkExtension('session'),
             $this->checkXhVersion('1.7'),
-            $this->checkPlugin('fa'),
             $this->checkWritability("$this->pluginFolder/css/"),
             $this->checkWritability("$this->pluginFolder/config/"),
             $this->checkWritability("$this->pluginFolder/languages/"),
@@ -86,18 +85,6 @@ class SystemCheckService
     {
         $state = version_compare(CMSIMPLE_XH_VERSION, "CMSimple_XH $version", 'ge') ? 'success' : 'fail';
         $label = sprintf($this->lang['syscheck_xhversion'], $version);
-        $stateLabel = $this->lang["syscheck_$state"];
-        return (object) compact('state', 'label', 'stateLabel');
-    }
-
-    /**
-     * @param string $plugin
-     * @return stdClass
-     */
-    private function checkPlugin($plugin)
-    {
-        $state = is_dir("{$this->pluginsFolder}{$plugin}") ? 'success' : 'fail';
-        $label = sprintf($this->lang['syscheck_plugin'], $plugin);
         $stateLabel = $this->lang["syscheck_$state"];
         return (object) compact('state', 'label', 'stateLabel');
     }

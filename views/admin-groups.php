@@ -8,13 +8,13 @@
             <tr>
                 <th><?=$this->text('groupname')?></th>
                 <th><?=$this->text('login')?></th>
-                <th><button name="add[0]"><i class="fa fa-plus"></i></button></th>
+                <th><button name="add[0]"><?=$this->text("label_add")?></button></th>
             </tr>
 <?php foreach ($this->groups as $i => $entry):?>
             <tr>
                 <td><input type="text" size="10" value="<?=$this->escape($entry->groupname)?>" name="groupname[<?=$this->escape($i)?>]"></td>
                 <td><?=$this->escape($this->selects[$i])?></td>
-                <td><button name="delete[<?=$this->escape($i)?>]" value="1"><i class="fa fa-minus"></i></td>
+                <td><button name="delete[<?=$this->escape($i)?>]" value="1"><?=$this->text("label_delete")?></i></td>
             </tr>
 <?php endforeach?>
         </table>

@@ -88,6 +88,10 @@ $plugin_tx['register']['label_access']="Zugriff";
 $plugin_tx['register']['hint_accessgroups']="Eine durch Kommas getrennte Liste von Benutzergruppen, die Zugriff zu dieser Seite haben. Leer lassen, um jedem, einschließlich Besuchern, Zugriff zu gewähren.";
 $plugin_tx['register']['label_submit']="Speichern";
 
+$plugin_tx['register']['label_add']="Neu";
+$plugin_tx['register']['label_delete']="Löschen";
+$plugin_tx['register']['label_mail']="Mail";
+
 $plugin_tx['register']['js_confirmLeave']="Ungespeicherte Änderungen gehen verloren!";
 $plugin_tx['register']['js_newPassword']="Neues Kennwort (darf nur alphanumerische Zeichen und Unterstriche enthalten):";
 $plugin_tx['register']['js_tooManyUsers']="Es gibt zu viele Benutzer!";
@@ -96,7 +100,6 @@ $plugin_tx['register']['syscheck_extension']="die PHP-Erweiterung '%s' geladen i
 $plugin_tx['register']['syscheck_fail']="Fehler";
 $plugin_tx['register']['syscheck_message']="Prüfe, dass %1\$s … %2\$s";
 $plugin_tx['register']['syscheck_phpversion']="die PHP-Version ≥ %s";
-$plugin_tx['register']['syscheck_plugin']="das CMSIMPLE_XH Plugin '%s' installiert ist";
 $plugin_tx['register']['syscheck_success']="OK";
 $plugin_tx['register']['syscheck_title']="System-Prüfung";
 $plugin_tx['register']['syscheck_warning']="Warnung";

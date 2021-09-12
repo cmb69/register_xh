@@ -2,7 +2,7 @@
 <div class="register_admin_main">
     <table>
         <tr id="register_user_template" style="display: none">
-            <td><button title="<?=$this->text('user_delete')?>" onclick="register.removeRow(this); return false"><i class="fa fa-minus"></i></button></td>
+            <td><button title="<?=$this->text('user_delete')?>" onclick="register.removeRow(this); return false"><?=$this->text("label_delete")?></button></td>
             <td><input type="text" value="" name="name[]"></td>
             <td><input type="text" value="<?=$this->defaultGroup()?>" name="accessgroups[]"></td>
             <td><?=$this->statusSelectActivated()?></td>
@@ -48,13 +48,13 @@
             </tr>
 <?php foreach ($this->users as $i => $entry):?>
             <tr id="register_user_<?=$this->escape($i)?>">
-                <td><button title="<?=$this->text('user_delete')?>" onclick="register.removeRow(this); return false"><i class="fa fa-minus"></i></button></td>
+                <td><button title="<?=$this->text('user_delete')?>" onclick="register.removeRow(this); return false"><?=$this->text("label_delete")?></button></td>
                 <td><input type="text" value="<?=$this->escape($entry->name)?>" name="name[<?=$this->escape($i)?>]"></td>
                 <td><input type="text" value="<?=$this->escape($this->groupStrings[$i])?>" name="accessgroups[<?=$this->escape($i)?>]"></td>
                 <td><?=$this->escape($this->statusSelects[$i])?></td>
             </tr>
             <tr class="register_second_row">
-                <td><button type="button" onclick="register.mailTo(this)" title="<?=$this->text('email')?>"><i class="fa fa-envelope"></i></button></td>
+                <td><button type="button" onclick="register.mailTo(this)" title="<?=$this->text('email')?>"><?=$this->text("label_mail")?></i></button></td>
                 <td><input type="text" value="<?=$this->escape($entry->username)?>" name="username[<?=$this->escape($i)?>]"></td>
                 <td><input type="text" value="<?=$this->escape($entry->email)?>" name="email[<?=$this->escape($i)?>]"></td>
                 <td>

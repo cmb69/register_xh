@@ -88,6 +88,10 @@ $plugin_tx['register']['label_access']="Access";
 $plugin_tx['register']['hint_accessgroups']="A comma separated list of user groups which have access to this page. Leave empty to grant access to everybody, including visitors.";
 $plugin_tx['register']['label_submit']="Submit";
 
+$plugin_tx['register']['label_add']="Add";
+$plugin_tx['register']['label_delete']="Delete";
+$plugin_tx['register']['label_mail']="Mail";
+
 $plugin_tx['register']['js_confirmLeave']="Unsaved changes will be lost!";
 $plugin_tx['register']['js_newPassword']="New Password (may contain only alphanumeric characters and underscores):";
 $plugin_tx['register']['js_tooManyUsers']="There are too many users!";
@@ -96,7 +100,6 @@ $plugin_tx['register']['syscheck_extension']="the PHP extension '%s' is loaded";
 $plugin_tx['register']['syscheck_fail']="failure";
 $plugin_tx['register']['syscheck_message']="Checking that %1\$s … %2\$s";
 $plugin_tx['register']['syscheck_phpversion']="PHP version ≥ %s";
-$plugin_tx['register']['syscheck_plugin']="the CMSimple_XH plugin '%s' is installed";
 $plugin_tx['register']['syscheck_success']="okay";
 $plugin_tx['register']['syscheck_title']="System check";
 $plugin_tx['register']['syscheck_warning']="warning";

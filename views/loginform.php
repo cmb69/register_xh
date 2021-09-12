@@ -17,7 +17,7 @@
 <?php endif?>
 <?php if ($this->hasForgotPasswordLink):?>
             <a href="<?=$this->forgotPasswordUrl()?>" title="<?=$this->text('forgot_password')?>">
-                <i class="fa fa-question-circle"></i> <?=$this->text('forgot_password')?>
+                <?=$this->text('forgot_password')?>
             </a>
 <?php endif?>
         </div>
@@ -26,14 +26,14 @@
             <input type="password" name="password">
         </div>
         <div class="regi_loginbutton_hor">
-            <button class="regi_loginbutton_hor" name="login" title="<?=$this->text('login')?>"><i class="fa fa-sign-in"></i></button>
+            <button class="regi_loginbutton_hor" name="login"><?=$this->text('login')?></button>
         </div>
 <?php else:?>
         <div class="regi_passwordfield_ver">
             <input type="password" name="password">
         </div>
         <div class="regi_loginbutton_ver">
-           <button class="regi_loginbutton_ver" name="login" title="<?=$this->text('login')?>"><i class="fa fa-sign-in"></i></button>
+           <button class="regi_loginbutton_ver" name="login"><?=$this->text('login')?></button>
         </div>
 <?php endif?>
 <?php if ($this->hasRememberMe):?>
