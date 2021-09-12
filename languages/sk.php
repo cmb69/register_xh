@@ -46,7 +46,6 @@ $plugin_tx['register']['err_old_password_wrong']="Uvedené staré heslo je nespr
 $plugin_tx['register']['err_email']="Napíšte Vašu e-mailovú adresu.";
 $plugin_tx['register']['err_email_invalid']="Uvedená e-mailová aresa je chybná.";
 $plugin_tx['register']['err_email_exists']="Užívateľ s uvedenou e-mailovou adresou je už registrovaný.";
-$plugin_tx['register']['err_email_does_not_exist']="Užívateľ s uvedenou e-mailovou adresou neexistuje.";
 $plugin_tx['register']['err_colon']="Nesmie obsahovať dvojbodku.";
 $plugin_tx['register']['err_group_does_not_exist']="Skupina neexistuje.";
 $plugin_tx['register']['err_csv_missing']="Súbor CSV neexistuje.";

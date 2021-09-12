@@ -59,7 +59,6 @@ $plugin_tx['register']['err_old_password_wrong']="Вы указали непра
 $plugin_tx['register']['err_email']="Пожалуйста, укажите адрес электронной почты.";
 $plugin_tx['register']['err_email_invalid']="Указан недействительный адрес электронной почты.";
 $plugin_tx['register']['err_email_exists']="Пользователь с таким электронным адресом уже зарегистрирован.";
-$plugin_tx['register']['err_email_does_not_exist']="Пользователь с таким электронным адресом не существует.";
 $plugin_tx['register']['err_colon']="не может содержать двоеточие.";
 $plugin_tx['register']['err_group_does_not_exist']="Такой группы нет.";
 $plugin_tx['register']['err_csv_missing']="Файл CSV не существует.";

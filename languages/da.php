@@ -53,7 +53,6 @@ $plugin_tx['register']['err_old_password_wrong']="Den gamle adgangskode du indta
 $plugin_tx['register']['err_email']="Indtast venligst din e-mail-adresse.";
 $plugin_tx['register']['err_email_invalid']="Den angivne e-mail adresse er ugyldig.";
 $plugin_tx['register']['err_email_exists']="En bruger med den angivne email-adressen eksisterer allerede.";
-$plugin_tx['register']['err_email_does_not_exist']="En bruger med den angivne e-mail-adresse eksisterer ikke.";
 $plugin_tx['register']['err_colon']="må ikke indeholde et kolon.";
 $plugin_tx['register']['err_group_does_not_exist']="Gruppe findes ikke.";
 $plugin_tx['register']['err_csv_missing']="The CSV file does not exist.";

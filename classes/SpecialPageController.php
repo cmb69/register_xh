@@ -57,7 +57,7 @@ class SpecialPageController
     {
         global $title;
 
-        if ($this->conf['password_forgotten'] && !in_array($this->text['forgot_password'], $this->headings)) {
+        if (!in_array($this->text['forgot_password'], $this->headings)) {
             $title = XH_hsc($this->text['forgot_password']);
             $this->renderPageView(
                 $this->text['forgot_password'],

@@ -45,9 +45,7 @@ class ForgotPasswordController extends Controller
         $dbService->lock(LOCK_UN);
 
         // search user for email
-        if (!$user = registerSearchUserArray($userArray, 'email', $email)) {
-            $errors[] = $this->lang['err_email_does_not_exist'];
-        }
+        $user = registerSearchUserArray($userArray, 'email', $email);
 
         if (!empty($errors)) {
             $view = new View('error');
@@ -55,24 +53,26 @@ class ForgotPasswordController extends Controller
             $view->render();
             $this->prepareForgotForm($email)->render();
         } else {
-            // prepare email content for user data email
-            $content = $this->lang['emailtext1'] . "\n\n"
-                . ' ' . $this->lang['name'] . ": " . $user->name . "\n"
-                . ' ' . $this->lang['username'] . ": " . $user->username . "\n";
-            $content .= ' ' . $this->lang['email'] . ": " . $user->email . "\n";
-            $content .= "\n" . $this->lang['emailtext3'] ."\n\n"
-                . '<' . CMSIMPLE_URL . '?' . $su . '&'
-                . 'action=registerResetPassword&username=' . urlencode($user->username) . '&nonce='
-                . urlencode($user->password) . '>';
+            if ($user) {
+                // prepare email content for user data email
+                $content = $this->lang['emailtext1'] . "\n\n"
+                    . ' ' . $this->lang['name'] . ": " . $user->name . "\n"
+                    . ' ' . $this->lang['username'] . ": " . $user->username . "\n";
+                $content .= ' ' . $this->lang['email'] . ": " . $user->email . "\n";
+                $content .= "\n" . $this->lang['emailtext3'] ."\n\n"
+                    . '<' . CMSIMPLE_URL . '?' . $su . '&'
+                    . 'action=registerResetPassword&username=' . urlencode($user->username) . '&nonce='
+                    . urlencode($user->password) . '>';
 
-            // send reminder email
-            (new MailService)->sendMail(
-                $email,
-                $this->lang['reminderemailsubject'] . ' ' . $_SERVER['SERVER_NAME'],
-                $content,
-                array('From: ' . $this->config['senderemail'])
-            );
-            echo XH_message('success', $this->lang['remindersent']);
+                // send reminder email
+                (new MailService)->sendMail(
+                    $email,
+                    $this->lang['reminderemailsubject'] . ' ' . $_SERVER['SERVER_NAME'],
+                    $content,
+                    array('From: ' . $this->config['senderemail'])
+                );
+            }
+            echo XH_message('success', $this->lang['remindersent_reset']);
         }
     }
 

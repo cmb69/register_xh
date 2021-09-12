@@ -51,9 +51,7 @@ class RegistrationController extends Controller
         if (registerSearchUserArray($userArray, 'username', $username) !== false) {
             $errors[] = $this->lang['err_username_exists'];
         }
-        if (registerSearchUserArray($userArray, 'email', $email) !== false) {
-            $errors[] = $this->lang['err_email_exists'];
-        }
+        $user = registerSearchUserArray($userArray, 'email', $email);
 
         // generate a nonce for the user activation
         $status = bin2hex(random_bytes(16));
@@ -68,7 +66,7 @@ class RegistrationController extends Controller
         );
 
         // write CSV file if no errors occurred so far
-        if (empty($errors) && !$dbService->writeUsers($userArray)) {
+        if (empty($errors) && !$user && !$dbService->writeUsers($userArray)) {
             $errors[] = $this->lang['err_cannot_write_csv'] . ' (' . Register_dataFolder() . 'users.csv' . ')';
         }
         $dbService->lock(LOCK_UN);
@@ -84,11 +82,16 @@ class RegistrationController extends Controller
                 . ' ' . $this->lang['name'] . ": $name \n"
                 . ' ' . $this->lang['username'] . ": $username \n"
                 . ' ' . $this->lang['email'] . ": $email \n"
-                . ' ' . $this->lang['fromip'] . ": {$_SERVER['REMOTE_ADDR']} \n\n"
-                . $this->lang['emailtext2'] . "\n\n"
-                . '<' . CMSIMPLE_URL . '?' . $su . '&'
-                . 'action=register_activate_user&username='.$username.'&nonce='
-                . $status . '>';
+                . ' ' . $this->lang['fromip'] . ": {$_SERVER['REMOTE_ADDR']} \n\n";
+            if (!$user) {
+                $content .= $this->lang['emailtext2'] . "\n\n"
+                    . '<' . CMSIMPLE_URL . '?' . $su . '&'
+                    . 'action=register_activate_user&username='.$username.'&nonce='
+                    . $status . '>';
+            } else {
+                $content .= $this->lang['emailtext4'] . "\n\n"
+                    . '<' . CMSIMPLE_URL . '?' . uenc($this->lang['forgot_password']) . '>';
+            }
 
             // send activation email
             (new MailService)->sendMail(
