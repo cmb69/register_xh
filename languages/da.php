@@ -48,7 +48,6 @@ $plugin_tx['register']['err_username_does_not_exist']="Det valgte brugernaven fi
 $plugin_tx['register']['err_username_notfound']="Brugernavnet findes ikke: ";
 $plugin_tx['register']['err_password']="Vælg venligst et kodeord.";
 $plugin_tx['register']['err_password2']="De to indtastede kodeors er ikke ens.";
-$plugin_tx['register']['err_password_illegal']="Adgangskoden må kun indeholde følgende tegn: A-Z, a-z, 0-9, _";
 $plugin_tx['register']['err_old_password_wrong']="Den gamle adgangskode du indtastede er forkert.";
 $plugin_tx['register']['err_email']="Indtast venligst din e-mail-adresse.";
 $plugin_tx['register']['err_email_invalid']="Den angivne e-mail adresse er ugyldig.";

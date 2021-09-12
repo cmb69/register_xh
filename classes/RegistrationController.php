@@ -27,20 +27,15 @@ class RegistrationController extends Controller
     {
         global $su;
 
-        $errors = [];
-        $name      = isset($_POST['name']) ? $_POST['name'] : '';
-        $username  = isset($_POST['username']) ? $_POST['username'] : '';
-        $password1 = isset($_POST['password1']) ? $_POST['password1'] : '';
-        $password2 = isset($_POST['password2']) ? $_POST['password2'] : '';
-        $email     = isset($_POST['email']) ? $_POST['email'] : '';
+        // $errors = [];
+        $name      = isset($_POST['name']) && is_string($_POST["name"]) ? trim($_POST['name']) : '';
+        $username  = isset($_POST['username']) && is_string($_POST["username"]) ? trim($_POST['username']) : '';
+        $password1 = isset($_POST['password1']) && is_string($_POST["password1"]) ? trim($_POST['password1']) : '';
+        $password2 = isset($_POST['password2']) && is_string($_POST["password2"]) ? trim($_POST['password2']) : '';
+        $email     = isset($_POST['email']) && is_string($_POST["email"]) ? trim($_POST['email']) : '';
 
-        $errors = array_merge(
-            $errors,
-            registerCheckEntry($name, $username, $password1, $password2, $email)
-        );
-
-        // check for colons in fields
-        $errors = array_merge($errors, registerCheckColons($name, $username, $password1, $email));
+        $validationService = new ValidationService($this->lang);
+        $errors = $validationService->validateUser($name, $username, $password1, $password2, $email);
 
         // read user file in CSV format separated by colons
         $dbService = new DbService(Register_dataFolder());

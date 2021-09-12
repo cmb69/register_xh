@@ -51,7 +51,6 @@ $plugin_tx['register']['err_username_does_not_exist']="The current username does
 $plugin_tx['register']['err_username_notfound']="The Username could not be found: ";
 $plugin_tx['register']['err_password']="Please choose a password.";
 $plugin_tx['register']['err_password2']="The two entered passwords do not match.";
-$plugin_tx['register']['err_password_illegal']="The password must contain only following characters: A-Z, a-z, 0-9, _";
 $plugin_tx['register']['err_old_password_wrong']="The old password you entered is wrong.";
 $plugin_tx['register']['err_email']="Please enter your email address.";
 $plugin_tx['register']['err_email_invalid']="The given email address is invalid.";

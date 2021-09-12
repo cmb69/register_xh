@@ -54,7 +54,6 @@ $plugin_tx['register']['err_username_does_not_exist']="Пользователь 
 $plugin_tx['register']['err_username_notfound']="Пользователь не найден: ";
 $plugin_tx['register']['err_password']="Пожалуйста, выберите пароль.";
 $plugin_tx['register']['err_password2']="Пароли не совпадают.";
-$plugin_tx['register']['err_password_illegal']="Пароль должен содержать только символы: A-Z, a-z, 0-9, _, -";
 $plugin_tx['register']['err_old_password_wrong']="Вы указали неправильный старый пароль.";
 $plugin_tx['register']['err_email']="Пожалуйста, укажите адрес электронной почты.";
 $plugin_tx['register']['err_email_invalid']="Указан недействительный адрес электронной почты.";

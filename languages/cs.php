@@ -41,7 +41,6 @@ $plugin_tx['register']['err_username_does_not_exist']="Uvedené uživatelské jm
 $plugin_tx['register']['err_username_notfound']="Uvedené uživatelské jméno se nenašlo: ";
 $plugin_tx['register']['err_password']="Zvolte přístupové heslo.";
 $plugin_tx['register']['err_password2']="Uvedená hesla se neshodují.";
-$plugin_tx['register']['err_password_illegal']="Heslo může obsahovat pouze znaky: A-Z, a-z, 0-9, _";
 $plugin_tx['register']['err_old_password_wrong']="Uvedené staré heslo je nesprávné.";
 $plugin_tx['register']['err_email']="Zadejte Vaší e-mailovou adresu.";
 $plugin_tx['register']['err_email_invalid']="Uvedená e-mailová adresa je chybná.";

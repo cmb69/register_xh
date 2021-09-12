@@ -55,11 +55,13 @@ class UserPrefsController extends Controller
         $this->csrfProtector->check();
         $errors = [];
         // Get form data if available
-        $oldpassword  = isset($_POST['oldpassword']) ? $_POST['oldpassword'] : '';
-        $name      = isset($_POST['name']) ? $_POST['name'] : '';
-        $password1 = isset($_POST['password1']) ? $_POST['password1'] : '';
-        $password2 = isset($_POST['password2']) ? $_POST['password2'] : '';
-        $email     = isset($_POST['email']) ? $_POST['email'] : '';
+        $oldpassword  = isset($_POST['oldpassword']) && is_string($_POST["oldpassword"])
+            ? trim($_POST['oldpassword'])
+            : '';
+        $name      = isset($_POST['name']) && is_string($_POST["name"]) ? trim($_POST['name']) : '';
+        $password1 = isset($_POST['password1']) && is_string($_POST["password1"]) ? trim($_POST['password1']) : '';
+        $password2 = isset($_POST['password2']) && is_string($_POST["password2"]) ? trim($_POST['password2']) : '';
+        $email     = isset($_POST['email']) && is_string($_POST["email"]) ? trim($_POST['email']) : '';
 
         // set user name from session
         $username = isset($_SESSION['username']) ? $_SESSION['username'] : "";
@@ -98,10 +100,12 @@ class UserPrefsController extends Controller
             $name = $entry->name;
         }
 
-        $errors = array_merge($errors, registerCheckEntry($name, $username, $password1, $password2, $email));
+        $validationService = new ValidationService($this->lang);
+        $errors = array_merge(
+            $errors,
+            $validationService->validateUser($name, $username, $password1, $password2, $email)
+        );
 
-        // check for colons in fields
-        $errors = array_merge($errors, registerCheckColons($name, $username, $password1, $email));
         $oldemail = $entry->email;
 
         // read user entry, update it and write it back to CSV file

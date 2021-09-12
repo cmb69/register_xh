@@ -78,6 +78,8 @@ class MainAdminController extends Controller
         $deleted = false;
         $added   = false;
 
+        $validationService = new ValidationService($this->lang);
+
         $newusers = array();
         foreach (array_keys($username) as $j) {
             if (!isset($delete[$j]) || $delete[$j] == '') {
@@ -87,18 +89,20 @@ class MainAdminController extends Controller
                 if ($password[$j] == $oldpassword[$j]) {
                     $entryErrors = array_merge(
                         $entryErrors,
-                        registerCheckEntry($name[$j], $username[$j], "dummy", "dummy", $email[$j])
+                        $validationService->validateUser($name[$j], $username[$j], "dummy", "dummy", $email[$j])
                     );
                 } else {
                     $entryErrors = array_merge(
                         $entryErrors,
-                        registerCheckEntry($name[$j], $username[$j], $password[$j], $password[$j], $email[$j])
+                        $validationService->validateUser(
+                            $name[$j],
+                            $username[$j],
+                            $password[$j],
+                            $password[$j],
+                            $email[$j]
+                        )
                     );
                 }
-                $entryErrors = array_merge(
-                    $entryErrors,
-                    registerCheckColons($name[$j], $username[$j], $password[$j], $email[$j])
-                );
                 if (registerSearchUserArray($newusers, 'username', $username[$j]) !== false) {
                     $entryErrors[] = $this->lang['err_username_exists'];
                 }
