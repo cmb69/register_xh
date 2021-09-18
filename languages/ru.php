@@ -85,7 +85,6 @@ $plugin_tx['register']['entries_in_csv']="Файл CSV ";
 $plugin_tx['register']['csv_written']="Файл CSV сохранен.";
 $plugin_tx['register']['cf_group_activated']="Статус новых пользователей (группа после регистрации и активации учетной записи).";
 $plugin_tx['register']['cf_group_default']="Статус новых пользователей (группа по умолчанию для новых пользователей после регистрации, но до активации учетной записи).";
-$plugin_tx['register']['cf_login_layout']="<i>horizontal</i> Создать горизонтальную форму входа, если не указано, будет создана вертикальная форма входа.";
 $plugin_tx['register']['cf_senderemail']="Электронный адрес администратора.";
 
 ?>

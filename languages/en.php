@@ -112,7 +112,6 @@ $plugin_tx['register']['cf_group_activated']="The status of new members (group a
 $plugin_tx['register']['cf_group_default']="The status of new members (default group for user after registration, but before account activation).";
 $plugin_tx['register']['cf_hide_pages']="Whether to hide pages in the table of contents to which the user does not have access.";
 $plugin_tx['register']['cf_login_all_subsites']="Whether there is a single set of users for all languages; otherwise each language has its own set.";
-$plugin_tx['register']['cf_login_layout']="<i>horizontal</i> creates a horizontal login form, empty or all others creates a vertical login form.";
 $plugin_tx['register']['cf_remember_user']="Whether the remember user checkbox shall be shown below the login form.";
 $plugin_tx['register']['cf_senderemail']="The e-mail account of the administrator";
 $plugin_tx['register']['cf_password_forgotten']="Whether the password forgotten link shall be shown in the login form.";

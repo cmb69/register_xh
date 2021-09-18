@@ -112,7 +112,6 @@ $plugin_tx['register']['cf_group_activated']="Der Status neuer Mitglieder (Grupp
 $plugin_tx['register']['cf_group_default']="Der Status neuer Mitglieder (Gruppe nach Registrierung, aber vor der Account Aktivierung).";
 $plugin_tx['register']['cf_hide_pages']="Ob versteckt Seiten, zu denen das Mitglied keinen Zugang hat, in der Navigation angezeigt werden sollen.";
 $plugin_tx['register']['cf_login_all_subsites']="Ob es einen einzigen Satz von Mitgliedern für alle Sprachen gibt; andernfalls hat jede Sprache ihren eigenen Satz.";
-$plugin_tx['register']['cf_login_layout']="<i>horizontal</i> erzeugt ein horizontales Login Formular, leer oder alles andere erzeugt ein vertikales Login Formular.";
 $plugin_tx['register']['cf_remember_user']="Ob die \"Benutzer merken\" Checkbox unterhalb des Login Formulars angezeigt werden soll.";
 $plugin_tx['register']['cf_senderemail']="Die E-Mail-Adresse des Administrators";
 $plugin_tx['register']['cf_password_forgotten']="Ob der \"Kennwort vergessen\" Link im Login Formular angezeigt werden soll.";

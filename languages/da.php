@@ -79,7 +79,6 @@ $plugin_tx['register']['entries_in_csv']="Entries in CSV file ";
 $plugin_tx['register']['csv_written']="CSV file successfully written";
 $plugin_tx['register']['cf_group_activated']="Status for nye medlemmer (gruppe efter registrering og konto aktivering).";
 $plugin_tx['register']['cf_group_default']="Status for nye medlemmer (standard gruppe for brugeren efter registrering, men før konto aktivering).";
-$plugin_tx['register']['cf_login_layout']="<i>horizontal</i> skaber en horisontal login-formular, tom eller alle andret skaber en lodret login form.";
 $plugin_tx['register']['cf_senderemail']="E-mail-konto til administrator";
 $plugin_tx['register']['syscheck_title']="System check";
 $plugin_tx['register']['syscheck_phpversion']="PHP version ≥ %s";

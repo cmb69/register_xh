@@ -307,7 +307,6 @@ function registerloginform(): string
         $forgotPasswordUrl = uenc($plugin_tx['register']['forgot_password']);
         $registerUrl = uenc($plugin_tx['register']['register']);
         $view->setData([
-            'isHorizontal' => $plugin_cf['register']['login_layout'] === 'horizontal',
             'actionUrl' => sv('REQUEST_URI'),
             'hasForgotPasswordLink' => $plugin_cf['register']['password_forgotten']
                 && isset($su) && urldecode($su) != $forgotPasswordUrl,
@@ -322,7 +321,6 @@ function registerloginform(): string
         $user = Register_currentUser();
         $userPrefUrl = uenc($plugin_tx['register']['user_prefs']);
         $view->setData([
-            'isHorizontal' => $plugin_cf['register']['login_layout'] === 'horizontal',
             'fullName' => $user->name,
             'hasUserPrefs' => $user->status == 'activated' && isset($su)
                 && urldecode($su) != $userPrefUrl,

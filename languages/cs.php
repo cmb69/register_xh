@@ -77,7 +77,6 @@ $plugin_tx['register']['syscheck_extension']="Rozšíření '%s' načteno";
 $plugin_tx['register']['syscheck_writable']="Adresář '%s' umožňuje zápis";
 $plugin_tx['register']['cf_group_activated']="Status nových členů (skupina po registraci a aktivaci účtu).";
 $plugin_tx['register']['cf_group_default']="Stav nových členů (výchozí skupina uživatele po registraci, ale před aktivací účtu).";
-$plugin_tx['register']['cf_login_layout']="<i>horizontal</i> vytváří horizontální přihlašovací formulář, nevyplněno, nebo cokoli jiného vytvoří vertikální přihlašovací formulář.";
 $plugin_tx['register']['cf_senderemail']="E-mailový účet správce";
 
 ?>
