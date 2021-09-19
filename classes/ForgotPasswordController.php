@@ -13,6 +13,16 @@ namespace Register;
 class ForgotPasswordController extends Controller
 {
     /**
+     * @var View
+     */
+    private $view;
+
+    public function __construct(View $view)
+    {
+        parent::__construct();
+        $this->view = $view;
+    }
+    /**
      * @return void
      */
     public function defaultAction()
@@ -48,8 +58,7 @@ class ForgotPasswordController extends Controller
         $user = registerSearchUserArray($userArray, 'email', $email);
 
         if (!empty($errors)) {
-            $view = new View();
-            $view->render('error', ['errors' => $errors]);
+            $this->view->render('error', ['errors' => $errors]);
             $this->renderForgotForm($email);
         } else {
             if ($user) {
@@ -114,8 +123,7 @@ class ForgotPasswordController extends Controller
         $dbService->lock(LOCK_UN);
 
         if (!empty($errors)) {
-            $view = new View();
-            $view->render('error', ['errors' => $errors]);
+            $this->view->render('error', ['errors' => $errors]);
             $this->renderForgotForm($email);
         } else {
             // prepare email content for user data email
@@ -142,8 +150,7 @@ class ForgotPasswordController extends Controller
      */
     private function renderForgotForm($email)
     {
-        $view = new View();
-        $view->render('forgotten-form', [
+        $this->view->render('forgotten-form', [
             'actionUrl' => sv('REQUEST_URI'),
             'email' => $email,
         ]);

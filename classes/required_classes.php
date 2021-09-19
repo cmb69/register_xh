@@ -11,6 +11,7 @@
 use Register\PageDataController;
 use Register\User;
 use Register\UserGroup;
+use Register\View;
 
 function Register_dataFolder(): string
 {
@@ -230,7 +231,7 @@ function registerUser(): string
         header('Location: ' . CMSIMPLE_URL);
         exit;
     }
-    $controller = new Register\RegistrationController;
+    $controller = new Register\RegistrationController(new View());
     if (isset($_POST['action']) && $_POST['action'] === 'register_user') {
         $action = 'registerUserAction';
     } elseif (isset($_GET['action']) && $_GET['action'] === 'register_activate_user') {
@@ -255,7 +256,7 @@ function registerForgotPassword()
         header('Location: ' . CMSIMPLE_URL);
         exit;
     }
-    $controller = new Register\ForgotPasswordController;
+    $controller = new Register\ForgotPasswordController(new View());
     if (isset($_POST['action']) && $_POST['action'] === 'forgotten_password') {
         $action = 'passwordForgottenAction';
     } elseif (isset($_GET['action']) && $_GET['action'] === 'registerResetPassword') {
@@ -279,7 +280,7 @@ function registerUserPrefs(): string
     if (!Register_isLoggedIn()) {
         return XH_message('fail', $plugin_tx['register']['access_error_text']);
     }
-    $controller = new Register\UserPrefsController;
+    $controller = new Register\UserPrefsController(new View());
     if (isset($_POST['action']) && $_POST['action'] === 'edit_user_prefs' && isset($_POST['submit'])) {
         $action = 'editAction';
     } elseif (isset($_POST['action']) && $_POST['action'] === 'edit_user_prefs' && isset($_POST['delete'])) {
@@ -303,7 +304,7 @@ function registerloginform(): string
 
     if (!Register_isLoggedIn()) {
         // Begin register- and loginarea and user fields
-        $view = new Register\View();
+        $view = new View();
         $forgotPasswordUrl = uenc($plugin_tx['register']['forgot_password']);
         $registerUrl = uenc($plugin_tx['register']['register']);
         $data = [
@@ -320,7 +321,7 @@ function registerloginform(): string
         return ob_get_clean();
     } else {
         // Logout Link and Preferences Link
-        $view = new Register\View();
+        $view = new View();
         $user = Register_currentUser();
         $userPrefUrl = uenc($plugin_tx['register']['user_prefs']);
         $data = [
@@ -366,6 +367,6 @@ function Register_sessionName(): string
 function register_pd_view(array $pageData)
 {
     ob_start();
-    (new PageDataController($pageData))->execute();
+    (new PageDataController($pageData, new View()))->execute();
     return (string) ob_get_clean();
 }

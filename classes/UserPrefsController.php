@@ -19,11 +19,17 @@ class UserPrefsController extends Controller
      */
     private $csrfProtector;
 
-    public function __construct()
+    /**
+     * @var View
+     */
+    private $view;
+
+    public function __construct(View $view)
     {
         parent::__construct();
         XH_startSession();
         $this->csrfProtector = new CSRFProtection('register_csrf_token', false);
+        $this->view = $view;
     }
 
     /**
@@ -123,8 +129,7 @@ class UserPrefsController extends Controller
         $dbService->lock(LOCK_UN);
 
         if (!empty($errors)) {
-            $view = new View();
-            $view->render('error', ['errors' => $errors]);
+            $this->view->render('error', ['errors' => $errors]);
             $this->renderForm($name, $email);
         } else {
             // prepare email for user information about updates
@@ -199,8 +204,7 @@ class UserPrefsController extends Controller
         $dbService->lock(LOCK_UN);
 
         if (!empty($errors)) {
-            $view = new View();
-            $view->render('error', ['errors' => $errors]);
+            $this->view->render('error', ['errors' => $errors]);
             $this->renderForm($name, $email);
         } else {
             $username = isset($_SESSION['username']) ? $_SESSION['username'] : '';
@@ -219,8 +223,7 @@ class UserPrefsController extends Controller
     {
         $csrfTokenInput = $this->csrfProtector->tokenInput();
         $this->csrfProtector->store();
-        $view = new View();
-        $view->render('userprefs-form', [
+        $this->view->render('userprefs-form', [
             'csrfTokenInput' => new HtmlString($csrfTokenInput),
             'actionUrl' => sv('REQUEST_URI'),
             'name' => $name,

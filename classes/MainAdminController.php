@@ -19,12 +19,18 @@ class MainAdminController extends Controller
      */
     private $csrfProtector;
 
-    public function __construct()
+    /**
+     * @var View
+     */
+    private $view;
+
+    public function __construct(View $view)
     {
         global $_XH_csrfProtection;
 
         parent::__construct();
         $this->csrfProtector = $_XH_csrfProtection;
+        $this->view = $view;
     }
 
     /**
@@ -115,9 +121,8 @@ class MainAdminController extends Controller
                     }
                 }
                 if (!empty($entryErrors)) {
-                    $view = new View();
                     ob_start();
-                    $view->render('user-error', [
+                    $this->view->render('user-error', [
                         'username' => $username[$j],
                         'errors' => $entryErrors,
                     ]);
@@ -185,8 +190,7 @@ class MainAdminController extends Controller
      */
     private function renderErrorView(array $errors)
     {
-        $view = new View();
-        $view->render('error', ['errors' => $errors]);
+        $this->view->render('error', ['errors' => $errors]);
     }
 
     /**
@@ -212,7 +216,6 @@ class MainAdminController extends Controller
             . '<script type="text/javascript">register.tx={' . implode(',', $txts) . '};'
             . 'register.maxNumberOfUsers=' . $this->calcMaxRecords(7, 4) . ';</script>';
 
-        $view = new View();
         $data = [
             'csrfTokenInput' => new HtmlString($this->csrfProtector->tokenInput()),
             'saveLabel' => ucfirst($tx['action']['save']),
@@ -229,7 +232,7 @@ class MainAdminController extends Controller
         }
         $data['groupStrings'] = $groupStrings;
         $data['statusSelects'] = $statusSelects;
-        $view->render('admin-users', $data);
+        $this->view->render('admin-users', $data);
     }
 
     /**
@@ -373,7 +376,6 @@ class MainAdminController extends Controller
     {
         global $tx, $sn;
     
-        $view = new View();
         $data = [
             'csrfTokenInput' => new HtmlString($this->csrfProtector->tokenInput()),
             'actionUrl' => "$sn?&register",
@@ -385,7 +387,7 @@ class MainAdminController extends Controller
             $selects[] = new HtmlString($this->pageSelectbox($entry->loginpage, $i));
         }
         $data['selects'] = $selects;
-        $view->render('admin-groups', $data);
+        $this->view->render('admin-groups', $data);
     }
 
     private function pageSelectbox(string $loginpage, int $n): string

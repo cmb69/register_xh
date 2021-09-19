@@ -111,7 +111,7 @@ class Plugin
                 $method = null;
         }
         if ($method !== null) {
-            $controller = new SpecialPageController($h, $plugin_cf['register'], $plugin_tx['register']);
+            $controller = new SpecialPageController($h, $plugin_cf['register'], $plugin_tx['register'], new View());
             ob_start();
             $controller->{$method}();
             $o .= (string) ob_get_clean();
@@ -158,7 +158,7 @@ class Plugin
                 $o .= self::renderInfo();
                 break;
             case 'plugin_main':
-                $temp = new MainAdminController;
+                $temp = new MainAdminController(new View());
                 ob_start();
                 switch ($action) {
                     case 'editusers':

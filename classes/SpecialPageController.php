@@ -22,15 +22,21 @@ class SpecialPageController
     private $text;
 
     /**
+     * @var View
+     */
+    private $view;
+
+    /**
      * @param string[] $headings
      * @param array<string,string> $conf
      * @param array<string,string> $text
      */
-    public function __construct(array $headings, array $conf, array $text)
+    public function __construct(array $headings, array $conf, array $text, View $view)
     {
         $this->headings = $headings;
         $this->conf = $conf;
         $this->text = $text;
+        $this->view = $view;
     }
 
     /**
@@ -158,8 +164,7 @@ class SpecialPageController
      */
     private function renderPageView($title, $intro, $more = '')
     {
-        $view = new View();
-        $view->render('page', [
+        $this->view->render('page', [
             'title' => $title,
             'intro' => $intro,
             'more' => new HtmlString($more),

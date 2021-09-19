@@ -13,6 +13,16 @@ namespace Register;
 class RegistrationController extends Controller
 {
     /**
+     * @var View
+     */
+    private $view;
+
+    public function __construct(View $view)
+    {
+        parent::__construct();
+        $this->view = $view;
+    }
+    /**
      * @return void
      */
     public function defaultAction()
@@ -67,8 +77,7 @@ class RegistrationController extends Controller
         $dbService->lock(LOCK_UN);
 
         if (!empty($errors)) {
-            $view = new View();
-            $view->render('error', ['errors' => $errors]);
+            $this->view->render('error', ['errors' => $errors]);
             echo $this->form($name, $username, $password1, $password2, $email);
         } else {
             // prepare email content for registration activation
@@ -144,9 +153,8 @@ class RegistrationController extends Controller
         }
 
         if (!empty($errors)) {
-            $view = new View();
             ob_start();
-            $view->render('error', ['errors' => $errors]);
+            $this->view->render('error', ['errors' => $errors]);
             $o .= ob_get_clean();
         } else {
             $entry->status = "activated";
@@ -161,17 +169,15 @@ class RegistrationController extends Controller
 
     private function form(string $name, string $username, string $password1, string $password2, string $email): string
     {
-        $view = new View();
-        $data = [
+        ob_start();
+        $this->view->render('registerform', [
             'actionUrl' => sv('REQUEST_URI'),
             'name' => $name,
             'username' => $username,
             'password1' => $password1,
             'password2' => $password2,
             'email' => $email,
-        ];
-        ob_start();
-        $view->render('registerform', $data);
+        ]);
         return ob_get_clean();
     }
 }
