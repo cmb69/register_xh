@@ -30,8 +30,8 @@ class LoginController extends Controller
     {
         $rememberPeriod = 24*60*60*100;
 
-        $username = isset($_POST['username']) ? $_POST['username'] : '';
-        $password = isset($_POST['password']) ? $_POST['password'] : '';
+        $username = $_POST['username'] ?? '';
+        $password = $_POST['password'] ?? '';
 
         // set username and password in case cookies are set
         if ($this->config['remember_user']
@@ -98,7 +98,7 @@ class LoginController extends Controller
     public function logoutAction()
     {
         XH_startSession();
-        $username = isset($_SESSION['username']) ? $_SESSION['username'] : '';
+        $username = $_SESSION['username'] ?? '';
         Register_logout();
         XH_logMessage('info', 'register', 'logout', "$username logged out");
     

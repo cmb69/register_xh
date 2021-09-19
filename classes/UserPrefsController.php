@@ -43,7 +43,7 @@ class UserPrefsController extends Controller
      */
     public function defaultAction()
     {
-        $username = isset($_SESSION['username']) ? $_SESSION['username'] : '';
+        $username = $_SESSION['username'] ?? '';
 
         $this->dbService->lock(LOCK_EX);
         $userArray = $this->dbService->readUsers();
@@ -75,7 +75,7 @@ class UserPrefsController extends Controller
         $email     = isset($_POST['email']) && is_string($_POST["email"]) ? trim($_POST['email']) : '';
 
         // set user name from session
-        $username = isset($_SESSION['username']) ? $_SESSION['username'] : "";
+        $username = $_SESSION['username'] ?? "";
 
         // read user file in CSV format separated by colons
         $this->dbService->lock(LOCK_EX);
@@ -167,12 +167,12 @@ class UserPrefsController extends Controller
         $errors = [];
     
         // Get form data if available
-        $oldpassword  = isset($_POST['oldpassword']) ? $_POST['oldpassword'] : '';
-        $name      = isset($_POST['name']) ? $_POST['name'] : '';
-        $email     = isset($_POST['email']) ? $_POST['email'] : '';
+        $oldpassword = $_POST['oldpassword'] ?? '';
+        $name = $_POST['name'] ?? '';
+        $email = $_POST['email'] ?? '';
 
         // set user name from session
-        $username = isset($_SESSION['username']) ? $_SESSION['username'] : "";
+        $username = $_SESSION['username'] ?? "";
 
         // read user file in CSV format separated by colons
         $this->dbService->lock(LOCK_EX);
@@ -210,7 +210,7 @@ class UserPrefsController extends Controller
             echo $this->view->render('error', ['errors' => $errors]);
             echo $this->renderForm($name, $email);
         } else {
-            $username = isset($_SESSION['username']) ? $_SESSION['username'] : '';
+            $username = $_SESSION['username'] ?? '';
             Register_logout();
             XH_logMessage('info', 'register', 'logout', "$username deleted and logged out");
             echo XH_message('success', $this->lang['user_deleted'] . ': '.$username);

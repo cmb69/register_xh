@@ -125,11 +125,11 @@ class RegistrationController extends Controller
     public function activateUserAction()
     {
         // Get form data if available
-        $name      = isset($_POST['name']) ? $_POST['name'] : '';
-        $username  = isset($_POST['username']) ? $_POST['username'] : '';
-        $password1 = isset($_POST['password1']) ? $_POST['password1'] : '';
-        $password2 = isset($_POST['password2']) ? $_POST['password2'] : '';
-        $email     = isset($_POST['email']) ? $_POST['email'] : '';
+        $name = $_POST['name'] ?? '';
+        $username = $_POST['username'] ?? '';
+        $password1 = $_POST['password1'] ?? '';
+        $password2 = $_POST['password2'] ?? '';
+        $email = $_POST['email'] ?? '';
 
         if (isset($_GET['username']) && isset($_GET['nonce'])) {
             echo $this->activateUser($_GET['username'], $_GET['nonce']);

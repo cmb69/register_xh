@@ -79,15 +79,15 @@ class MainAdminController extends Controller
             $groupIds[] = $entry->groupname;
         }
 
-        $delete      = isset($_POST['delete'])       ? $_POST['delete']       : [];
-        $add         = isset($_POST['add'])          ? $_POST['add']          : '';
-        $username    = isset($_POST['username'])     ? $_POST['username']     : [];
-        $password    = isset($_POST['password'])     ? $_POST['password']     : [];
-        $oldpassword = isset($_POST['oldpassword'])  ? $_POST['oldpassword']  : [];
-        $name        = isset($_POST['name'])         ? $_POST['name']         : [];
-        $email       = isset($_POST['email'])        ? $_POST['email']        : [];
-        $groupString = isset($_POST['accessgroups']) ? $_POST['accessgroups'] : [];
-        $status      = isset($_POST['status'])       ? $_POST['status']       : [];
+        $delete = $_POST['delete'] ?? [];
+        $add = $_POST['add'] ?? '';
+        $username = $_POST['username'] ?? [];
+        $password = $_POST['password'] ?? [];
+        $oldpassword = $_POST['oldpassword'] ?? [];
+        $name = $_POST['name'] ?? [];
+        $email = $_POST['email'] ?? [];
+        $groupString = $_POST['accessgroups'] ?? [];
+        $status = $_POST['status'] ?? [];
 
         $deleted = false;
         $added   = false;
@@ -332,9 +332,9 @@ class MainAdminController extends Controller
         $this->csrfProtector->check();
         $errors = [];
 
-        $delete      = isset($_POST['delete'])       ? $_POST['delete']       : [];
-        $add         = isset($_POST['add'])          ? $_POST['add']          : '';
-        $groupname   = isset($_POST['groupname'])    ? $_POST['groupname']    : [];
+        $delete = $_POST['delete'] ?? [];
+        $add = $_POST['add'] ?? '';
+        $groupname = $_POST['groupname'] ?? [];
 
         $deleted = false;
         $added   = false;
