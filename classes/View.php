@@ -11,48 +11,6 @@ namespace Register;
 class View
 {
     /**
-     * @var array<string,mixed>
-     */
-    private $data = array();
-
-    /**
-     * @param array<string,mixed> $data
-     * @return void
-     */
-    public function setData($data)
-    {
-        $this->data = $data;
-    }
-
-    /**
-     * @param string $name
-     * @return string
-     */
-    public function __get($name)
-    {
-        return $this->data[$name];
-    }
-
-    /**
-     * @param string $name
-     * @return bool
-     */
-    public function __isset($name)
-    {
-        return isset($this->data[$name]);
-    }
-
-    /**
-     * @param string $name
-     * @param mixed[] $args
-     * @return string
-     */
-    public function __call($name, array $args)
-    {
-        return $this->escape($this->data[$name]);
-    }
-
-    /**
      * @param string $key
      * @return string
      */
@@ -84,14 +42,16 @@ class View
     }
 
     /**
+     * @param array<string,mixed> $_data
      * @return void
      */
-    public function render(string $_template)
+    public function render(string $_template, array $_data)
     {
         global $pth;
 
-        echo "<!-- {$_template} -->", PHP_EOL;
         $_template = "{$pth['folder']['plugins']}register/views/{$_template}.php";
+        unset($pth);
+        extract($_data);
         include $_template;
     }
 
@@ -99,7 +59,7 @@ class View
      * @param mixed $value
      * @return mixed
      */
-    protected function escape($value)
+    public function escape($value)
     {
         if ($value instanceof HtmlString) {
             return $value;

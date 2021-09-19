@@ -1,11 +1,24 @@
+<?php
+
+use Register\View;
+
+/**
+ * @var View $this
+ * @var string $actionUrl
+ * @var string $csrfTokenInput
+ * @var string $name
+ * @var string $email
+ */
+?>
+
 <div class="regi_settings">
-    <form method="post" action="<?=$this->actionUrl?>" target="_self">
+    <form method="post" action="<?=$this->escape($actionUrl)?>" target="_self">
         <input type="hidden" name="action" value="edit_user_prefs">
-        <?=$this->csrfTokenInput()?>
+        <?=$this->escape($csrfTokenInput)?>
         <table style="margin: auto;">
             <tr>
                 <td><?=$this->text('name')?></td>
-                <td><input class="text" name="name" type="text" size="35" value="<?=$this->name()?>"></td>
+                <td><input class="text" name="name" type="text" size="35" value="<?=$this->escape($name)?>"></td>
             </tr>
             <tr>
                 <td><?=$this->text('oldpassword')?></td>
@@ -21,7 +34,7 @@
             </tr>
             <tr>
                 <td><?=$this->text('email')?></td>
-                <td><input class="text" name="email" type="text" size="35" value="<?=$this->email()?>"></td>
+                <td><input class="text" name="email" type="text" size="35" value="<?=$this->escape($email)?>"></td>
             </tr>
             <tr>
                 <td colspan="2">

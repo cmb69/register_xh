@@ -1,12 +1,27 @@
+<?php
+
+use Register\View;
+
+/**
+ * @var View $this
+ * @var string $actionUrl
+ * @var bool $hasForgotPasswordLink
+ * @var string $forgotPasswordUrl
+ * @var bool $hasRememberMe
+ * @var bool $isRegisterAllowed
+ * @var string $registerUrl
+ */
+?>
+
 <div class="regi_regloginarea">
-    <form action="<?=$this->actionUrl()?>" method="post">
+    <form action="<?=$this->escape($actionUrl)?>" method="post">
         <input type="hidden" name="function" value="registerlogin">
         <div class="regi_user"><?=$this->text('username')?></div>
         <div class="regi_userfield"><input class="regi_userfield" type="text" name="username"></div>
         <div class="regi_password"><?=$this->text('password')?></div>
         <div class="regi_forgotpw">
-<?php if ($this->hasForgotPasswordLink):?>
-            <a href="<?=$this->forgotPasswordUrl()?>" title="<?=$this->text('forgot_password')?>">
+<?php if ($hasForgotPasswordLink):?>
+            <a href="<?=$this->escape($forgotPasswordUrl)?>" title="<?=$this->text('forgot_password')?>">
                 <?=$this->text('forgot_password')?>
             </a>
 <?php endif?>
@@ -17,14 +32,14 @@
         <div class="regi_loginbutton">
             <button class="regi_loginbutton" name="login"><?=$this->text('login')?></button>
         </div>
-<?php if ($this->hasRememberMe):?>
+<?php if ($hasRememberMe):?>
         <div class="regi_remember">
             <input type="checkbox" name="remember" class="regi_remember"><?=$this->text('remember')?>
         </div>
 <?php endif?>
-<?php if ($this->isRegisterAllowed):?>
+<?php if ($isRegisterAllowed):?>
         <div class="regi_register">
-            <a href="<?=$this->registerUrl()?>"><?=$this->text('register')?></a>
+            <a href="<?=$this->escape($registerUrl)?>"><?=$this->text('register')?></a>
         </div>
 <?php endif?>
     </form>
