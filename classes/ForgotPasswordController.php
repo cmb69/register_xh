@@ -69,14 +69,17 @@ class ForgotPasswordController
          */
         global $su;
 
-        $errors = [];
-
         $email = $_POST['email'] ?? '';
 
         if ($email == '') {
-            $errors[] = $this->lang['err_email'];
-        } elseif (!preg_match("/^[^\s()<>@,;:\"\/\[\]?=]+@\w[\w-]*(\.\w[\w-]*)*\.[a-z]{2,}$/i", $email)) {
-            $errors[] = $this->lang['err_email_invalid'];
+            echo $this->view->message("fail", $this->lang['err_email']);
+            echo $this->renderForgotForm($email);
+            return;
+        }
+        if (!preg_match("/^[^\s()<>@,;:\"\/\[\]?=]+@\w[\w-]*(\.\w[\w-]*)*\.[a-z]{2,}$/i", $email)) {
+            echo $this->view->message("fail", $this->lang['err_email_invalid']);
+            echo $this->renderForgotForm($email);
+            return;
         }
 
         // read user file in CSV format separated by colons
@@ -86,32 +89,26 @@ class ForgotPasswordController
 
         // search user for email
         $user = registerSearchUserArray($userArray, 'email', $email);
+        if ($user) {
+            // prepare email content for user data email
+            $content = $this->lang['emailtext1'] . "\n\n"
+                . ' ' . $this->lang['name'] . ": " . $user->name . "\n"
+                . ' ' . $this->lang['username'] . ": " . $user->username . "\n";
+            $content .= ' ' . $this->lang['email'] . ": " . $user->email . "\n";
+            $content .= "\n" . $this->lang['emailtext3'] ."\n\n"
+                . '<' . CMSIMPLE_URL . '?' . $su . '&'
+                . 'action=registerResetPassword&username=' . urlencode($user->username) . '&nonce='
+                . urlencode($user->password) . '>';
 
-        if (!empty($errors)) {
-            echo $this->view->render('error', ['errors' => $errors]);
-            echo $this->renderForgotForm($email);
-        } else {
-            if ($user) {
-                // prepare email content for user data email
-                $content = $this->lang['emailtext1'] . "\n\n"
-                    . ' ' . $this->lang['name'] . ": " . $user->name . "\n"
-                    . ' ' . $this->lang['username'] . ": " . $user->username . "\n";
-                $content .= ' ' . $this->lang['email'] . ": " . $user->email . "\n";
-                $content .= "\n" . $this->lang['emailtext3'] ."\n\n"
-                    . '<' . CMSIMPLE_URL . '?' . $su . '&'
-                    . 'action=registerResetPassword&username=' . urlencode($user->username) . '&nonce='
-                    . urlencode($user->password) . '>';
-
-                // send reminder email
-                $this->mailService->sendMail(
-                    $email,
-                    $this->lang['reminderemailsubject'] . ' ' . $_SERVER['SERVER_NAME'],
-                    $content,
-                    array('From: ' . $this->config['senderemail'])
-                );
-            }
-            echo $this->view->message('success', $this->lang['remindersent_reset']);
+            // send reminder email
+            $this->mailService->sendMail(
+                $email,
+                $this->lang['reminderemailsubject'] . ' ' . $_SERVER['SERVER_NAME'],
+                $content,
+                array('From: ' . $this->config['senderemail'])
+            );
         }
+        echo $this->view->message('success', $this->lang['remindersent_reset']);
     }
 
     /**
@@ -119,10 +116,6 @@ class ForgotPasswordController
      */
     public function resetPasswordAction()
     {
-        $errors = [];
-
-        $email = $_POST['email'] ?? '';
-
         // read user file in CSV format separated by colons
         $this->dbService->lock(LOCK_EX);
         $userArray = $this->dbService->readUsers();
@@ -130,46 +123,44 @@ class ForgotPasswordController
         // search user for email
         $user = registerSearchUserArray($userArray, 'username', $_GET['username']);
         if (!$user) {
-            $errors[] = $this->lang['err_username_does_not_exist'];
+            echo $this->view->message("fail", $this->lang['err_username_does_not_exist']);
+            $this->dbService->lock(LOCK_UN);
+            return;
         }
 
         if ($user->password != $_GET['nonce']) {
-            $errors[] = $this->lang['err_status_invalid'];
+            echo $this->view->message("fail", $this->lang['err_status_invalid']);
+            $this->dbService->lock(LOCK_UN);
+            return;
         }
 
-        $password = null;
         // in case of encrypted password a new random password will be generated
         // and its value be written back to the CSV file
-        if (empty($errors)) {
-            $password = base64_encode(random_bytes(8));
-            $user->password = password_hash($password, PASSWORD_DEFAULT);
-            $userArray = registerReplaceUserEntry($userArray, $user);
-            if (!$this->dbService->writeUsers($userArray)) {
-                $errors[] = $this->lang['err_cannot_write_csv'];
-            }
+        $password = base64_encode(random_bytes(8));
+        $user->password = password_hash($password, PASSWORD_DEFAULT);
+        $userArray = registerReplaceUserEntry($userArray, $user);
+        if (!$this->dbService->writeUsers($userArray)) {
+            $this->view->message("fail", $this->lang['err_cannot_write_csv']);
+            $this->dbService->lock(LOCK_UN);
+            return;
         }
         $this->dbService->lock(LOCK_UN);
 
-        if (!empty($errors)) {
-            echo $this->view->render('error', ['errors' => $errors]);
-            echo $this->renderForgotForm($email);
-        } else {
-            // prepare email content for user data email
-            $content = $this->lang['emailtext1'] . "\n\n"
-                . ' ' . $this->lang['name'] . ": " . $user->name . "\n"
-                . ' ' . $this->lang['username'] . ": " . $user->username . "\n"
-                . ' ' . $this->lang['password'] . ": " . $password . "\n"
-                . ' ' . $this->lang['email'] . ": " . $user->email . "\n";
+        // prepare email content for user data email
+        $content = $this->lang['emailtext1'] . "\n\n"
+            . ' ' . $this->lang['name'] . ": " . $user->name . "\n"
+            . ' ' . $this->lang['username'] . ": " . $user->username . "\n"
+            . ' ' . $this->lang['password'] . ": " . $password . "\n"
+            . ' ' . $this->lang['email'] . ": " . $user->email . "\n";
 
-            // send reminder email
-            $this->mailService->sendMail(
-                $user->email,
-                $this->lang['reminderemailsubject'] . ' ' . $_SERVER['SERVER_NAME'],
-                $content,
-                array('From: ' . $this->config['senderemail'])
-            );
-            echo $this->view->message('success', $this->lang['remindersent']);
-        }
+        // send reminder email
+        $this->mailService->sendMail(
+            $user->email,
+            $this->lang['reminderemailsubject'] . ' ' . $_SERVER['SERVER_NAME'],
+            $content,
+            array('From: ' . $this->config['senderemail'])
+        );
+        echo $this->view->message('success', $this->lang['remindersent']);
     }
 
     /**
