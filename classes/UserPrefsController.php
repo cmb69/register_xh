@@ -223,11 +223,17 @@ class UserPrefsController extends Controller
      */
     private function renderForm($name, $email): string
     {
+        /**
+         * @var string $sn
+         * @var string $su
+         */
+        global $sn, $su;
+
         $csrfTokenInput = $this->csrfProtector->tokenInput();
         $this->csrfProtector->store();
         return $this->view->render('userprefs-form', [
             'csrfTokenInput' => new HtmlString($csrfTokenInput),
-            'actionUrl' => sv('REQUEST_URI'),
+            'actionUrl' => "$sn?$su",
             'name' => $name,
             'email' => $email,
         ]);

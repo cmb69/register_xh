@@ -157,8 +157,14 @@ class ForgotPasswordController extends Controller
      */
     private function renderForgotForm($email): string
     {
+        /**
+         * @var string $sn
+         * @var string $su
+         */
+        global $sn, $su;
+
         return $this->view->render('forgotten-form', [
-            'actionUrl' => sv('REQUEST_URI'),
+            'actionUrl' => "$sn?$su",
             'email' => $email,
         ]);
     }

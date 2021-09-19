@@ -334,7 +334,7 @@ function registerloginform(): string
         $forgotPasswordUrl = uenc($plugin_tx['register']['forgot_password']);
         $registerUrl = uenc($plugin_tx['register']['register']);
         $data = [
-            'actionUrl' => sv('REQUEST_URI'),
+            'actionUrl' => "$sn?$su",
             'hasForgotPasswordLink' => $plugin_cf['register']['password_forgotten']
                 && urldecode($su) != $forgotPasswordUrl,
             'forgotPasswordUrl' => "$sn?$forgotPasswordUrl",

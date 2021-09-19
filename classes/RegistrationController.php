@@ -175,8 +175,14 @@ class RegistrationController extends Controller
 
     private function form(string $name, string $username, string $password1, string $password2, string $email): string
     {
+        /**
+         * @var string $sn
+         * @var string $su
+         */
+        global $sn, $su;
+
         return $this->view->render('registerform', [
-            'actionUrl' => sv('REQUEST_URI'),
+            'actionUrl' => "$sn?$su",
             'name' => $name,
             'username' => $username,
             'password1' => $password1,
