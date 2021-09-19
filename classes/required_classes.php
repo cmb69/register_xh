@@ -19,6 +19,12 @@ use Register\View;
 
 function Register_dataFolder(): string
 {
+    /**
+     * @var string $sl
+     * @var array<string,array<string,string>> $cf
+     * @var array<string,array<string,string>> $plugin_cf
+     * @var array{folder:array<string,string>,file:array<string,string>} $pth
+     */
     global $sl, $cf, $plugin_cf, $pth;
 
     if ($plugin_cf['register']['login_all_subsites']) {
@@ -55,6 +61,10 @@ function Register_isLoggedIn()
 
 function register_access(string $groupString): string
 {
+    /**
+     * @var array<string,array<string,string>> $plugin_tx
+     * @var string $function
+     */
     global $plugin_tx, $function;
 
     // remove spaces etc.
@@ -181,6 +191,9 @@ function registerDeleteUserEntry(array $array, string $username): array
  */
 function Register_currentUser()
 {
+    /**
+     * @var array{folder:array<string,string>,file:array<string,string>} $pth
+     */
     global $pth;
     static $user = null;
 
@@ -279,6 +292,9 @@ function registerForgotPassword()
  */
 function registerUserPrefs(): string
 {
+    /**
+     * @var array<string,array<string,string>> $plugin_tx
+     */
     global $plugin_tx;
 
     if (!Register_isLoggedIn()) {
@@ -302,6 +318,12 @@ function registerUserPrefs(): string
  */
 function registerloginform(): string
 {
+    /**
+     * @var array<string,array<string,string>> $plugin_cf
+     * @var array<string,array<string,string>> $plugin_tx
+     * @var string $sn
+     * @var string $su
+     */
     global $plugin_cf, $plugin_tx, $sn, $su;
 
     // If logged in show user preferences link, otherwise register and forgot email links.
@@ -314,7 +336,7 @@ function registerloginform(): string
         $data = [
             'actionUrl' => sv('REQUEST_URI'),
             'hasForgotPasswordLink' => $plugin_cf['register']['password_forgotten']
-                && isset($su) && urldecode($su) != $forgotPasswordUrl,
+                && urldecode($su) != $forgotPasswordUrl,
             'forgotPasswordUrl' => "$sn?$forgotPasswordUrl",
             'hasRememberMe' => $plugin_cf['register']['remember_user'],
             'isRegisterAllowed' => $plugin_cf['register']['allowed_register'],
@@ -328,8 +350,8 @@ function registerloginform(): string
         $userPrefUrl = uenc($plugin_tx['register']['user_prefs']);
         $data = [
             'fullName' => $user->name,
-            'hasUserPrefs' => $user->status == 'activated' && isset($su)
-                && urldecode($su) != $userPrefUrl,
+            'hasUserPrefs' => $user->status == 'activated' &&
+                urldecode($su) != $userPrefUrl,
             'userPrefUrl' => "?$userPrefUrl",
             'logoutUrl' => "$sn?&function=registerlogout",
         ];
@@ -351,6 +373,10 @@ function Register_loggedInForm()
 
 function Register_sessionName(): string
 {
+    /**
+     * @var string $sl
+     * @var array<string,array<string,string>> $plugin_cf
+     */
     global $sl, $plugin_cf;
 
     if ($plugin_cf['register']['login_all_subsites']) {

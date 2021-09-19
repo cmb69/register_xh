@@ -35,6 +35,9 @@ class RegistrationController extends Controller
      */
     public function registerUserAction()
     {
+        /**
+         * @var string $su
+         */
         global $su;
 
         // $errors = [];

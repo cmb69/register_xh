@@ -19,6 +19,9 @@ class MailService
 
     public function __construct()
     {
+        /**
+         * @var array<string,array<string,string>> $plugin_cf
+         */
         global $plugin_cf;
 
         $this->config = $plugin_cf['register'];

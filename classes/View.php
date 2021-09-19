@@ -16,6 +16,9 @@ class View
      */
     public function text($key)
     {
+        /**
+         * @var array<string,array<string,string>> $plugin_tx
+         */
         global $plugin_tx;
 
         $args = func_get_args();
@@ -29,6 +32,9 @@ class View
      */
     public function plural($key, $count): string
     {
+        /**
+         * @var array<string,array<string,string>> $plugin_tx
+         */
         global $plugin_tx;
 
         if ($count == 0) {
@@ -46,6 +52,9 @@ class View
      */
     public function render(string $_template, array $_data): string
     {
+        /**
+         * @var array{folder:array<string,string>,file:array<string,string>} $pth
+         */
         global $pth;
 
         $_template = "{$pth['folder']['plugins']}register/views/{$_template}.php";

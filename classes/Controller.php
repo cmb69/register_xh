@@ -24,6 +24,10 @@ abstract class Controller
 
     public function __construct()
     {
+        /**
+         * @var array<string,array<string,string>> $plugin_cf
+         * @var array<string,array<string,string>> $plugin_tx
+         */
         global $plugin_cf, $plugin_tx;
 
         $this->config = $plugin_cf['register'];

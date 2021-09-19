@@ -36,6 +36,9 @@ class ForgotPasswordController extends Controller
      */
     public function passwordForgottenAction()
     {
+        /**
+         * @var string $su
+         */
         global $su;
 
         $errors = [];

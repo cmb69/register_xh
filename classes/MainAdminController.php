@@ -26,6 +26,9 @@ class MainAdminController extends Controller
 
     public function __construct(View $view)
     {
+        /**
+         * @var CSRFProtection $_XH_csrfProtection
+         */
         global $_XH_csrfProtection;
 
         parent::__construct();
@@ -196,6 +199,12 @@ class MainAdminController extends Controller
      */
     private function renderUsersForm(array $users)
     {
+        /**
+         * @var array<string,array<string,string>> $tx
+         * @var array{folder:array<string,string>,file:array<string,string>} $pth
+         * @var string $sn
+         * @var string $hjs
+         */
         global $tx, $pth, $sn, $hjs;
 
         $jsKeys = ['name', 'username', 'password', 'accessgroups', 'status', 'email', 'prefsemailsubject'];
@@ -371,6 +380,10 @@ class MainAdminController extends Controller
      */
     private function renderGroupsForm(array $groups)
     {
+        /**
+         * @var array<string,array<string,string>> $tx
+         * @var string $sn
+         */
         global $tx, $sn;
     
         $data = [
@@ -389,6 +402,12 @@ class MainAdminController extends Controller
 
     private function pageSelectbox(string $loginpage, int $n): string
     {
+        /**
+         * @var int $cl
+         * @var array<int,string> $h
+         * @var array<int,string> $u
+         * @var array<int,int> $l
+         */
         global $cl, $h, $u, $l;
     
         $o = '<select name="grouploginpage[' . $n . ']"><option value="">' . $this->lang['label_none'] . '</option>';

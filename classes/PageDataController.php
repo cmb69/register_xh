@@ -32,6 +32,10 @@ class PageDataController
      */
     public function execute()
     {
+        /**
+         * @var string $sn
+         * @var string $su
+         */
         global $sn, $su;
 
         echo $this->view->render("page_data", [

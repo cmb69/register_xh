@@ -29,6 +29,10 @@ class SystemCheckService
 
     public function __construct()
     {
+        /**
+         * @var array{folder:array<string,string>,file:array<string,string>} $pth
+         * @var array<string,array<string,string>> $plugin_tx
+         */
         global $pth, $plugin_tx;
 
         $this->pluginsFolder = $pth['folder']['plugins'];

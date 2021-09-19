@@ -44,6 +44,9 @@ class SpecialPageController
      */
     public function registrationPageAction()
     {
+        /**
+         * @var string $title
+         */
         global $title;
 
         if ($this->conf['allowed_register'] && !in_array($this->text['register'], $this->headings)) {
@@ -61,6 +64,9 @@ class SpecialPageController
      */
     public function passwordForgottenPageAction()
     {
+        /**
+         * @var string $title
+         */
         global $title;
 
         if (!in_array($this->text['forgot_password'], $this->headings)) {
@@ -78,6 +84,9 @@ class SpecialPageController
      */
     public function userPrefsPageAction()
     {
+        /**
+         * @var string $title
+         */
         global $title;
 
         if (!in_array($this->text['user_prefs'], $this->headings)) {
@@ -95,6 +104,9 @@ class SpecialPageController
      */
     public function loginErrorPageAction()
     {
+        /**
+         * @var string $title
+         */
         global $title;
 
         header('HTTP/1.1 403 Forbidden');
@@ -112,6 +124,9 @@ class SpecialPageController
      */
     public function logoutPageAction()
     {
+        /**
+         * @var string $title
+         */
         global $title;
 
         if (!in_array($this->text['loggedout'], $this->headings)) {
@@ -128,6 +143,9 @@ class SpecialPageController
      */
     public function loginPageAction()
     {
+        /**
+         * @var string $title
+         */
         global $title;
 
         if (!in_array($this->text['loggedin'], $this->headings)) {
@@ -144,6 +162,9 @@ class SpecialPageController
      */
     public function accessErrorPageAction()
     {
+        /**
+         * @var string $title
+         */
         global $title;
 
         header('HTTP/1.1 403 Forbidden');

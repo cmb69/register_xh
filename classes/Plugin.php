@@ -10,6 +10,8 @@
 
 namespace Register;
 
+use XH\PageDataRouter;
+
 class Plugin
 {
     const VERSION = "1.6";
@@ -19,6 +21,14 @@ class Plugin
      */
     public static function run()
     {
+        /**
+         * @var bool $edit
+         * @var string $function
+         * @var array<string,array<string,string>> $plugin_cf
+         * @var array<string,array<string,string>> $plugin_tx
+         * @var PageDataRouter $pd_router
+         * @var array{folder:array<string,string>,file:array<string,string>} $pth
+         */
         global $edit, $function, $plugin_cf, $plugin_tx, $pd_router, $pth;
 
         $pd_router->add_interest("register_access");
@@ -66,6 +76,10 @@ class Plugin
      */
     private static function removeHiddenPages(array $userGroups)
     {
+        /**
+         * @var PageDataRouter $pd_router
+         * @var array<int,string> $c
+         */
         global $pd_router, $c;
 
         foreach ($pd_router->find_all() as $i => $pd) {
@@ -83,6 +97,13 @@ class Plugin
      */
     private static function handleImplicitPages()
     {
+        /**
+         * @var string $o
+         * @var string $su
+         * @var array<int,string> $h
+         * @var array<string,array<string,string>> $plugin_cf
+         * @var array<string,array<string,string>> $plugin_tx
+         */
         global $o, $su, $h, $plugin_cf, $plugin_tx;
 
         switch ($su) {
@@ -136,6 +157,12 @@ class Plugin
      */
     private static function handleAdministration()
     {
+        /**
+         * @var string $o
+         * @var string $admin
+         * @var string $action
+         * @var array<string,array<string,string>> $plugin_tx
+         */
         global $o, $admin, $action, $plugin_tx;
 
         $o .= print_plugin_admin('off');
