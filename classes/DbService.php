@@ -10,8 +10,6 @@
 
 namespace Register;
 
-use stdClass;
-
 class DbService
 {
     /**
