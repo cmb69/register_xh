@@ -68,8 +68,7 @@ class RegistrationController extends Controller
 
         if (!empty($errors)) {
             $view = new View();
-            $view->setData(['errors' => $errors]);
-            $view->render('error');
+            $view->render('error', ['errors' => $errors]);
             echo $this->form($name, $username, $password1, $password2, $email);
         } else {
             // prepare email content for registration activation
@@ -146,9 +145,8 @@ class RegistrationController extends Controller
 
         if (!empty($errors)) {
             $view = new View();
-            $view->setData(['errors' => $errors]);
             ob_start();
-            $view->render('error');
+            $view->render('error', ['errors' => $errors]);
             $o .= ob_get_clean();
         } else {
             $entry->status = "activated";
@@ -164,16 +162,16 @@ class RegistrationController extends Controller
     private function form(string $name, string $username, string $password1, string $password2, string $email): string
     {
         $view = new View();
-        $view->setData([
+        $data = [
             'actionUrl' => sv('REQUEST_URI'),
             'name' => $name,
             'username' => $username,
             'password1' => $password1,
             'password2' => $password2,
             'email' => $email,
-        ]);
+        ];
         ob_start();
-        $view->render('registerform');
+        $view->render('registerform', $data);
         return ob_get_clean();
     }
 }

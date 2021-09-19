@@ -29,11 +29,10 @@ class PageDataController
         global $sn, $su;
 
         $view = new View();
-        $view->setData([
+        $view->render("page_data", [
             "action" => "$sn?$su",
             "helpIcon" => new HtmlString(XH_helpIcon($view->text("hint_accessgroups"))),
             "accessGroups" => $this->pageData["register_access"],
         ]);
-        $view->render("page_data");
     }
 }

@@ -306,7 +306,7 @@ function registerloginform(): string
         $view = new Register\View();
         $forgotPasswordUrl = uenc($plugin_tx['register']['forgot_password']);
         $registerUrl = uenc($plugin_tx['register']['register']);
-        $view->setData([
+        $data = [
             'actionUrl' => sv('REQUEST_URI'),
             'hasForgotPasswordLink' => $plugin_cf['register']['password_forgotten']
                 && isset($su) && urldecode($su) != $forgotPasswordUrl,
@@ -314,24 +314,24 @@ function registerloginform(): string
             'hasRememberMe' => $plugin_cf['register']['remember_user'],
             'isRegisterAllowed' => $plugin_cf['register']['allowed_register'],
             'registerUrl' => "$sn?$registerUrl",
-        ]);
+        ];
         ob_start();
-        $view->render('loginform');
+        $view->render('loginform', $data);
         return ob_get_clean();
     } else {
         // Logout Link and Preferences Link
         $view = new Register\View();
         $user = Register_currentUser();
         $userPrefUrl = uenc($plugin_tx['register']['user_prefs']);
-        $view->setData([
+        $data = [
             'fullName' => $user->name,
             'hasUserPrefs' => $user->status == 'activated' && isset($su)
                 && urldecode($su) != $userPrefUrl,
             'userPrefUrl' => "?$userPrefUrl",
             'logoutUrl' => "$sn?&function=registerlogout",
-        ]);
+        ];
         ob_start();
-        $view->render('loggedin-area');
+        $view->render('loggedin-area', $data);
         return ob_get_clean();
     }
 }

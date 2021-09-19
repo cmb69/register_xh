@@ -116,12 +116,11 @@ class MainAdminController extends Controller
                 }
                 if (!empty($entryErrors)) {
                     $view = new View();
-                    $view->setData([
+                    ob_start();
+                    $view->render('user-error', [
                         'username' => $username[$j],
                         'errors' => $entryErrors,
                     ]);
-                    ob_start();
-                    $view->render('user-error');
                     $errors[] = new HtmlString(ob_get_clean());
                 }
                 if ($password[$j] == '') {
@@ -187,8 +186,7 @@ class MainAdminController extends Controller
     private function renderErrorView(array $errors)
     {
         $view = new View();
-        $view->setData(['errors' => $errors]);
-        $view->render('error');
+        $view->render('error', ['errors' => $errors]);
     }
 
     /**
@@ -231,8 +229,7 @@ class MainAdminController extends Controller
         }
         $data['groupStrings'] = $groupStrings;
         $data['statusSelects'] = $statusSelects;
-        $view->setData($data);
-        $view->render('admin-users');
+        $view->render('admin-users', $data);
     }
 
     /**
@@ -388,8 +385,7 @@ class MainAdminController extends Controller
             $selects[] = new HtmlString($this->pageSelectbox($entry->loginpage, $i));
         }
         $data['selects'] = $selects;
-        $view->setData($data);
-        $view->render('admin-groups');
+        $view->render('admin-groups', $data);
     }
 
     private function pageSelectbox(string $loginpage, int $n): string

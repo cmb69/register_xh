@@ -49,8 +49,7 @@ class ForgotPasswordController extends Controller
 
         if (!empty($errors)) {
             $view = new View();
-            $view->setData(['errors' => $errors]);
-            $view->render('error');
+            $view->render('error', ['errors' => $errors]);
             $this->renderForgotForm($email);
         } else {
             if ($user) {
@@ -116,8 +115,7 @@ class ForgotPasswordController extends Controller
 
         if (!empty($errors)) {
             $view = new View();
-            $view->setData(['errors' => $errors]);
-            $view->render('error');
+            $view->render('error', ['errors' => $errors]);
             $this->renderForgotForm($email);
         } else {
             // prepare email content for user data email
@@ -145,10 +143,9 @@ class ForgotPasswordController extends Controller
     private function renderForgotForm($email)
     {
         $view = new View();
-        $view->setData([
+        $view->render('forgotten-form', [
             'actionUrl' => sv('REQUEST_URI'),
             'email' => $email,
         ]);
-        $view->render('forgotten-form');
     }
 }
