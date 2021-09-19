@@ -328,7 +328,9 @@ function registerloginform(): string
             'logoutUrl' => "$sn?&function=registerlogout",
         ]);
     }
-    return (string) $view;
+    ob_start();
+    $view->render();
+    return ob_get_clean();
 }
 
 /**

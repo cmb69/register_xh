@@ -147,7 +147,9 @@ class RegistrationController extends Controller
         if (!empty($errors)) {
             $view = new View('error');
             $view->setData(['errors' => $errors]);
-            $o .= $view;
+            ob_start();
+            $view->render();
+            $o .= ob_get_clean();
         } else {
             $entry->status = "activated";
             $entry->accessgroups = array($this->config['group_activated']);
@@ -170,6 +172,8 @@ class RegistrationController extends Controller
             'password2' => $password2,
             'email' => $email,
         ]);
-        return (string) $view;
+        ob_start();
+        $view->render();
+        return ob_get_clean();
     }
 }

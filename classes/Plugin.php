@@ -191,6 +191,8 @@ class Plugin
             'version' => self::VERSION,
             'checks' => (new SystemCheckService)->getChecks(),
         ]);
-        return (string) $view;
+        ob_start();
+        $view->render();
+        return ob_get_clean();
     }
 }

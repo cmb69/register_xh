@@ -120,7 +120,9 @@ class MainAdminController extends Controller
                         'username' => $username[$j],
                         'errors' => $entryErrors,
                     ]);
-                    $errors[] = new HtmlString($view);
+                    ob_start();
+                    $view->render();
+                    $errors[] = new HtmlString(ob_get_clean());
                 }
                 if ($password[$j] == '') {
                     $password[$j] = base64_encode(random_bytes(16));
@@ -305,7 +307,7 @@ class MainAdminController extends Controller
         $filename = Register_dataFolder() . 'groups.csv';
         if (is_file($filename)) {
             $groups = (new DbService(Register_dataFolder()))->readGroups();
-            echo $this->prepareGroupsForm($groups);
+            $this->renderGroupsForm($groups);
             echo XH_message('info', count($groups) . ' ' . $this->lang['entries_in_csv'] . $filename);
         } else {
             echo XH_message('fail', $this->lang['err_csv_missing'] . ' (' . $filename . ')');
@@ -363,14 +365,14 @@ class MainAdminController extends Controller
             $this->renderErrorView($errors);
         }
 
-        echo $this->prepareGroupsForm($newgroups);
+        $this->renderGroupsForm($newgroups);
     }
 
     /**
      * @param UserGroup[] $groups
-     * @return View
+     * @return void
      */
-    private function prepareGroupsForm(array $groups)
+    private function renderGroupsForm(array $groups)
     {
         global $tx, $sn;
     
@@ -387,7 +389,7 @@ class MainAdminController extends Controller
         }
         $data['selects'] = $selects;
         $view->setData($data);
-        return $view;
+        $view->render();
     }
 
     private function pageSelectbox(string $loginpage, int $n): string
