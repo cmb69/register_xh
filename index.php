@@ -8,4 +8,6 @@
  * Copyright (c) 2012-2021 Christoph M. Becker
  */
 
-Register\Plugin::run();
+use Register\Plugin;
+
+Plugin::run();

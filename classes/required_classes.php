@@ -8,9 +8,13 @@
  * Copyright (c) 2012-2021 Christoph M. Becker
  */
 
+use Register\DbService;
+use Register\ForgotPasswordController;
 use Register\PageDataController;
+use Register\RegistrationController;
 use Register\User;
 use Register\UserGroup;
+use Register\UserPrefsController;
 use Register\View;
 
 function Register_dataFolder(): string
@@ -31,10 +35,10 @@ function Register_dataFolder(): string
         chmod($folder, 0777);
     }
     if (!is_file("{$folder}users.csv")) {
-        (new Register\DbService($folder))->writeUsers([]);
+        (new DbService($folder))->writeUsers([]);
     }
     if (!is_file("{$folder}groups.csv")) {
-        (new Register\DbService($folder))->writeGroups(
+        (new DbService($folder))->writeGroups(
             [new UserGroup($plugin_cf['register']['group_default'], '')]
         );
     }
@@ -78,7 +82,7 @@ function access(string $groupString): string
  */
 function Register_groupLoginPage(string $group)
 {
-    $groups = (new Register\DbService(Register_dataFolder()))->readGroups();
+    $groups = (new DbService(Register_dataFolder()))->readGroups();
     foreach ($groups as $rec) {
         if ($rec->groupname == $group) {
             return $rec->loginpage;
@@ -188,7 +192,7 @@ function Register_currentUser()
         }
         if (isset($_SESSION['username'], $_SESSION['register_sn'])
                 && $_SESSION['register_sn'] == Register_sessionName()) {
-            $dbService = new Register\DbService(Register_dataFolder());
+            $dbService = new DbService(Register_dataFolder());
             $dbService->lock(LOCK_SH);
             $users = $dbService->readUsers();
             $rec = registerSearchUserArray($users, 'username', $_SESSION['username']);
@@ -231,7 +235,7 @@ function registerUser(): string
         header('Location: ' . CMSIMPLE_URL);
         exit;
     }
-    $controller = new Register\RegistrationController(new View());
+    $controller = new RegistrationController(new View());
     if (isset($_POST['action']) && $_POST['action'] === 'register_user') {
         $action = 'registerUserAction';
     } elseif (isset($_GET['action']) && $_GET['action'] === 'register_activate_user') {
@@ -256,7 +260,7 @@ function registerForgotPassword()
         header('Location: ' . CMSIMPLE_URL);
         exit;
     }
-    $controller = new Register\ForgotPasswordController(new View());
+    $controller = new ForgotPasswordController(new View());
     if (isset($_POST['action']) && $_POST['action'] === 'forgotten_password') {
         $action = 'passwordForgottenAction';
     } elseif (isset($_GET['action']) && $_GET['action'] === 'registerResetPassword') {
@@ -280,7 +284,7 @@ function registerUserPrefs(): string
     if (!Register_isLoggedIn()) {
         return XH_message('fail', $plugin_tx['register']['access_error_text']);
     }
-    $controller = new Register\UserPrefsController(new View());
+    $controller = new UserPrefsController(new View());
     if (isset($_POST['action']) && $_POST['action'] === 'edit_user_prefs' && isset($_POST['submit'])) {
         $action = 'editAction';
     } elseif (isset($_POST['action']) && $_POST['action'] === 'edit_user_prefs' && isset($_POST['delete'])) {
