@@ -30,7 +30,7 @@ use Register\View;
     <tr style="display: none">
       <td></td>
       <td><input type="text" value="" name="username[]"></td>
-      <td><input type="text" value="" name="email[]"></td>
+      <td><input type="email" value="" name="email[]"></td>
       <td>
         <button onclick="register.changePassword(this.nextElementSibling); return false"><?=$this->text('change_password')?></button>
         <input type="hidden" value="" name="password[]">
@@ -76,7 +76,7 @@ use Register\View;
       <tr class="register_second_row">
         <td><button type="button" onclick="register.mailTo(this)" title="<?=$this->text('email')?>"><?=$this->text("label_mail")?></i></button></td>
         <td><input type="text" value="<?=$this->esc($entry->username)?>" name="username[<?=$this->esc($i)?>]"></td>
-        <td><input type="text" value="<?=$this->esc($entry->email)?>" name="email[<?=$this->esc($i)?>]"></td>
+        <td><input type="email" value="<?=$this->esc($entry->email)?>" name="email[<?=$this->esc($i)?>]"></td>
         <td>
           <button onclick="register.changePassword(this.nextElementSibling); return false"><?=$this->text('change_password')?></button>
           <input type="hidden" value="<?=$this->esc($entry->password)?>" name="password[<?=$this->esc($i)?>]">

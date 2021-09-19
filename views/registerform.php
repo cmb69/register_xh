@@ -37,7 +37,7 @@ use Register\View;
       </tr>
       <tr>
         <td><?=$this->text('email')?></td>
-        <td colspan="2"><input class="text" name="email" type="text" size="35" value="<?=$this->esc($email)?>"></td>
+        <td colspan="2"><input class="text" name="email" type="email" size="35" value="<?=$this->esc($email)?>"></td>
       </tr>
       <tr>
         <td colspan="3"><input class="submit" type="submit" value="<?=$this->text('register')?>"></td>
