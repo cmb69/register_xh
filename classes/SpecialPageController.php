@@ -48,7 +48,7 @@ class SpecialPageController
 
         if ($this->conf['allowed_register'] && !in_array($this->text['register'], $this->headings)) {
             $title = XH_hsc($this->text['register']);
-            $this->renderPageView(
+            echo $this->renderPageView(
                 $this->text['register'],
                 $this->text['register_form1'],
                 registerUser()
@@ -65,7 +65,7 @@ class SpecialPageController
 
         if (!in_array($this->text['forgot_password'], $this->headings)) {
             $title = XH_hsc($this->text['forgot_password']);
-            $this->renderPageView(
+            echo $this->renderPageView(
                 $this->text['forgot_password'],
                 $this->text['reminderexplanation'],
                 registerForgotPassword()
@@ -82,7 +82,7 @@ class SpecialPageController
 
         if (!in_array($this->text['user_prefs'], $this->headings)) {
             $title = XH_hsc($this->text['user_prefs']);
-            $this->renderPageView(
+            echo $this->renderPageView(
                 $this->text['user_prefs'],
                 $this->text['changeexplanation'],
                 registerUserPrefs()
@@ -100,7 +100,7 @@ class SpecialPageController
         header('HTTP/1.1 403 Forbidden');
         if (!in_array($this->text['login_error'], $this->headings)) {
             $title = $this->text['login_error'];
-            $this->renderPageView(
+            echo $this->renderPageView(
                 $this->text['login_error'],
                 $this->text['login_error_text']
             );
@@ -116,7 +116,7 @@ class SpecialPageController
 
         if (!in_array($this->text['loggedout'], $this->headings)) {
             $title = $this->text['loggedout'];
-            $this->renderPageView(
+            echo $this->renderPageView(
                 $this->text['loggedout'],
                 $this->text['loggedout_text']
             );
@@ -132,7 +132,7 @@ class SpecialPageController
 
         if (!in_array($this->text['loggedin'], $this->headings)) {
             $title = $this->text['loggedin'];
-            $this->renderPageView(
+            echo $this->renderPageView(
                 $this->text['loggedin'],
                 $this->text['loggedin_text']
             );
@@ -149,7 +149,7 @@ class SpecialPageController
         header('HTTP/1.1 403 Forbidden');
         if (!in_array($this->text['access_error'], $this->headings)) {
             $title = $this->text['access_error'];
-            $this->renderPageView(
+            echo $this->renderPageView(
                 $this->text['access_error'],
                 $this->text['access_error_text']
             );
@@ -160,11 +160,10 @@ class SpecialPageController
      * @param string $title
      * @param string $intro
      * @param string $more
-     * @return void
      */
-    private function renderPageView($title, $intro, $more = '')
+    private function renderPageView($title, $intro, $more = ''): string
     {
-        $this->view->render('page', [
+        return $this->view->render('page', [
             'title' => $title,
             'intro' => $intro,
             'more' => new HtmlString($more),

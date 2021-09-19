@@ -28,7 +28,7 @@ class ForgotPasswordController extends Controller
     public function defaultAction()
     {
         $email = isset($_POST['email']) ? $_POST['email'] : '';
-        $this->renderForgotForm($email);
+        echo $this->renderForgotForm($email);
     }
 
     /**
@@ -58,8 +58,8 @@ class ForgotPasswordController extends Controller
         $user = registerSearchUserArray($userArray, 'email', $email);
 
         if (!empty($errors)) {
-            $this->view->render('error', ['errors' => $errors]);
-            $this->renderForgotForm($email);
+            echo $this->view->render('error', ['errors' => $errors]);
+            echo $this->renderForgotForm($email);
         } else {
             if ($user) {
                 // prepare email content for user data email
@@ -123,8 +123,8 @@ class ForgotPasswordController extends Controller
         $dbService->lock(LOCK_UN);
 
         if (!empty($errors)) {
-            $this->view->render('error', ['errors' => $errors]);
-            $this->renderForgotForm($email);
+            echo $this->view->render('error', ['errors' => $errors]);
+            echo $this->renderForgotForm($email);
         } else {
             // prepare email content for user data email
             $content = $this->lang['emailtext1'] . "\n\n"
@@ -146,11 +146,10 @@ class ForgotPasswordController extends Controller
 
     /**
      * @param string $email
-     * @return void
      */
-    private function renderForgotForm($email)
+    private function renderForgotForm($email): string
     {
-        $this->view->render('forgotten-form', [
+        return $this->view->render('forgotten-form', [
             'actionUrl' => sv('REQUEST_URI'),
             'email' => $email,
         ]);

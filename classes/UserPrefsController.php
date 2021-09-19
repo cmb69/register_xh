@@ -49,7 +49,7 @@ class UserPrefsController extends Controller
         } elseif ($entry->status == "locked") {
             echo XH_message('fail', $this->lang['user_locked'] . ':' .$username);
         } else {
-            $this->renderForm($entry->name, $entry->email);
+            echo $this->renderForm($entry->name, $entry->email);
         }
     }
 
@@ -129,8 +129,8 @@ class UserPrefsController extends Controller
         $dbService->lock(LOCK_UN);
 
         if (!empty($errors)) {
-            $this->view->render('error', ['errors' => $errors]);
-            $this->renderForm($name, $email);
+            echo $this->view->render('error', ['errors' => $errors]);
+            echo $this->renderForm($name, $email);
         } else {
             // prepare email for user information about updates
             $content = $this->lang['emailprefsupdated'] . "\n\n" .
@@ -204,8 +204,8 @@ class UserPrefsController extends Controller
         $dbService->lock(LOCK_UN);
 
         if (!empty($errors)) {
-            $this->view->render('error', ['errors' => $errors]);
-            $this->renderForm($name, $email);
+            echo $this->view->render('error', ['errors' => $errors]);
+            echo $this->renderForm($name, $email);
         } else {
             $username = isset($_SESSION['username']) ? $_SESSION['username'] : '';
             Register_logout();
@@ -217,13 +217,12 @@ class UserPrefsController extends Controller
     /**
      * @param string $name
      * @param string $email
-     * @return void
      */
-    private function renderForm($name, $email)
+    private function renderForm($name, $email): string
     {
         $csrfTokenInput = $this->csrfProtector->tokenInput();
         $this->csrfProtector->store();
-        $this->view->render('userprefs-form', [
+        return $this->view->render('userprefs-form', [
             'csrfTokenInput' => new HtmlString($csrfTokenInput),
             'actionUrl' => sv('REQUEST_URI'),
             'name' => $name,

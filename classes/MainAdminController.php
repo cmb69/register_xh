@@ -121,12 +121,10 @@ class MainAdminController extends Controller
                     }
                 }
                 if (!empty($entryErrors)) {
-                    ob_start();
-                    $this->view->render('user-error', [
+                    $errors[] = new HtmlString($this->view->render('user-error', [
                         'username' => $username[$j],
                         'errors' => $entryErrors,
-                    ]);
-                    $errors[] = new HtmlString(ob_get_clean());
+                    ]));
                 }
                 if ($password[$j] == '') {
                     $password[$j] = base64_encode(random_bytes(16));
@@ -170,7 +168,7 @@ class MainAdminController extends Controller
             $dbService->lock(LOCK_UN);
 
             if (!empty($errors)) {
-                $this->renderErrorView($errors);
+                echo $this->renderErrorView($errors);
             } else {
                 echo XH_message(
                     'success',
@@ -178,7 +176,7 @@ class MainAdminController extends Controller
                 );
             }
         } elseif (!empty($errors)) {
-            $this->renderErrorView($errors);
+            echo $this->renderErrorView($errors);
         }
 
         $this->renderUsersForm($newusers);
@@ -186,11 +184,10 @@ class MainAdminController extends Controller
 
     /**
      * @param string[] $errors
-     * @return void
      */
-    private function renderErrorView(array $errors)
+    private function renderErrorView(array $errors): string
     {
-        $this->view->render('error', ['errors' => $errors]);
+        return $this->view->render('error', ['errors' => $errors]);
     }
 
     /**
@@ -232,7 +229,7 @@ class MainAdminController extends Controller
         }
         $data['groupStrings'] = $groupStrings;
         $data['statusSelects'] = $statusSelects;
-        $this->view->render('admin-users', $data);
+        echo $this->view->render('admin-users', $data);
     }
 
     /**
@@ -354,7 +351,7 @@ class MainAdminController extends Controller
                 $errors[] = $this->lang['err_cannot_write_csv'] . ' (' . Register_dataFolder() . 'groups.csv' . ')';
             }
             if (!empty($errors)) {
-                $this->renderErrorView($errors);
+                echo $this->renderErrorView($errors);
             } else {
                 echo XH_message(
                     'success',
@@ -362,7 +359,7 @@ class MainAdminController extends Controller
                 );
             }
         } elseif (!empty($errors)) {
-            $this->renderErrorView($errors);
+            echo $this->renderErrorView($errors);
         }
 
         $this->renderGroupsForm($newgroups);
@@ -387,7 +384,7 @@ class MainAdminController extends Controller
             $selects[] = new HtmlString($this->pageSelectbox($entry->loginpage, $i));
         }
         $data['selects'] = $selects;
-        $this->view->render('admin-groups', $data);
+        echo $this->view->render('admin-groups', $data);
     }
 
     private function pageSelectbox(string $loginpage, int $n): string

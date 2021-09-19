@@ -77,7 +77,7 @@ class RegistrationController extends Controller
         $dbService->lock(LOCK_UN);
 
         if (!empty($errors)) {
-            $this->view->render('error', ['errors' => $errors]);
+            echo $this->view->render('error', ['errors' => $errors]);
             echo $this->form($name, $username, $password1, $password2, $email);
         } else {
             // prepare email content for registration activation
@@ -153,9 +153,7 @@ class RegistrationController extends Controller
         }
 
         if (!empty($errors)) {
-            ob_start();
-            $this->view->render('error', ['errors' => $errors]);
-            $o .= ob_get_clean();
+            $o .= $this->view->render('error', ['errors' => $errors]);
         } else {
             $entry->status = "activated";
             $entry->accessgroups = array($this->config['group_activated']);
@@ -169,8 +167,7 @@ class RegistrationController extends Controller
 
     private function form(string $name, string $username, string $password1, string $password2, string $email): string
     {
-        ob_start();
-        $this->view->render('registerform', [
+        return $this->view->render('registerform', [
             'actionUrl' => sv('REQUEST_URI'),
             'name' => $name,
             'username' => $username,
@@ -178,6 +175,5 @@ class RegistrationController extends Controller
             'password2' => $password2,
             'email' => $email,
         ]);
-        return ob_get_clean();
     }
 }

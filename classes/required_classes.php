@@ -316,9 +316,7 @@ function registerloginform(): string
             'isRegisterAllowed' => $plugin_cf['register']['allowed_register'],
             'registerUrl' => "$sn?$registerUrl",
         ];
-        ob_start();
-        $view->render('loginform', $data);
-        return ob_get_clean();
+        return $view->render('loginform', $data);
     } else {
         // Logout Link and Preferences Link
         $view = new View();
@@ -331,9 +329,7 @@ function registerloginform(): string
             'userPrefUrl' => "?$userPrefUrl",
             'logoutUrl' => "$sn?&function=registerlogout",
         ];
-        ob_start();
-        $view->render('loggedin-area', $data);
-        return ob_get_clean();
+        return $view->render('loggedin-area', $data);
     }
 }
 

@@ -43,16 +43,17 @@ class View
 
     /**
      * @param array<string,mixed> $_data
-     * @return void
      */
-    public function render(string $_template, array $_data)
+    public function render(string $_template, array $_data): string
     {
         global $pth;
 
         $_template = "{$pth['folder']['plugins']}register/views/{$_template}.php";
         unset($pth);
         extract($_data);
+        ob_start();
         include $_template;
+        return ob_get_clean();
     }
 
     /**

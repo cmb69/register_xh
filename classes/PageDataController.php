@@ -34,7 +34,7 @@ class PageDataController
     {
         global $sn, $su;
 
-        $this->view->render("page_data", [
+        echo $this->view->render("page_data", [
             "action" => "$sn?$su",
             "helpIcon" => new HtmlString(XH_helpIcon($this->view->text("hint_accessgroups"))),
             "accessGroups" => $this->pageData["register_access"],
