@@ -77,4 +77,12 @@ class View
             return XH_hsc($value);
         }
     }
+
+    /**
+     * @param mixed $args
+     */
+    public function message(string $type, string $message, ...$args): string
+    {
+        return XH_message($type, $message, ...$args);
+    }
 }

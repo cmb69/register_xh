@@ -50,9 +50,9 @@ class UserPrefsController extends Controller
 
         $entry = registerSearchUserArray($userArray, 'username', $username);
         if ($entry === false) {
-            echo XH_message('fail', $this->lang['err_username_does_not_exist'] . " ('" . $username . "')");
+            echo $this->view->message('fail', $this->lang['err_username_does_not_exist'] . " ('" . $username . "')");
         } elseif ($entry->status == "locked") {
-            echo XH_message('fail', $this->lang['user_locked'] . ':' .$username);
+            echo $this->view->message('fail', $this->lang['user_locked'] . ':' .$username);
         } else {
             echo $this->renderForm($entry->name, $entry->email);
         }
@@ -84,13 +84,13 @@ class UserPrefsController extends Controller
         // search user in CSV data
         $entry = registerSearchUserArray($userArray, 'username', $username);
         if ($entry === false) {
-            echo XH_message('fail', $this->lang['err_username_does_not_exist'] . " ('" . $username . "')");
+            echo $this->view->message('fail', $this->lang['err_username_does_not_exist'] . " ('" . $username . "')");
             return;
         }
 
         // Test if user is locked
         if ($entry->status == "locked") {
-            echo XH_message('fail', $this->lang['user_locked'] . ':' .$username);
+            echo $this->view->message('fail', $this->lang['user_locked'] . ':' .$username);
             return;
         }
 
@@ -154,7 +154,7 @@ class UserPrefsController extends Controller
                     'Cc: '  . $oldemail . ', ' . $this->config['senderemail']
                 )
             );
-            echo XH_message('success', $this->lang['prefsupdated']);
+            echo $this->view->message('success', $this->lang['prefsupdated']);
         }
     }
 
@@ -181,13 +181,13 @@ class UserPrefsController extends Controller
         // search user in CSV data
         $entry = registerSearchUserArray($userArray, 'username', $username);
         if ($entry === false) {
-            echo XH_message('fail', $this->lang['err_username_does_not_exist'] . " ('" . $username . "')");
+            echo $this->view->message('fail', $this->lang['err_username_does_not_exist'] . " ('" . $username . "')");
             return;
         }
 
         // Test if user is locked
         if ($entry->status == "locked") {
-            echo XH_message('fail', $this->lang['user_locked'] . ':' .$username);
+            echo $this->view->message('fail', $this->lang['user_locked'] . ':' .$username);
             return;
         }
 
@@ -213,7 +213,7 @@ class UserPrefsController extends Controller
             $username = $_SESSION['username'] ?? '';
             Register_logout();
             XH_logMessage('info', 'register', 'logout', "$username deleted and logged out");
-            echo XH_message('success', $this->lang['user_deleted'] . ': '.$username);
+            echo $this->view->message('success', $this->lang['user_deleted'] . ': '.$username);
         }
     }
 

@@ -53,9 +53,9 @@ class MainAdminController extends Controller
             $users  = $this->dbService->readUsers();
             $this->dbService->lock(LOCK_UN);
             $this->renderUsersForm($users);
-            echo XH_message('info', count($users) . ' ' . $this->lang['entries_in_csv'] . $fn);
+            echo $this->view->message('info', count($users) . ' ' . $this->lang['entries_in_csv'] . $fn);
         } else {
-            echo XH_message('fail', $this->lang['err_csv_missing'] . ' (' . $fn . ')');
+            echo $this->view->message('fail', $this->lang['err_csv_missing'] . ' (' . $fn . ')');
         }
     }
 
@@ -177,7 +177,7 @@ class MainAdminController extends Controller
             if (!empty($errors)) {
                 echo $this->renderErrorView($errors);
             } else {
-                echo XH_message(
+                echo $this->view->message(
                     'success',
                     $this->lang['csv_written'] . ' (' . Register_dataFolder() . 'users.csv' . ')'
                 );
@@ -318,9 +318,9 @@ class MainAdminController extends Controller
         if (is_file($filename)) {
             $groups = $this->dbService->readGroups();
             $this->renderGroupsForm($groups);
-            echo XH_message('info', count($groups) . ' ' . $this->lang['entries_in_csv'] . $filename);
+            echo $this->view->message('info', count($groups) . ' ' . $this->lang['entries_in_csv'] . $filename);
         } else {
-            echo XH_message('fail', $this->lang['err_csv_missing'] . ' (' . $filename . ')');
+            echo $this->view->message('fail', $this->lang['err_csv_missing'] . ' (' . $filename . ')');
         }
     }
 
@@ -366,7 +366,7 @@ class MainAdminController extends Controller
             if (!empty($errors)) {
                 echo $this->renderErrorView($errors);
             } else {
-                echo XH_message(
+                echo $this->view->message(
                     'success',
                     $this->lang['csv_written'] . '(' . Register_dataFolder() . 'groups.csv' . ')'
                 );

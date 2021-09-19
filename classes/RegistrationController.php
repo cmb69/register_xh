@@ -115,7 +115,7 @@ class RegistrationController extends Controller
                     'Cc: '  . $this->config['senderemail']
                 )
             );
-            echo XH_message('success', $this->lang['registered']);
+            echo $this->view->message('success', $this->lang['registered']);
         }
     }
 
@@ -167,7 +167,7 @@ class RegistrationController extends Controller
             $entry->accessgroups = array($this->config['group_activated']);
             $userArray = registerReplaceUserEntry($userArray, $entry);
             $this->dbService->writeUsers($userArray);
-            $o .= XH_message('success', $this->lang['activated']);
+            $o .= $this->view->message('success', $this->lang['activated']);
         }
         $this->dbService->lock(LOCK_UN);
         return $o;
