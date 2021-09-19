@@ -10,6 +10,6 @@ use Register\View;
  */
 ?>
 
-<h1><?=$this->escape($title)?></h1>
-<p><?=$this->escape($intro)?></p>
-<?=$this->escape($more)?>
+<h1><?=$this->esc($title)?></h1>
+<p><?=$this->esc($intro)?></p>
+<?=$this->esc($more)?>

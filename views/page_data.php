@@ -10,12 +10,12 @@ use Register\View;
  */
 ?>
 
-<form action="<?=$this->escape($action)?>" method="post" id="register">
+<form action="<?=$this->esc($action)?>" method="post" id="register">
     <p>
-        <?=$this->escape($helpIcon)?>
+        <?=$this->esc($helpIcon)?>
         <label>
             <?=$this->text("accessgroups")?><br/>
-            <input name="register_access" value="<?=$this->escape($accessGroups)?>">
+            <input name="register_access" value="<?=$this->esc($accessGroups)?>">
         </label>
     </p>
     <input name="save_page_data" type="hidden">

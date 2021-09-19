@@ -12,7 +12,7 @@ use Register\View;
     <span><?=$this->text('error')?></span>
     <ul>
 <?php foreach ($errors as $error):?>
-        <li><?=$this->escape($error)?></li>
+        <li><?=$this->esc($error)?></li>
 <?php endforeach?>
     </ul>
 </div>

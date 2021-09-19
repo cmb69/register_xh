@@ -20,7 +20,7 @@ class View
 
         $args = func_get_args();
         array_shift($args);
-        return $this->escape(vsprintf($plugin_tx['register'][$key], $args));
+        return $this->esc(vsprintf($plugin_tx['register'][$key], $args));
     }
 
     /**
@@ -38,7 +38,7 @@ class View
         }
         $args = func_get_args();
         array_shift($args);
-        return $this->escape(vsprintf($plugin_tx['register'][$key], $args));
+        return $this->esc(vsprintf($plugin_tx['register'][$key], $args));
     }
 
     /**
@@ -59,7 +59,7 @@ class View
      * @param mixed $value
      * @return mixed
      */
-    public function escape($value)
+    public function esc($value)
     {
         if ($value instanceof HtmlString) {
             return $value;

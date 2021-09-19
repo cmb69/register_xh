@@ -9,9 +9,9 @@ use Register\View;
  */
 ?>
 
-<div><?=$this->text('error_in_user')?>"<?=$this->escape($username)?>"</div>
+<div><?=$this->text('error_in_user')?>"<?=$this->esc($username)?>"</div>
 <ul>
 <?php foreach ($errors as $error):?>
-    <li><?=$this->escape($error)?></li>
+    <li><?=$this->esc($error)?></li>
 <?php endforeach?>
 </ul>
