@@ -33,15 +33,21 @@ class ForgotPasswordController
     private $dbService;
 
     /**
+     * @var MailService
+     */
+    private $mailService;
+
+    /**
      * @param array<string,string> $config
      * @param array<string,string> $lang
      */
-    public function __construct(array $config, array $lang, View $view, DbService $dbService)
+    public function __construct(array $config, array $lang, View $view, DbService $dbService, MailService $mailService)
     {
         $this->config = $config;
         $this->lang = $lang;
         $this->view = $view;
         $this->dbService = $dbService;
+        $this->mailService = $mailService;
     }
 
     /**
@@ -97,7 +103,7 @@ class ForgotPasswordController
                     . urlencode($user->password) . '>';
 
                 // send reminder email
-                (new MailService)->sendMail(
+                $this->mailService->sendMail(
                     $email,
                     $this->lang['reminderemailsubject'] . ' ' . $_SERVER['SERVER_NAME'],
                     $content,
@@ -156,7 +162,7 @@ class ForgotPasswordController
                 . ' ' . $this->lang['email'] . ": " . $user->email . "\n";
 
             // send reminder email
-            (new MailService)->sendMail(
+            $this->mailService->sendMail(
                 $user->email,
                 $this->lang['reminderemailsubject'] . ' ' . $_SERVER['SERVER_NAME'],
                 $content,

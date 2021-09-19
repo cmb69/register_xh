@@ -40,10 +40,15 @@ class UserPrefsController
     private $dbService;
 
     /**
+     * @var MailService
+     */
+    private $mailService;
+
+    /**
      * @param array<string,string> $config
      * @param array<string,string> $lang
      */
-    public function __construct(array $config, array $lang, View $view, DbService $dbService)
+    public function __construct(array $config, array $lang, View $view, DbService $dbService, MailService $mailService)
     {
         $this->config = $config;
         $this->lang = $lang;
@@ -51,6 +56,7 @@ class UserPrefsController
         $this->csrfProtector = new CSRFProtection('register_csrf_token', false);
         $this->view = $view;
         $this->dbService = $dbService;
+        $this->mailService = $mailService;
     }
 
     /**
@@ -160,7 +166,7 @@ class UserPrefsController
                 ' ' . $this->lang['fromip'] . ': '. $_SERVER['REMOTE_ADDR'] ."\n";
 
             // send update email
-            (new MailService)->sendMail(
+            $this->mailService->sendMail(
                 $email,
                 $this->lang['prefsemailsubject'] . ' ' . $_SERVER['SERVER_NAME'],
                 $content,

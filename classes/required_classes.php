@@ -10,6 +10,7 @@
 
 use Register\DbService;
 use Register\ForgotPasswordController;
+use Register\MailService;
 use Register\PageDataController;
 use Register\RegistrationController;
 use Register\User;
@@ -258,7 +259,8 @@ function registerUser(): string
         $plugin_cf["register"],
         $plugin_tx["register"],
         new View(),
-        new DbService(Register_dataFolder())
+        new DbService(Register_dataFolder()),
+        new MailService()
     );
     if (isset($_POST['action']) && $_POST['action'] === 'register_user') {
         $action = 'registerUserAction';
@@ -294,7 +296,8 @@ function registerForgotPassword()
         $plugin_cf["register"],
         $plugin_tx["register"],
         new View(),
-        new DbService(Register_dataFolder())
+        new DbService(Register_dataFolder()),
+        new MailService()
     );
     if (isset($_POST['action']) && $_POST['action'] === 'forgotten_password') {
         $action = 'passwordForgottenAction';
@@ -327,7 +330,8 @@ function registerUserPrefs(): string
         $plugin_cf["register"],
         $plugin_tx["register"],
         new View(),
-        new DbService(Register_dataFolder())
+        new DbService(Register_dataFolder()),
+        new MailService()
     );
     if (isset($_POST['action']) && $_POST['action'] === 'edit_user_prefs' && isset($_POST['submit'])) {
         $action = 'editAction';
