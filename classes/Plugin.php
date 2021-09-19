@@ -186,13 +186,13 @@ class Plugin
      */
     private static function renderInfo()
     {
-        $view = new View('info');
+        $view = new View();
         $view->setData([
             'version' => self::VERSION,
             'checks' => (new SystemCheckService)->getChecks(),
         ]);
         ob_start();
-        $view->render();
+        $view->render('info');
         return ob_get_clean();
     }
 }

@@ -43,7 +43,7 @@ class UserPrefsController extends Controller
         } elseif ($entry->status == "locked") {
             echo XH_message('fail', $this->lang['user_locked'] . ':' .$username);
         } else {
-            $this->prepareForm($entry->name, $entry->email)->render();
+            $this->renderForm($entry->name, $entry->email);
         }
     }
 
@@ -123,10 +123,10 @@ class UserPrefsController extends Controller
         $dbService->lock(LOCK_UN);
 
         if (!empty($errors)) {
-            $view = new View('error');
+            $view = new View();
             $view->setData(['errors' => $errors]);
-            $view->render();
-            $this->prepareForm($name, $email)->render();
+            $view->render('error');
+            $this->renderForm($name, $email);
         } else {
             // prepare email for user information about updates
             $content = $this->lang['emailprefsupdated'] . "\n\n" .
@@ -200,10 +200,10 @@ class UserPrefsController extends Controller
         $dbService->lock(LOCK_UN);
 
         if (!empty($errors)) {
-            $view = new View('error');
+            $view = new View();
             $view->setData(['errors' => $errors]);
-            $view->render();
-            $this->prepareForm($name, $email)->render();
+            $view->render('error');
+            $this->renderForm($name, $email);
         } else {
             $username = isset($_SESSION['username']) ? $_SESSION['username'] : '';
             Register_logout();
@@ -215,19 +215,19 @@ class UserPrefsController extends Controller
     /**
      * @param string $name
      * @param string $email
-     * @return View
+     * @return void
      */
-    private function prepareForm($name, $email)
+    private function renderForm($name, $email)
     {
         $csrfTokenInput = $this->csrfProtector->tokenInput();
         $this->csrfProtector->store();
-        $view = new View('userprefs-form');
+        $view = new View();
         $view->setData([
             'csrfTokenInput' => new HtmlString($csrfTokenInput),
             'actionUrl' => sv('REQUEST_URI'),
             'name' => $name,
             'email' => $email,
         ]);
-        return $view;
+        $view->render('userprefs-form');
     }
 }

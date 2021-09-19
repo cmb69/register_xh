@@ -158,12 +158,12 @@ class SpecialPageController
      */
     private function renderPageView($title, $intro, $more = '')
     {
-        $view = new View('page');
+        $view = new View();
         $view->setData([
             'title' => $title,
             'intro' => $intro,
             'more' => new HtmlString($more),
         ]);
-        $view->render();
+        $view->render('page');
     }
 }

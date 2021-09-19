@@ -11,22 +11,9 @@ namespace Register;
 class View
 {
     /**
-     * @var string
-     */
-    private $template;
-
-    /**
      * @var array<string,mixed>
      */
     private $data = array();
-
-    /**
-     * @param string $template
-     */
-    public function __construct($template)
-    {
-        $this->template = $template;
-    }
 
     /**
      * @param array<string,mixed> $data
@@ -99,12 +86,13 @@ class View
     /**
      * @return void
      */
-    public function render()
+    public function render(string $_template)
     {
         global $pth;
 
-        echo "<!-- {$this->template} -->", PHP_EOL;
-        include "{$pth['folder']['plugins']}register/views/{$this->template}.php";
+        echo "<!-- {$_template} -->", PHP_EOL;
+        $_template = "{$pth['folder']['plugins']}register/views/{$_template}.php";
+        include $_template;
     }
 
     /**

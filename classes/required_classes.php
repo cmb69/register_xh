@@ -303,7 +303,7 @@ function registerloginform(): string
 
     if (!Register_isLoggedIn()) {
         // Begin register- and loginarea and user fields
-        $view = new Register\View('loginform');
+        $view = new Register\View();
         $forgotPasswordUrl = uenc($plugin_tx['register']['forgot_password']);
         $registerUrl = uenc($plugin_tx['register']['register']);
         $view->setData([
@@ -315,9 +315,12 @@ function registerloginform(): string
             'isRegisterAllowed' => $plugin_cf['register']['allowed_register'],
             'registerUrl' => "$sn?$registerUrl",
         ]);
+        ob_start();
+        $view->render('loginform');
+        return ob_get_clean();
     } else {
         // Logout Link and Preferences Link
-        $view = new Register\View('loggedin-area');
+        $view = new Register\View();
         $user = Register_currentUser();
         $userPrefUrl = uenc($plugin_tx['register']['user_prefs']);
         $view->setData([
@@ -327,10 +330,10 @@ function registerloginform(): string
             'userPrefUrl' => "?$userPrefUrl",
             'logoutUrl' => "$sn?&function=registerlogout",
         ]);
+        ob_start();
+        $view->render('loggedin-area');
+        return ob_get_clean();
     }
-    ob_start();
-    $view->render();
-    return ob_get_clean();
 }
 
 /**

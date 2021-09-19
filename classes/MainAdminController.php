@@ -38,7 +38,7 @@ class MainAdminController extends Controller
             $dbService->lock(LOCK_SH);
             $users  = $dbService->readUsers();
             $dbService->lock(LOCK_UN);
-            $this->prepareUsersForm($users)->render();
+            $this->renderUsersForm($users);
             echo XH_message('info', count($users) . ' ' . $this->lang['entries_in_csv'] . $fn);
         } else {
             echo XH_message('fail', $this->lang['err_csv_missing'] . ' (' . $fn . ')');
@@ -115,13 +115,13 @@ class MainAdminController extends Controller
                     }
                 }
                 if (!empty($entryErrors)) {
-                    $view = new View('user-error');
+                    $view = new View();
                     $view->setData([
                         'username' => $username[$j],
                         'errors' => $entryErrors,
                     ]);
                     ob_start();
-                    $view->render();
+                    $view->render('user-error');
                     $errors[] = new HtmlString(ob_get_clean());
                 }
                 if ($password[$j] == '') {
@@ -177,7 +177,7 @@ class MainAdminController extends Controller
             $this->renderErrorView($errors);
         }
 
-        $this->prepareUsersForm($newusers)->render();
+        $this->renderUsersForm($newusers);
     }
 
     /**
@@ -186,16 +186,16 @@ class MainAdminController extends Controller
      */
     private function renderErrorView(array $errors)
     {
-        $view = new View('error');
+        $view = new View();
         $view->setData(['errors' => $errors]);
-        $view->render();
+        $view->render('error');
     }
 
     /**
      * @param User[] $users
-     * @return View
+     * @return void
      */
-    private function prepareUsersForm(array $users)
+    private function renderUsersForm(array $users)
     {
         global $tx, $pth, $sn, $hjs;
 
@@ -214,7 +214,7 @@ class MainAdminController extends Controller
             . '<script type="text/javascript">register.tx={' . implode(',', $txts) . '};'
             . 'register.maxNumberOfUsers=' . $this->calcMaxRecords(7, 4) . ';</script>';
 
-        $view = new View('admin-users');
+        $view = new View();
         $data = [
             'csrfTokenInput' => new HtmlString($this->csrfProtector->tokenInput()),
             'saveLabel' => ucfirst($tx['action']['save']),
@@ -232,7 +232,7 @@ class MainAdminController extends Controller
         $data['groupStrings'] = $groupStrings;
         $data['statusSelects'] = $statusSelects;
         $view->setData($data);
-        return $view;
+        $view->render('admin-users');
     }
 
     /**
@@ -376,7 +376,7 @@ class MainAdminController extends Controller
     {
         global $tx, $sn;
     
-        $view = new View('admin-groups');
+        $view = new View();
         $data = [
             'csrfTokenInput' => new HtmlString($this->csrfProtector->tokenInput()),
             'actionUrl' => "$sn?&register",
@@ -389,7 +389,7 @@ class MainAdminController extends Controller
         }
         $data['selects'] = $selects;
         $view->setData($data);
-        $view->render();
+        $view->render('admin-groups');
     }
 
     private function pageSelectbox(string $loginpage, int $n): string

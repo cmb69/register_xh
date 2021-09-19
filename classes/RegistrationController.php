@@ -67,9 +67,9 @@ class RegistrationController extends Controller
         $dbService->lock(LOCK_UN);
 
         if (!empty($errors)) {
-            $view = new View('error');
+            $view = new View();
             $view->setData(['errors' => $errors]);
-            $view->render();
+            $view->render('error');
             echo $this->form($name, $username, $password1, $password2, $email);
         } else {
             // prepare email content for registration activation
@@ -145,10 +145,10 @@ class RegistrationController extends Controller
         }
 
         if (!empty($errors)) {
-            $view = new View('error');
+            $view = new View();
             $view->setData(['errors' => $errors]);
             ob_start();
-            $view->render();
+            $view->render('error');
             $o .= ob_get_clean();
         } else {
             $entry->status = "activated";
@@ -163,7 +163,7 @@ class RegistrationController extends Controller
 
     private function form(string $name, string $username, string $password1, string $password2, string $email): string
     {
-        $view = new View('registerform');
+        $view = new View();
         $view->setData([
             'actionUrl' => sv('REQUEST_URI'),
             'name' => $name,
@@ -173,7 +173,7 @@ class RegistrationController extends Controller
             'email' => $email,
         ]);
         ob_start();
-        $view->render();
+        $view->render('registerform');
         return ob_get_clean();
     }
 }
