@@ -12,8 +12,18 @@ namespace Register;
 
 use XH\CSRFProtection;
 
-class UserPrefsController extends Controller
+class UserPrefsController
 {
+    /**
+     * @var array<string,string>
+     */
+    private $config;
+
+    /**
+     * @var array<string,string>
+     */
+    private $lang;
+
     /**
      * @var CSRFProtection
      */
@@ -29,9 +39,14 @@ class UserPrefsController extends Controller
      */
     private $dbService;
 
-    public function __construct(View $view, DbService $dbService)
+    /**
+     * @param array<string,string> $config
+     * @param array<string,string> $lang
+     */
+    public function __construct(array $config, array $lang, View $view, DbService $dbService)
     {
-        parent::__construct();
+        $this->config = $config;
+        $this->lang = $lang;
         XH_startSession();
         $this->csrfProtector = new CSRFProtection('register_csrf_token', false);
         $this->view = $view;

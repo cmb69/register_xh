@@ -12,8 +12,18 @@ namespace Register;
 
 use XH\CSRFProtection;
 
-class MainAdminController extends Controller
+class MainAdminController
 {
+    /**
+     * @var array<string,string>
+     */
+    private $config;
+
+    /**
+     * @var array<string,string>
+     */
+    private $lang;
+
     /**
      * @var CSRFProtection
      */
@@ -29,14 +39,19 @@ class MainAdminController extends Controller
      */
     private $dbService;
 
-    public function __construct(View $view, DbService $dbService)
+    /**
+     * @param array<string,string> $config
+     * @param array<string,string> $lang
+     */
+    public function __construct(array $config, array $lang, View $view, DbService $dbService)
     {
         /**
          * @var CSRFProtection $_XH_csrfProtection
          */
         global $_XH_csrfProtection;
 
-        parent::__construct();
+        $this->config = $config;
+        $this->lang = $lang;
         $this->csrfProtector = $_XH_csrfProtection;
         $this->view = $view;
         $this->dbService = $dbService;

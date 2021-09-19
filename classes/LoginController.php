@@ -10,16 +10,31 @@
 
 namespace Register;
 
-class LoginController extends Controller
+class LoginController
 {
+    /**
+     * @var array<string,string>
+     */
+    private $config;
+
+    /**
+     * @var array<string,string>
+     */
+    private $lang;
+
     /**
      * @var DbService
      */
     private $dbService;
 
-    public function __construct(DbService $dbService)
+    /**
+     * @param array<string,string> $config
+     * @param array<string,string> $lang
+     */
+    public function __construct(array $config, array $lang, DbService $dbService)
     {
-        parent::__construct();
+        $this->config = $config;
+        $this->lang = $lang;
         $this->dbService = $dbService;
     }
 

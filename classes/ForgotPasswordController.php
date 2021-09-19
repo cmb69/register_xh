@@ -10,8 +10,18 @@
 
 namespace Register;
 
-class ForgotPasswordController extends Controller
+class ForgotPasswordController
 {
+    /**
+     * @var array<string,string>
+     */
+    private $config;
+
+    /**
+     * @var array<string,string>
+     */
+    private $lang;
+
     /**
      * @var View
      */
@@ -22,9 +32,14 @@ class ForgotPasswordController extends Controller
      */
     private $dbService;
 
-    public function __construct(View $view, DbService $dbService)
+    /**
+     * @param array<string,string> $config
+     * @param array<string,string> $lang
+     */
+    public function __construct(array $config, array $lang, View $view, DbService $dbService)
     {
-        parent::__construct();
+        $this->config = $config;
+        $this->lang = $lang;
         $this->view = $view;
         $this->dbService = $dbService;
     }

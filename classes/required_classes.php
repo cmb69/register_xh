@@ -243,12 +243,23 @@ function Register_logout()
  */
 function registerUser(): string
 {
+    /**
+     * @var array<string,array<string,string>> $plugin_cf
+     * @var array<string,array<string,string>> $plugin_tx
+     */
+    global $plugin_cf, $plugin_tx;
+
     // In case user is logged in, no registration page is shown
     if (Register_isLoggedIn()) {
         header('Location: ' . CMSIMPLE_URL);
         exit;
     }
-    $controller = new RegistrationController(new View(), new DbService(Register_dataFolder()));
+    $controller = new RegistrationController(
+        $plugin_cf["register"],
+        $plugin_tx["register"],
+        new View(),
+        new DbService(Register_dataFolder())
+    );
     if (isset($_POST['action']) && $_POST['action'] === 'register_user') {
         $action = 'registerUserAction';
     } elseif (isset($_GET['action']) && $_GET['action'] === 'register_activate_user') {
@@ -268,12 +279,23 @@ function registerUser(): string
  */
 function registerForgotPassword()
 {
+    /**
+     * @var array<string,array<string,string>> $plugin_cf
+     * @var array<string,array<string,string>> $plugin_tx
+     */
+    global $plugin_cf, $plugin_tx;
+
     // In case user is logged in, no password forgotten page is shown
     if (Register_isLoggedIn()) {
         header('Location: ' . CMSIMPLE_URL);
         exit;
     }
-    $controller = new ForgotPasswordController(new View(), new DbService(Register_dataFolder()));
+    $controller = new ForgotPasswordController(
+        $plugin_cf["register"],
+        $plugin_tx["register"],
+        new View(),
+        new DbService(Register_dataFolder())
+    );
     if (isset($_POST['action']) && $_POST['action'] === 'forgotten_password') {
         $action = 'passwordForgottenAction';
     } elseif (isset($_GET['action']) && $_GET['action'] === 'registerResetPassword') {
@@ -293,14 +315,20 @@ function registerForgotPassword()
 function registerUserPrefs(): string
 {
     /**
+     * @var array<string,array<string,string>> $plugin_cf
      * @var array<string,array<string,string>> $plugin_tx
      */
-    global $plugin_tx;
+    global $plugin_cf, $plugin_tx;
 
     if (!Register_isLoggedIn()) {
         return XH_message('fail', $plugin_tx['register']['access_error_text']);
     }
-    $controller = new UserPrefsController(new View(), new DbService(Register_dataFolder()));
+    $controller = new UserPrefsController(
+        $plugin_cf["register"],
+        $plugin_tx["register"],
+        new View(),
+        new DbService(Register_dataFolder())
+    );
     if (isset($_POST['action']) && $_POST['action'] === 'edit_user_prefs' && isset($_POST['submit'])) {
         $action = 'editAction';
     } elseif (isset($_POST['action']) && $_POST['action'] === 'edit_user_prefs' && isset($_POST['delete'])) {

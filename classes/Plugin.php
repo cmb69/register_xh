@@ -47,10 +47,20 @@ class Plugin
         }
 
         if (!Register_isLoggedIn() && $function === 'registerlogin') {
-            (new LoginController(new DbService(Register_dataFolder())))->loginAction();
+            $controller = new LoginController(
+                $plugin_cf["register"],
+                $plugin_tx["register"],
+                new DbService(Register_dataFolder())
+            );
+            $controller->loginAction();
         }
         if (Register_isLoggedIn() && $function === 'registerlogout') {
-            (new LoginController(new DbService(Register_dataFolder())))->logoutAction();
+            $controller = new LoginController(
+                $plugin_cf["register"],
+                $plugin_tx["register"],
+                new DbService(Register_dataFolder())
+            );
+            $controller->logoutAction();
         }
         if (!(self::isAdmin() && $edit)) {
             self::handleImplicitPages();
@@ -161,9 +171,10 @@ class Plugin
          * @var string $o
          * @var string $admin
          * @var string $action
+         * @var array<string,array<string,string>> $plugin_cf
          * @var array<string,array<string,string>> $plugin_tx
          */
-        global $o, $admin, $action, $plugin_tx;
+        global $o, $admin, $action, $plugin_cf, $plugin_tx;
 
         $o .= print_plugin_admin('off');
         pluginmenu('ROW');
@@ -185,7 +196,12 @@ class Plugin
                 $o .= self::renderInfo();
                 break;
             case 'plugin_main':
-                $temp = new MainAdminController(new View(), new DbService(Register_dataFolder()));
+                $temp = new MainAdminController(
+                    $plugin_cf["register"],
+                    $plugin_tx["register"],
+                    new View(),
+                    new DbService(Register_dataFolder())
+                );
                 ob_start();
                 switch ($action) {
                     case 'editusers':
