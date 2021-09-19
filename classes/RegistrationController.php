@@ -81,7 +81,7 @@ class RegistrationController extends Controller
 
         // write CSV file if no errors occurred so far
         if (empty($errors) && !$user && !$this->dbService->writeUsers($userArray)) {
-            $errors[] = $this->lang['err_cannot_write_csv'] . ' (' . Register_dataFolder() . 'users.csv' . ')';
+            $errors[] = $this->lang['err_cannot_write_csv'];
         }
         $this->dbService->lock(LOCK_UN);
 

@@ -127,7 +127,7 @@ class UserPrefsController extends Controller
 
             // write CSV file if no errors occurred so far
             if (!$this->dbService->writeUsers($userArray)) {
-                $errors[] = $this->lang['err_cannot_write_csv'] .' (' . Register_dataFolder() . 'users.csv' . ')';
+                $errors[] = $this->lang['err_cannot_write_csv'];
             }
         }
         $this->dbService->lock(LOCK_UN);
@@ -200,7 +200,7 @@ class UserPrefsController extends Controller
         if (empty($errors)) {
             $userArray = registerDeleteUserEntry($userArray, $username);
             if (!$this->dbService->writeUsers($userArray)) {
-                $errors[] = $this->lang['err_cannot_write_csv'] . ' (' . Register_dataFolder() . 'users.csv' . ')';
+                $errors[] = $this->lang['err_cannot_write_csv'];
             }
         }
         // write CSV file if no errors occurred so far

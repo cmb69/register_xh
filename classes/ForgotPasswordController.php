@@ -124,8 +124,7 @@ class ForgotPasswordController extends Controller
             $user->password = password_hash($password, PASSWORD_DEFAULT);
             $userArray = registerReplaceUserEntry($userArray, $user);
             if (!$this->dbService->writeUsers($userArray)) {
-                $errors[] = $this->lang['err_cannot_write_csv']
-                    . ' (' . Register_dataFolder() . 'users.csv' . ')';
+                $errors[] = $this->lang['err_cannot_write_csv'];
             }
         }
         $this->dbService->lock(LOCK_UN);
