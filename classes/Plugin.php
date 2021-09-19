@@ -47,10 +47,10 @@ class Plugin
         }
 
         if (!Register_isLoggedIn() && $function === 'registerlogin') {
-            (new LoginController)->loginAction();
+            (new LoginController(new DbService(Register_dataFolder())))->loginAction();
         }
         if (Register_isLoggedIn() && $function === 'registerlogout') {
-            (new LoginController)->logoutAction();
+            (new LoginController(new DbService(Register_dataFolder())))->logoutAction();
         }
         if (!(self::isAdmin() && $edit)) {
             self::handleImplicitPages();
@@ -185,7 +185,7 @@ class Plugin
                 $o .= self::renderInfo();
                 break;
             case 'plugin_main':
-                $temp = new MainAdminController(new View());
+                $temp = new MainAdminController(new View(), new DbService(Register_dataFolder()));
                 ob_start();
                 switch ($action) {
                     case 'editusers':

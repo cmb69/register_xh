@@ -24,7 +24,12 @@ class MainAdminController extends Controller
      */
     private $view;
 
-    public function __construct(View $view)
+    /**
+     * @var DbService
+     */
+    private $dbService;
+
+    public function __construct(View $view, DbService $dbService)
     {
         /**
          * @var CSRFProtection $_XH_csrfProtection
@@ -34,6 +39,7 @@ class MainAdminController extends Controller
         parent::__construct();
         $this->csrfProtector = $_XH_csrfProtection;
         $this->view = $view;
+        $this->dbService = $dbService;
     }
 
     /**
@@ -43,10 +49,9 @@ class MainAdminController extends Controller
     {
         $fn = Register_dataFolder() . 'users.csv';
         if (is_file($fn)) {
-            $dbService = new DbService(Register_dataFolder());
-            $dbService->lock(LOCK_SH);
-            $users  = $dbService->readUsers();
-            $dbService->lock(LOCK_UN);
+            $this->dbService->lock(LOCK_SH);
+            $users  = $this->dbService->readUsers();
+            $this->dbService->lock(LOCK_UN);
             $this->renderUsersForm($users);
             echo XH_message('info', count($users) . ' ' . $this->lang['entries_in_csv'] . $fn);
         } else {
@@ -62,7 +67,7 @@ class MainAdminController extends Controller
         $this->csrfProtector->check();
         $errors = [];
         if (is_file(Register_dataFolder() . 'groups.csv')) {
-            $groups = (new DbService(Register_dataFolder()))->readGroups();
+            $groups = $this->dbService->readGroups();
         } else {
             $groups = [];
             $errors[] = $this->lang['err_csv_missing'] . ' (' . Register_dataFolder() . 'groups.csv' . ')';
@@ -163,12 +168,11 @@ class MainAdminController extends Controller
 
         // In case that nothing got deleted or added, store back (save got pressed)
         if (!$deleted && !$added && empty($errors)) {
-            $dbService = new DbService(Register_dataFolder());
-            $dbService->lock(LOCK_EX);
-            if (!$dbService->writeUsers($newusers)) {
+            $this->dbService->lock(LOCK_EX);
+            if (!$this->dbService->writeUsers($newusers)) {
                 $errors[] = $this->lang['err_cannot_write_csv'] . ' (' . Register_dataFolder() . 'users.csv' . ')';
             }
-            $dbService->lock(LOCK_UN);
+            $this->dbService->lock(LOCK_UN);
 
             if (!empty($errors)) {
                 echo $this->renderErrorView($errors);
@@ -246,7 +250,7 @@ class MainAdminController extends Controller
      */
     private function findGroups(): array
     {
-        $groups = (new DbService(Register_dataFolder()))->readGroups();
+        $groups = $this->dbService->readGroups();
         usort($groups, function ($a, $b) {
             return strcasecmp($a->groupname, $b->groupname);
         });
@@ -312,7 +316,7 @@ class MainAdminController extends Controller
     {
         $filename = Register_dataFolder() . 'groups.csv';
         if (is_file($filename)) {
-            $groups = (new DbService(Register_dataFolder()))->readGroups();
+            $groups = $this->dbService->readGroups();
             $this->renderGroupsForm($groups);
             echo XH_message('info', count($groups) . ' ' . $this->lang['entries_in_csv'] . $filename);
         } else {
@@ -356,7 +360,7 @@ class MainAdminController extends Controller
 
         // In case that nothing got deleted or added, store back (save got pressed)
         if (!$deleted && !$added && empty($errors)) {
-            if (!(new DbService(Register_dataFolder()))->writeGroups($newgroups)) {
+            if (!$this->dbService->writeGroups($newgroups)) {
                 $errors[] = $this->lang['err_cannot_write_csv'] . ' (' . Register_dataFolder() . 'groups.csv' . ')';
             }
             if (!empty($errors)) {

@@ -17,11 +17,18 @@ class RegistrationController extends Controller
      */
     private $view;
 
-    public function __construct(View $view)
+    /**
+     * @var DbService
+     */
+    private $dbService;
+
+    public function __construct(View $view, DbService $dbService)
     {
         parent::__construct();
         $this->view = $view;
+        $this->dbService = $dbService;
     }
+
     /**
      * @return void
      */
@@ -51,9 +58,8 @@ class RegistrationController extends Controller
         $errors = $validationService->validateUser($name, $username, $password1, $password2, $email);
 
         // read user file in CSV format separated by colons
-        $dbService = new DbService(Register_dataFolder());
-        $dbService->lock(LOCK_EX);
-        $userArray = $dbService->readUsers();
+        $this->dbService->lock(LOCK_EX);
+        $userArray = $this->dbService->readUsers();
 
         // check if user or other user for same email address exists
         if (registerSearchUserArray($userArray, 'username', $username) !== false) {
@@ -74,10 +80,10 @@ class RegistrationController extends Controller
         );
 
         // write CSV file if no errors occurred so far
-        if (empty($errors) && !$user && !$dbService->writeUsers($userArray)) {
+        if (empty($errors) && !$user && !$this->dbService->writeUsers($userArray)) {
             $errors[] = $this->lang['err_cannot_write_csv'] . ' (' . Register_dataFolder() . 'users.csv' . ')';
         }
-        $dbService->lock(LOCK_UN);
+        $this->dbService->lock(LOCK_UN);
 
         if (!empty($errors)) {
             echo $this->view->render('error', ['errors' => $errors]);
@@ -138,9 +144,8 @@ class RegistrationController extends Controller
         $o ='';
 
         // read user file in CSV format separated by colons
-        $dbService = new DbService(Register_dataFolder());
-        $dbService->lock(LOCK_EX);
-        $userArray = $dbService->readUsers();
+        $this->dbService->lock(LOCK_EX);
+        $userArray = $this->dbService->readUsers();
     
         // check if user or other user for same email address exists
         $entry = registerSearchUserArray($userArray, 'username', $user);
@@ -161,10 +166,10 @@ class RegistrationController extends Controller
             $entry->status = "activated";
             $entry->accessgroups = array($this->config['group_activated']);
             $userArray = registerReplaceUserEntry($userArray, $entry);
-            $dbService->writeUsers($userArray);
+            $this->dbService->writeUsers($userArray);
             $o .= XH_message('success', $this->lang['activated']);
         }
-        $dbService->lock(LOCK_UN);
+        $this->dbService->lock(LOCK_UN);
         return $o;
     }
 

@@ -24,12 +24,18 @@ class UserPrefsController extends Controller
      */
     private $view;
 
-    public function __construct(View $view)
+    /**
+     * @var DbService
+     */
+    private $dbService;
+
+    public function __construct(View $view, DbService $dbService)
     {
         parent::__construct();
         XH_startSession();
         $this->csrfProtector = new CSRFProtection('register_csrf_token', false);
         $this->view = $view;
+        $this->dbService = $dbService;
     }
 
     /**
@@ -39,9 +45,8 @@ class UserPrefsController extends Controller
     {
         $username = isset($_SESSION['username']) ? $_SESSION['username'] : '';
 
-        $dbService = new DbService(Register_dataFolder());
-        $dbService->lock(LOCK_EX);
-        $userArray = $dbService->readUsers();
+        $this->dbService->lock(LOCK_EX);
+        $userArray = $this->dbService->readUsers();
 
         $entry = registerSearchUserArray($userArray, 'username', $username);
         if ($entry === false) {
@@ -73,9 +78,8 @@ class UserPrefsController extends Controller
         $username = isset($_SESSION['username']) ? $_SESSION['username'] : "";
 
         // read user file in CSV format separated by colons
-        $dbService = new DbService(Register_dataFolder());
-        $dbService->lock(LOCK_EX);
-        $userArray = $dbService->readUsers();
+        $this->dbService->lock(LOCK_EX);
+        $userArray = $this->dbService->readUsers();
 
         // search user in CSV data
         $entry = registerSearchUserArray($userArray, 'username', $username);
@@ -122,11 +126,11 @@ class UserPrefsController extends Controller
             $userArray = registerReplaceUserEntry($userArray, $entry);
 
             // write CSV file if no errors occurred so far
-            if (!$dbService->writeUsers($userArray)) {
+            if (!$this->dbService->writeUsers($userArray)) {
                 $errors[] = $this->lang['err_cannot_write_csv'] .' (' . Register_dataFolder() . 'users.csv' . ')';
             }
         }
-        $dbService->lock(LOCK_UN);
+        $this->dbService->lock(LOCK_UN);
 
         if (!empty($errors)) {
             echo $this->view->render('error', ['errors' => $errors]);
@@ -171,9 +175,8 @@ class UserPrefsController extends Controller
         $username = isset($_SESSION['username']) ? $_SESSION['username'] : "";
 
         // read user file in CSV format separated by colons
-        $dbService = new DbService(Register_dataFolder());
-        $dbService->lock(LOCK_EX);
-        $userArray = $dbService->readUsers();
+        $this->dbService->lock(LOCK_EX);
+        $userArray = $this->dbService->readUsers();
 
         // search user in CSV data
         $entry = registerSearchUserArray($userArray, 'username', $username);
@@ -196,12 +199,12 @@ class UserPrefsController extends Controller
         // read user entry, update it and write it back to CSV file
         if (empty($errors)) {
             $userArray = registerDeleteUserEntry($userArray, $username);
-            if (!$dbService->writeUsers($userArray)) {
+            if (!$this->dbService->writeUsers($userArray)) {
                 $errors[] = $this->lang['err_cannot_write_csv'] . ' (' . Register_dataFolder() . 'users.csv' . ')';
             }
         }
         // write CSV file if no errors occurred so far
-        $dbService->lock(LOCK_UN);
+        $this->dbService->lock(LOCK_UN);
 
         if (!empty($errors)) {
             echo $this->view->render('error', ['errors' => $errors]);

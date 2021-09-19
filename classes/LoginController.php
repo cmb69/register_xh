@@ -13,6 +13,17 @@ namespace Register;
 class LoginController extends Controller
 {
     /**
+     * @var DbService
+     */
+    private $dbService;
+
+    public function __construct(DbService $dbService)
+    {
+        parent::__construct();
+        $this->dbService = $dbService;
+    }
+
+    /**
      * @return void
      */
     public function loginAction()
@@ -30,10 +41,9 @@ class LoginController extends Controller
         }
     
         // read user file in CSV format separated by colons
-        $dbService = new DbService(Register_dataFolder());
-        $dbService->lock(LOCK_SH);
-        $userArray = $dbService->readUsers();
-        $dbService->lock(LOCK_UN);
+        $this->dbService->lock(LOCK_SH);
+        $userArray = $this->dbService->readUsers();
+        $this->dbService->lock(LOCK_UN);
 
         // search user in CSV data
         $entry = registerSearchUserArray($userArray, 'username', $username);
