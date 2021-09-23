@@ -28,9 +28,9 @@ class ForgotPasswordController
     private $view;
 
     /**
-     * @var DbService
+     * @var UserRepository
      */
-    private $dbService;
+    private $userRepository;
 
     /**
      * @var MailService
@@ -41,12 +41,17 @@ class ForgotPasswordController
      * @param array<string,string> $config
      * @param array<string,string> $lang
      */
-    public function __construct(array $config, array $lang, View $view, DbService $dbService, MailService $mailService)
-    {
+    public function __construct(
+        array $config,
+        array $lang,
+        View $view,
+        UserRepository $userRepository,
+        MailService $mailService
+    ) {
         $this->config = $config;
         $this->lang = $lang;
         $this->view = $view;
-        $this->dbService = $dbService;
+        $this->userRepository = $userRepository;
         $this->mailService = $mailService;
     }
 
@@ -82,13 +87,7 @@ class ForgotPasswordController
             return;
         }
 
-        // read user file in CSV format separated by colons
-        $this->dbService->lock(LOCK_SH);
-        $userArray = $this->dbService->readUsers();
-        $this->dbService->lock(LOCK_UN);
-
-        // search user for email
-        $user = registerSearchUserArray($userArray, 'email', $email);
+        $user = $this->userRepository->findByEmail($email);
         if ($user) {
             // prepare email content for user data email
             $content = $this->lang['emailtext1'] . "\n\n"
@@ -116,35 +115,23 @@ class ForgotPasswordController
      */
     public function resetPasswordAction()
     {
-        // read user file in CSV format separated by colons
-        $this->dbService->lock(LOCK_EX);
-        $userArray = $this->dbService->readUsers();
-
-        // search user for email
-        $user = registerSearchUserArray($userArray, 'username', $_GET['username']);
+        $user = $this->userRepository->findByUsername($_GET['username']);
         if (!$user) {
             echo $this->view->message("fail", $this->lang['err_username_does_not_exist']);
-            $this->dbService->lock(LOCK_UN);
             return;
         }
 
         if ($user->password != $_GET['nonce']) {
             echo $this->view->message("fail", $this->lang['err_status_invalid']);
-            $this->dbService->lock(LOCK_UN);
             return;
         }
 
-        // in case of encrypted password a new random password will be generated
-        // and its value be written back to the CSV file
         $password = base64_encode(random_bytes(8));
-        $user->password = password_hash($password, PASSWORD_DEFAULT);
-        $userArray = registerReplaceUserEntry($userArray, $user);
-        if (!$this->dbService->writeUsers($userArray)) {
+        $user->changePassword($password);
+        if (!$this->userRepository->update($user)) {
             $this->view->message("fail", $this->lang['err_cannot_write_csv']);
-            $this->dbService->lock(LOCK_UN);
             return;
         }
-        $this->dbService->lock(LOCK_UN);
 
         // prepare email content for user data email
         $content = $this->lang['emailtext1'] . "\n\n"

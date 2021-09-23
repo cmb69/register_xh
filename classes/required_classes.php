@@ -16,6 +16,7 @@ use Register\RegistrationController;
 use Register\User;
 use Register\UserGroup;
 use Register\UserPrefsController;
+use Register\UserRepository;
 use Register\View;
 
 function Register_dataFolder(): string
@@ -296,7 +297,7 @@ function registerForgotPassword()
         $plugin_cf["register"],
         $plugin_tx["register"],
         new View(),
-        new DbService(Register_dataFolder()),
+        new UserRepository(new DbService(Register_dataFolder())),
         new MailService()
     );
     if (isset($_POST['action']) && $_POST['action'] === 'forgotten_password') {

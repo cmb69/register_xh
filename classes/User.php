@@ -64,4 +64,12 @@ class User
         $this->email = $email;
         $this->status = $status;
     }
+
+    /**
+     * @return void
+     */
+    public function changePassword(string $password)
+    {
+        $this->password = password_hash($password, PASSWORD_DEFAULT);
+    }
 }

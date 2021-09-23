@@ -6,5 +6,8 @@ require_once "./classes/ForgotPasswordController.php";
 require_once "./classes/MailService.php";
 require_once "./classes/User.php";
 require_once "./classes/UserGroup.php";
+require_once "./classes/UserRepository.php";
 require_once "./classes/ValidationService.php";
 require_once "./classes/View.php";
+
+const CMSIMPLE_URL = "http://example.com";
