@@ -68,6 +68,7 @@ class UserPrefsController
 
         $this->dbService->lock(LOCK_EX);
         $userArray = $this->dbService->readUsers();
+        $this->dbService->lock(LOCK_UN);
 
         $entry = registerSearchUserArray($userArray, 'username', $username);
         if ($entry === false) {
@@ -85,7 +86,7 @@ class UserPrefsController
     public function editAction()
     {
         $this->csrfProtector->check();
-        $errors = [];
+
         // Get form data if available
         $oldpassword  = isset($_POST['oldpassword']) && is_string($_POST["oldpassword"])
             ? trim($_POST['oldpassword'])
@@ -106,18 +107,23 @@ class UserPrefsController
         $entry = registerSearchUserArray($userArray, 'username', $username);
         if ($entry === false) {
             echo $this->view->message('fail', $this->lang['err_username_does_not_exist'] . " ('" . $username . "')");
+            $this->dbService->lock(LOCK_UN);
             return;
         }
 
         // Test if user is locked
         if ($entry->status == "locked") {
             echo $this->view->message('fail', $this->lang['user_locked'] . ':' .$username);
+            $this->dbService->lock(LOCK_UN);
             return;
         }
 
         // check that old password got entered correctly
         if (!password_verify($oldpassword, $entry->password)) {
-            $errors[] = $this->lang['err_old_password_wrong'];
+            echo $this->view->message("fail", $this->lang['err_old_password_wrong']);
+            echo $this->renderForm($name, $email);
+            $this->dbService->lock(LOCK_UN);
+            return;
         }
 
         if ($password1 == "" && $password2 == "") {
@@ -132,51 +138,49 @@ class UserPrefsController
         }
 
         $validationService = new ValidationService($this->lang);
-        $errors = array_merge(
-            $errors,
-            $validationService->validateUser($name, $username, $password1, $password2, $email)
-        );
+        $errors = $validationService->validateUser($name, $username, $password1, $password2, $email);
+        if ($errors) {
+            echo $this->view->render('error', ['errors' => $errors]);
+            echo $this->renderForm($name, $email);
+            $this->dbService->lock(LOCK_UN);
+            return;
+        }
 
         $oldemail = $entry->email;
 
         // read user entry, update it and write it back to CSV file
-        if (empty($errors)) {
-            $entry->password = password_hash($password1, PASSWORD_DEFAULT);
-            $entry->email    = $email;
-            $entry->name     = $name;
-            $userArray = registerReplaceUserEntry($userArray, $entry);
+        $entry->password = password_hash($password1, PASSWORD_DEFAULT);
+        $entry->email    = $email;
+        $entry->name     = $name;
+        $userArray = registerReplaceUserEntry($userArray, $entry);
 
-            // write CSV file if no errors occurred so far
-            if (!$this->dbService->writeUsers($userArray)) {
-                $errors[] = $this->lang['err_cannot_write_csv'];
-            }
+        // write CSV file if no errors occurred so far
+        if (!$this->dbService->writeUsers($userArray)) {
+            echo $this->view->message("fail", $this->lang['err_cannot_write_csv']);
+            $this->dbService->lock(LOCK_UN);
+            return;
         }
         $this->dbService->lock(LOCK_UN);
 
-        if (!empty($errors)) {
-            echo $this->view->render('error', ['errors' => $errors]);
-            echo $this->renderForm($name, $email);
-        } else {
-            // prepare email for user information about updates
-            $content = $this->lang['emailprefsupdated'] . "\n\n" .
-                ' ' . $this->lang['name'] . ': '.$name."\n" .
-                ' ' . $this->lang['username'] . ': '.$username."\n" .
-                //' ' . $this->lang['password'] . ': '.$password1."\n" .
-                ' ' . $this->lang['email'] . ': '.$email."\n" .
-                ' ' . $this->lang['fromip'] . ': '. $_SERVER['REMOTE_ADDR'] ."\n";
+        // prepare email for user information about updates
+        $content = $this->lang['emailprefsupdated'] . "\n\n" .
+            ' ' . $this->lang['name'] . ': '.$name."\n" .
+            ' ' . $this->lang['username'] . ': '.$username."\n" .
+            //' ' . $this->lang['password'] . ': '.$password1."\n" .
+            ' ' . $this->lang['email'] . ': '.$email."\n" .
+            ' ' . $this->lang['fromip'] . ': '. $_SERVER['REMOTE_ADDR'] ."\n";
 
-            // send update email
-            $this->mailService->sendMail(
-                $email,
-                $this->lang['prefsemailsubject'] . ' ' . $_SERVER['SERVER_NAME'],
-                $content,
-                array(
-                    'From: ' . $this->config['senderemail'],
-                    'Cc: '  . $oldemail . ', ' . $this->config['senderemail']
-                )
-            );
-            echo $this->view->message('success', $this->lang['prefsupdated']);
-        }
+        // send update email
+        $this->mailService->sendMail(
+            $email,
+            $this->lang['prefsemailsubject'] . ' ' . $_SERVER['SERVER_NAME'],
+            $content,
+            array(
+                'From: ' . $this->config['senderemail'],
+                'Cc: '  . $oldemail . ', ' . $this->config['senderemail']
+            )
+        );
+        echo $this->view->message('success', $this->lang['prefsupdated']);
     }
 
     /**
@@ -185,7 +189,6 @@ class UserPrefsController
     public function deleteAction()
     {
         $this->csrfProtector->check();
-        $errors = [];
     
         // Get form data if available
         $oldpassword = $_POST['oldpassword'] ?? '';
@@ -203,39 +206,39 @@ class UserPrefsController
         $entry = registerSearchUserArray($userArray, 'username', $username);
         if ($entry === false) {
             echo $this->view->message('fail', $this->lang['err_username_does_not_exist'] . " ('" . $username . "')");
+            $this->dbService->lock(LOCK_UN);
             return;
         }
 
         // Test if user is locked
         if ($entry->status == "locked") {
             echo $this->view->message('fail', $this->lang['user_locked'] . ':' .$username);
+            $this->dbService->lock(LOCK_UN);
             return;
         }
 
         // Form Handling - Delete User ================================================
         if (!password_verify($oldpassword, $entry->password)) {
-            $errors[] = $this->lang['err_old_password_wrong'];
+            echo $this->view->message("fail", $this->lang['err_old_password_wrong']);
+            echo $this->renderForm($name, $email);
+            $this->dbService->lock(LOCK_UN);
+            return;
         }
 
         // read user entry, update it and write it back to CSV file
-        if (empty($errors)) {
-            $userArray = registerDeleteUserEntry($userArray, $username);
-            if (!$this->dbService->writeUsers($userArray)) {
-                $errors[] = $this->lang['err_cannot_write_csv'];
-            }
+        $userArray = registerDeleteUserEntry($userArray, $username);
+        if (!$this->dbService->writeUsers($userArray)) {
+            echo $this->view->message("fail", $this->lang['err_cannot_write_csv']);
+            $this->dbService->lock(LOCK_UN);
+            return;
         }
         // write CSV file if no errors occurred so far
         $this->dbService->lock(LOCK_UN);
 
-        if (!empty($errors)) {
-            echo $this->view->render('error', ['errors' => $errors]);
-            echo $this->renderForm($name, $email);
-        } else {
-            $username = $_SESSION['username'] ?? '';
-            Register_logout();
-            XH_logMessage('info', 'register', 'logout', "$username deleted and logged out");
-            echo $this->view->message('success', $this->lang['user_deleted'] . ': '.$username);
-        }
+        $username = $_SESSION['username'] ?? '';
+        Register_logout();
+        XH_logMessage('info', 'register', 'logout', "$username deleted and logged out");
+        echo $this->view->message('success', $this->lang['user_deleted'] . ': '.$username);
     }
 
     /**
