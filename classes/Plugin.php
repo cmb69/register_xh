@@ -46,11 +46,13 @@ class Plugin
             }
         }
 
+        $dbService = new DbService(Register_dataFolder());
         if (!Register_isLoggedIn() && $function === 'registerlogin') {
             $controller = new LoginController(
                 $plugin_cf["register"],
                 $plugin_tx["register"],
-                new DbService(Register_dataFolder())
+                $dbService,
+                new UserGroupRepository($dbService)
             );
             $controller->loginAction();
         }
@@ -58,7 +60,8 @@ class Plugin
             $controller = new LoginController(
                 $plugin_cf["register"],
                 $plugin_tx["register"],
-                new DbService(Register_dataFolder())
+                $dbService,
+                new UserGroupRepository($dbService)
             );
             $controller->logoutAction();
         }

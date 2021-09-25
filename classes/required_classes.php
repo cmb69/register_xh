@@ -92,20 +92,6 @@ function access(string $groupString): string
 }
 
 /**
- * @return string|false
- */
-function Register_groupLoginPage(string $group)
-{
-    $groups = (new DbService(Register_dataFolder()))->readGroups();
-    foreach ($groups as $rec) {
-        if ($rec->getGroupname() == $group) {
-            return $rec->getLoginpage();
-        }
-    }
-    return false;
-}
-
-/**
  * Search array of user entries for key and value.
  *
  * @param User[] $array

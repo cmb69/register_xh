@@ -28,14 +28,24 @@ class LoginController
     private $dbService;
 
     /**
+     * @var UserGroupRepository
+     */
+    private $userGroupRepository;
+
+    /**
      * @param array<string,string> $config
      * @param array<string,string> $lang
      */
-    public function __construct(array $config, array $lang, DbService $dbService)
-    {
+    public function __construct(
+        array $config,
+        array $lang,
+        DbService $dbService,
+        UserGroupRepository $userGroupRepository
+    ) {
         $this->config = $config;
         $this->lang = $lang;
         $this->dbService = $dbService;
+        $this->userGroupRepository = $userGroupRepository;
     }
 
     /**
@@ -84,8 +94,9 @@ class LoginController
             XH_logMessage('info', 'register', 'login', "$username logged in");
 
             // go to login page if exists or to default page otherwise
-            if ($glp = Register_groupLoginPage($entry->getAccessgroups()[0])) {
-                $loginPage = '?' . $glp;
+            $group = $this->userGroupRepository->findByGroupname($entry->getAccessgroups()[0]);
+            if ($group && $group->getLoginpage()) {
+                $loginPage = '?' . $group->getLoginpage();
             } else {
                 $loginPage = '?'. uenc($this->lang['loggedin']);
             }
