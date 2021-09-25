@@ -89,7 +89,6 @@ class LoginController
             session_regenerate_id(true);
 
             $_SESSION['username']     = $entry->getUsername();
-            $_SESSION['register_sn']  = Register_sessionName();
 
             XH_logMessage('info', 'register', 'login', "$username logged in");
 

@@ -31,14 +31,10 @@ function Register_dataFolder(): string
      */
     global $sl, $cf, $plugin_cf, $pth;
 
-    if ($plugin_cf['register']['login_all_subsites']) {
-        if ($sl === $cf['language']['default']) {
-            $folder = "{$pth['folder']['content']}register/";
-        } else {
-            $folder = dirname($pth['folder']['content']) . "/register/";
-        }
-    } else {
+    if ($sl === $cf['language']['default']) {
         $folder = "{$pth['folder']['content']}register/";
+    } else {
+        $folder = dirname($pth['folder']['content']) . "/register/";
     }
     if (!is_dir($folder)) {
         mkdir($folder, 0777, true);
@@ -164,8 +160,7 @@ function Register_currentUser()
         if (is_file($sessionfile) && isset($_COOKIE[file_get_contents($sessionfile)])) {
             XH_startSession();
         }
-        if (isset($_SESSION['username'], $_SESSION['register_sn'])
-                && $_SESSION['register_sn'] == Register_sessionName()) {
+        if (isset($_SESSION['username'])) {
             $dbService = new DbService(Register_dataFolder());
             $dbService->lock(LOCK_SH);
             $users = $dbService->readUsers();
@@ -191,7 +186,7 @@ function Register_logout()
 {
     XH_startSession();
     session_regenerate_id(true);
-    unset($_SESSION['username'], $_SESSION['register_sn']);
+    unset($_SESSION['username']);
     if (isset($_COOKIE['register_username'], $_COOKIE['register_password'])) {
         setcookie('register_username', '', 0, CMSIMPLE_ROOT);
         setcookie('register_password', '', 0, CMSIMPLE_ROOT);
@@ -364,21 +359,6 @@ function registerloginform(): string
 function Register_loggedInForm()
 {
     return Register_isLoggedIn() ? registerloginform() : '';
-}
-
-function Register_sessionName(): string
-{
-    /**
-     * @var string $sl
-     * @var array<string,array<string,string>> $plugin_cf
-     */
-    global $sl, $plugin_cf;
-
-    if ($plugin_cf['register']['login_all_subsites']) {
-        return CMSIMPLE_ROOT;
-    } else {
-        return CMSIMPLE_ROOT . $sl;
-    }
 }
 
 /**
