@@ -184,7 +184,7 @@ class RegistrationController
         if (!empty($errors)) {
             $o .= $this->view->render('error', ['errors' => $errors]);
         } else {
-            $entry->setStatus("activated");
+            $entry->activate();
             $entry->setAccessgroups(array($this->config['group_activated']));
             $userArray = registerReplaceUserEntry($userArray, $entry);
             $this->dbService->writeUsers($userArray);

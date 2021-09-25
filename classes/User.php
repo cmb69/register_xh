@@ -138,9 +138,9 @@ class User
     /**
      * @return void
      */
-    public function setStatus(string $status)
+    public function activate()
     {
-        $this->status = $status;
+        $this->status = "activated";
     }
 
     /**
