@@ -23,6 +23,11 @@ class RegistrationController
     private $lang;
 
     /**
+     * @var ValidationService
+     */
+    private $validationService;
+
+    /**
      * @var View
      */
     private $view;
@@ -44,12 +49,14 @@ class RegistrationController
     public function __construct(
         array $config,
         array $lang,
+        ValidationService $validationService,
         View $view,
         UserRepository $userRepository,
         MailService $mailService
     ) {
         $this->config = $config;
         $this->lang = $lang;
+        $this->validationService = $validationService;
         $this->view = $view;
         $this->userRepository = $userRepository;
         $this->mailService = $mailService;
@@ -79,14 +86,14 @@ class RegistrationController
         $password2 = isset($_POST['password2']) && is_string($_POST["password2"]) ? trim($_POST['password2']) : '';
         $email     = isset($_POST['email']) && is_string($_POST["email"]) ? trim($_POST['email']) : '';
 
-        $validationService = new ValidationService($this->lang);
-        $errors = $validationService->validateUser($name, $username, $password1, $password2, $email);
+        $errors = $this->validationService->validateUser($name, $username, $password1, $password2, $email);
         if ($errors) {
             echo $this->view->render('error', ['errors' => $errors]);
             echo $this->form($name, $username, $password1, $password2, $email);
+            return;
         }
 
-        if (!$this->userRepository->findByUsername($username)) {
+        if ($this->userRepository->findByUsername($username)) {
             $this->view->message("fail", $this->lang['err_username_exists']);
             return;
         }
@@ -144,17 +151,8 @@ class RegistrationController
      */
     public function activateUserAction()
     {
-        // Get form data if available
-        $name = $_POST['name'] ?? '';
-        $username = $_POST['username'] ?? '';
-        $password1 = $_POST['password1'] ?? '';
-        $password2 = $_POST['password2'] ?? '';
-        $email = $_POST['email'] ?? '';
-
         if (isset($_GET['username']) && isset($_GET['nonce'])) {
             $this->activateUser($_GET['username'], $_GET['nonce']);
-        } else {
-            echo $this->form($name, $username, $password1, $password2, $email);
         }
     }
 

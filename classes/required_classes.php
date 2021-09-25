@@ -232,6 +232,7 @@ function registerUser(): string
     $controller = new RegistrationController(
         $plugin_cf["register"],
         $plugin_tx["register"],
+        new ValidationService($plugin_tx["register"]),
         new View(),
         new UserRepository(new DbService(Register_dataFolder())),
         new MailService()
