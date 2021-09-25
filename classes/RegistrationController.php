@@ -152,33 +152,35 @@ class RegistrationController
         $email = $_POST['email'] ?? '';
 
         if (isset($_GET['username']) && isset($_GET['nonce'])) {
-            echo $this->activateUser($_GET['username'], $_GET['nonce']);
+            $this->activateUser($_GET['username'], $_GET['nonce']);
         } else {
             echo $this->form($name, $username, $password1, $password2, $email);
         }
     }
 
-    private function activateUser(string $user, string $nonce): string
+    /**
+     * @return void
+     */
+    private function activateUser(string $user, string $nonce)
     {
         $entry = $this->userRepository->findByUsername($user);
         if ($entry === null) {
-            $this->view->message("fail", $this->lang['err_username_notfound'] . $user);
-            return "";
+            echo $this->view->message("fail", $this->lang['err_username_notfound'] . $user);
+            return;
         }
         if ($entry->getStatus() == "") {
-            $this->view->message("fail", $this->lang['err_status_empty']);
-            return "";
+            echo $this->view->message("fail", $this->lang['err_status_empty']);
+            return;
         }
         if ($nonce != $entry->getStatus()) {
-            $this->view->message("fail", $this->lang['err_status_invalid']);
-            return "";
+            echo $this->view->message("fail", $this->lang['err_status_invalid']);
+            return;
         }
 
         $entry->activate();
         $entry->setAccessgroups(array($this->config['group_activated']));
         $this->userRepository->update($entry);
-        $o = $this->view->message('success', $this->lang['activated']);
-        return $o;
+        echo $this->view->message('success', $this->lang['activated']);
     }
 
     private function form(string $name, string $username, string $password1, string $password2, string $email): string
