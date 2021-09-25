@@ -53,4 +53,14 @@ class UserRepository
         $this->dbService->lock(LOCK_EX);
         return $result;
     }
+
+    public function delete(User $user): bool
+    {
+        $this->dbService->lock(LOCK_EX);
+        $users = $this->dbService->readUsers();
+        $userArray = registerDeleteUserEntry($users, $user->getUsername());
+        $result = $this->dbService->writeUsers($userArray);
+        $this->dbService->lock(LOCK_EX);
+        return $result;
+    }
 }

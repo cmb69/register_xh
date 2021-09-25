@@ -30,14 +30,14 @@ class UserPrefsController
     private $csrfProtector;
 
     /**
+     * @var UserRepository
+     */
+    private $userRepository;
+
+    /**
      * @var View
      */
     private $view;
-
-    /**
-     * @var DbService
-     */
-    private $dbService;
 
     /**
      * @var MailService
@@ -48,14 +48,19 @@ class UserPrefsController
      * @param array<string,string> $config
      * @param array<string,string> $lang
      */
-    public function __construct(array $config, array $lang, View $view, DbService $dbService, MailService $mailService)
-    {
+    public function __construct(
+        array $config,
+        array $lang,
+        UserRepository $userRepository,
+        View $view,
+        MailService $mailService
+    ) {
         $this->config = $config;
         $this->lang = $lang;
         XH_startSession();
         $this->csrfProtector = new CSRFProtection('register_csrf_token', false);
+        $this->userRepository = $userRepository;
         $this->view = $view;
-        $this->dbService = $dbService;
         $this->mailService = $mailService;
     }
 
@@ -66,17 +71,13 @@ class UserPrefsController
     {
         $username = $_SESSION['username'] ?? '';
 
-        $this->dbService->lock(LOCK_EX);
-        $userArray = $this->dbService->readUsers();
-        $this->dbService->lock(LOCK_UN);
-
-        $entry = registerSearchUserArray($userArray, 'username', $username);
-        if ($entry === false) {
+        $user = $this->userRepository->findByUsername($username);
+        if ($user === null) {
             echo $this->view->message('fail', $this->lang['err_username_does_not_exist'] . " ('" . $username . "')");
-        } elseif ($entry->isLocked()) {
+        } elseif ($user->isLocked()) {
             echo $this->view->message('fail', $this->lang['user_locked'] . ':' .$username);
         } else {
-            echo $this->renderForm($entry->getName(), $entry->getEmail());
+            echo $this->renderForm($user->getName(), $user->getEmail());
         }
     }
 
@@ -99,22 +100,15 @@ class UserPrefsController
         // set user name from session
         $username = $_SESSION['username'] ?? "";
 
-        // read user file in CSV format separated by colons
-        $this->dbService->lock(LOCK_EX);
-        $userArray = $this->dbService->readUsers();
-
-        // search user in CSV data
-        $entry = registerSearchUserArray($userArray, 'username', $username);
-        if ($entry === false) {
+        $entry = $this->userRepository->findByUsername($username);
+        if ($entry === null) {
             echo $this->view->message('fail', $this->lang['err_username_does_not_exist'] . " ('" . $username . "')");
-            $this->dbService->lock(LOCK_UN);
             return;
         }
 
         // Test if user is locked
         if ($entry->isLocked()) {
             echo $this->view->message('fail', $this->lang['user_locked'] . ':' .$username);
-            $this->dbService->lock(LOCK_UN);
             return;
         }
 
@@ -122,7 +116,6 @@ class UserPrefsController
         if (!password_verify($oldpassword, $entry->getPassword())) {
             echo $this->view->message("fail", $this->lang['err_old_password_wrong']);
             echo $this->renderForm($name, $email);
-            $this->dbService->lock(LOCK_UN);
             return;
         }
 
@@ -142,7 +135,6 @@ class UserPrefsController
         if ($errors) {
             echo $this->view->render('error', ['errors' => $errors]);
             echo $this->renderForm($name, $email);
-            $this->dbService->lock(LOCK_UN);
             return;
         }
 
@@ -152,15 +144,11 @@ class UserPrefsController
         $entry->setPassword(password_hash($password1, PASSWORD_DEFAULT));
         $entry->setEmail($email);
         $entry->setName($name);
-        $userArray = registerReplaceUserEntry($userArray, $entry);
 
-        // write CSV file if no errors occurred so far
-        if (!$this->dbService->writeUsers($userArray)) {
+        if (!$this->userRepository->update($entry)) {
             echo $this->view->message("fail", $this->lang['err_cannot_write_csv']);
-            $this->dbService->lock(LOCK_UN);
             return;
         }
-        $this->dbService->lock(LOCK_UN);
 
         // prepare email for user information about updates
         $content = $this->lang['emailprefsupdated'] . "\n\n" .
@@ -198,22 +186,15 @@ class UserPrefsController
         // set user name from session
         $username = $_SESSION['username'] ?? "";
 
-        // read user file in CSV format separated by colons
-        $this->dbService->lock(LOCK_EX);
-        $userArray = $this->dbService->readUsers();
-
-        // search user in CSV data
-        $entry = registerSearchUserArray($userArray, 'username', $username);
-        if ($entry === false) {
+        $entry = $this->userRepository->findByUsername($username);
+        if ($entry === null) {
             echo $this->view->message('fail', $this->lang['err_username_does_not_exist'] . " ('" . $username . "')");
-            $this->dbService->lock(LOCK_UN);
             return;
         }
 
         // Test if user is locked
         if ($entry->isLocked()) {
             echo $this->view->message('fail', $this->lang['user_locked'] . ':' .$username);
-            $this->dbService->lock(LOCK_UN);
             return;
         }
 
@@ -221,19 +202,13 @@ class UserPrefsController
         if (!password_verify($oldpassword, $entry->getPassword())) {
             echo $this->view->message("fail", $this->lang['err_old_password_wrong']);
             echo $this->renderForm($name, $email);
-            $this->dbService->lock(LOCK_UN);
             return;
         }
 
-        // read user entry, update it and write it back to CSV file
-        $userArray = registerDeleteUserEntry($userArray, $username);
-        if (!$this->dbService->writeUsers($userArray)) {
+        if (!$this->userRepository->delete($entry)) {
             echo $this->view->message("fail", $this->lang['err_cannot_write_csv']);
-            $this->dbService->lock(LOCK_UN);
             return;
         }
-        // write CSV file if no errors occurred so far
-        $this->dbService->lock(LOCK_UN);
 
         $username = $_SESSION['username'] ?? '';
         Register_logout();

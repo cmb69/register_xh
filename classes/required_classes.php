@@ -330,8 +330,8 @@ function registerUserPrefs(): string
     $controller = new UserPrefsController(
         $plugin_cf["register"],
         $plugin_tx["register"],
+        new UserRepository(new DbService(Register_dataFolder())),
         new View(),
-        new DbService(Register_dataFolder()),
         new MailService()
     );
     if (isset($_POST['action']) && $_POST['action'] === 'edit_user_prefs' && isset($_POST['submit'])) {
