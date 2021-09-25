@@ -106,35 +106,6 @@ function Register_groupLoginPage(string $group)
 }
 
 /**
- * Add new user to array
- *
- * @param User[] $array
- * @param string[] $accessgroups
- * @return User[]
- */
-function registerAddUser(
-    array $array,
-    string $username,
-    string $password,
-    array $accessgroups,
-    string $name,
-    string $email,
-    string $status
-) {
-    $entry = new User(
-        $username,
-        $password,
-        $accessgroups,
-        $name,
-        $email,
-        $status
-    );
-
-    $array[] = $entry;
-    return $array;
-}
-
-/**
  * Search array of user entries for key and value.
  *
  * @param User[] $array
@@ -262,7 +233,7 @@ function registerUser(): string
         $plugin_cf["register"],
         $plugin_tx["register"],
         new View(),
-        new DbService(Register_dataFolder()),
+        new UserRepository(new DbService(Register_dataFolder())),
         new MailService()
     );
     if (isset($_POST['action']) && $_POST['action'] === 'register_user') {

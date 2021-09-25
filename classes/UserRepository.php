@@ -44,6 +44,16 @@ class UserRepository
         return $user ? $user : null;
     }
 
+    public function add(User $user): bool
+    {
+        $this->dbService->lock(LOCK_EX);
+        $users = $this->dbService->readUsers();
+        $users[] = $user;
+        $result = $this->dbService->writeUsers($users);
+        $this->dbService->lock(LOCK_EX);
+        return $result;
+    }
+
     public function update(User $user): bool
     {
         $this->dbService->lock(LOCK_EX);

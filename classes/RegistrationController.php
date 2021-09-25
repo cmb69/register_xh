@@ -28,9 +28,9 @@ class RegistrationController
     private $view;
 
     /**
-     * @var DbService
+     * @var UserRepository
      */
-    private $dbService;
+    private $userRepository;
 
     /**
      * @var MailService
@@ -41,12 +41,17 @@ class RegistrationController
      * @param array<string,string> $config
      * @param array<string,string> $lang
      */
-    public function __construct(array $config, array $lang, View $view, DbService $dbService, MailService $mailService)
-    {
+    public function __construct(
+        array $config,
+        array $lang,
+        View $view,
+        UserRepository $userRepository,
+        MailService $mailService
+    ) {
         $this->config = $config;
         $this->lang = $lang;
         $this->view = $view;
-        $this->dbService = $dbService;
+        $this->userRepository = $userRepository;
         $this->mailService = $mailService;
     }
 
@@ -81,37 +86,29 @@ class RegistrationController
             echo $this->form($name, $username, $password1, $password2, $email);
         }
 
-        // read user file in CSV format separated by colons
-        $this->dbService->lock(LOCK_EX);
-        $userArray = $this->dbService->readUsers();
-
-        // check if user or other user for same email address exists
-        if (registerSearchUserArray($userArray, 'username', $username) !== false) {
+        if (!$this->userRepository->findByUsername($username)) {
             $this->view->message("fail", $this->lang['err_username_exists']);
-            $this->dbService->lock(LOCK_UN);
             return;
         }
-        $user = registerSearchUserArray($userArray, 'email', $email);
+        $user = $this->userRepository->findByEmail($email);
 
         // generate a nonce for the user activation
         $status = bin2hex(random_bytes(16));
-        $userArray = registerAddUser(
-            $userArray,
-            $username,
-            password_hash($password1, PASSWORD_DEFAULT),
-            array($this->config['group_default']),
-            $name,
-            $email,
-            $status
-        );
+        if (!$user) {
+            $newUser = new User(
+                $username,
+                password_hash($password1, PASSWORD_DEFAULT),
+                array($this->config['group_default']),
+                $name,
+                $email,
+                $status
+            );
 
-        // write CSV file if no errors occurred so far
-        if (!$user && !$this->dbService->writeUsers($userArray)) {
-            $this->view->message("fail", $this->lang['err_cannot_write_csv']);
-            $this->dbService->lock(LOCK_UN);
-            return;
+            if (!$this->userRepository->add($newUser)) {
+                $this->view->message("fail", $this->lang['err_cannot_write_csv']);
+                return;
+            }
         }
-        $this->dbService->lock(LOCK_UN);
 
         // prepare email content for registration activation
         $content = $this->lang['emailtext1'] . "\n\n"
@@ -163,34 +160,24 @@ class RegistrationController
 
     private function activateUser(string $user, string $nonce): string
     {
-        // read user file in CSV format separated by colons
-        $this->dbService->lock(LOCK_EX);
-        $userArray = $this->dbService->readUsers();
-    
-        // check if user or other user for same email address exists
-        $entry = registerSearchUserArray($userArray, 'username', $user);
-        if ($entry === false) {
+        $entry = $this->userRepository->findByUsername($user);
+        if ($entry === null) {
             $this->view->message("fail", $this->lang['err_username_notfound'] . $user);
-            $this->dbService->lock(LOCK_UN);
             return "";
         }
         if ($entry->getStatus() == "") {
             $this->view->message("fail", $this->lang['err_status_empty']);
-            $this->dbService->lock(LOCK_UN);
             return "";
         }
         if ($nonce != $entry->getStatus()) {
             $this->view->message("fail", $this->lang['err_status_invalid']);
-            $this->dbService->lock(LOCK_UN);
             return "";
         }
 
         $entry->activate();
         $entry->setAccessgroups(array($this->config['group_activated']));
-        $userArray = registerReplaceUserEntry($userArray, $entry);
-        $this->dbService->writeUsers($userArray);
+        $this->userRepository->update($entry);
         $o = $this->view->message('success', $this->lang['activated']);
-        $this->dbService->lock(LOCK_UN);
         return $o;
     }
 
