@@ -40,7 +40,7 @@ class Plugin
 
         if (!($edit && self::isAdmin()) && $plugin_cf['register']['hide_pages']) {
             if ($temp = Register_currentUser()) {
-                self::removeHiddenPages($temp->accessgroups);
+                self::removeHiddenPages($temp->getAccessgroups());
             } else {
                 self::removeHiddenPages([]);
             }

@@ -113,8 +113,9 @@ class DbService
         }
 
         foreach ($array as $entry) {
-            $groupname = $entry->groupname;
-            $line = "$groupname|$entry->loginpage\n";
+            $groupname = $entry->getGroupname();
+            $loginpage = $entry->getLoginpage();
+            $line = "$groupname|$loginpage\n";
             if (!fwrite($fp, $line)) {
                 fclose($fp);
                 return false;
@@ -208,12 +209,12 @@ class DbService
         }
 
         foreach ($array as $entry) {
-            $username = $entry->username;
-            $password = $entry->password;
-            $accessgroups = implode(',', $entry->accessgroups);
-            $fullname = $entry->name;
-            $email = $entry->email;
-            $status = $entry->status;
+            $username = $entry->getUsername();
+            $password = $entry->getPassword();
+            $accessgroups = implode(',', $entry->getAccessgroups());
+            $fullname = $entry->getName();
+            $email = $entry->getEmail();
+            $status = $entry->getStatus();
             $line = "$username:$password:$accessgroups:$fullname:$email:$status"."\n";
             if (!fwrite($fp, $line)) {
                 fclose($fp);

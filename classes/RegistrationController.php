@@ -173,10 +173,10 @@ class RegistrationController
         if ($entry === false) {
             $errors[] = $this->lang['err_username_notfound'] . $user;
         } else {
-            if (!isset($entry->status) || $entry->status == "") {
+            if ($entry->getStatus() == "") {
                 $errors[] = $this->lang['err_status_empty'];
             }
-            if ($nonce != $entry->status) {
+            if ($nonce != $entry->getStatus()) {
                 $errors[] = $this->lang['err_status_invalid'];
             }
         }
@@ -184,8 +184,8 @@ class RegistrationController
         if (!empty($errors)) {
             $o .= $this->view->render('error', ['errors' => $errors]);
         } else {
-            $entry->status = "activated";
-            $entry->accessgroups = array($this->config['group_activated']);
+            $entry->setStatus("activated");
+            $entry->setAccessgroups(array($this->config['group_activated']));
             $userArray = registerReplaceUserEntry($userArray, $entry);
             $this->dbService->writeUsers($userArray);
             $o .= $this->view->message('success', $this->lang['activated']);

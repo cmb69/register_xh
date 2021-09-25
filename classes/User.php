@@ -12,39 +12,33 @@ class User
 {
     /**
      * @var string
-     * @readonly
      */
-    public $username;
+    private $username;
 
     /**
      * @var string
-     * @readonly
      */
-    public $password;
+    private $password;
     
     /**
      * @var string[]
-     * @readonly
      */
-    public $accessgroups;
+    private $accessgroups;
     
     /**
      * @var string
-     * @readonly
      */
-    public $name;
+    private $name;
 
     /**
      * @var string
-     * @readonly
      */
-    public $email;
+    private $email;
 
     /**
      * @var string
-     * @readonly
      */
-    public $status;
+    private $status;
 
     /**
      * @param string[] $accessgroups
@@ -62,6 +56,80 @@ class User
         $this->accessgroups = $accessgroups;
         $this->name = $name;
         $this->email = $email;
+        $this->status = $status;
+    }
+
+    public function getUsername(): string
+    {
+        return $this->username;
+    }
+
+    public function getPassword(): string
+    {
+        return $this->password;
+    }
+
+    /**
+     * @return array<int,string>
+     */
+    public function getAccessgroups(): array
+    {
+        return $this->accessgroups;
+    }
+
+    public function getName(): string
+    {
+        return $this->name;
+    }
+
+    public function getEmail(): string
+    {
+        return $this->email;
+    }
+
+    public function getStatus(): string
+    {
+        return $this->status;
+    }
+
+    /**
+     * @return void
+     */
+    public function setPassword(string $password)
+    {
+        $this->password = $password;
+    }
+
+    /**
+     * @param array<int,string> $accessgroups
+     * @return void
+     */
+    public function setAccessgroups(array $accessgroups)
+    {
+        $this->accessgroups = $accessgroups;
+    }
+
+    /**
+     * @return void
+     */
+    public function setName(string $name)
+    {
+        $this->name = $name;
+    }
+
+    /**
+     * @return void
+     */
+    public function setEmail(string $email)
+    {
+        $this->email = $email;
+    }
+
+    /**
+     * @return void
+     */
+    public function setStatus(string $status)
+    {
         $this->status = $status;
     }
 

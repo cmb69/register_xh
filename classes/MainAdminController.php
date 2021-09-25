@@ -91,7 +91,7 @@ class MainAdminController
         // put all available group Ids in an array for easier handling
         $groupIds = array();
         foreach ($groups as $entry) {
-            $groupIds[] = $entry->groupname;
+            $groupIds[] = $entry->getGroupname();
         }
 
         $delete = $_POST['delete'] ?? [];
@@ -252,8 +252,8 @@ class MainAdminController
         ];
         $groupStrings = $statusSelects = [];
         foreach ($users as $i => $entry) {
-            $groupStrings[] = implode(",", $entry->accessgroups);
-            $statusSelects[] = new HtmlString($this->statusSelectbox($entry->status, $i));
+            $groupStrings[] = implode(",", $entry->getAccessgroups());
+            $statusSelects[] = new HtmlString($this->statusSelectbox($entry->getStatus(), $i));
         }
         $data['groupStrings'] = $groupStrings;
         $data['statusSelects'] = $statusSelects;
@@ -413,7 +413,7 @@ class MainAdminController
         ];
         $selects = [];
         foreach ($groups as $i => $entry) {
-            $selects[] = new HtmlString($this->pageSelectbox($entry->loginpage, $i));
+            $selects[] = new HtmlString($this->pageSelectbox($entry->getLoginpage(), $i));
         }
         $data['selects'] = $selects;
         echo $this->view->render('admin-groups', $data);

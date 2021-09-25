@@ -27,7 +27,7 @@ use Register\View;
       </tr>
 <?php foreach ($groups as $i => $entry):?>
       <tr>
-        <td><input type="text" size="10" value="<?=$this->esc($entry->groupname)?>" name="groupname[<?=$this->esc($i)?>]"></td>
+        <td><input type="text" size="10" value="<?=$this->esc($entry->getGroupname())?>" name="groupname[<?=$this->esc($i)?>]"></td>
         <td><?=$this->esc($selects[$i])?></td>
         <td><button name="delete[<?=$this->esc($i)?>]" value="1"><?=$this->text("label_delete")?></i></td>
       </tr>

@@ -91,13 +91,13 @@ class ForgotPasswordController
         if ($user) {
             // prepare email content for user data email
             $content = $this->lang['emailtext1'] . "\n\n"
-                . ' ' . $this->lang['name'] . ": " . $user->name . "\n"
-                . ' ' . $this->lang['username'] . ": " . $user->username . "\n";
-            $content .= ' ' . $this->lang['email'] . ": " . $user->email . "\n";
+                . ' ' . $this->lang['name'] . ": " . $user->getName() . "\n"
+                . ' ' . $this->lang['username'] . ": " . $user->getUsername() . "\n";
+            $content .= ' ' . $this->lang['email'] . ": " . $user->getEmail() . "\n";
             $content .= "\n" . $this->lang['emailtext3'] ."\n\n"
                 . '<' . CMSIMPLE_URL . '?' . $su . '&'
-                . 'action=registerResetPassword&username=' . urlencode($user->username) . '&nonce='
-                . urlencode($user->password) . '>';
+                . 'action=registerResetPassword&username=' . urlencode($user->getUsername()) . '&nonce='
+                . urlencode($user->getPassword()) . '>';
 
             // send reminder email
             $this->mailService->sendMail(
@@ -121,7 +121,7 @@ class ForgotPasswordController
             return;
         }
 
-        if ($user->password != $_GET['nonce']) {
+        if ($user->getPassword() != $_GET['nonce']) {
             echo $this->view->message("fail", $this->lang['err_status_invalid']);
             return;
         }
@@ -135,14 +135,14 @@ class ForgotPasswordController
 
         // prepare email content for user data email
         $content = $this->lang['emailtext1'] . "\n\n"
-            . ' ' . $this->lang['name'] . ": " . $user->name . "\n"
-            . ' ' . $this->lang['username'] . ": " . $user->username . "\n"
+            . ' ' . $this->lang['name'] . ": " . $user->getName() . "\n"
+            . ' ' . $this->lang['username'] . ": " . $user->getUsername() . "\n"
             . ' ' . $this->lang['password'] . ": " . $password . "\n"
-            . ' ' . $this->lang['email'] . ": " . $user->email . "\n";
+            . ' ' . $this->lang['email'] . ": " . $user->getEmail() . "\n";
 
         // send reminder email
         $this->mailService->sendMail(
-            $user->email,
+            $user->getEmail(),
             $this->lang['reminderemailsubject'] . ' ' . $_SERVER['SERVER_NAME'],
             $content,
             array('From: ' . $this->config['senderemail'])

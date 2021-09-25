@@ -73,10 +73,10 @@ class UserPrefsController
         $entry = registerSearchUserArray($userArray, 'username', $username);
         if ($entry === false) {
             echo $this->view->message('fail', $this->lang['err_username_does_not_exist'] . " ('" . $username . "')");
-        } elseif ($entry->status == "locked") {
+        } elseif ($entry->getStatus() == "locked") {
             echo $this->view->message('fail', $this->lang['user_locked'] . ':' .$username);
         } else {
-            echo $this->renderForm($entry->name, $entry->email);
+            echo $this->renderForm($entry->getName(), $entry->getEmail());
         }
     }
 
@@ -112,14 +112,14 @@ class UserPrefsController
         }
 
         // Test if user is locked
-        if ($entry->status == "locked") {
+        if ($entry->getStatus() == "locked") {
             echo $this->view->message('fail', $this->lang['user_locked'] . ':' .$username);
             $this->dbService->lock(LOCK_UN);
             return;
         }
 
         // check that old password got entered correctly
-        if (!password_verify($oldpassword, $entry->password)) {
+        if (!password_verify($oldpassword, $entry->getPassword())) {
             echo $this->view->message("fail", $this->lang['err_old_password_wrong']);
             echo $this->renderForm($name, $email);
             $this->dbService->lock(LOCK_UN);
@@ -131,10 +131,10 @@ class UserPrefsController
             $password2 = $oldpassword;
         }
         if ($email == "") {
-            $email = $entry->email;
+            $email = $entry->getEmail();
         }
         if ($name == "") {
-            $name = $entry->name;
+            $name = $entry->getName();
         }
 
         $validationService = new ValidationService($this->lang);
@@ -146,12 +146,12 @@ class UserPrefsController
             return;
         }
 
-        $oldemail = $entry->email;
+        $oldemail = $entry->getEmail();
 
         // read user entry, update it and write it back to CSV file
-        $entry->password = password_hash($password1, PASSWORD_DEFAULT);
-        $entry->email    = $email;
-        $entry->name     = $name;
+        $entry->setPassword(password_hash($password1, PASSWORD_DEFAULT));
+        $entry->setEmail($email);
+        $entry->setName($name);
         $userArray = registerReplaceUserEntry($userArray, $entry);
 
         // write CSV file if no errors occurred so far
@@ -211,14 +211,14 @@ class UserPrefsController
         }
 
         // Test if user is locked
-        if ($entry->status == "locked") {
+        if ($entry->getStatus() == "locked") {
             echo $this->view->message('fail', $this->lang['user_locked'] . ':' .$username);
             $this->dbService->lock(LOCK_UN);
             return;
         }
 
         // Form Handling - Delete User ================================================
-        if (!password_verify($oldpassword, $entry->password)) {
+        if (!password_verify($oldpassword, $entry->getPassword())) {
             echo $this->view->message("fail", $this->lang['err_old_password_wrong']);
             echo $this->renderForm($name, $email);
             $this->dbService->lock(LOCK_UN);

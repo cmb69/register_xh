@@ -12,19 +12,27 @@ class UserGroup
 {
     /**
      * @var string
-     * @readonly
      */
-    public $groupname;
+    private $groupname;
 
     /**
      * @var string
-     * @readonly
      */
-    public $loginpage;
+    private $loginpage;
 
     public function __construct(string $groupname, string $loginpage)
     {
         $this->groupname = $groupname;
         $this->loginpage = $loginpage;
+    }
+
+    public function getGroupname(): string
+    {
+        return $this->groupname;
+    }
+
+    public function getLoginpage(): string
+    {
+        return $this->loginpage;
     }
 }

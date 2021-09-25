@@ -75,7 +75,7 @@ function register_access(string $groupString): string
 
     $user = Register_currentUser();
     if ($function !== 'search'
-            && (!Register_isLoggedIn() || !count(array_intersect($groupNames, $user->accessgroups)))) {
+            && (!Register_isLoggedIn() || !count(array_intersect($groupNames, $user->getAccessgroups())))) {
         // go to access error page
         $pageTitle = uenc($plugin_tx['register']['access_error']);
         header('Location: '.CMSIMPLE_URL.'?'. $pageTitle);
@@ -96,8 +96,8 @@ function Register_groupLoginPage(string $group)
 {
     $groups = (new DbService(Register_dataFolder()))->readGroups();
     foreach ($groups as $rec) {
-        if ($rec->groupname == $group) {
-            return $rec->loginpage;
+        if ($rec->getGroupname() == $group) {
+            return $rec->getLoginpage();
         }
     }
     return false;
@@ -158,9 +158,9 @@ function registerSearchUserArray(array $array, string $key, $value)
 function registerReplaceUserEntry(array $array, User $newentry): array
 {
     $newarray = array();
-    $username = $newentry->username;
+    $username = $newentry->getUsername();
     foreach ($array as $entry) {
-        if (isset($entry->username) && $entry->username == $username) {
+        if ($entry->getUsername() == $username) {
             $newarray[] = $newentry;
         } else {
             $newarray[] = $entry;
@@ -179,7 +179,7 @@ function registerDeleteUserEntry(array $array, string $username): array
 {
     $newarray = array();
     foreach ($array as $entry) {
-        if (isset($entry->username) && $entry->username != $username) {
+        if ($entry->getUsername() != $username) {
             $newarray[] = $entry;
         }
     }
@@ -382,8 +382,8 @@ function registerloginform(): string
         $user = Register_currentUser();
         $userPrefUrl = uenc($plugin_tx['register']['user_prefs']);
         $data = [
-            'fullName' => $user->name,
-            'hasUserPrefs' => $user->status == 'activated' &&
+            'fullName' => $user->getName(),
+            'hasUserPrefs' => $user->getStatus() == 'activated' &&
                 urldecode($su) != $userPrefUrl,
             'userPrefUrl' => "?$userPrefUrl",
             'logoutUrl' => "$sn?&function=registerlogout",
