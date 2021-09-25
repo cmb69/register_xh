@@ -142,7 +142,7 @@ function registerAddUser(
 function registerSearchUserArray(array $array, string $key, $value)
 {
     foreach ($array as $entry) {
-        if (isset($entry->{$key}) && $entry->{$key} == $value) {
+        if ($entry->{"get$key"}() == $value) {
             return $entry;
         }
     }
