@@ -8,6 +8,7 @@
  * Copyright (c) 2012-2021 Christoph M. Becker
  */
 
+use XH\CSRFProtection as CsrfProtector;
 use Register\DbService;
 use Register\ForgotPasswordController;
 use Register\MailService;
@@ -17,6 +18,7 @@ use Register\User;
 use Register\UserGroup;
 use Register\UserPrefsController;
 use Register\UserRepository;
+use Register\ValidationService;
 use Register\View;
 
 function Register_dataFolder(): string
@@ -330,6 +332,8 @@ function registerUserPrefs(): string
     $controller = new UserPrefsController(
         $plugin_cf["register"],
         $plugin_tx["register"],
+        new CsrfProtector('register_csrf_token', false),
+        new ValidationService($plugin_tx["register"]),
         new UserRepository(new DbService(Register_dataFolder())),
         new View(),
         new MailService()

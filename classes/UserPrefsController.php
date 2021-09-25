@@ -10,7 +10,7 @@
 
 namespace Register;
 
-use XH\CSRFProtection;
+use XH\CSRFProtection as CsrfProtector;
 
 class UserPrefsController
 {
@@ -25,9 +25,14 @@ class UserPrefsController
     private $lang;
 
     /**
-     * @var CSRFProtection
+     * @var CsrfProtector
      */
     private $csrfProtector;
+
+    /**
+     * @var ValidationService
+     */
+    private $validationService;
 
     /**
      * @var UserRepository
@@ -51,6 +56,8 @@ class UserPrefsController
     public function __construct(
         array $config,
         array $lang,
+        CsrfProtector $csrfProtector,
+        ValidationService $validationService,
         UserRepository $userRepository,
         View $view,
         MailService $mailService
@@ -58,7 +65,8 @@ class UserPrefsController
         $this->config = $config;
         $this->lang = $lang;
         XH_startSession();
-        $this->csrfProtector = new CSRFProtection('register_csrf_token', false);
+        $this->csrfProtector = $csrfProtector;
+        $this->validationService = $validationService;
         $this->userRepository = $userRepository;
         $this->view = $view;
         $this->mailService = $mailService;
@@ -130,8 +138,7 @@ class UserPrefsController
             $name = $entry->getName();
         }
 
-        $validationService = new ValidationService($this->lang);
-        $errors = $validationService->validateUser($name, $username, $password1, $password2, $email);
+        $errors = $this->validationService->validateUser($name, $username, $password1, $password2, $email);
         if ($errors) {
             echo $this->view->render('error', ['errors' => $errors]);
             echo $this->renderForm($name, $email);
