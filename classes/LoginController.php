@@ -65,7 +65,7 @@ class LoginController
 
         // check password and set session variables
         if ($entry && $entry->getUsername() == $username
-                && ($entry->getStatus() == 'activated' || $entry->getStatus() == 'locked')
+                && ($entry->isActivated() || $entry->isLocked())
                 && (!isset($passwordHash) || $passwordHash == $entry->getPassword())
                 && (isset($passwordHash)
                 || (password_verify($password, $entry->getPassword())))) {

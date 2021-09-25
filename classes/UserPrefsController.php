@@ -73,7 +73,7 @@ class UserPrefsController
         $entry = registerSearchUserArray($userArray, 'username', $username);
         if ($entry === false) {
             echo $this->view->message('fail', $this->lang['err_username_does_not_exist'] . " ('" . $username . "')");
-        } elseif ($entry->getStatus() == "locked") {
+        } elseif ($entry->isLocked()) {
             echo $this->view->message('fail', $this->lang['user_locked'] . ':' .$username);
         } else {
             echo $this->renderForm($entry->getName(), $entry->getEmail());
@@ -112,7 +112,7 @@ class UserPrefsController
         }
 
         // Test if user is locked
-        if ($entry->getStatus() == "locked") {
+        if ($entry->isLocked()) {
             echo $this->view->message('fail', $this->lang['user_locked'] . ':' .$username);
             $this->dbService->lock(LOCK_UN);
             return;
@@ -211,7 +211,7 @@ class UserPrefsController
         }
 
         // Test if user is locked
-        if ($entry->getStatus() == "locked") {
+        if ($entry->isLocked()) {
             echo $this->view->message('fail', $this->lang['user_locked'] . ':' .$username);
             $this->dbService->lock(LOCK_UN);
             return;

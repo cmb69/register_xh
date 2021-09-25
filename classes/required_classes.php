@@ -383,7 +383,7 @@ function registerloginform(): string
         $userPrefUrl = uenc($plugin_tx['register']['user_prefs']);
         $data = [
             'fullName' => $user->getName(),
-            'hasUserPrefs' => $user->getStatus() == 'activated' &&
+            'hasUserPrefs' => $user->isActivated() &&
                 urldecode($su) != $userPrefUrl,
             'userPrefUrl' => "?$userPrefUrl",
             'logoutUrl' => "$sn?&function=registerlogout",

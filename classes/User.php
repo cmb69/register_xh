@@ -92,6 +92,16 @@ class User
         return $this->status;
     }
 
+    public function isActivated(): bool
+    {
+        return $this->status === "activated";
+    }
+
+    public function isLocked(): bool
+    {
+        return $this->status === "locked";
+    }
+
     /**
      * @return void
      */
