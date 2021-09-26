@@ -57,6 +57,7 @@ class LoginController
 
         $username = $_POST['username'] ?? '';
         $password = $_POST['password'] ?? '';
+        $passwordHash = null;
 
         // set username and password in case cookies are set
         if ($this->config['remember_user']
@@ -64,14 +65,10 @@ class LoginController
             $username     = $_COOKIE['register_username'];
             $passwordHash = $_COOKIE['register_password'];
         }
-    
+
         $entry = $this->userRepository->findByUsername($username);
         // check password and set session variables
-        if ($entry && $entry->getUsername() == $username
-                && ($entry->isActivated() || $entry->isLocked())
-                && (!isset($passwordHash) || $passwordHash == $entry->getPassword())
-                && (isset($passwordHash)
-                || (password_verify($password, $entry->getPassword())))) {
+        if ($this->isUserAuthenticated($entry, $password, $passwordHash)) {
             // set cookies if requested by user
             if ($this->config['remember_user'] && isset($_POST['remember'])) {
                 setcookie('register_username', $username, time() + $rememberPeriod, CMSIMPLE_ROOT);
@@ -108,6 +105,18 @@ class LoginController
             header('Location: ' . CMSIMPLE_URL . '?' . $errorTitle);
             exit;
         }
+    }
+
+    /**
+     * @param User|null $user
+     * @param string|null $passwordHash
+     */
+    private function isUserAuthenticated($user, string $password, $passwordHash): bool
+    {
+        return $user
+            && ($user->isActivated() || $user->isLocked())
+            && (!isset($passwordHash) || $passwordHash == $user->getPassword())
+            && (isset($passwordHash) || (password_verify($password, $user->getPassword())));
     }
 
     /**
