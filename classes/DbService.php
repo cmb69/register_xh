@@ -25,6 +25,11 @@ class DbService
         $this->dirname = $dirname;
     }
 
+    public function dataFolder(): string
+    {
+        return $this->dirname;
+    }
+
     /**
      * @param int $mode
      * @return void

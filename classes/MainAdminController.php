@@ -62,7 +62,7 @@ class MainAdminController
      */
     public function editUsersAction()
     {
-        $fn = Register_dataFolder() . 'users.csv';
+        $fn = $this->dbService->dataFolder() . 'users.csv';
         if (is_file($fn)) {
             $this->dbService->lock(LOCK_SH);
             $users  = $this->dbService->readUsers();
@@ -81,11 +81,11 @@ class MainAdminController
     {
         $this->csrfProtector->check();
         $errors = [];
-        if (is_file(Register_dataFolder() . 'groups.csv')) {
+        if (is_file($this->dbService->dataFolder() . 'groups.csv')) {
             $groups = $this->dbService->readGroups();
         } else {
             $groups = [];
-            $errors[] = $this->lang['err_csv_missing'] . ' (' . Register_dataFolder() . 'groups.csv' . ')';
+            $errors[] = $this->lang['err_csv_missing'] . ' (' . $this->dbService->dataFolder() . 'groups.csv' . ')';
         }
 
         // put all available group Ids in an array for easier handling
@@ -185,7 +185,8 @@ class MainAdminController
         if (!$deleted && !$added && empty($errors)) {
             $this->dbService->lock(LOCK_EX);
             if (!$this->dbService->writeUsers($newusers)) {
-                $errors[] = $this->lang['err_cannot_write_csv'] . ' (' . Register_dataFolder() . 'users.csv' . ')';
+                $errors[] = $this->lang['err_cannot_write_csv']
+                    . ' (' . $this->dbService->dataFolder() . 'users.csv' . ')';
             }
             $this->dbService->lock(LOCK_UN);
 
@@ -194,7 +195,7 @@ class MainAdminController
             } else {
                 echo $this->view->message(
                     'success',
-                    $this->lang['csv_written'] . ' (' . Register_dataFolder() . 'users.csv' . ')'
+                    $this->lang['csv_written'] . ' (' . $this->dbService->dataFolder() . 'users.csv' . ')'
                 );
             }
         } elseif (!empty($errors)) {
@@ -329,7 +330,7 @@ class MainAdminController
      */
     public function editGroupsAction()
     {
-        $filename = Register_dataFolder() . 'groups.csv';
+        $filename = $this->dbService->dataFolder() . 'groups.csv';
         if (is_file($filename)) {
             $groups = $this->dbService->readGroups();
             $this->renderGroupsForm($groups);
@@ -376,14 +377,15 @@ class MainAdminController
         // In case that nothing got deleted or added, store back (save got pressed)
         if (!$deleted && !$added && empty($errors)) {
             if (!$this->dbService->writeGroups($newgroups)) {
-                $errors[] = $this->lang['err_cannot_write_csv'] . ' (' . Register_dataFolder() . 'groups.csv' . ')';
+                $errors[] = $this->lang['err_cannot_write_csv']
+                    . ' (' . $this->dbService->dataFolder() . 'groups.csv' . ')';
             }
             if (!empty($errors)) {
                 echo $this->renderErrorView($errors);
             } else {
                 echo $this->view->message(
                     'success',
-                    $this->lang['csv_written'] . '(' . Register_dataFolder() . 'groups.csv' . ')'
+                    $this->lang['csv_written'] . '(' . $this->dbService->dataFolder() . 'groups.csv' . ')'
                 );
             }
         } elseif (!empty($errors)) {

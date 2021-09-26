@@ -47,7 +47,7 @@ class Plugin
             }
         }
 
-        $dbService = new DbService(Register_dataFolder());
+        $dbService = new DbService(self::dataFolder());
         if (!self::currentUser() && $function === 'registerlogin') {
             $controller = new LoginController(
                 $plugin_cf["register"],
@@ -204,7 +204,7 @@ class Plugin
                     $plugin_cf["register"],
                     $plugin_tx["register"],
                     new View(),
-                    new DbService(Register_dataFolder())
+                    new DbService(self::dataFolder())
                 );
                 ob_start();
                 switch ($action) {
@@ -236,7 +236,7 @@ class Plugin
         $view = new View();
         return $view->render('info', [
             'version' => self::VERSION,
-            'checks' => (new SystemCheckService)->getChecks(),
+            'checks' => (new SystemCheckService(self::dataFolder()))->getChecks(),
         ]);
     }
 
@@ -281,7 +281,7 @@ class Plugin
             $plugin_tx["register"],
             new ValidationService($plugin_tx["register"]),
             new View(),
-            new UserRepository(new DbService(Register_dataFolder())),
+            new UserRepository(new DbService(self::dataFolder())),
             new MailService()
         );
         if (isset($_POST['action']) && $_POST['action'] === 'register_user') {
@@ -313,7 +313,7 @@ class Plugin
             $plugin_cf["register"],
             $plugin_tx["register"],
             new View(),
-            new UserRepository(new DbService(Register_dataFolder())),
+            new UserRepository(new DbService(self::dataFolder())),
             new MailService()
         );
         if (isset($_POST['action']) && $_POST['action'] === 'forgotten_password') {
@@ -344,7 +344,7 @@ class Plugin
             $plugin_tx["register"],
             new CsrfProtector('register_csrf_token', false),
             new ValidationService($plugin_tx["register"]),
-            new UserRepository(new DbService(Register_dataFolder())),
+            new UserRepository(new DbService(self::dataFolder())),
             new View(),
             new MailService()
         );
@@ -426,7 +426,7 @@ class Plugin
                 XH_startSession();
             }
             if (isset($_SESSION['username'])) {
-                $dbService = new DbService(Register_dataFolder());
+                $dbService = new DbService(self::dataFolder());
                 $dbService->lock(LOCK_SH);
                 $users = $dbService->readUsers();
                 $rec = registerSearchUserArray($users, 'username', $_SESSION['username']);
@@ -442,5 +442,35 @@ class Plugin
             }
         }
         return $user;
+    }
+
+    private static function dataFolder(): string
+    {
+        /**
+         * @var string $sl
+         * @var array<string,array<string,string>> $cf
+         * @var array<string,array<string,string>> $plugin_cf
+         * @var array{folder:array<string,string>,file:array<string,string>} $pth
+         */
+        global $sl, $cf, $plugin_cf, $pth;
+    
+        if ($sl === $cf['language']['default']) {
+            $folder = "{$pth['folder']['content']}register/";
+        } else {
+            $folder = dirname($pth['folder']['content']) . "/register/";
+        }
+        if (!is_dir($folder)) {
+            mkdir($folder, 0777, true);
+            chmod($folder, 0777);
+        }
+        if (!is_file("{$folder}users.csv")) {
+            (new DbService($folder))->writeUsers([]);
+        }
+        if (!is_file("{$folder}groups.csv")) {
+            (new DbService($folder))->writeGroups(
+                [new UserGroup($plugin_cf['register']['group_default'], '')]
+            );
+        }
+        return $folder;
     }
 }

@@ -25,7 +25,12 @@ class SystemCheckService
      */
     private $lang;
 
-    public function __construct()
+    /**
+     * @var string
+     */
+    private $dataFolder;
+
+    public function __construct(string $dataFolder)
     {
         /**
          * @var array{folder:array<string,string>,file:array<string,string>} $pth
@@ -36,6 +41,7 @@ class SystemCheckService
         $this->pluginsFolder = $pth['folder']['plugins'];
         $this->pluginFolder = "{$this->pluginsFolder}register";
         $this->lang = $plugin_tx['register'];
+        $this->dataFolder = $dataFolder;
     }
 
     /**
@@ -50,7 +56,7 @@ class SystemCheckService
             $this->checkWritability("$this->pluginFolder/css/"),
             $this->checkWritability("$this->pluginFolder/config/"),
             $this->checkWritability("$this->pluginFolder/languages/"),
-            $this->checkWritability(Register_dataFolder())
+            $this->checkWritability($this->dataFolder)
         );
     }
 
