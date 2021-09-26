@@ -80,6 +80,7 @@ class LoginController
 
         $entry = $this->userRepository->findByUsername($username);
         if ($this->isUserAuthenticated($entry, $password, $passwordHash)) {
+            assert($entry instanceof User);
             $this->loginManager->login($entry, $this->config['remember_user'] && isset($_POST['remember']));
             $this->logger->logInfo('login', "$username logged in");
 

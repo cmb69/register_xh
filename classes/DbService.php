@@ -41,8 +41,9 @@ class DbService
         $fn = $this->dirname . '/.lock';
         touch($fn);
         if ($mode != LOCK_UN) {
-            $fp = fopen($fn, 'r');
-            flock($fp, $mode);
+            if ($fp = fopen($fn, 'r')) {
+                flock($fp, $mode);
+            }
         } else {
             flock($fp, $mode);
             fclose($fp);
@@ -59,13 +60,15 @@ class DbService
         $groupArray = array();
         if (is_file($filename)) {
             $fp = fopen($filename, "r");
-            while (!feof($fp)) {
-                $line = rtrim(fgets($fp, 4096));
-                if ($entry = $this->readGroupLine($line)) {
-                    $groupArray[] = $entry;
+            if ($fp) {
+                while (!feof($fp)) {
+                    $line = rtrim((string) fgets($fp, 4096));
+                    if ($entry = $this->readGroupLine($line)) {
+                        $groupArray[] = $entry;
+                    }
                 }
+                fclose($fp);
             }
-            fclose($fp);
         }
         return $groupArray;
     }
@@ -145,15 +148,17 @@ class DbService
 
         if (is_file($filename)) {
             $fp = fopen($filename, "r");
-            while (!feof($fp)) {
-                $line = fgets($fp, 4096);
-                if ($line != "" && strpos($line, '//')=== false) {
-                    if ($entry = $this->readUserLine($line)) {
-                        $userArray[] = $entry;
+            if ($fp) {
+                while (!feof($fp)) {
+                    $line = fgets($fp, 4096);
+                    if ($line && strpos($line, '//') === false) {
+                        if ($entry = $this->readUserLine($line)) {
+                            $userArray[] = $entry;
+                        }
                     }
                 }
+                fclose($fp);
             }
-            fclose($fp);
         }
         return $userArray;
     }

@@ -104,7 +104,7 @@ class RegistrationController
         if (!$user) {
             $newUser = new User(
                 $username,
-                password_hash($password1, PASSWORD_DEFAULT),
+                (string) password_hash($password1, PASSWORD_DEFAULT),
                 array($this->config['group_default']),
                 $name,
                 $email,

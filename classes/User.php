@@ -148,6 +148,6 @@ class User
      */
     public function changePassword(string $password)
     {
-        $this->password = password_hash($password, PASSWORD_DEFAULT);
+        $this->password = (string) password_hash($password, PASSWORD_DEFAULT);
     }
 }

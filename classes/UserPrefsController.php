@@ -162,7 +162,7 @@ class UserPrefsController
         $oldemail = $entry->getEmail();
 
         // read user entry, update it and write it back to CSV file
-        $entry->setPassword(password_hash($password1, PASSWORD_DEFAULT));
+        $entry->setPassword((string) password_hash($password1, PASSWORD_DEFAULT));
         $entry->setEmail($email);
         $entry->setName($name);
 

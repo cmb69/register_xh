@@ -298,8 +298,8 @@ class MainAdminController
                 $$var = PHP_INT_MAX;
             }
         }
-        $maxVars = min($miv, $pmv, $rmv);
-        $maxRecords = intval(($maxVars - $additionalVars) / $varsPerRecord);
+        $maxVars = min((int) $miv, (int) $pmv, (int) $rmv);
+        $maxRecords = intdiv(($maxVars - $additionalVars), $varsPerRecord);
         return $maxRecords;
     }
 

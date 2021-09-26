@@ -94,6 +94,7 @@ class LoginFormController
     private function renderLoggedInForm(): string
     {
         $user = $this->currentUser;
+        assert($user instanceof User);
         $userPrefUrl = uenc($this->lang['user_prefs']);
         $data = [
             'fullName' => $user->getName(),

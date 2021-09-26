@@ -250,7 +250,7 @@ class Plugin
         );
         ob_start();
         (new InfoController(self::VERSION, $systemCheckService, new View()))->execute();
-        return ob_get_clean();
+        return (string) ob_get_clean();
     }
 
     public static function handlePageAccess(string $groupString): string
@@ -262,12 +262,12 @@ class Plugin
         global $plugin_tx, $function;
     
         // remove spaces etc.
-        $groupString = preg_replace("/[ \t\r\n]*/", '', $groupString);
+        $groupString = (string) preg_replace("/[ \t\r\n]*/", '', $groupString);
         $groupNames = explode(",", $groupString);
     
         $user = self::currentUser();
         if ($function !== 'search'
-                && (!self::currentUser() || !count(array_intersect($groupNames, $user->getAccessgroups())))) {
+                && (!$user || !count(array_intersect($groupNames, $user->getAccessgroups())))) {
             // go to access error page
             $pageTitle = uenc($plugin_tx['register']['access_error']);
             header('Location: '.CMSIMPLE_URL.'?'. $pageTitle);
@@ -306,7 +306,7 @@ class Plugin
         }
         ob_start();
         $controller->{$action}();
-        return ob_get_clean();
+        return (string) ob_get_clean();
     }
 
     public static function handleForgotPassword(): string
@@ -338,7 +338,7 @@ class Plugin
         }
         ob_start();
         $controller->{$action}();
-        return ob_get_clean();
+        return (string) ob_get_clean();
     }
 
     public static function handleUserPrefs(): string
@@ -372,7 +372,7 @@ class Plugin
         }
         ob_start();
         $controller->{$action}();
-        return ob_get_clean();
+        return (string) ob_get_clean();
     }
 
     public static function handleLoginForm(): string
@@ -395,7 +395,7 @@ class Plugin
         );
         ob_start();
         $controller->execute();
-        return ob_get_clean();
+        return (string) ob_get_clean();
     }
 
     public static function handleloggedInForm(): string

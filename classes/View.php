@@ -62,7 +62,7 @@ class View
         extract($_data);
         ob_start();
         include $_template;
-        return ob_get_clean();
+        return (string) ob_get_clean();
     }
 
     /**
