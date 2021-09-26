@@ -7,8 +7,10 @@ namespace {
     require_once './classes/DbService.php';
     require_once "./classes/ForgotPasswordController.php";
     require_once "./classes/HtmlString.php";
+    require_once "./classes/InfoController.php";
     require_once "./classes/MailService.php";
     require_once "./classes/RegistrationController.php";
+    require_once "./classes/SystemCheckService.php";
     require_once "./classes/User.php";
     require_once "./classes/UserGroup.php";
     require_once "./classes/UserPrefsController.php";

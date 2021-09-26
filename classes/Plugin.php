@@ -244,11 +244,9 @@ class Plugin
             $plugin_tx['register'],
             self::dataFolder()
         );
-        $view = new View();
-        return $view->render('info', [
-            'version' => self::VERSION,
-            'checks' => $systemCheckService->getChecks(),
-        ]);
+        ob_start();
+        (new InfoController(self::VERSION, $systemCheckService, new View()))->execute();
+        return ob_get_clean();
     }
 
     public static function handlePageAccess(string $groupString): string
