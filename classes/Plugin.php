@@ -233,10 +233,21 @@ class Plugin
      */
     private static function renderInfo()
     {
+        /**
+         * @var array{folder:array<string,string>,file:array<string,string>} $pth
+         * @var array<string,array<string,string>> $plugin_tx
+         */
+        global $pth, $plugin_tx;
+
+        $systemCheckService = new SystemCheckService(
+            $pth['folder']['plugins'],
+            $plugin_tx['register'],
+            self::dataFolder()
+        );
         $view = new View();
         return $view->render('info', [
             'version' => self::VERSION,
-            'checks' => (new SystemCheckService(self::dataFolder()))->getChecks(),
+            'checks' => $systemCheckService->getChecks(),
         ]);
     }
 

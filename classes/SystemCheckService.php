@@ -30,17 +30,14 @@ class SystemCheckService
      */
     private $dataFolder;
 
-    public function __construct(string $dataFolder)
+    /**
+     * @param array<string,string> $lang
+     */
+    public function __construct(string $pluginsFolder, array $lang, string $dataFolder)
     {
-        /**
-         * @var array{folder:array<string,string>,file:array<string,string>} $pth
-         * @var array<string,array<string,string>> $plugin_tx
-         */
-        global $pth, $plugin_tx;
-
-        $this->pluginsFolder = $pth['folder']['plugins'];
+        $this->pluginsFolder = $pluginsFolder;
         $this->pluginFolder = "{$this->pluginsFolder}register";
-        $this->lang = $plugin_tx['register'];
+        $this->lang = $lang;
         $this->dataFolder = $dataFolder;
     }
 
