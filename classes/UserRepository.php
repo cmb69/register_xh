@@ -50,7 +50,7 @@ class UserRepository
         $users = $this->dbService->readUsers();
         $users[] = $user;
         $result = $this->dbService->writeUsers($users);
-        $this->dbService->lock(LOCK_EX);
+        $this->dbService->lock(LOCK_UN);
         return $result;
     }
 
@@ -60,7 +60,7 @@ class UserRepository
         $users = $this->dbService->readUsers();
         $userArray = registerReplaceUserEntry($users, $user);
         $result = $this->dbService->writeUsers($userArray);
-        $this->dbService->lock(LOCK_EX);
+        $this->dbService->lock(LOCK_UN);
         return $result;
     }
 
@@ -70,7 +70,7 @@ class UserRepository
         $users = $this->dbService->readUsers();
         $userArray = registerDeleteUserEntry($users, $user->getUsername());
         $result = $this->dbService->writeUsers($userArray);
-        $this->dbService->lock(LOCK_EX);
+        $this->dbService->lock(LOCK_UN);
         return $result;
     }
 }
