@@ -379,37 +379,17 @@ class Plugin
          */
         global $plugin_cf, $plugin_tx, $sn, $su;
     
-        // If logged in show user preferences link, otherwise register and forgot email links.
-    
-        if (!self::currentUser()) {
-            // Begin register- and loginarea and user fields
-            $view = new View();
-            $forgotPasswordUrl = uenc($plugin_tx['register']['forgot_password']);
-            $registerUrl = uenc($plugin_tx['register']['register']);
-            $data = [
-                'actionUrl' => "$sn?$su",
-                'hasForgotPasswordLink' => $plugin_cf['register']['password_forgotten']
-                    && urldecode($su) != $forgotPasswordUrl,
-                'forgotPasswordUrl' => "$sn?$forgotPasswordUrl",
-                'hasRememberMe' => $plugin_cf['register']['remember_user'],
-                'isRegisterAllowed' => $plugin_cf['register']['allowed_register'],
-                'registerUrl' => "$sn?$registerUrl",
-            ];
-            return $view->render('loginform', $data);
-        } else {
-            // Logout Link and Preferences Link
-            $view = new View();
-            $user = self::currentUser();
-            $userPrefUrl = uenc($plugin_tx['register']['user_prefs']);
-            $data = [
-                'fullName' => $user->getName(),
-                'hasUserPrefs' => $user->isActivated() &&
-                    urldecode($su) != $userPrefUrl,
-                'userPrefUrl' => "?$userPrefUrl",
-                'logoutUrl' => "$sn?&function=registerlogout",
-            ];
-            return $view->render('loggedin-area', $data);
-        }
+        $controller = new LoginFormController(
+            $plugin_cf["register"],
+            $plugin_tx["register"],
+            $sn,
+            $su,
+            self::currentUser(),
+            new View()
+        );
+        ob_start();
+        $controller->execute();
+        return ob_get_clean();
     }
 
     public static function handleloggedInForm(): string
