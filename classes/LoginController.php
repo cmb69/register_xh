@@ -23,9 +23,9 @@ class LoginController
     private $lang;
 
     /**
-     * @var DbService
+     * @var UserRepository
      */
-    private $dbService;
+    private $userRepository;
 
     /**
      * @var UserGroupRepository
@@ -39,12 +39,12 @@ class LoginController
     public function __construct(
         array $config,
         array $lang,
-        DbService $dbService,
+        UserRepository $userRepository,
         UserGroupRepository $userGroupRepository
     ) {
         $this->config = $config;
         $this->lang = $lang;
-        $this->dbService = $dbService;
+        $this->userRepository = $userRepository;
         $this->userGroupRepository = $userGroupRepository;
     }
 
@@ -65,14 +65,7 @@ class LoginController
             $passwordHash = $_COOKIE['register_password'];
         }
     
-        // read user file in CSV format separated by colons
-        $this->dbService->lock(LOCK_SH);
-        $userArray = $this->dbService->readUsers();
-        $this->dbService->lock(LOCK_UN);
-
-        // search user in CSV data
-        $entry = registerSearchUserArray($userArray, 'username', $username);
-
+        $entry = $this->userRepository->findByUsername($username);
         // check password and set session variables
         if ($entry && $entry->getUsername() == $username
                 && ($entry->isActivated() || $entry->isLocked())

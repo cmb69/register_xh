@@ -52,7 +52,7 @@ class Plugin
             $controller = new LoginController(
                 $plugin_cf["register"],
                 $plugin_tx["register"],
-                $dbService,
+                new UserRepository($dbService),
                 new UserGroupRepository($dbService)
             );
             $controller->loginAction();
@@ -61,7 +61,7 @@ class Plugin
             $controller = new LoginController(
                 $plugin_cf["register"],
                 $plugin_tx["register"],
-                $dbService,
+                new UserRepository($dbService),
                 new UserGroupRepository($dbService)
             );
             $controller->logoutAction();
@@ -426,11 +426,8 @@ class Plugin
                 XH_startSession();
             }
             if (isset($_SESSION['username'])) {
-                $dbService = new DbService(self::dataFolder());
-                $dbService->lock(LOCK_SH);
-                $users = $dbService->readUsers();
-                $rec = registerSearchUserArray($users, 'username', $_SESSION['username']);
-                $dbService->lock(LOCK_UN);
+                $userRepository = new UserRepository(new DbService(self::dataFolder()));
+                $rec = $userRepository->findByUsername($_SESSION['username']);
                 if ($rec) {
                     $user = $rec;
                 } else {
