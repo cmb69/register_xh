@@ -35,12 +35,12 @@ class Plugin
         $pd_router->add_interest("register_access");
 
         if ($plugin_cf['register']['remember_user']
-                && isset($_COOKIE['register_username'], $_COOKIE['register_password']) && !Register_isLoggedIn()) {
+                && isset($_COOKIE['register_username'], $_COOKIE['register_password']) && !self::currentUser()) {
             $function = "registerlogin";
         }
 
         if (!($edit && self::isAdmin()) && $plugin_cf['register']['hide_pages']) {
-            if ($temp = Register_currentUser()) {
+            if ($temp = self::currentUser()) {
                 self::removeHiddenPages($temp->getAccessgroups());
             } else {
                 self::removeHiddenPages([]);
@@ -48,7 +48,7 @@ class Plugin
         }
 
         $dbService = new DbService(Register_dataFolder());
-        if (!Register_isLoggedIn() && $function === 'registerlogin') {
+        if (!self::currentUser() && $function === 'registerlogin') {
             $controller = new LoginController(
                 $plugin_cf["register"],
                 $plugin_tx["register"],
@@ -57,7 +57,7 @@ class Plugin
             );
             $controller->loginAction();
         }
-        if (Register_isLoggedIn() && $function === 'registerlogout') {
+        if (self::currentUser() && $function === 'registerlogout') {
             $controller = new LoginController(
                 $plugin_cf["register"],
                 $plugin_tx["register"],
@@ -252,9 +252,9 @@ class Plugin
         $groupString = preg_replace("/[ \t\r\n]*/", '', $groupString);
         $groupNames = explode(",", $groupString);
     
-        $user = Register_currentUser();
+        $user = self::currentUser();
         if ($function !== 'search'
-                && (!Register_isLoggedIn() || !count(array_intersect($groupNames, $user->getAccessgroups())))) {
+                && (!self::currentUser() || !count(array_intersect($groupNames, $user->getAccessgroups())))) {
             // go to access error page
             $pageTitle = uenc($plugin_tx['register']['access_error']);
             header('Location: '.CMSIMPLE_URL.'?'. $pageTitle);
@@ -272,7 +272,7 @@ class Plugin
         global $plugin_cf, $plugin_tx;
 
         // In case user is logged in, no registration page is shown
-        if (Register_isLoggedIn()) {
+        if (self::currentUser()) {
             header('Location: ' . CMSIMPLE_URL);
             exit;
         }
@@ -305,7 +305,7 @@ class Plugin
         global $plugin_cf, $plugin_tx;
 
         // In case user is logged in, no password forgotten page is shown
-        if (Register_isLoggedIn()) {
+        if (self::currentUser()) {
             header('Location: ' . CMSIMPLE_URL);
             exit;
         }
@@ -336,7 +336,7 @@ class Plugin
          */
         global $plugin_cf, $plugin_tx;
     
-        if (!Register_isLoggedIn()) {
+        if (!self::currentUser()) {
             return XH_message('fail', $plugin_tx['register']['access_error_text']);
         }
         $controller = new UserPrefsController(
@@ -372,7 +372,7 @@ class Plugin
     
         // If logged in show user preferences link, otherwise register and forgot email links.
     
-        if (!Register_isLoggedIn()) {
+        if (!self::currentUser()) {
             // Begin register- and loginarea and user fields
             $view = new View();
             $forgotPasswordUrl = uenc($plugin_tx['register']['forgot_password']);
@@ -390,7 +390,7 @@ class Plugin
         } else {
             // Logout Link and Preferences Link
             $view = new View();
-            $user = Register_currentUser();
+            $user = self::currentUser();
             $userPrefUrl = uenc($plugin_tx['register']['user_prefs']);
             $data = [
                 'fullName' => $user->getName(),
@@ -405,6 +405,42 @@ class Plugin
 
     public static function handleloggedInForm(): string
     {
-        return Register_isLoggedIn() ? registerloginform() : "";
+        return self::currentUser() ? registerloginform() : "";
+    }
+
+    /**
+     * @return User|null
+     */
+    private static function currentUser()
+    {
+        /**
+         * @var array{folder:array<string,string>,file:array<string,string>} $pth
+         */
+        global $pth;
+        static $user = null;
+
+        if (!$user) {
+            // it would be nice if XH had an API to get the session name without starting a session
+            $sessionfile = $pth['folder']['cmsimple'] . '.sessionname';
+            if (is_file($sessionfile) && isset($_COOKIE[file_get_contents($sessionfile)])) {
+                XH_startSession();
+            }
+            if (isset($_SESSION['username'])) {
+                $dbService = new DbService(Register_dataFolder());
+                $dbService->lock(LOCK_SH);
+                $users = $dbService->readUsers();
+                $rec = registerSearchUserArray($users, 'username', $_SESSION['username']);
+                $dbService->lock(LOCK_UN);
+                if ($rec) {
+                    $user = $rec;
+                } else {
+                    Register_logout();
+                    $user = null;
+                }
+            } else {
+                $user = null;
+            }
+        }
+        return $user;
     }
 }

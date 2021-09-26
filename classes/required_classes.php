@@ -45,14 +45,6 @@ function Register_dataFolder(): string
     return $folder;
 }
 
-/**
- * @return bool
- */
-function Register_isLoggedIn()
-{
-    return (bool) Register_currentUser();
-}
-
 function register_access(string $groupString): string
 {
     return Plugin::handlePageAccess($groupString);
@@ -78,44 +70,6 @@ function registerSearchUserArray(array $array, string $key, $value)
         }
     }
     return false;
-}
-
-/**
- * Returns the user record, if the user is logged in, otherwise null.
- *
- * @return User|null
- */
-function Register_currentUser()
-{
-    /**
-     * @var array{folder:array<string,string>,file:array<string,string>} $pth
-     */
-    global $pth;
-    static $user = null;
-
-    if (!$user) {
-        // it would be nice if XH had an API to get the session name without starting a session
-        $sessionfile = $pth['folder']['cmsimple'] . '.sessionname';
-        if (is_file($sessionfile) && isset($_COOKIE[file_get_contents($sessionfile)])) {
-            XH_startSession();
-        }
-        if (isset($_SESSION['username'])) {
-            $dbService = new DbService(Register_dataFolder());
-            $dbService->lock(LOCK_SH);
-            $users = $dbService->readUsers();
-            $rec = registerSearchUserArray($users, 'username', $_SESSION['username']);
-            $dbService->lock(LOCK_UN);
-            if ($rec) {
-                $user = $rec;
-            } else {
-                Register_logout();
-                $user = null;
-            }
-        } else {
-            $user = null;
-        }
-    }
-    return $user;
 }
 
 /**
