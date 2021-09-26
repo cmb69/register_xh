@@ -50,6 +50,11 @@ class UserPrefsController
     private $mailService;
 
     /**
+     * @var LoginManager
+     */
+    private $loginManager;
+
+    /**
      * @param array<string,string> $config
      * @param array<string,string> $lang
      */
@@ -60,7 +65,8 @@ class UserPrefsController
         ValidationService $validationService,
         UserRepository $userRepository,
         View $view,
-        MailService $mailService
+        MailService $mailService,
+        LoginManager $loginManager
     ) {
         $this->config = $config;
         $this->lang = $lang;
@@ -70,6 +76,7 @@ class UserPrefsController
         $this->userRepository = $userRepository;
         $this->view = $view;
         $this->mailService = $mailService;
+        $this->loginManager = $loginManager;
     }
 
     /**
@@ -218,7 +225,7 @@ class UserPrefsController
         }
 
         $username = $_SESSION['username'] ?? '';
-        Register_logout();
+        $this->loginManager->logout();
         XH_logMessage('info', 'register', 'logout', "$username deleted and logged out");
         echo $this->view->message('success', $this->lang['user_deleted'] . ': '.$username);
     }

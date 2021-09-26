@@ -9,6 +9,7 @@ namespace {
     require_once "./classes/HtmlString.php";
     require_once "./classes/InfoController.php";
     require_once "./classes/LoginFormController.php";
+    require_once "./classes/LoginManager.php";
     require_once "./classes/MailService.php";
     require_once "./classes/RegistrationController.php";
     require_once "./classes/SystemCheckService.php";

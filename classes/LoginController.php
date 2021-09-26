@@ -33,6 +33,11 @@ class LoginController
     private $userGroupRepository;
 
     /**
+     * @var LoginManager
+     */
+    private $loginManager;
+
+    /**
      * @param array<string,string> $config
      * @param array<string,string> $lang
      */
@@ -40,12 +45,14 @@ class LoginController
         array $config,
         array $lang,
         UserRepository $userRepository,
-        UserGroupRepository $userGroupRepository
+        UserGroupRepository $userGroupRepository,
+        LoginManager $loginManager
     ) {
         $this->config = $config;
         $this->lang = $lang;
         $this->userRepository = $userRepository;
         $this->userGroupRepository = $userGroupRepository;
+        $this->loginManager = $loginManager;
     }
 
     /**
@@ -53,8 +60,6 @@ class LoginController
      */
     public function loginAction()
     {
-        $rememberPeriod = 24*60*60*100;
-
         $username = $_POST['username'] ?? '';
         $password = $_POST['password'] ?? '';
         $passwordHash = null;
@@ -67,19 +72,8 @@ class LoginController
         }
 
         $entry = $this->userRepository->findByUsername($username);
-        // check password and set session variables
         if ($this->isUserAuthenticated($entry, $password, $passwordHash)) {
-            // set cookies if requested by user
-            if ($this->config['remember_user'] && isset($_POST['remember'])) {
-                setcookie('register_username', $username, time() + $rememberPeriod, CMSIMPLE_ROOT);
-                setcookie('register_password', $entry->getPassword(), time() + $rememberPeriod, CMSIMPLE_ROOT);
-            }
-
-            XH_startSession();
-            session_regenerate_id(true);
-
-            $_SESSION['username']     = $entry->getUsername();
-
+            $this->loginManager->login($entry, $this->config['remember_user'] && isset($_POST['remember']));
             XH_logMessage('info', 'register', 'login', "$username logged in");
 
             // go to login page if exists or to default page otherwise
@@ -92,12 +86,7 @@ class LoginController
             header('Location: ' . CMSIMPLE_URL . $loginPage);
             exit;
         } else {
-            // clear cookies
-            if (isset($_COOKIE['register_username'], $_COOKIE['register_password'])) {
-                setcookie('register_username', '', 0, CMSIMPLE_ROOT);
-                setcookie('register_password', '', 0, CMSIMPLE_ROOT);
-            }
-
+            $this->loginManager->forget();
             XH_logMessage('error', 'register', 'login', "$username wrong password");
 
             // go to login error page
@@ -126,7 +115,7 @@ class LoginController
     {
         XH_startSession();
         $username = $_SESSION['username'] ?? '';
-        Register_logout();
+        $this->loginManager->logout();
         XH_logMessage('info', 'register', 'logout', "$username logged out");
     
         $logoutTitle = uenc($this->lang['loggedout']);

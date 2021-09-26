@@ -53,7 +53,8 @@ class Plugin
                 $plugin_cf["register"],
                 $plugin_tx["register"],
                 new UserRepository($dbService),
-                new UserGroupRepository($dbService)
+                new UserGroupRepository($dbService),
+                new LoginManager()
             );
             $controller->loginAction();
         }
@@ -62,7 +63,8 @@ class Plugin
                 $plugin_cf["register"],
                 $plugin_tx["register"],
                 new UserRepository($dbService),
-                new UserGroupRepository($dbService)
+                new UserGroupRepository($dbService),
+                new LoginManager()
             );
             $controller->logoutAction();
         }
@@ -355,7 +357,8 @@ class Plugin
             new ValidationService($plugin_tx["register"]),
             new UserRepository(new DbService(self::dataFolder())),
             new View(),
-            new MailService()
+            new MailService(),
+            new LoginManager()
         );
         if (isset($_POST['action']) && $_POST['action'] === 'edit_user_prefs' && isset($_POST['submit'])) {
             $action = 'editAction';
@@ -420,7 +423,7 @@ class Plugin
                 if ($rec) {
                     $user = $rec;
                 } else {
-                    Register_logout();
+                    (new LoginManager())->logout();
                     $user = null;
                 }
             } else {

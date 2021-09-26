@@ -23,20 +23,6 @@ function access(string $groupString): string
 }
 
 /**
- * @return void
- */
-function Register_logout()
-{
-    XH_startSession();
-    session_regenerate_id(true);
-    unset($_SESSION['username']);
-    if (isset($_COOKIE['register_username'], $_COOKIE['register_password'])) {
-        setcookie('register_username', '', 0, CMSIMPLE_ROOT);
-        setcookie('register_password', '', 0, CMSIMPLE_ROOT);
-    }
-}
-
-/**
  * Create and handle register form
  */
 function registerUser(): string

@@ -67,6 +67,7 @@ class UserPrefsControllerTest extends TestCase
         $this->userRepository = $this->createMock(UserRepository::class);
         $this->view = $this->createMock(View::class);
         $mailService = $this->createStub(MailService::class);
+        $loginManager = $this->createStub(LoginManager::class);
         $this->subject = new UserPrefsController(
             $conf,
             $lang,
@@ -74,7 +75,8 @@ class UserPrefsControllerTest extends TestCase
             $validationService,
             $this->userRepository,
             $this->view,
-            $mailService
+            $mailService,
+            $loginManager
         );
     }
 
