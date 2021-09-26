@@ -8,17 +8,11 @@
  * Copyright (c) 2012-2021 Christoph M. Becker
  */
 
-use XH\CSRFProtection as CsrfProtector;
 use Register\DbService;
-use Register\ForgotPasswordController;
-use Register\MailService;
 use Register\PageDataController;
-use Register\RegistrationController;
+use Register\Plugin;
 use Register\User;
 use Register\UserGroup;
-use Register\UserPrefsController;
-use Register\UserRepository;
-use Register\ValidationService;
 use Register\View;
 
 function Register_dataFolder(): string
@@ -61,30 +55,12 @@ function Register_isLoggedIn()
 
 function register_access(string $groupString): string
 {
-    /**
-     * @var array<string,array<string,string>> $plugin_tx
-     * @var string $function
-     */
-    global $plugin_tx, $function;
-
-    // remove spaces etc.
-    $groupString = preg_replace("/[ \t\r\n]*/", '', $groupString);
-    $groupNames = explode(",", $groupString);
-
-    $user = Register_currentUser();
-    if ($function !== 'search'
-            && (!Register_isLoggedIn() || !count(array_intersect($groupNames, $user->getAccessgroups())))) {
-        // go to access error page
-        $pageTitle = uenc($plugin_tx['register']['access_error']);
-        header('Location: '.CMSIMPLE_URL.'?'. $pageTitle);
-        exit;
-    }
-    return '';
+    return Plugin::handlePageAccess($groupString);
 }
 
 function access(string $groupString): string
 {
-    return register_access($groupString);
+    return Plugin::handlePageAccess($groupString);
 }
 
 /**
@@ -156,172 +132,46 @@ function Register_logout()
     }
 }
 
-/*
- * Function to create and handle register form (Top Level Function).
- *
+/**
+ * Create and handle register form
  */
 function registerUser(): string
 {
-    /**
-     * @var array<string,array<string,string>> $plugin_cf
-     * @var array<string,array<string,string>> $plugin_tx
-     */
-    global $plugin_cf, $plugin_tx;
-
-    // In case user is logged in, no registration page is shown
-    if (Register_isLoggedIn()) {
-        header('Location: ' . CMSIMPLE_URL);
-        exit;
-    }
-    $controller = new RegistrationController(
-        $plugin_cf["register"],
-        $plugin_tx["register"],
-        new ValidationService($plugin_tx["register"]),
-        new View(),
-        new UserRepository(new DbService(Register_dataFolder())),
-        new MailService()
-    );
-    if (isset($_POST['action']) && $_POST['action'] === 'register_user') {
-        $action = 'registerUserAction';
-    } elseif (isset($_GET['action']) && $_GET['action'] === 'register_activate_user') {
-        $action = 'activateUserAction';
-    } else {
-        $action = 'defaultAction';
-    }
-    ob_start();
-    $controller->{$action}();
-    return ob_get_clean();
+    return Plugin::handleUserRegistration();
 }
 
 /**
- * Function to create and handle forgotten password form (Top Level Function)
- *
- * @return string
+ * Create and handle forgotten password form
  */
-function registerForgotPassword()
+function registerForgotPassword(): string
 {
-    /**
-     * @var array<string,array<string,string>> $plugin_cf
-     * @var array<string,array<string,string>> $plugin_tx
-     */
-    global $plugin_cf, $plugin_tx;
-
-    // In case user is logged in, no password forgotten page is shown
-    if (Register_isLoggedIn()) {
-        header('Location: ' . CMSIMPLE_URL);
-        exit;
-    }
-    $controller = new ForgotPasswordController(
-        $plugin_cf["register"],
-        $plugin_tx["register"],
-        new View(),
-        new UserRepository(new DbService(Register_dataFolder())),
-        new MailService()
-    );
-    if (isset($_POST['action']) && $_POST['action'] === 'forgotten_password') {
-        $action = 'passwordForgottenAction';
-    } elseif (isset($_GET['action']) && $_GET['action'] === 'registerResetPassword') {
-        $action = 'resetPasswordAction';
-    } else {
-        $action = 'defaultAction';
-    }
-    ob_start();
-    $controller->{$action}();
-    return ob_get_clean();
+    return Plugin::handleForgotPassword();
 }
 
 /*
- * Function to create and handle user preferences form (Top Level Function).
- *
+ * Create and handle user preferences form
  */
 function registerUserPrefs(): string
 {
-    /**
-     * @var array<string,array<string,string>> $plugin_cf
-     * @var array<string,array<string,string>> $plugin_tx
-     */
-    global $plugin_cf, $plugin_tx;
-
-    if (!Register_isLoggedIn()) {
-        return XH_message('fail', $plugin_tx['register']['access_error_text']);
-    }
-    $controller = new UserPrefsController(
-        $plugin_cf["register"],
-        $plugin_tx["register"],
-        new CsrfProtector('register_csrf_token', false),
-        new ValidationService($plugin_tx["register"]),
-        new UserRepository(new DbService(Register_dataFolder())),
-        new View(),
-        new MailService()
-    );
-    if (isset($_POST['action']) && $_POST['action'] === 'edit_user_prefs' && isset($_POST['submit'])) {
-        $action = 'editAction';
-    } elseif (isset($_POST['action']) && $_POST['action'] === 'edit_user_prefs' && isset($_POST['delete'])) {
-        $action = 'deleteAction';
-    } else {
-        $action = 'defaultAction';
-    }
-    ob_start();
-    $controller->{$action}();
-    return ob_get_clean();
+    return Plugin::handleUserPrefs();
 }
 
 /*
- *  This function creates a link to the "Registration" page (Top Level Function).
+ * Show the login or logged in form
  */
 function registerloginform(): string
 {
-    /**
-     * @var array<string,array<string,string>> $plugin_cf
-     * @var array<string,array<string,string>> $plugin_tx
-     * @var string $sn
-     * @var string $su
-     */
-    global $plugin_cf, $plugin_tx, $sn, $su;
-
-    // If logged in show user preferences link, otherwise register and forgot email links.
-
-    if (!Register_isLoggedIn()) {
-        // Begin register- and loginarea and user fields
-        $view = new View();
-        $forgotPasswordUrl = uenc($plugin_tx['register']['forgot_password']);
-        $registerUrl = uenc($plugin_tx['register']['register']);
-        $data = [
-            'actionUrl' => "$sn?$su",
-            'hasForgotPasswordLink' => $plugin_cf['register']['password_forgotten']
-                && urldecode($su) != $forgotPasswordUrl,
-            'forgotPasswordUrl' => "$sn?$forgotPasswordUrl",
-            'hasRememberMe' => $plugin_cf['register']['remember_user'],
-            'isRegisterAllowed' => $plugin_cf['register']['allowed_register'],
-            'registerUrl' => "$sn?$registerUrl",
-        ];
-        return $view->render('loginform', $data);
-    } else {
-        // Logout Link and Preferences Link
-        $view = new View();
-        $user = Register_currentUser();
-        $userPrefUrl = uenc($plugin_tx['register']['user_prefs']);
-        $data = [
-            'fullName' => $user->getName(),
-            'hasUserPrefs' => $user->isActivated() &&
-                urldecode($su) != $userPrefUrl,
-            'userPrefUrl' => "?$userPrefUrl",
-            'logoutUrl' => "$sn?&function=registerlogout",
-        ];
-        return $view->render('loggedin-area', $data);
-    }
+    return Plugin::handleLoginForm();
 }
 
 /**
- * Returns the logged in form, if user is logged in.
+ * Show the logged in form, if user is logged in
  *
  * @since 1.5rc1
- *
- * @return  string
  */
-function Register_loggedInForm()
+function Register_loggedInForm(): string
 {
-    return Register_isLoggedIn() ? registerloginform() : '';
+    return Plugin::handleloggedInForm();
 }
 
 /**

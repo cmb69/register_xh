@@ -54,7 +54,7 @@ class SpecialPageController
             echo $this->renderPageView(
                 $this->text['register'],
                 $this->text['register_form1'],
-                registerUser()
+                Plugin::handleUserRegistration()
             );
         }
     }
@@ -74,7 +74,7 @@ class SpecialPageController
             echo $this->renderPageView(
                 $this->text['forgot_password'],
                 $this->text['reminderexplanation'],
-                registerForgotPassword()
+                Plugin::handleForgotPassword()
             );
         }
     }
@@ -94,7 +94,7 @@ class SpecialPageController
             echo $this->renderPageView(
                 $this->text['user_prefs'],
                 $this->text['changeexplanation'],
-                registerUserPrefs()
+                Plugin::handleUserPrefs()
             );
         }
     }
