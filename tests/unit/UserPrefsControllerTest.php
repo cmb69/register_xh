@@ -40,6 +40,16 @@ class UserPrefsControllerTest extends TestCase
      */
     private $view;
 
+    /**
+     * @var MockObject
+     */
+    private $loginManager;
+
+    /**
+     * @var MockObject
+     */
+    private $logger;
+
     public function setUp(): void
     {
         $this->users = [
@@ -59,6 +69,7 @@ class UserPrefsControllerTest extends TestCase
             "name" => "name",
             "prefsemailsubject" => "prefsemailsubject",
             "prefsupdated" => "prefsupdated",
+            "user_deleted" => "user_deleted",
             "user_locked" => "user_locked",
             "username" => "username",
         ];
@@ -67,7 +78,8 @@ class UserPrefsControllerTest extends TestCase
         $this->userRepository = $this->createMock(UserRepository::class);
         $this->view = $this->createMock(View::class);
         $mailService = $this->createStub(MailService::class);
-        $loginManager = $this->createStub(LoginManager::class);
+        $this->loginManager = $this->createStub(LoginManager::class);
+        $this->logger = $this->createMock(Logger::class);
         $this->subject = new UserPrefsController(
             $conf,
             $lang,
@@ -76,7 +88,8 @@ class UserPrefsControllerTest extends TestCase
             $this->userRepository,
             $this->view,
             $mailService,
-            $loginManager
+            $this->loginManager,
+            $this->logger
         );
     }
 
@@ -172,9 +185,10 @@ class UserPrefsControllerTest extends TestCase
         $_SESSION = ["username" => "john"];
         $_POST = ["oldpassword" => "12345"];
         $this->userRepository->method("findByUsername")->willReturn($this->users["john"]);
-        $this->userRepository->expects($this->once())->method("delete")->willReturn(false);
+        $this->userRepository->expects($this->once())->method("delete")->willReturn(true);
         $this->csrfProtector->expects($this->once())->method("check");
-        $this->view->expects($this->once())->method("message")->with("fail");
+        $this->loginManager->expects($this->once())->method("logout")->with();
+        $this->view->expects($this->once())->method("message")->with("success");
         $this->subject->deleteAction();
     }
 }

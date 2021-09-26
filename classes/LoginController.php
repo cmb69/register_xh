@@ -38,6 +38,11 @@ class LoginController
     private $loginManager;
 
     /**
+     * @var Logger
+     */
+    private $logger;
+
+    /**
      * @param array<string,string> $config
      * @param array<string,string> $lang
      */
@@ -46,13 +51,15 @@ class LoginController
         array $lang,
         UserRepository $userRepository,
         UserGroupRepository $userGroupRepository,
-        LoginManager $loginManager
+        LoginManager $loginManager,
+        Logger $logger
     ) {
         $this->config = $config;
         $this->lang = $lang;
         $this->userRepository = $userRepository;
         $this->userGroupRepository = $userGroupRepository;
         $this->loginManager = $loginManager;
+        $this->logger = $logger;
     }
 
     /**
@@ -74,7 +81,7 @@ class LoginController
         $entry = $this->userRepository->findByUsername($username);
         if ($this->isUserAuthenticated($entry, $password, $passwordHash)) {
             $this->loginManager->login($entry, $this->config['remember_user'] && isset($_POST['remember']));
-            XH_logMessage('info', 'register', 'login', "$username logged in");
+            $this->logger->logInfo('login', "$username logged in");
 
             // go to login page if exists or to default page otherwise
             $group = $this->userGroupRepository->findByGroupname($entry->getAccessgroups()[0]);
@@ -87,7 +94,7 @@ class LoginController
             exit;
         } else {
             $this->loginManager->forget();
-            XH_logMessage('error', 'register', 'login', "$username wrong password");
+            $this->logger->logError('login', "$username wrong password");
 
             // go to login error page
             $errorTitle = uenc($this->lang['login_error']);
@@ -116,7 +123,7 @@ class LoginController
         XH_startSession();
         $username = $_SESSION['username'] ?? '';
         $this->loginManager->logout();
-        XH_logMessage('info', 'register', 'logout', "$username logged out");
+        $this->logger->logInfo('logout', "$username logged out");
     
         $logoutTitle = uenc($this->lang['loggedout']);
         header('Location: ' . CMSIMPLE_URL . '?' . $logoutTitle);

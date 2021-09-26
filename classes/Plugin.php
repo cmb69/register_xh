@@ -54,7 +54,8 @@ class Plugin
                 $plugin_tx["register"],
                 new UserRepository($dbService),
                 new UserGroupRepository($dbService),
-                new LoginManager()
+                new LoginManager(),
+                new Logger()
             );
             $controller->loginAction();
         }
@@ -64,7 +65,8 @@ class Plugin
                 $plugin_tx["register"],
                 new UserRepository($dbService),
                 new UserGroupRepository($dbService),
-                new LoginManager()
+                new LoginManager(),
+                new Logger()
             );
             $controller->logoutAction();
         }
@@ -358,7 +360,8 @@ class Plugin
             new UserRepository(new DbService(self::dataFolder())),
             new View(),
             new MailService(),
-            new LoginManager()
+            new LoginManager(),
+            new Logger()
         );
         if (isset($_POST['action']) && $_POST['action'] === 'edit_user_prefs' && isset($_POST['submit'])) {
             $action = 'editAction';
