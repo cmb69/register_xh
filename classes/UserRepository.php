@@ -58,19 +58,52 @@ class UserRepository
     {
         $this->dbService->lock(LOCK_EX);
         $users = $this->dbService->readUsers();
-        $userArray = registerReplaceUserEntry($users, $user);
+        $userArray = $this->replaceUser($users, $user);
         $result = $this->dbService->writeUsers($userArray);
         $this->dbService->lock(LOCK_UN);
         return $result;
+    }
+
+    /**
+     * @param array<int,User> $users
+     * @return array<int,User>
+     */
+    private function replaceUser(array $users, User $newuser): array
+    {
+        $newusers = array();
+        $username = $newuser->getUsername();
+        foreach ($users as $user) {
+            if ($user->getUsername() == $username) {
+                $newusers[] = $newuser;
+            } else {
+                $newusers[] = $user;
+            }
+        }
+        return $newusers;
     }
 
     public function delete(User $user): bool
     {
         $this->dbService->lock(LOCK_EX);
         $users = $this->dbService->readUsers();
-        $userArray = registerDeleteUserEntry($users, $user->getUsername());
+        $userArray = $this->deleteUser($users, $user->getUsername());
         $result = $this->dbService->writeUsers($userArray);
         $this->dbService->lock(LOCK_UN);
         return $result;
+    }
+
+    /**
+     * @param array<int,User> $users
+     * @return array<int,User>
+     */
+    private function deleteUser(array $users, string $username): array
+    {
+        $newarray = array();
+        foreach ($users as $user) {
+            if ($user->getUsername() != $username) {
+                $newarray[] = $user;
+            }
+        }
+        return $newarray;
     }
 }

@@ -105,43 +105,6 @@ function registerSearchUserArray(array $array, string $key, $value)
 }
 
 /**
- * Replace user entry in array.
- *
- * @param User[] $array
- * @return User[]
- */
-function registerReplaceUserEntry(array $array, User $newentry): array
-{
-    $newarray = array();
-    $username = $newentry->getUsername();
-    foreach ($array as $entry) {
-        if ($entry->getUsername() == $username) {
-            $newarray[] = $newentry;
-        } else {
-            $newarray[] = $entry;
-        }
-    }
-    return $newarray;
-}
-
-/**
- * Delete user entry in array.
- *
- * @param User[] $array
- * @return User[]
- */
-function registerDeleteUserEntry(array $array, string $username): array
-{
-    $newarray = array();
-    foreach ($array as $entry) {
-        if ($entry->getUsername() != $username) {
-            $newarray[] = $entry;
-        }
-    }
-    return $newarray;
-}
-
-/**
  * Returns the user record, if the user is logged in, otherwise null.
  *
  * @return User|null
