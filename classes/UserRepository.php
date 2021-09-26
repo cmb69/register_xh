@@ -28,7 +28,7 @@ class UserRepository
         $this->dbService->lock(LOCK_SH);
         $users = $this->dbService->readUsers();
         $this->dbService->lock(LOCK_UN);
-        $user = registerSearchUserArray($users, 'username', $username);
+        $user = $this->searchUserArray($users, 'username', $username);
         return $user ? $user : null;
     }
 
@@ -40,8 +40,23 @@ class UserRepository
         $this->dbService->lock(LOCK_SH);
         $users = $this->dbService->readUsers();
         $this->dbService->lock(LOCK_UN);
-        $user = registerSearchUserArray($users, 'email', $email);
+        $user = $this->searchUserArray($users, 'email', $email);
         return $user ? $user : null;
+    }
+
+    /**
+     * @param User[] $users
+     * @param mixed $value
+     * @return User|false
+     */
+    private function searchUserArray(array $users, string $key, $value)
+    {
+        foreach ($users as $user) {
+            if ($user->{"get$key"}() == $value) {
+                return $user;
+            }
+        }
+        return false;
     }
 
     public function add(User $user): bool

@@ -10,7 +10,6 @@
 
 use Register\PageDataController;
 use Register\Plugin;
-use Register\User;
 use Register\View;
 
 function register_access(string $groupString): string
@@ -21,23 +20,6 @@ function register_access(string $groupString): string
 function access(string $groupString): string
 {
     return Plugin::handlePageAccess($groupString);
-}
-
-/**
- * Search array of user entries for key and value.
- *
- * @param User[] $array
- * @param mixed $value
- * @return User|false
- */
-function registerSearchUserArray(array $array, string $key, $value)
-{
-    foreach ($array as $entry) {
-        if ($entry->{"get$key"}() == $value) {
-            return $entry;
-        }
-    }
-    return false;
 }
 
 /**

@@ -132,11 +132,13 @@ class MainAdminController
                         )
                     );
                 }
-                if (registerSearchUserArray($newusers, 'username', $username[$j]) !== false) {
-                    $entryErrors[] = $this->lang['err_username_exists'];
-                }
-                if (registerSearchUserArray($newusers, 'email', $email) !== false) {
-                    $entryErrors[] = $this->lang['err_email_exists'];
+                foreach ($newusers as $newuser) {
+                    if ($newuser->getUsername() === $username[$j]) {
+                        $entryErrors[] = $this->lang['err_username_exists'];
+                    }
+                    if ($newuser->getEmail() === $email) { // FIXME?: $email[$j]
+                        $entryErrors[] = $this->lang['err_email_exists'];
+                    }
                 }
                 foreach ($userGroups as $groupName) {
                     if (!in_array($groupName, $groupIds)) {
