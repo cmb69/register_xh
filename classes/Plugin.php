@@ -181,8 +181,9 @@ class Plugin
          * @var string $action
          * @var array<string,array<string,string>> $plugin_cf
          * @var array<string,array<string,string>> $plugin_tx
+         * @var CsrfProtector $_XH_csrfProtection
          */
-        global $o, $admin, $action, $plugin_cf, $plugin_tx;
+        global $o, $admin, $action, $plugin_cf, $plugin_tx, $_XH_csrfProtection;
 
         $o .= print_plugin_admin('off');
         pluginmenu('ROW');
@@ -207,6 +208,7 @@ class Plugin
                 $temp = new MainAdminController(
                     $plugin_cf["register"],
                     $plugin_tx["register"],
+                    $_XH_csrfProtection,
                     new View(),
                     new DbService(self::dataFolder())
                 );
