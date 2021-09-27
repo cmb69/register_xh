@@ -111,16 +111,14 @@ class UserPrefsController
         $this->csrfProtector->check();
 
         // Get form data if available
-        $oldpassword  = isset($_POST['oldpassword']) && is_string($_POST["oldpassword"])
-            ? trim($_POST['oldpassword'])
-            : '';
-        $name      = isset($_POST['name']) && is_string($_POST["name"]) ? trim($_POST['name']) : '';
-        $password1 = isset($_POST['password1']) && is_string($_POST["password1"]) ? trim($_POST['password1']) : '';
-        $password2 = isset($_POST['password2']) && is_string($_POST["password2"]) ? trim($_POST['password2']) : '';
-        $email     = isset($_POST['email']) && is_string($_POST["email"]) ? trim($_POST['email']) : '';
+        $oldpassword = $this->trimmedPostString("oldpassword");
+        $name = $this->trimmedPostString("name");
+        $password1 = $this->trimmedPostString("password1");
+        $password2 = $this->trimmedPostString("password2");
+        $email = $this->trimmedPostString("email");
 
         // set user name from session
-        $username = $_SESSION['username'] ?? "";
+        $username = $_SESSION['username'];
 
         $entry = $this->userRepository->findByUsername($username);
         if ($entry === null) {
@@ -190,6 +188,11 @@ class UserPrefsController
             )
         );
         echo $this->view->message('success', $this->lang['prefsupdated']);
+    }
+
+    private function trimmedPostString(string $param): string
+    {
+        return (isset($_POST[$param]) && is_string($_POST[$param])) ? trim($_POST[$param]) : "";
     }
 
     /**
