@@ -143,7 +143,7 @@ class PasswordForgottenControllerTest extends TestCase
         $this->userRepository->method("findByUsername")->willReturn(null);
         $this->view->expects($this->once())->method("message")->with(
             $this->equalTo("fail"),
-            $this->equalTo("err_username_does_not_exist")
+            $this->equalTo("err_status_invalid")
         );
         $this->subject->resetPasswordAction();
     }
@@ -183,7 +183,7 @@ class PasswordForgottenControllerTest extends TestCase
         $this->userRepository->method("findByUsername")->willReturn(null);
         $this->view->expects($this->once())->method("message")->with(
             $this->equalTo("fail"),
-            $this->equalTo("err_username_does_not_exist")
+            $this->equalTo("err_status_invalid")
         );
         $this->subject->changePasswordAction();
     }

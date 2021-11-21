@@ -118,12 +118,7 @@ class ForgotPasswordController
         global $sn, $su;
 
         $user = $this->userRepository->findByUsername($_GET['username']);
-        if (!$user) {
-            echo $this->view->message("fail", $this->lang['err_username_does_not_exist']);
-            return;
-        }
-
-        if ($user->getPassword() != $_GET['nonce']) {
+        if (!$user || $user->getPassword() != $_GET['nonce']) {
             echo $this->view->message("fail", $this->lang['err_status_invalid']);
             return;
         }
@@ -141,12 +136,7 @@ class ForgotPasswordController
         global $sn, $su;
 
         $user = $this->userRepository->findByUsername($_GET['username']);
-        if (!$user) {
-            echo $this->view->message("fail", $this->lang['err_username_does_not_exist']);
-            return;
-        }
-
-        if ($user->getPassword() != $_GET['nonce']) {
+        if (!$user || $user->getPassword() != $_GET['nonce']) {
             echo $this->view->message("fail", $this->lang['err_status_invalid']);
             return;
         }
