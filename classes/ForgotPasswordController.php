@@ -115,6 +115,8 @@ class ForgotPasswordController
      */
     public function resetPasswordAction()
     {
+        global $sn, $su;
+
         $user = $this->userRepository->findByUsername($_GET['username']);
         if (!$user) {
             echo $this->view->message("fail", $this->lang['err_username_does_not_exist']);
@@ -126,7 +128,38 @@ class ForgotPasswordController
             return;
         }
 
-        $password = base64_encode(random_bytes(8));
+        echo $this->view->render("change_password", [
+            "url" => "$sn?$su&action=register_change_password&username={$_GET['username']}&nonce={$_GET['nonce']}",
+        ]);
+    }
+
+    /**
+     * @return void
+     */
+    public function changePasswordAction()
+    {
+        global $sn, $su;
+
+        $user = $this->userRepository->findByUsername($_GET['username']);
+        if (!$user) {
+            echo $this->view->message("fail", $this->lang['err_username_does_not_exist']);
+            return;
+        }
+
+        if ($user->getPassword() != $_GET['nonce']) {
+            echo $this->view->message("fail", $this->lang['err_status_invalid']);
+            return;
+        }
+
+        if (!isset($_POST["password1"], $_POST["password2"]) || $_POST["password1"] !== $_POST["password2"]) {
+            echo $this->view->message("fail", $this->lang['err_password2']);
+            echo $this->view->render("change_password", [
+                "url" => "$sn?$su&action=register_change_password&username={$_GET['username']}&nonce={$_GET['nonce']}",
+            ]);
+            return;
+        }
+
+        $password = $_POST["password1"];
         $user->changePassword($password);
         if (!$this->userRepository->update($user)) {
             $this->view->message("fail", $this->lang['err_cannot_write_csv']);
@@ -137,7 +170,6 @@ class ForgotPasswordController
         $content = $this->lang['emailtext1'] . "\n\n"
             . ' ' . $this->lang['name'] . ": " . $user->getName() . "\n"
             . ' ' . $this->lang['username'] . ": " . $user->getUsername() . "\n"
-            . ' ' . $this->lang['password'] . ": " . $password . "\n"
             . ' ' . $this->lang['email'] . ": " . $user->getEmail() . "\n";
 
         // send reminder email

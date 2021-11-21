@@ -171,11 +171,55 @@ class PasswordForgottenControllerTest extends TestCase
         ];
         $john = new User("john", "12345", [], "John Dow", "john@example.com", "");
         $this->userRepository->method("findByUsername")->willReturn($john);
+        $this->view->expects($this->once())->method("render")->with(
+            $this->equalTo("change_password")
+        );
+        $this->subject->resetPasswordAction();
+    }
+
+    public function testChangePasswordActionUnknownUsername(): void
+    {
+        $_GET = ["username" => "colt"];
+        $this->userRepository->method("findByUsername")->willReturn(null);
+        $this->view->expects($this->once())->method("message")->with(
+            $this->equalTo("fail"),
+            $this->equalTo("err_username_does_not_exist")
+        );
+        $this->subject->changePasswordAction();
+    }
+
+    public function testChangePasswordActionWrongNonce(): void
+    {
+        $_GET = [
+            "username" => "john",
+            "nonce" => "54321",
+        ];
+        $john = new User("john", "12345", [], "John Dow", "john@example.com", "");
+        $this->userRepository->method("findByUsername")->willReturn($john);
+        $this->view->expects($this->once())->method("message")->with(
+            $this->equalTo("fail"),
+            $this->equalTo("err_status_invalid")
+        );
+        $this->subject->changePasswordAction();
+    }
+
+    public function testChangePasswordActionSuccess(): void
+    {
+        $_GET = [
+            "username" => "john",
+            "nonce" => "12345",
+        ];
+        $_POST = [
+            "password1" => "admin",
+            "password2" => "admin",
+        ];
+        $john = new User("john", "12345", [], "John Dow", "john@example.com", "");
+        $this->userRepository->method("findByUsername")->willReturn($john);
         $this->userRepository->method("update")->willReturn(true);
         $this->view->expects($this->once())->method("message")->with(
             $this->equalTo("success"),
             $this->equalTo("remindersent")
         );
-        $this->subject->resetPasswordAction();
+        $this->subject->changePasswordAction();
     }
 }

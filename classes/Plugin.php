@@ -335,6 +335,8 @@ class Plugin
             $action = 'passwordForgottenAction';
         } elseif (isset($_GET['action']) && $_GET['action'] === 'registerResetPassword') {
             $action = 'resetPasswordAction';
+        } elseif (isset($_GET['action']) && $_GET['action'] === 'register_change_password') {
+            $action = 'changePasswordAction';
         } else {
             $action = 'defaultAction';
         }
