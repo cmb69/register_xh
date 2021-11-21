@@ -15,7 +15,7 @@ use XH\PageDataRouter;
 
 class Plugin
 {
-    const VERSION = "1.6";
+    const VERSION = "2.0-dev";
 
     /**
      * @return void
