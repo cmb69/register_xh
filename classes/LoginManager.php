@@ -14,14 +14,32 @@ class LoginManager
 {
     const REMEMBER_PERIOD = 100 * 24 * 60 * 60;
 
+    /** @var int */
+    private $now;
+
+    public function __construct(int $now)
+    {
+        $this->now = $now;
+    }
+
     /**
      * @return void
      */
     public function login(User $user, bool $remember)
     {
         if ($remember) {
-            setcookie('register_username', $user->getUsername(), time() + self::REMEMBER_PERIOD, CMSIMPLE_ROOT);
-            setcookie('register_password', $user->getPassword(), time() + self::REMEMBER_PERIOD, CMSIMPLE_ROOT);
+            setcookie(
+                'register_username',
+                $user->getUsername(),
+                $this->now + self::REMEMBER_PERIOD,
+                CMSIMPLE_ROOT
+            );
+            setcookie(
+                'register_token',
+                $this->calculateMac($user->getUsername(), $user->getPassword()),
+                $this->now + self::REMEMBER_PERIOD,
+                CMSIMPLE_ROOT
+            );
         }
 
         XH_startSession();
@@ -45,9 +63,27 @@ class LoginManager
      */
     public function forget()
     {
-        if (isset($_COOKIE['register_username'], $_COOKIE['register_password'])) {
+        if (isset($_COOKIE['register_username'], $_COOKIE['register_token'])) {
             setcookie('register_username', '', 0, CMSIMPLE_ROOT);
-            setcookie('register_password', '', 0, CMSIMPLE_ROOT);
+            setcookie('register_token', '', 0, CMSIMPLE_ROOT);
         }
+    }
+
+    /**
+     * @param User|null $user
+     * @param string|null $token
+     */
+    public function isUserAuthenticated($user, string $password, $token): bool
+    {
+        return $user
+            && ($user->isActivated() || $user->isLocked())
+            && (!isset($token) || hash_equals($this->calculateMac($user->getUsername(), $user->getPassword()), $token))
+            && (isset($token) || (password_verify($password, $user->getPassword())));
+    }
+
+    private function calculateMac(string $username, string $secret): string
+    {
+        $mac = hash_hmac("sha1", "{$username}", $secret, true);
+        return rtrim(strtr(base64_encode($mac), "+/", "-_"), "=");
     }
 }

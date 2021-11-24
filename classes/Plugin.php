@@ -35,7 +35,7 @@ class Plugin
         $pd_router->add_interest("register_access");
 
         if ($plugin_cf['register']['remember_user']
-                && isset($_COOKIE['register_username'], $_COOKIE['register_password']) && !self::currentUser()) {
+                && isset($_COOKIE['register_username'], $_COOKIE['register_token']) && !self::currentUser()) {
             $function = "registerlogin";
         }
 
@@ -54,7 +54,7 @@ class Plugin
                 $plugin_tx["register"],
                 new UserRepository($dbService),
                 new UserGroupRepository($dbService),
-                new LoginManager(),
+                new LoginManager(time()),
                 new Logger()
             );
             $controller->loginAction();
@@ -65,7 +65,7 @@ class Plugin
                 $plugin_tx["register"],
                 new UserRepository($dbService),
                 new UserGroupRepository($dbService),
-                new LoginManager(),
+                new LoginManager(time()),
                 new Logger()
             );
             $controller->logoutAction();
@@ -327,6 +327,7 @@ class Plugin
         $controller = new ForgotPasswordController(
             $plugin_cf["register"],
             $plugin_tx["register"],
+            time(),
             new View(),
             new UserRepository(new DbService(self::dataFolder())),
             new MailService()
@@ -364,7 +365,7 @@ class Plugin
             new UserRepository(new DbService(self::dataFolder())),
             new View(),
             new MailService(),
-            new LoginManager(),
+            new LoginManager(time()),
             new Logger()
         );
         if (isset($_POST['action']) && $_POST['action'] === 'edit_user_prefs' && isset($_POST['submit'])) {
@@ -430,7 +431,7 @@ class Plugin
                 if ($rec) {
                     $user = $rec;
                 } else {
-                    (new LoginManager())->logout();
+                    (new LoginManager(time()))->logout();
                     $user = null;
                 }
             } else {

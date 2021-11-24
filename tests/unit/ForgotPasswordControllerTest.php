@@ -60,6 +60,7 @@ class PasswordForgottenControllerTest extends TestCase
         $this->subject = new ForgotPasswordController(
             $conf,
             $lang,
+            1637449200,
             $this->view,
             $this->userRepository,
             $this->mailService
@@ -148,11 +149,12 @@ class PasswordForgottenControllerTest extends TestCase
         $this->subject->resetPasswordAction();
     }
 
-    public function testResetPasswordActionWrongNonce(): void
+    public function testResetPasswordActionWrongMac(): void
     {
         $_GET = [
             "username" => "john",
-            "nonce" => "54321",
+            "time" => 1637449800,
+            "mac" => "54321",
         ];
         $john = new User("john", "12345", [], "John Dow", "john@example.com", "");
         $this->userRepository->method("findByUsername")->willReturn($john);
@@ -167,7 +169,8 @@ class PasswordForgottenControllerTest extends TestCase
     {
         $_GET = [
             "username" => "john",
-            "nonce" => "12345",
+            "time" => 1637449800,
+            "mac" => "oZkWxkzriULe8-2LimEunYo-ULI",
         ];
         $john = new User("john", "12345", [], "John Dow", "john@example.com", "");
         $this->userRepository->method("findByUsername")->willReturn($john);
@@ -188,11 +191,12 @@ class PasswordForgottenControllerTest extends TestCase
         $this->subject->changePasswordAction();
     }
 
-    public function testChangePasswordActionWrongNonce(): void
+    public function testChangePasswordActionWrongMac(): void
     {
         $_GET = [
             "username" => "john",
-            "nonce" => "54321",
+            "time" => 1637449800,
+            "mac" => "54321",
         ];
         $john = new User("john", "12345", [], "John Dow", "john@example.com", "");
         $this->userRepository->method("findByUsername")->willReturn($john);
@@ -207,7 +211,8 @@ class PasswordForgottenControllerTest extends TestCase
     {
         $_GET = [
             "username" => "john",
-            "nonce" => "12345",
+            "time" => 1637449800,
+            "mac" => "oZkWxkzriULe8-2LimEunYo-ULI",
         ];
         $_POST = [
             "password1" => "admin",

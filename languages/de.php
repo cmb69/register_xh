@@ -75,6 +75,7 @@ $plugin_tx['register']['reminderexplanation']="Auf dieser Seite können Sie Ihre
 $plugin_tx['register']['reminderemailsubject']="Benutzerdaten für";
 $plugin_tx['register']['remindersent_reset']="Wenn die angegebene E-Mail in unserem System existiert, wurde an diese ein Link zum Zurücksetzen des Kennworts zugesandt.";
 $plugin_tx['register']['remindersent']="Ihnen wurde eine E-Mail mit Ihren Benutzerdaten zugesandt.";
+$plugin_tx['register']['forgotten_expired']="Das Zurücksetzen des Passworts ist abgelaufen!";
 $plugin_tx['register']['changeexplanation']="Auf dieser Seite können Sie Ihre Benutzerdaten ändern. Sie benötigen dafür Ihr altes Kennwort.";
 $plugin_tx['register']['prefsemailsubject']="Benutzerdaten geändert für";
 $plugin_tx['register']['prefsupdated']="Ihre Benutzerdaten wurden geändert und Ihnen per E-Mail zugesandt.";

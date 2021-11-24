@@ -12,6 +12,8 @@ namespace Register;
 
 class ForgotPasswordController
 {
+    const TTL = 3600;
+
     /**
      * @var array<string,string>
      */
@@ -21,6 +23,9 @@ class ForgotPasswordController
      * @var array<string,string>
      */
     private $lang;
+
+    /** @var int */
+    private $now;
 
     /**
      * @var View
@@ -44,12 +49,14 @@ class ForgotPasswordController
     public function __construct(
         array $config,
         array $lang,
+        int $now,
         View $view,
         UserRepository $userRepository,
         MailService $mailService
     ) {
         $this->config = $config;
         $this->lang = $lang;
+        $this->now = $now;
         $this->view = $view;
         $this->userRepository = $userRepository;
         $this->mailService = $mailService;
@@ -89,6 +96,7 @@ class ForgotPasswordController
 
         $user = $this->userRepository->findByEmail($email);
         if ($user) {
+            $mac = $this->calculateMac($user->getUsername(), $this->now, $user->getPassword());
             // prepare email content for user data email
             $content = $this->lang['emailtext1'] . "\n\n"
                 . ' ' . $this->lang['name'] . ": " . $user->getName() . "\n"
@@ -96,8 +104,8 @@ class ForgotPasswordController
             $content .= ' ' . $this->lang['email'] . ": " . $user->getEmail() . "\n";
             $content .= "\n" . $this->lang['emailtext3'] ."\n\n"
                 . '<' . CMSIMPLE_URL . '?' . $su . '&'
-                . 'action=registerResetPassword&username=' . urlencode($user->getUsername()) . '&nonce='
-                . urlencode($user->getPassword()) . '>';
+                . 'action=registerResetPassword&username=' . urlencode($user->getUsername()) . '&time='
+                . urlencode((string) $this->now) . '&mac=' . urlencode($mac) . '>';
 
             // send reminder email
             $this->mailService->sendMail(
@@ -117,14 +125,25 @@ class ForgotPasswordController
     {
         global $sn, $su;
 
-        $user = $this->userRepository->findByUsername($_GET['username']);
-        if (!$user || $user->getPassword() != $_GET['nonce']) {
+        $username = $_GET["username"] ?? "";
+        $time = $_GET["time"] ?? 0;
+        $mac = $_GET["mac"] ?? "";
+
+        $user = $this->userRepository->findByUsername($username);
+        if (!$user || !hash_equals($this->calculateMac($username, $time, $user->getPassword()), $mac)) {
             echo $this->view->message("fail", $this->lang['err_status_invalid']);
             return;
         }
+        if ($this->now > $time + self::TTL) {
+            echo $this->view->message("fail", $this->lang["forgotten_expired"]);
+            return;
+        }
 
+        $username = urlencode($username);
+        $time = urlencode($time);
+        $mac = urlencode($mac);
         echo $this->view->render("change_password", [
-            "url" => "$sn?$su&action=register_change_password&username={$_GET['username']}&nonce={$_GET['nonce']}",
+            "url" => "$sn?$su&action=register_change_password&username=$username&time=$time&mac=$mac",
         ]);
     }
 
@@ -135,16 +154,27 @@ class ForgotPasswordController
     {
         global $sn, $su;
 
-        $user = $this->userRepository->findByUsername($_GET['username']);
-        if (!$user || $user->getPassword() != $_GET['nonce']) {
+        $username = $_GET["username"] ?? "";
+        $time = $_GET["time"] ?? 0;
+        $mac = $_GET["mac"] ?? "";
+
+        $user = $this->userRepository->findByUsername($username);
+        if (!$user || !hash_equals($this->calculateMac($username, $time, $user->getPassword()), $mac)) {
             echo $this->view->message("fail", $this->lang['err_status_invalid']);
+            return;
+        }
+        if ($this->now > $time + self::TTL) {
+            echo $this->view->message("fail", $this->lang["forgotten_expired"]);
             return;
         }
 
         if (!isset($_POST["password1"], $_POST["password2"]) || $_POST["password1"] !== $_POST["password2"]) {
             echo $this->view->message("fail", $this->lang['err_password2']);
+            $username = urlencode($username);
+            $time = urlencode($time);
+            $mac = urlencode($mac);
             echo $this->view->render("change_password", [
-                "url" => "$sn?$su&action=register_change_password&username={$_GET['username']}&nonce={$_GET['nonce']}",
+                "url" => "$sn?$su&action=register_change_password&username=$username&time=$time&nonce=$mac",
             ]);
             return;
         }
@@ -170,6 +200,12 @@ class ForgotPasswordController
             array('From: ' . $this->config['senderemail'])
         );
         echo $this->view->message('success', $this->lang['remindersent']);
+    }
+
+    private function calculateMac(string $username, int $time, string $secret): string
+    {
+        $mac = hash_hmac("sha1", "{$username}{$time}", $secret, true);
+        return rtrim(strtr(base64_encode($mac), "+/", "-_"), "=");
     }
 
     /**

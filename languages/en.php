@@ -75,6 +75,7 @@ $plugin_tx['register']['reminderexplanation']="On this page you can enter your e
 $plugin_tx['register']['reminderemailsubject']="Account data for";
 $plugin_tx['register']['remindersent_reset']="If the email you specified exists in our system, we've sent a password reset link to it.";
 $plugin_tx['register']['remindersent']="An email has been sent to you with your user data.";
+$plugin_tx['register']['forgotten_expired']="The password reset has expired!";
 $plugin_tx['register']['changeexplanation']="On this page you can change your account settings. For changing your data you will need your old password.";
 $plugin_tx['register']['prefsemailsubject']="Account data changed for";
 $plugin_tx['register']['prefsupdated']="Your account information has been updated and sent to you via email.";
