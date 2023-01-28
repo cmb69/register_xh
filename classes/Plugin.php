@@ -122,7 +122,7 @@ class Plugin
          * @var array<string,array<string,string>> $plugin_cf
          * @var array<string,array<string,string>> $plugin_tx
          */
-        global $o, $su, $h, $plugin_cf, $plugin_tx;
+        global $o, $pth, $su, $h, $plugin_cf, $plugin_tx;
 
         switch ($su) {
             case uenc($plugin_tx['register']['register']):
@@ -154,7 +154,7 @@ class Plugin
                 $h,
                 $plugin_cf['register'],
                 $plugin_tx['register'],
-                new View($plugin_tx['register'])
+                new View("{$pth['folder']['plugins']}register/", $plugin_tx['register'])
             );
             ob_start();
             $controller->{$method}();
@@ -188,7 +188,7 @@ class Plugin
          * @var array<string,array<string,string>> $plugin_tx
          * @var CsrfProtector $_XH_csrfProtection
          */
-        global $o, $admin, $action, $plugin_cf, $plugin_tx, $_XH_csrfProtection;
+        global $o, $pth, $admin, $action, $plugin_cf, $plugin_tx, $_XH_csrfProtection;
 
         $o .= print_plugin_admin('off');
         pluginmenu('ROW');
@@ -214,7 +214,7 @@ class Plugin
                     $plugin_cf["register"],
                     $plugin_tx["register"],
                     $_XH_csrfProtection,
-                    new View($plugin_tx['register']),
+                    new View("{$pth['folder']['plugins']}register/", $plugin_tx['register']),
                     new DbService(self::dataFolder())
                 );
                 ob_start();
@@ -256,7 +256,12 @@ class Plugin
             self::dataFolder()
         );
         ob_start();
-        (new InfoController(self::VERSION, $systemCheckService, new View($plugin_tx['register'])))->execute();
+        $controller = new InfoController(
+            self::VERSION,
+            $systemCheckService,
+            new View("{$pth['folder']['plugins']}register/", $plugin_tx['register'])
+        );
+        $controller->execute();
         return (string) ob_get_clean();
     }
 
@@ -289,7 +294,7 @@ class Plugin
          * @var array<string,array<string,string>> $plugin_cf
          * @var array<string,array<string,string>> $plugin_tx
          */
-        global $plugin_cf, $plugin_tx;
+        global $pth, $plugin_cf, $plugin_tx;
 
         // In case user is logged in, no registration page is shown
         if (self::currentUser()) {
@@ -300,7 +305,7 @@ class Plugin
             $plugin_cf["register"],
             $plugin_tx["register"],
             new ValidationService($plugin_tx["register"]),
-            new View($plugin_tx['register']),
+            new View("{$pth['folder']['plugins']}register/", $plugin_tx['register']),
             new UserRepository(new DbService(self::dataFolder())),
             new MailService()
         );
@@ -322,7 +327,7 @@ class Plugin
          * @var array<string,array<string,string>> $plugin_cf
          * @var array<string,array<string,string>> $plugin_tx
          */
-        global $plugin_cf, $plugin_tx;
+        global $pth, $plugin_cf, $plugin_tx;
 
         // In case user is logged in, no password forgotten page is shown
         if (self::currentUser()) {
@@ -333,7 +338,7 @@ class Plugin
             $plugin_cf["register"],
             $plugin_tx["register"],
             time(),
-            new View($plugin_tx['register']),
+            new View("{$pth['folder']['plugins']}register/", $plugin_tx['register']),
             new UserRepository(new DbService(self::dataFolder())),
             new MailService()
         );
@@ -355,7 +360,7 @@ class Plugin
          * @var array<string,array<string,string>> $plugin_cf
          * @var array<string,array<string,string>> $plugin_tx
          */
-        global $plugin_cf, $plugin_tx;
+        global $pth, $plugin_cf, $plugin_tx;
     
         if (!self::currentUser()) {
             return XH_message('fail', $plugin_tx['register']['access_error_text']);
@@ -366,7 +371,7 @@ class Plugin
             new CsrfProtector('register_csrf_token', false),
             new ValidationService($plugin_tx["register"]),
             new UserRepository(new DbService(self::dataFolder())),
-            new View($plugin_tx['register']),
+            new View("{$pth['folder']['plugins']}register/", $plugin_tx['register']),
             new MailService(),
             new LoginManager(time()),
             new Logger()
@@ -391,7 +396,7 @@ class Plugin
          * @var string $sn
          * @var string $su
          */
-        global $plugin_cf, $plugin_tx, $sn, $su;
+        global $pth, $plugin_cf, $plugin_tx, $sn, $su;
     
         $controller = new LoginFormController(
             $plugin_cf["register"],
@@ -399,7 +404,7 @@ class Plugin
             $sn,
             $su,
             self::currentUser(),
-            new View($plugin_tx['register'])
+            new View("{$pth['folder']['plugins']}register/", $plugin_tx['register'])
         );
         ob_start();
         $controller->execute();

@@ -10,14 +10,18 @@ namespace Register;
 
 class View
 {
+    /** @var string */
+    private $pluginFolder;
+
     /** @var array<string,string> */
     private $lang;
 
     /**
      * @param array<string,string> $lang
      */
-    public function __construct(array $lang)
+    public function __construct(string $pluginFolder, array $lang)
     {
+        $this->pluginFolder = $pluginFolder;
         $this->lang = $lang;
     }
 
@@ -53,13 +57,7 @@ class View
      */
     public function render(string $_template, array $_data): string
     {
-        /**
-         * @var array{folder:array<string,string>,file:array<string,string>} $pth
-         */
-        global $pth;
-
-        $_template = "{$pth['folder']['plugins']}register/views/{$_template}.php";
-        unset($pth);
+        $_template = "{$this->pluginFolder}views/{$_template}.php";
         extract($_data);
         ob_start();
         include $_template;
