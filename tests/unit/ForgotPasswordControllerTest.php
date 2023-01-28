@@ -11,10 +11,10 @@ namespace Register;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
-class PasswordForgottenControllerTest extends TestCase
+class ForgotPasswordControllerTest extends TestCase
 {
     /**
-     * @var PasswordForgottenController
+     * @var ForgotPasswordController
      */
     private $subject;
 
