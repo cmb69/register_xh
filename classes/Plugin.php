@@ -256,14 +256,12 @@ class Plugin
             self::dataFolder(),
             new SystemChecker()
         );
-        ob_start();
         $controller = new InfoController(
             self::VERSION,
             $systemCheckService,
             new View("{$pth['folder']['plugins']}register/", $plugin_tx['register'])
         );
-        $controller->execute();
-        return (string) ob_get_clean();
+        return $controller->execute();
     }
 
     public static function handlePageAccess(string $groupString): string

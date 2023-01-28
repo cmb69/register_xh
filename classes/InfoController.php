@@ -32,12 +32,9 @@ class InfoController
         $this->view = $view;
     }
 
-    /**
-     * @return void
-     */
-    public function execute()
+    public function execute(): string
     {
-        echo $this->view->render('info', [
+        return $this->view->render('info', [
             'version' => $this->pluginVersion,
             'checks' => $this->systemCheckService->getChecks(),
         ]);
