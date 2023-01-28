@@ -8,6 +8,8 @@
 
 namespace Register;
 
+use XH_includeVar;
+
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
@@ -44,28 +46,10 @@ class RegistrationControllerTest extends TestCase
             "john" => new User("john", "\$2y\$10\$f4ldVDiVXTkNrcPmBdbW7.g/.mw5GOEqBid650oN9hE56UC28aXSq", [], "John Doe", "john@example.com", ""),
             "jane" => new User("jane", "", [], "Jane Doe", "jane@example.com", "12345"),
         ];
-        $conf = [
-            "group_activated" => "group_activated",
-            "group_default" => "group_default",
-            "senderemail" => "senderemail",
-        ];
-        $lang = [
-            "activated" => "activated",
-            "email" => "email",
-            "emailsubject" => "emailsubject",
-            "emailtext1" => "emailtext1",
-            "emailtext2" => "emailtext2",
-            "emailtext4" => "emailtext4",
-            "err_status_empty" => "err_status_empty",
-            "err_status_invalid" => "err_status_invalid",
-            "err_username_exists" => "err_username_exists",
-            "err_username_notfound" => "err_username_notfound",
-            "forgot_password" => "forgot_password",
-            "fromip" => "fromip",
-            "name" => "name",
-            "registered" => "registered",
-            "username" => "username",
-        ];
+        $plugin_cf = XH_includeVar("./config/config.php", 'plugin_cf');
+        $conf = $plugin_cf['register'];
+        $plugin_tx = XH_includeVar("./languages/en.php", 'plugin_tx');
+        $lang = $plugin_tx['register'];
         $this->validationService = $this->createStub(ValidationService::class);
         $this->view = $this->createMock(View::class);
         $this->userRepository = $this->createMock(UserRepository::class);
