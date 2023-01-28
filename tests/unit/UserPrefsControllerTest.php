@@ -8,6 +8,7 @@
 
 namespace Register;
 
+use ApprovalTests\Approvals;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
@@ -63,7 +64,7 @@ class UserPrefsControllerTest extends TestCase
         $this->csrfProtector = $this->createMock(CsrfProtector::class);
         $validationService = $this->createStub(ValidationService::class);
         $this->userRepository = $this->createMock(UserRepository::class);
-        $this->view = $this->createMock(View::class);
+        $this->view = new View("./", $lang);
         $mailService = $this->createStub(MailService::class);
         $this->loginManager = $this->createStub(LoginManager::class);
         $this->logger = $this->createMock(Logger::class);
@@ -83,32 +84,32 @@ class UserPrefsControllerTest extends TestCase
     public function testDefaultActionNoUser(): void
     {
         $_SESSION = ["username" => "john"];
-        $this->view->expects($this->once())->method("message")->with("fail");
-        $this->subject->defaultAction();
+        $response = $this->subject->defaultAction();
+        Approvals::verifyHtml($response);
     }
 
     public function testDefaultActionUserIsLocked(): void
     {
         $_SESSION = ["username" => "jane"];
         $this->userRepository->method("findByUsername")->willReturn($this->users["jane"]);
-        $this->view->expects($this->once())->method("message")->with("fail");
-        $this->subject->defaultAction();
+        $response = $this->subject->defaultAction();
+        Approvals::verifyHtml($response);
     }
 
     public function testDefaultAction(): void
     {
         $_SESSION = ["username" => "john"];
         $this->userRepository->method("findByUsername")->willReturn($this->users["john"]);
-        $this->view->expects($this->once())->method("render")->with("userprefs-form");
-        $this->subject->defaultAction();
+        $response = $this->subject->defaultAction();
+        Approvals::verifyHtml($response);
     }
 
     public function testEditActionNoUser(): void
     {
         $_SESSION['username'] = "cmb";
         $this->csrfProtector->expects($this->once())->method("check");
-        $this->view->expects($this->once())->method("message")->with("fail");
-        $this->subject->editAction();
+        $response = $this->subject->editAction();
+        Approvals::verifyHtml($response);
     }
 
     public function testEditActionIsLocked(): void
@@ -116,8 +117,8 @@ class UserPrefsControllerTest extends TestCase
         $_SESSION = ["username" => "jane"];
         $this->userRepository->method("findByUsername")->willReturn($this->users["jane"]);
         $this->csrfProtector->expects($this->once())->method("check");
-        $this->view->expects($this->once())->method("message")->with("fail");
-        $this->subject->editAction();
+        $response = $this->subject->editAction();
+        Approvals::verifyHtml($response);
     }
 
     public function testEditActionWrongPassword(): void
@@ -126,8 +127,8 @@ class UserPrefsControllerTest extends TestCase
         $_POST = ["oldpassword" => "54321"];
         $this->userRepository->method("findByUsername")->willReturn($this->users["john"]);
         $this->csrfProtector->expects($this->once())->method("check");
-        $this->view->expects($this->once())->method("message")->with("fail");
-        $this->subject->editAction();
+        $response = $this->subject->editAction();
+        Approvals::verifyHtml($response);
     }
 
     public function testEditActionCorrectPassword(): void
@@ -139,14 +140,15 @@ class UserPrefsControllerTest extends TestCase
         $this->userRepository->method("findByUsername")->willReturn($this->users["john"]);
         $this->csrfProtector->expects($this->once())->method("check");
         $this->userRepository->expects($this->once())->method("update")->willReturn(true);
-        $this->subject->editAction();
+        $response = $this->subject->editAction();
+        Approvals::verifyHtml($response);
     }
 
     public function testDeleteActionNoUser(): void
     {
         $this->csrfProtector->expects($this->once())->method("check");
-        $this->view->expects($this->once())->method("message")->with("fail");
-        $this->subject->deleteAction();
+        $response = $this->subject->deleteAction();
+        Approvals::verifyHtml($response);
     }
 
     public function testDeleteActionIsLocked(): void
@@ -154,8 +156,8 @@ class UserPrefsControllerTest extends TestCase
         $_SESSION = ["username" => "jane"];
         $this->userRepository->method("findByUsername")->willReturn($this->users["jane"]);
         $this->csrfProtector->expects($this->once())->method("check");
-        $this->view->expects($this->once())->method("message")->with("fail");
-        $this->subject->deleteAction();
+        $response = $this->subject->deleteAction();
+        Approvals::verifyHtml($response);
     }
 
     public function testDeleteActionWrongPassword(): void
@@ -164,8 +166,8 @@ class UserPrefsControllerTest extends TestCase
         $_POST = ["oldpassword" => "54321"];
         $this->userRepository->method("findByUsername")->willReturn($this->users["john"]);
         $this->csrfProtector->expects($this->once())->method("check");
-        $this->view->expects($this->once())->method("message")->with("fail");
-        $this->subject->deleteAction();
+        $response = $this->subject->deleteAction();
+        Approvals::verifyHtml($response);
     }
 
     public function testDeleteActionCorrectPassword(): void
@@ -176,7 +178,7 @@ class UserPrefsControllerTest extends TestCase
         $this->userRepository->expects($this->once())->method("delete")->willReturn(true);
         $this->csrfProtector->expects($this->once())->method("check");
         $this->loginManager->expects($this->once())->method("logout")->with();
-        $this->view->expects($this->once())->method("message")->with("success");
-        $this->subject->deleteAction();
+        $response = $this->subject->deleteAction();
+        Approvals::verifyHtml($response);
     }
 }
