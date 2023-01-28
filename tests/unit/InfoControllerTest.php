@@ -8,19 +8,24 @@
 
 namespace Register;
 
+use ApprovalTests\Approvals;
 use PHPUnit\Framework\TestCase;
 
 class InfoControllerTest extends TestCase
 {
-    public function testExecute()
+    public function testRendersPluginInfo()
     {
-        $systemChecker = $this->createStub(SystemChecker::class);
         $plugin_tx = XH_includeVar("./languages/en.php", 'plugin_tx');
         $lang = $plugin_tx['register'];
+        $systemChecker = $this->createStub(SystemChecker::class);
+        $systemChecker->method('checkVersion')->willReturn(true);
+        $systemChecker->method('checkExtension')->willReturn(true);
+        $systemChecker->method('checkWritability')->willReturn(true);
         $systemCheckService = new SystemCheckService("", $lang, "", $systemChecker);
-        $view = $this->createMock(View::class);
-        $subject = new InfoController("2.0", $systemCheckService, $view);
-        $view->expects($this->once())->method("render")->with("info");
-        $subject->execute();
+        $subject = new InfoController("2.0", $systemCheckService, new View("./", $lang));
+
+        $response = $subject->execute();
+
+        Approvals::verifyHtml($response);
     }
 }
