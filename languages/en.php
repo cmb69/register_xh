@@ -92,6 +92,7 @@ $plugin_tx['register']['label_submit']="Submit";
 $plugin_tx['register']['label_add']="Add";
 $plugin_tx['register']['label_delete']="Delete";
 $plugin_tx['register']['label_mail']="Mail";
+$plugin_tx['register']['label_save']="Save";
 
 $plugin_tx['register']['js_confirmLeave']="Unsaved changes will be lost!";
 $plugin_tx['register']['js_newPassword']="New Password (may contain only alphanumeric characters and underscores):";

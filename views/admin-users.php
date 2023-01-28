@@ -14,7 +14,6 @@ use Register\View;
  * @var array<int,User> $users
  * @var array<int,string> $groupStrings
  * @var array<int,string> $statusSelects
- * @var string $saveLabel
  */
 ?>
 
@@ -85,7 +84,7 @@ use Register\View;
       </tr>
 <?php endforeach?>
     </table>
-    <input class="submit" type="submit" value="<?=$this->esc($saveLabel)?>" name="send">
+    <input class="submit" type="submit" value="<?=$this->text('label_save')?>" name="send">
   </form>
 </div>
 <script type="text/javascript">register.init()</script>

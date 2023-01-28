@@ -92,6 +92,7 @@ $plugin_tx['register']['label_submit']="Speichern";
 $plugin_tx['register']['label_add']="Neu";
 $plugin_tx['register']['label_delete']="Löschen";
 $plugin_tx['register']['label_mail']="Mail";
+$plugin_tx['register']['label_save']="Speichern";
 
 $plugin_tx['register']['js_confirmLeave']="Ungespeicherte Änderungen gehen verloren!";
 $plugin_tx['register']['js_newPassword']="Neues Kennwort (darf nur alphanumerische Zeichen und Unterstriche enthalten):";

@@ -222,12 +222,11 @@ class MainAdminController
     private function renderUsersForm(array $users)
     {
         /**
-         * @var array<string,array<string,string>> $tx
          * @var array{folder:array<string,string>,file:array<string,string>} $pth
          * @var string $sn
          * @var string $hjs
          */
-        global $tx, $pth, $sn, $hjs;
+        global $pth, $sn, $hjs;
 
         $jsKeys = ['name', 'username', 'password', 'accessgroups', 'status', 'email', 'prefsemailsubject'];
         $txts = array();
@@ -246,7 +245,6 @@ class MainAdminController
 
         $data = [
             'csrfTokenInput' => new HtmlString($this->csrfProtector->tokenInput()),
-            'saveLabel' => ucfirst($tx['action']['save']),
             'defaultGroup' => $this->config['group_default'],
             'statusSelectActivated' => new HtmlString($this->statusSelectbox('activated')),
             'groups' => $this->findGroups(),
@@ -404,15 +402,13 @@ class MainAdminController
     private function renderGroupsForm(array $groups)
     {
         /**
-         * @var array<string,array<string,string>> $tx
          * @var string $sn
          */
-        global $tx, $sn;
+        global $sn;
     
         $data = [
             'csrfTokenInput' => new HtmlString($this->csrfProtector->tokenInput()),
             'actionUrl' => "$sn?&register",
-            'saveLabel' => ucfirst($tx['action']['save']),
             'groups' => $groups,
         ];
         $selects = [];

@@ -33,6 +33,6 @@ use Register\View;
       </tr>
 <?php endforeach?>
     </table>
-    <input class="submit" type="submit" value="<?=$this->esc($saveLabel)?>" name="send">
+    <input class="submit" type="submit" value="<?=$this->text('label_save')?>" name="send">
   </form>
 </div>
