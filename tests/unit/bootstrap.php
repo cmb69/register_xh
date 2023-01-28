@@ -14,6 +14,7 @@ namespace {
     require_once "./classes/LoginManager.php";
     require_once "./classes/MailService.php";
     require_once "./classes/RegistrationController.php";
+    require_once "./classes/SystemChecker.php";
     require_once "./classes/SystemCheckService.php";
     require_once "./classes/User.php";
     require_once "./classes/UserGroup.php";
@@ -22,6 +23,7 @@ namespace {
     require_once "./classes/ValidationService.php";
     require_once "./classes/View.php";
 
+    const CMSIMPLE_XH_VERSION = "CMSimple_XH 1.7.5";
     const CMSIMPLE_URL = "http://example.com";
 
     // function uenc(string $string): string

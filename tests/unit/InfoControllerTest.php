@@ -14,7 +14,10 @@ class InfoControllerTest extends TestCase
 {
     public function testExecute()
     {
-        $systemCheckService = $this->createStub(SystemCheckService::class);
+        $systemChecker = $this->createStub(SystemChecker::class);
+        $plugin_tx = XH_includeVar("./languages/en.php", 'plugin_tx');
+        $lang = $plugin_tx['register'];
+        $systemCheckService = new SystemCheckService("", $lang, "", $systemChecker);
         $view = $this->createMock(View::class);
         $subject = new InfoController("2.0", $systemCheckService, $view);
         $view->expects($this->once())->method("render")->with("info");
