@@ -62,19 +62,13 @@ class ForgotPasswordController
         $this->mailService = $mailService;
     }
 
-    /**
-     * @return void
-     */
-    public function defaultAction()
+    public function defaultAction(): string
     {
         $email = $_POST['email'] ?? '';
-        echo $this->renderForgotForm($email);
+        return $this->renderForgotForm($email);
     }
 
-    /**
-     * @return void
-     */
-    public function passwordForgottenAction()
+    public function passwordForgottenAction(): string
     {
         /**
          * @var string $su
@@ -84,14 +78,12 @@ class ForgotPasswordController
         $email = $_POST['email'] ?? '';
 
         if ($email == '') {
-            echo $this->view->message("fail", $this->lang['err_email']);
-            echo $this->renderForgotForm($email);
-            return;
+            return $this->view->message("fail", $this->lang['err_email'])
+                . $this->renderForgotForm($email);
         }
         if (!preg_match("/^[^\s()<>@,;:\"\/\[\]?=]+@\w[\w-]*(\.\w[\w-]*)*\.[a-z]{2,}$/i", $email)) {
-            echo $this->view->message("fail", $this->lang['err_email_invalid']);
-            echo $this->renderForgotForm($email);
-            return;
+            return $this->view->message("fail", $this->lang['err_email_invalid'])
+                . $this->renderForgotForm($email);
         }
 
         $user = $this->userRepository->findByEmail($email);
@@ -115,13 +107,10 @@ class ForgotPasswordController
                 array('From: ' . $this->config['senderemail'])
             );
         }
-        echo $this->view->message('success', $this->lang['remindersent_reset']);
+        return $this->view->message('success', $this->lang['remindersent_reset']);
     }
 
-    /**
-     * @return void
-     */
-    public function resetPasswordAction()
+    public function resetPasswordAction(): string
     {
         global $sn, $su;
 
@@ -131,26 +120,21 @@ class ForgotPasswordController
 
         $user = $this->userRepository->findByUsername($username);
         if (!$user || !hash_equals($this->calculateMac($username, $time, $user->getPassword()), $mac)) {
-            echo $this->view->message("fail", $this->lang['err_status_invalid']);
-            return;
+            return $this->view->message("fail", $this->lang['err_status_invalid']);
         }
         if ($this->now > $time + self::TTL) {
-            echo $this->view->message("fail", $this->lang["forgotten_expired"]);
-            return;
+            return $this->view->message("fail", $this->lang["forgotten_expired"]);
         }
 
         $username = urlencode($username);
         $time = urlencode($time);
         $mac = urlencode($mac);
-        echo $this->view->render("change_password", [
+        return $this->view->render("change_password", [
             "url" => "$sn?$su&action=register_change_password&username=$username&time=$time&mac=$mac",
         ]);
     }
 
-    /**
-     * @return void
-     */
-    public function changePasswordAction()
+    public function changePasswordAction(): string
     {
         global $sn, $su;
 
@@ -160,30 +144,26 @@ class ForgotPasswordController
 
         $user = $this->userRepository->findByUsername($username);
         if (!$user || !hash_equals($this->calculateMac($username, $time, $user->getPassword()), $mac)) {
-            echo $this->view->message("fail", $this->lang['err_status_invalid']);
-            return;
+            return $this->view->message("fail", $this->lang['err_status_invalid']);
         }
         if ($this->now > $time + self::TTL) {
-            echo $this->view->message("fail", $this->lang["forgotten_expired"]);
-            return;
+            return $this->view->message("fail", $this->lang["forgotten_expired"]);
         }
 
         if (!isset($_POST["password1"], $_POST["password2"]) || $_POST["password1"] !== $_POST["password2"]) {
-            echo $this->view->message("fail", $this->lang['err_password2']);
+            $o = $this->view->message("fail", $this->lang['err_password2']);
             $username = urlencode($username);
             $time = urlencode($time);
             $mac = urlencode($mac);
-            echo $this->view->render("change_password", [
+            return $o . $this->view->render("change_password", [
                 "url" => "$sn?$su&action=register_change_password&username=$username&time=$time&nonce=$mac",
             ]);
-            return;
         }
 
         $password = $_POST["password1"];
         $user->changePassword($password);
         if (!$this->userRepository->update($user)) {
-            $this->view->message("fail", $this->lang['err_cannot_write_csv']);
-            return;
+            return $this->view->message("fail", $this->lang['err_cannot_write_csv']);
         }
 
         // prepare email content for user data email
@@ -199,7 +179,7 @@ class ForgotPasswordController
             $content,
             array('From: ' . $this->config['senderemail'])
         );
-        echo $this->view->message('success', $this->lang['remindersent']);
+        return $this->view->message('success', $this->lang['remindersent']);
     }
 
     private function calculateMac(string $username, int $time, string $secret): string

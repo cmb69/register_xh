@@ -341,9 +341,7 @@ class Plugin
         } else {
             $action = 'defaultAction';
         }
-        ob_start();
-        $controller->{$action}();
-        return (string) ob_get_clean();
+        return $controller->{$action}();
     }
 
     public static function handleUserPrefs(): string
