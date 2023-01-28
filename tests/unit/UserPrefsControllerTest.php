@@ -56,23 +56,10 @@ class UserPrefsControllerTest extends TestCase
             "john" => new User("john", "\$2y\$10\$f4ldVDiVXTkNrcPmBdbW7.g/.mw5GOEqBid650oN9hE56UC28aXSq", [], "John Doe", "john@example.com", "activated"),
             "jane" => new User("jane", "", [], "Jane Doe", "jane@example.com", "locked"),
         ];
-        $conf = [
-            "senderemail" => "senderemail",
-        ];
-        $lang = [
-            "email" => "email",
-            "emailprefsupdated" => "emailprefsupdated",
-            "err_cannot_write_csv" => "err_cannot_write_csv",
-            "err_old_password_wrong" => "err_old_password_wrong",
-            "err_username_does_not_exist" => "err_username_does_not_exist",
-            "fromip" => "fromip",
-            "name" => "name",
-            "prefsemailsubject" => "prefsemailsubject",
-            "prefsupdated" => "prefsupdated",
-            "user_deleted" => "user_deleted",
-            "user_locked" => "user_locked",
-            "username" => "username",
-        ];
+        $plugin_cf = XH_includeVar("./config/config.php", 'plugin_cf');
+        $conf = $plugin_cf['register'];
+        $plugin_tx = XH_includeVar("./languages/en.php", 'plugin_tx');
+        $lang = $plugin_tx['register'];
         $this->csrfProtector = $this->createMock(CsrfProtector::class);
         $validationService = $this->createStub(ValidationService::class);
         $this->userRepository = $this->createMock(UserRepository::class);
