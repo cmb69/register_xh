@@ -218,6 +218,7 @@ class PasswordForgottenControllerTest extends TestCase
             "password1" => "admin",
             "password2" => "admin",
         ];
+        $_SERVER['SERVER_NAME'] = "example.com";
         $john = new User("john", "12345", [], "John Dow", "john@example.com", "");
         $this->userRepository->method("findByUsername")->willReturn($john);
         $this->userRepository->method("update")->willReturn(true);

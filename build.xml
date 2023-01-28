@@ -44,16 +44,12 @@
   </target>
 
   <target name="unit-tests" description="runs all unit tests">
-    <exec executable="phpunit" passthru="true" checkreturn="true">
-      <arg value="--bootstrap"/>
-      <arg file="tests/unit/bootstrap.php"/>
-      <arg file="tests/unit/"/>
-    </exec>
+    <exec executable="phpunit" passthru="true" checkreturn="true"/>
   </target>
 
   <target name="coverage" description="generates coverage report">
     <exec executable="phpunit" passthru="true" checkreturn="true">
-      <arg line="--configuration coverage.xml"/>
+      <arg line="--coverage-html tests/coverage"/>
     </exec>
   </target>
 
@@ -83,7 +79,7 @@
       <fileset dir="export">
         <exclude name="build.xml"/>
         <exclude name="composer.*"/>
-        <exclude name="coverage.xml"/>
+        <exclude name="phpunit.xml"/>
         <exclude name="phpstan.*"/>
         <exclude name="README*.md"/>
         <exclude name="tests/**"/>

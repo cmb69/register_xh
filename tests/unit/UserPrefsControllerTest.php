@@ -118,6 +118,7 @@ class UserPrefsControllerTest extends TestCase
 
     public function testEditActionNoUser(): void
     {
+        $_SESSION['username'] = "cmb";
         $this->csrfProtector->expects($this->once())->method("check");
         $this->view->expects($this->once())->method("message")->with("fail");
         $this->subject->editAction();

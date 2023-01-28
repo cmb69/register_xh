@@ -106,6 +106,7 @@ class RegistrationControllerTest extends TestCase
     public function testRegisterActionExistingEmail(): void
     {
         $_SERVER["REMOTE_ADDR"] = "example.com";
+        $_SERVER['SERVER_NAME'] = "example.com";
         $this->userRepository->method("findByEmail")->willReturn($this->users["john"]);
         $this->view->expects($this->once())->method("message")->with("success");
         $this->subject->registerUserAction();
@@ -114,6 +115,7 @@ class RegistrationControllerTest extends TestCase
     public function testRegisterActionSuccess(): void
     {
         $_SERVER["REMOTE_ADDR"] = "example.com";
+        $_SERVER['SERVER_NAME'] = "example.com";
         $this->userRepository->expects($this->once())->method("add")->willReturn(true);
         $this->view->expects($this->once())->method("message")->with("success");
         $this->subject->registerUserAction();
