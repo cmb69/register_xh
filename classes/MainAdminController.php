@@ -270,7 +270,7 @@ class MainAdminController
     {
         $groups = $this->dbService->readGroups();
         usort($groups, function ($a, $b) {
-            return strcasecmp($a->groupname, $b->groupname);
+            return strcasecmp($a->getGroupname(), $b->getGroupname());
         });
         return $groups;
     }
