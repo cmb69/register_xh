@@ -10,6 +10,7 @@ namespace Register;
 
 use XH_includeVar;
 
+use ApprovalTests\Approvals;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
@@ -52,6 +53,7 @@ class RegistrationControllerTest extends TestCase
         $lang = $plugin_tx['register'];
         $this->validationService = $this->createStub(ValidationService::class);
         $this->view = $this->createMock(View::class);
+        $this->view = new View("./", $lang);
         $this->userRepository = $this->createMock(UserRepository::class);
         $mailService = $this->createStub(MailService::class);
         $this->subject = new RegistrationController(
@@ -66,25 +68,22 @@ class RegistrationControllerTest extends TestCase
 
     public function testdefaultAction(): void
     {
-        $this->view->expects($this->once())->method("render")->with("registerform");
-        $this->subject->defaultAction();
+        $response = $this->subject->defaultAction();
+        Approvals::verifyHtml($response);
     }
 
     public function testRegisterActionValidationError(): void
     {
         $this->validationService->method("validateUser")->willReturn(["error"]);
-        $this->view->expects($this->exactly(2))->method("render")->withConsecutive(
-            ["error"],
-            ["registerform"]
-        );
-        $this->subject->registerUserAction();
+        $response = $this->subject->registerUserAction();
+        Approvals::verifyHtml($response);
     }
 
     public function testRegisterActionExistingUser(): void
     {
         $this->userRepository->method("findByUsername")->willReturn($this->users["jane"]);
-        $this->view->expects($this->once())->method("message")->with("fail");
-        $this->subject->registerUserAction();
+        $response = $this->subject->registerUserAction();
+        Approvals::verifyHtml($response);
     }
 
     public function testRegisterActionExistingEmail(): void
@@ -95,8 +94,8 @@ class RegistrationControllerTest extends TestCase
         $_SERVER["REMOTE_ADDR"] = "example.com";
         $_SERVER['SERVER_NAME'] = "example.com";
         $this->userRepository->method("findByEmail")->willReturn($this->users["john"]);
-        $this->view->expects($this->once())->method("message")->with("success");
-        $this->subject->registerUserAction();
+        $response = $this->subject->registerUserAction();
+        Approvals::verifyHtml($response);
     }
 
     public function testRegisterActionSuccess(): void
@@ -104,8 +103,8 @@ class RegistrationControllerTest extends TestCase
         $_SERVER["REMOTE_ADDR"] = "example.com";
         $_SERVER['SERVER_NAME'] = "example.com";
         $this->userRepository->expects($this->once())->method("add")->willReturn(true);
-        $this->view->expects($this->once())->method("message")->with("success");
-        $this->subject->registerUserAction();
+        $response = $this->subject->registerUserAction();
+        Approvals::verifyHtml($response);
     }
 
     public function testActivateUserActionNoUser(): void
@@ -114,8 +113,8 @@ class RegistrationControllerTest extends TestCase
             "username" => "john",
             "nonce" => "",
         ];
-        $this->view->expects($this->once())->method("message")->with("fail");
-        $this->subject->activateUserAction();
+        $response = $this->subject->activateUserAction();
+        Approvals::verifyHtml($response);
     }
 
     public function testActivateUserEmptyState(): void
@@ -125,8 +124,8 @@ class RegistrationControllerTest extends TestCase
             "nonce" => "",
         ];
         $this->userRepository->method("findByUsername")->willReturn($this->users["john"]);
-        $this->view->expects($this->once())->method("message")->with("fail");
-        $this->subject->activateUserAction();
+        $response = $this->subject->activateUserAction();
+        Approvals::verifyHtml($response);
     }
 
     public function testActivateUserInvalidState(): void
@@ -136,8 +135,8 @@ class RegistrationControllerTest extends TestCase
             "nonce" => "",
         ];
         $this->userRepository->method("findByUsername")->willReturn($this->users["jane"]);
-        $this->view->expects($this->once())->method("message")->with("fail");
-        $this->subject->activateUserAction();
+        $response = $this->subject->activateUserAction();
+        Approvals::verifyHtml($response);
     }
 
     public function testActivateUserSuccess(): void
@@ -148,7 +147,7 @@ class RegistrationControllerTest extends TestCase
         ];
         $this->userRepository->method("findByUsername")->willReturn($this->users["jane"]);
         $this->userRepository->expects($this->once())->method("update");
-        $this->view->expects($this->once())->method("message")->with("success");
-        $this->subject->activateUserAction();
+        $response = $this->subject->activateUserAction();
+        Approvals::verifyHtml($response);
     }
 }
