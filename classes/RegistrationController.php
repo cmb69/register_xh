@@ -62,18 +62,12 @@ class RegistrationController
         $this->mailService = $mailService;
     }
 
-    /**
-     * @return void
-     */
-    public function defaultAction()
+    public function defaultAction(): string
     {
-        echo $this->form('', '', '', '', '');
+        return $this->form('', '', '', '', '');
     }
 
-    /**
-     * @return void
-     */
-    public function registerUserAction()
+    public function registerUserAction(): string
     {
         /**
          * @var string $su
@@ -88,14 +82,12 @@ class RegistrationController
 
         $errors = $this->validationService->validateUser($name, $username, $password1, $password2, $email);
         if ($errors) {
-            echo $this->view->render('error', ['errors' => $errors]);
-            echo $this->form($name, $username, $password1, $password2, $email);
-            return;
+            return $this->view->render('error', ['errors' => $errors])
+                . $this->form($name, $username, $password1, $password2, $email);
         }
 
         if ($this->userRepository->findByUsername($username)) {
-            $this->view->message("fail", $this->lang['err_username_exists']);
-            return;
+            return $this->view->message("fail", $this->lang['err_username_exists']);
         }
         $user = $this->userRepository->findByEmail($email);
 
@@ -112,8 +104,7 @@ class RegistrationController
             );
 
             if (!$this->userRepository->add($newUser)) {
-                $this->view->message("fail", $this->lang['err_cannot_write_csv']);
-                return;
+                return $this->view->message("fail", $this->lang['err_cannot_write_csv']);
             }
         }
 
@@ -143,17 +134,15 @@ class RegistrationController
                 'Cc: '  . $this->config['senderemail']
             )
         );
-        echo $this->view->message('success', $this->lang['registered']);
+        return $this->view->message('success', $this->lang['registered']);
     }
 
-    /**
-     * @return void
-     */
-    public function activateUserAction()
+    public function activateUserAction(): string
     {
         if (isset($_GET['username']) && isset($_GET['nonce'])) {
             $this->activateUser($_GET['username'], $_GET['nonce']);
         }
+        return "";
     }
 
     /**
