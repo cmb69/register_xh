@@ -12,6 +12,7 @@ namespace Register;
 
 use XH\CSRFProtection as CsrfProtector;
 use XH\PageDataRouter;
+use XH\Pages;
 
 class Plugin
 {
@@ -216,7 +217,8 @@ class Plugin
                     $plugin_tx["register"],
                     $_XH_csrfProtection,
                     new DbService(self::dataFolder()),
-                    $sn
+                    $sn,
+                    new Pages()
                 );
                 ob_start();
                 switch ($action) {

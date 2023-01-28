@@ -11,6 +11,7 @@
 namespace Register;
 
 use XH\CSRFProtection as CsrfProtector;
+use XH\Pages;
 
 class MainAdminController
 {
@@ -45,6 +46,9 @@ class MainAdminController
     /** @var string */
     private $scriptName;
 
+    /** @var Pages */
+    private $pages;
+
     /**
      * @param array<string,string> $config
      * @param array<string,string> $lang
@@ -55,7 +59,8 @@ class MainAdminController
         array $lang,
         CsrfProtector $csrfProtector,
         DbService $dbService,
-        string $scriptName
+        string $scriptName,
+        Pages $pages
     ) {
         $this->pluginFolder = $pluginFolder;
         $this->config = $config;
@@ -64,6 +69,7 @@ class MainAdminController
         $this->view = new View($this->pluginFolder, $this->lang);
         $this->dbService = $dbService;
         $this->scriptName = $scriptName;
+        $this->pages = $pages;
     }
 
     /**
@@ -423,19 +429,11 @@ class MainAdminController
 
     private function pageSelectbox(string $loginpage, int $n): string
     {
-        /**
-         * @var int $cl
-         * @var array<int,string> $h
-         * @var array<int,string> $u
-         * @var array<int,int> $l
-         */
-        global $cl, $h, $u, $l;
-    
         $o = '<select name="grouploginpage[' . $n . ']"><option value="">' . $this->lang['label_none'] . '</option>';
-        for ($i = 0; $i < $cl; $i++) {
-            $sel = $u[$i] == $loginpage ? ' selected="selected"' : '';
-            $o .= '<option value="' . $u[$i] . '"' . $sel . '>'
-                . str_repeat('&nbsp;', 3 * ($l[$i] - 1)) . $h[$i] . '</option>';
+        for ($i = 0; $i < $this->pages->getCount(); $i++) {
+            $sel = $this->pages->url($i) == $loginpage ? ' selected="selected"' : '';
+            $o .= '<option value="' . $this->pages->url($i). '"' . $sel . '>'
+                . str_repeat('&nbsp;', 3 * ($this->pages->level($i) - 1)) . $this->pages->heading($i) . '</option>';
         }
         $o .= '</select>';
         return $o;
