@@ -8,21 +8,11 @@
 
 namespace Register;
 
-use PHPUnit\Framework\MockObject\MockObject;
+use ApprovalTests\Approvals;
 use PHPUnit\Framework\TestCase;
 
 class LoginFormControllerTest extends TestCase
 {
-    /**
-     * @MockObject
-     */
-    private $view;
-
-    public function setUp(): void
-    {
-        $this->view = $this->createMock(View::class);
-    }
-
     public function testLoginForm()
     {
         global $cf;
@@ -32,16 +22,11 @@ class LoginFormControllerTest extends TestCase
         $conf = $plugin_cf['register'];
         $plugin_tx = XH_includeVar("./languages/en.php", 'plugin_tx');
         $lang = $plugin_tx['register'];
-        $subject = new LoginFormController(
-            $conf,
-            $lang,
-            "/",
-            "Foo",
-            null,
-            $this->view
-        );
-        $this->view->expects($this->once())->method("render")->with("loginform");
-        $subject->execute();
+        $subject = new LoginFormController($conf, $lang, "/", "Foo", null, new View("./", $lang));
+
+        $response = $subject->execute();
+
+        Approvals::verifyHtml($response);
     }
 
     public function testLoggedInForm()
@@ -51,15 +36,11 @@ class LoginFormControllerTest extends TestCase
         $cf['uri']['word_separator'] = "|";
         $plugin_tx = XH_includeVar("./languages/en.php", 'plugin_tx');
         $lang = $plugin_tx['register'];
-        $subject = new LoginFormController(
-            [],
-            $lang,
-            "/",
-            "Foo",
-            new User("jane", "", [], "Jane Doe", "jane@example.com", "activated"),
-            $this->view
-        );
-        $this->view->expects($this->once())->method("render")->with("loggedin-area");
-        $subject->execute();
+        $user = new User("jane", "", [], "Jane Doe", "jane@example.com", "activated");
+        $subject = new LoginFormController([], $lang, "/", "Foo", $user, new View("./", $lang));
+
+        $response = $subject->execute();
+
+        Approvals::verifyHtml($response);
     }
 }
