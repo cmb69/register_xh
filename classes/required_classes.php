@@ -70,7 +70,9 @@ function Register_loggedInForm(): string
  */
 function register_pd_view(array $pageData)
 {
+    global $plugin_tx;
+
     ob_start();
-    (new PageDataController($pageData, new View()))->execute();
+    (new PageDataController($pageData, new View($plugin_tx['register'])))->execute();
     return (string) ob_get_clean();
 }

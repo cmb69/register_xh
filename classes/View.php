@@ -10,20 +10,26 @@ namespace Register;
 
 class View
 {
+    /** @var array<string,string> */
+    private $lang;
+
+    /**
+     * @param array<string,string> $lang
+     */
+    public function __construct(array $lang)
+    {
+        $this->lang = $lang;
+    }
+
     /**
      * @param string $key
      * @return string
      */
     public function text($key)
     {
-        /**
-         * @var array<string,array<string,string>> $plugin_tx
-         */
-        global $plugin_tx;
-
         $args = func_get_args();
         array_shift($args);
-        return $this->esc(vsprintf($plugin_tx['register'][$key], $args));
+        return $this->esc(vsprintf($this->lang[$key], $args));
     }
 
     /**
@@ -44,7 +50,7 @@ class View
         }
         $args = func_get_args();
         array_shift($args);
-        return $this->esc(vsprintf($plugin_tx['register'][$key], $args));
+        return $this->esc(vsprintf($this->lang[$key], $args));
     }
 
     /**

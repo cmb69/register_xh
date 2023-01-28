@@ -150,7 +150,12 @@ class Plugin
                 $method = null;
         }
         if ($method !== null) {
-            $controller = new SpecialPageController($h, $plugin_cf['register'], $plugin_tx['register'], new View());
+            $controller = new SpecialPageController(
+                $h,
+                $plugin_cf['register'],
+                $plugin_tx['register'],
+                new View($plugin_tx['register'])
+            );
             ob_start();
             $controller->{$method}();
             $o .= (string) ob_get_clean();
@@ -209,7 +214,7 @@ class Plugin
                     $plugin_cf["register"],
                     $plugin_tx["register"],
                     $_XH_csrfProtection,
-                    new View(),
+                    new View($plugin_tx['register']),
                     new DbService(self::dataFolder())
                 );
                 ob_start();
@@ -251,7 +256,7 @@ class Plugin
             self::dataFolder()
         );
         ob_start();
-        (new InfoController(self::VERSION, $systemCheckService, new View()))->execute();
+        (new InfoController(self::VERSION, $systemCheckService, new View($plugin_tx['register'])))->execute();
         return (string) ob_get_clean();
     }
 
@@ -295,7 +300,7 @@ class Plugin
             $plugin_cf["register"],
             $plugin_tx["register"],
             new ValidationService($plugin_tx["register"]),
-            new View(),
+            new View($plugin_tx['register']),
             new UserRepository(new DbService(self::dataFolder())),
             new MailService()
         );
@@ -328,7 +333,7 @@ class Plugin
             $plugin_cf["register"],
             $plugin_tx["register"],
             time(),
-            new View(),
+            new View($plugin_tx['register']),
             new UserRepository(new DbService(self::dataFolder())),
             new MailService()
         );
@@ -361,7 +366,7 @@ class Plugin
             new CsrfProtector('register_csrf_token', false),
             new ValidationService($plugin_tx["register"]),
             new UserRepository(new DbService(self::dataFolder())),
-            new View(),
+            new View($plugin_tx['register']),
             new MailService(),
             new LoginManager(time()),
             new Logger()
@@ -394,7 +399,7 @@ class Plugin
             $sn,
             $su,
             self::currentUser(),
-            new View()
+            new View($plugin_tx['register'])
         );
         ob_start();
         $controller->execute();
