@@ -211,6 +211,7 @@ class Plugin
                 break;
             case 'plugin_main':
                 $temp = new MainAdminController(
+                    "{$pth['folder']['plugins']}register/",
                     $plugin_cf["register"],
                     $plugin_tx["register"],
                     $_XH_csrfProtection,

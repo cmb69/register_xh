@@ -14,6 +14,9 @@ use XH\CSRFProtection as CsrfProtector;
 
 class MainAdminController
 {
+    /** @var string */
+    private $pluginFolder;
+
     /**
      * @var array<string,string>
      */
@@ -44,12 +47,14 @@ class MainAdminController
      * @param array<string,string> $lang
      */
     public function __construct(
+        string $pluginFolder,
         array $config,
         array $lang,
         CsrfProtector $csrfProtector,
         View $view,
         DbService $dbService
     ) {
+        $this->pluginFolder = $pluginFolder;
         $this->config = $config;
         $this->lang = $lang;
         $this->csrfProtector = $csrfProtector;
@@ -222,11 +227,10 @@ class MainAdminController
     private function renderUsersForm(array $users)
     {
         /**
-         * @var array{folder:array<string,string>,file:array<string,string>} $pth
          * @var string $sn
          * @var string $hjs
          */
-        global $pth, $sn, $hjs;
+        global $sn, $hjs;
 
         $jsKeys = ['name', 'username', 'password', 'accessgroups', 'status', 'email', 'prefsemailsubject'];
         $txts = array();
@@ -239,7 +243,7 @@ class MainAdminController
             }
         }
 
-        $hjs .= '<script type="text/javascript" src="' . $pth['folder']['plugins'] . 'register/admin.min.js"></script>'
+        $hjs .= '<script type="text/javascript" src="' . $this->pluginFolder . 'admin.min.js"></script>'
             . '<script type="text/javascript">register.tx={' . implode(',', $txts) . '};'
             . 'register.maxNumberOfUsers=' . $this->calcMaxRecords(7, 4) . ';</script>';
 
