@@ -16,7 +16,7 @@ jobs:
       - name: Patch CMSimple_XH
         run: cd cmsimplexh/cmsimple && sed -i 's/@return int The number of bytes written, or false on failure\./@return int\|false/g' functions.php
       - name: Checkout Register_XH
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           path: 'cmsimplexh/plugins/register'
       - name: composer install
