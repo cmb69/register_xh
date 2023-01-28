@@ -188,7 +188,7 @@ class Plugin
          * @var array<string,array<string,string>> $plugin_tx
          * @var CsrfProtector $_XH_csrfProtection
          */
-        global $o, $pth, $admin, $action, $plugin_cf, $plugin_tx, $_XH_csrfProtection;
+        global $o, $pth, $sn, $admin, $action, $plugin_cf, $plugin_tx, $_XH_csrfProtection;
 
         $o .= print_plugin_admin('off');
         pluginmenu('ROW');
@@ -215,7 +215,8 @@ class Plugin
                     $plugin_cf["register"],
                     $plugin_tx["register"],
                     $_XH_csrfProtection,
-                    new DbService(self::dataFolder())
+                    new DbService(self::dataFolder()),
+                    $sn
                 );
                 ob_start();
                 switch ($action) {

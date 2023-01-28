@@ -42,6 +42,9 @@ class MainAdminController
      */
     private $dbService;
 
+    /** @var string */
+    private $scriptName;
+
     /**
      * @param array<string,string> $config
      * @param array<string,string> $lang
@@ -51,7 +54,8 @@ class MainAdminController
         array $config,
         array $lang,
         CsrfProtector $csrfProtector,
-        DbService $dbService
+        DbService $dbService,
+        string $scriptName
     ) {
         $this->pluginFolder = $pluginFolder;
         $this->config = $config;
@@ -59,6 +63,7 @@ class MainAdminController
         $this->csrfProtector = $csrfProtector;
         $this->view = new View($this->pluginFolder, $this->lang);
         $this->dbService = $dbService;
+        $this->scriptName = $scriptName;
     }
 
     /**
@@ -226,10 +231,9 @@ class MainAdminController
     private function renderUsersForm(array $users)
     {
         /**
-         * @var string $sn
          * @var string $hjs
          */
-        global $sn, $hjs;
+        global $hjs;
 
         $jsKeys = ['name', 'username', 'password', 'accessgroups', 'status', 'email', 'prefsemailsubject'];
         $txts = array();
@@ -251,7 +255,7 @@ class MainAdminController
             'defaultGroup' => $this->config['group_default'],
             'statusSelectActivated' => new HtmlString($this->statusSelectbox('activated')),
             'groups' => $this->findGroups(),
-            'actionUrl' => "$sn?&register",
+            'actionUrl' => "{$this->scriptName}?&register",
             'users' => $users,
         ];
         $groupStrings = $statusSelects = [];
@@ -404,14 +408,9 @@ class MainAdminController
      */
     private function renderGroupsForm(array $groups)
     {
-        /**
-         * @var string $sn
-         */
-        global $sn;
-    
         $data = [
             'csrfTokenInput' => new HtmlString($this->csrfProtector->tokenInput()),
-            'actionUrl' => "$sn?&register",
+            'actionUrl' => "{$this->scriptName}?&register",
             'groups' => $groups,
         ];
         $selects = [];
