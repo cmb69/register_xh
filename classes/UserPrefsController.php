@@ -86,27 +86,21 @@ class UserPrefsController
         $this->logger = $logger;
     }
 
-    /**
-     * @return void
-     */
-    public function defaultAction()
+    public function defaultAction(): string
     {
         $username = $_SESSION['username'] ?? '';
 
         $user = $this->userRepository->findByUsername($username);
         if ($user === null) {
-            echo $this->view->message('fail', $this->lang['err_username_does_not_exist'] . " ('" . $username . "')");
+            return $this->view->message('fail', $this->lang['err_username_does_not_exist'] . " ('" . $username . "')");
         } elseif ($user->isLocked()) {
-            echo $this->view->message('fail', $this->lang['user_locked'] . ':' .$username);
+            return $this->view->message('fail', $this->lang['user_locked'] . ':' .$username);
         } else {
-            echo $this->renderForm($user->getName(), $user->getEmail());
+            return $this->renderForm($user->getName(), $user->getEmail());
         }
     }
 
-    /**
-     * @return void
-     */
-    public function editAction()
+    public function editAction(): string
     {
         $this->csrfProtector->check();
 
@@ -122,21 +116,18 @@ class UserPrefsController
 
         $entry = $this->userRepository->findByUsername($username);
         if ($entry === null) {
-            echo $this->view->message('fail', $this->lang['err_username_does_not_exist'] . " ('" . $username . "')");
-            return;
+            return $this->view->message('fail', $this->lang['err_username_does_not_exist'] . " ('" . $username . "')");
         }
 
         // Test if user is locked
         if ($entry->isLocked()) {
-            echo $this->view->message('fail', $this->lang['user_locked'] . ':' .$username);
-            return;
+            return $this->view->message('fail', $this->lang['user_locked'] . ':' .$username);
         }
 
         // check that old password got entered correctly
         if (!password_verify($oldpassword, $entry->getPassword())) {
-            echo $this->view->message("fail", $this->lang['err_old_password_wrong']);
-            echo $this->renderForm($name, $email);
-            return;
+            return $this->view->message("fail", $this->lang['err_old_password_wrong'])
+                . $this->renderForm($name, $email);
         }
 
         if ($password1 == "" && $password2 == "") {
@@ -152,9 +143,8 @@ class UserPrefsController
 
         $errors = $this->validationService->validateUser($name, $username, $password1, $password2, $email);
         if ($errors) {
-            echo $this->view->render('error', ['errors' => $errors]);
-            echo $this->renderForm($name, $email);
-            return;
+            return $this->view->render('error', ['errors' => $errors])
+                . $this->renderForm($name, $email);
         }
 
         $oldemail = $entry->getEmail();
@@ -165,8 +155,7 @@ class UserPrefsController
         $entry->setName($name);
 
         if (!$this->userRepository->update($entry)) {
-            echo $this->view->message("fail", $this->lang['err_cannot_write_csv']);
-            return;
+            return $this->view->message("fail", $this->lang['err_cannot_write_csv']);
         }
 
         // prepare email for user information about updates
@@ -187,7 +176,7 @@ class UserPrefsController
                 'Cc: '  . $oldemail . ', ' . $this->config['senderemail']
             )
         );
-        echo $this->view->message('success', $this->lang['prefsupdated']);
+        return $this->view->message('success', $this->lang['prefsupdated']);
     }
 
     private function trimmedPostString(string $param): string
@@ -195,10 +184,7 @@ class UserPrefsController
         return (isset($_POST[$param]) && is_string($_POST[$param])) ? trim($_POST[$param]) : "";
     }
 
-    /**
-     * @return void
-     */
-    public function deleteAction()
+    public function deleteAction(): string
     {
         $this->csrfProtector->check();
     
@@ -212,32 +198,28 @@ class UserPrefsController
 
         $entry = $this->userRepository->findByUsername($username);
         if ($entry === null) {
-            echo $this->view->message('fail', $this->lang['err_username_does_not_exist'] . " ('" . $username . "')");
-            return;
+            return $this->view->message('fail', $this->lang['err_username_does_not_exist'] . " ('" . $username . "')");
         }
 
         // Test if user is locked
         if ($entry->isLocked()) {
-            echo $this->view->message('fail', $this->lang['user_locked'] . ':' .$username);
-            return;
+            return $this->view->message('fail', $this->lang['user_locked'] . ':' .$username);
         }
 
         // Form Handling - Delete User ================================================
         if (!password_verify($oldpassword, $entry->getPassword())) {
-            echo $this->view->message("fail", $this->lang['err_old_password_wrong']);
-            echo $this->renderForm($name, $email);
-            return;
+            return $this->view->message("fail", $this->lang['err_old_password_wrong'])
+                . $this->renderForm($name, $email);
         }
 
         if (!$this->userRepository->delete($entry)) {
-            echo $this->view->message("fail", $this->lang['err_cannot_write_csv']);
-            return;
+            return $this->view->message("fail", $this->lang['err_cannot_write_csv']);
         }
 
         $username = $_SESSION['username'] ?? '';
         $this->loginManager->logout();
         $this->logger->logInfo('logout', "$username deleted and logged out");
-        echo $this->view->message('success', $this->lang['user_deleted'] . ': '.$username);
+        return $this->view->message('success', $this->lang['user_deleted'] . ': '.$username);
     }
 
     /**
