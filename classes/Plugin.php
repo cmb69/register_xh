@@ -253,7 +253,8 @@ class Plugin
         $systemCheckService = new SystemCheckService(
             $pth['folder']['plugins'],
             $plugin_tx['register'],
-            self::dataFolder()
+            self::dataFolder(),
+            new SystemChecker()
         );
         ob_start();
         $controller = new InfoController(
