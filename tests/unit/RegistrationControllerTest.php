@@ -52,7 +52,6 @@ class RegistrationControllerTest extends TestCase
         $plugin_tx = XH_includeVar("./languages/en.php", 'plugin_tx');
         $lang = $plugin_tx['register'];
         $this->validationService = $this->createStub(ValidationService::class);
-        $this->view = $this->createMock(View::class);
         $this->view = new View("./", $lang);
         $this->userRepository = $this->createMock(UserRepository::class);
         $mailService = $this->createStub(MailService::class);
