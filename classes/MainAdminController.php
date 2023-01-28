@@ -338,25 +338,19 @@ class MainAdminController
         return $o;
     }
 
-    /**
-     * @return void
-     */
-    public function editGroupsAction()
+    public function editGroupsAction(): string
     {
         $filename = $this->dbService->dataFolder() . 'groups.csv';
         if (is_file($filename)) {
             $groups = $this->dbService->readGroups();
-            $this->renderGroupsForm($groups);
-            echo $this->view->message('info', count($groups) . ' ' . $this->lang['entries_in_csv'] . $filename);
+            return $this->renderGroupsForm($groups)
+                . $this->view->message('info', count($groups) . ' ' . $this->lang['entries_in_csv'] . $filename);
         } else {
-            echo $this->view->message('fail', $this->lang['err_csv_missing'] . ' (' . $filename . ')');
+            return $this->view->message('fail', $this->lang['err_csv_missing'] . ' (' . $filename . ')');
         }
     }
 
-    /**
-     * @return void
-     */
-    public function saveGroupsAction()
+    public function saveGroupsAction(): string
     {
         $this->csrfProtector->check();
         $errors = [];
@@ -387,6 +381,7 @@ class MainAdminController
             $added = true;
         }
 
+        $o = "";
         // In case that nothing got deleted or added, store back (save got pressed)
         if (!$deleted && !$added && empty($errors)) {
             if (!$this->dbService->writeGroups($newgroups)) {
@@ -394,25 +389,25 @@ class MainAdminController
                     . ' (' . $this->dbService->dataFolder() . 'groups.csv' . ')';
             }
             if (!empty($errors)) {
-                echo $this->renderErrorView($errors);
+                $o .= $this->renderErrorView($errors);
             } else {
-                echo $this->view->message(
+                $o .= $this->view->message(
                     'success',
                     $this->lang['csv_written'] . '(' . $this->dbService->dataFolder() . 'groups.csv' . ')'
                 );
             }
         } elseif (!empty($errors)) {
-            echo $this->renderErrorView($errors);
+            $o .= $this->renderErrorView($errors);
         }
 
-        $this->renderGroupsForm($newgroups);
+        $o .= $this->renderGroupsForm($newgroups);
+        return $o;
     }
 
     /**
      * @param UserGroup[] $groups
-     * @return void
      */
-    private function renderGroupsForm(array $groups)
+    private function renderGroupsForm(array $groups): string
     {
         $data = [
             'csrfTokenInput' => new HtmlString($this->csrfProtector->tokenInput()),
@@ -424,7 +419,7 @@ class MainAdminController
             $selects[] = new HtmlString($this->pageSelectbox($entry->getLoginpage(), $i));
         }
         $data['selects'] = $selects;
-        echo $this->view->render('admin-groups', $data);
+        return $this->view->render('admin-groups', $data);
     }
 
     private function pageSelectbox(string $loginpage, int $n): string

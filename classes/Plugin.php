@@ -229,10 +229,10 @@ class Plugin
                         $temp->saveUsersAction();
                         break;
                     case 'editgroups':
-                        $temp->editGroupsAction();
+                        $o .= $temp->editGroupsAction();
                         break;
                     case 'savegroups':
-                        $temp->saveGroupsAction();
+                        $o .= $temp->saveGroupsAction();
                         break;
                 }
                 $o .= ob_get_clean();
