@@ -8,6 +8,8 @@
 
 namespace Register;
 
+use XH_includeVar;
+
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
@@ -35,25 +37,10 @@ class ForgotPasswordControllerTest extends TestCase
 
     public function setUp(): void
     {
-        $conf = [
-            "senderemail" => "webmaster@example.com",
-        ];
-        $lang = [
-            "email" => "email",
-            "emailtext1" => "emailtext1",
-            "emailtext3" => "emailtext3",
-            "err_email" => "err_email",
-            "err_email_invalid" => "err_email_invalid",
-            "err_status_invalid" => "err_status_invalid",
-            "err_username_does_not_exist" => "err_username_does_not_exist",
-            "name" => "name",
-            "password" => "password",
-            "reminderemailsubject" => "reminderemailsubject",
-            "remindersent" => "remindersent",
-            "remindersent_reset" => "remindersent_reset",
-            "senderemail" => "senderemail",
-            "username" => "username",
-        ];
+        $plugin_cf = XH_includeVar("./config/config.php", 'plugin_cf');
+        $conf = $plugin_cf['register'];
+        $plugin_tx = XH_includeVar("./languages/en.php", 'plugin_tx');
+        $lang = $plugin_tx['register'];
         $this->view = $this->createMock(View::class);
         $this->userRepository = $this->createStub(UserRepository::class);
         $this->mailService = $this->createMock(MailService::class);
@@ -84,7 +71,7 @@ class ForgotPasswordControllerTest extends TestCase
     {
         $this->view->expects($this->once())->method("message")->with(
             $this->equalTo("fail"),
-            $this->equalTo("err_email")
+            $this->equalTo("Please enter your email address.")
         );
         $this->view->expects($this->once())->method("render")->with(
             $this->equalTo("forgotten-form"),
@@ -101,7 +88,7 @@ class ForgotPasswordControllerTest extends TestCase
     {
         $this->view->expects($this->once())->method("message")->with(
             $this->equalTo("fail"),
-            $this->equalTo("err_email_invalid")
+            $this->equalTo("The given email address is invalid.")
         );
         $this->view->expects($this->once())->method("render")->with(
             $this->equalTo("forgotten-form"),
@@ -119,7 +106,7 @@ class ForgotPasswordControllerTest extends TestCase
         $this->userRepository->method("findByEmail")->willReturn(null);
         $this->view->expects($this->once())->method("message")->with(
             $this->equalTo("success"),
-            $this->equalTo("remindersent_reset")
+            $this->equalTo("If the email you specified exists in our system, we've sent a password reset link to it.")
         );
         $_POST["email"] = "jane@example.com";
         $this->subject->passwordForgottenAction();
@@ -132,7 +119,7 @@ class ForgotPasswordControllerTest extends TestCase
         $this->userRepository->method("findByEmail")->willReturn($john);
         $this->view->expects($this->once())->method("message")->with(
             $this->equalTo("success"),
-            $this->equalTo("remindersent_reset")
+            $this->equalTo("If the email you specified exists in our system, we've sent a password reset link to it.")
         );
         $_POST["email"] = "john@example.com";
         $this->subject->passwordForgottenAction();
@@ -144,7 +131,7 @@ class ForgotPasswordControllerTest extends TestCase
         $this->userRepository->method("findByUsername")->willReturn(null);
         $this->view->expects($this->once())->method("message")->with(
             $this->equalTo("fail"),
-            $this->equalTo("err_status_invalid")
+            $this->equalTo("The entered validation code is invalid.")
         );
         $this->subject->resetPasswordAction();
     }
@@ -160,7 +147,7 @@ class ForgotPasswordControllerTest extends TestCase
         $this->userRepository->method("findByUsername")->willReturn($john);
         $this->view->expects($this->once())->method("message")->with(
             $this->equalTo("fail"),
-            $this->equalTo("err_status_invalid")
+            $this->equalTo("The entered validation code is invalid.")
         );
         $this->subject->resetPasswordAction();
     }
@@ -186,7 +173,7 @@ class ForgotPasswordControllerTest extends TestCase
         $this->userRepository->method("findByUsername")->willReturn(null);
         $this->view->expects($this->once())->method("message")->with(
             $this->equalTo("fail"),
-            $this->equalTo("err_status_invalid")
+            $this->equalTo("The entered validation code is invalid.")
         );
         $this->subject->changePasswordAction();
     }
@@ -202,7 +189,7 @@ class ForgotPasswordControllerTest extends TestCase
         $this->userRepository->method("findByUsername")->willReturn($john);
         $this->view->expects($this->once())->method("message")->with(
             $this->equalTo("fail"),
-            $this->equalTo("err_status_invalid")
+            $this->equalTo("The entered validation code is invalid.")
         );
         $this->subject->changePasswordAction();
     }
@@ -224,7 +211,7 @@ class ForgotPasswordControllerTest extends TestCase
         $this->userRepository->method("update")->willReturn(true);
         $this->view->expects($this->once())->method("message")->with(
             $this->equalTo("success"),
-            $this->equalTo("remindersent")
+            $this->equalTo("An email has been sent to you with your user data.")
         );
         $this->subject->changePasswordAction();
     }

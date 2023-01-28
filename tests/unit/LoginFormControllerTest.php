@@ -25,15 +25,13 @@ class LoginFormControllerTest extends TestCase
 
     public function testLoginForm()
     {
-        $conf = [
-            "allowed_register" => "true",
-            "password_forgotten" => "true",
-            "remember_user" => "true",
-        ];
-        $lang = [
-            "forgot_password" => "forgot_password",
-            "register" => "register",
-        ];
+        global $cf;
+
+        $cf['uri']['word_separator'] = "|";
+        $plugin_cf = XH_includeVar("./config/config.php", 'plugin_cf');
+        $conf = $plugin_cf['register'];
+        $plugin_tx = XH_includeVar("./languages/en.php", 'plugin_tx');
+        $lang = $plugin_tx['register'];
         $subject = new LoginFormController(
             $conf,
             $lang,
@@ -48,9 +46,11 @@ class LoginFormControllerTest extends TestCase
 
     public function testLoggedInForm()
     {
-        $lang = [
-            "user_prefs" => "user_prefs",
-        ];
+        global $cf;
+
+        $cf['uri']['word_separator'] = "|";
+        $plugin_tx = XH_includeVar("./languages/en.php", 'plugin_tx');
+        $lang = $plugin_tx['register'];
         $subject = new LoginFormController(
             [],
             $lang,

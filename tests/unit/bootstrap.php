@@ -3,6 +3,7 @@
 namespace {
 
     require_once './vendor/autoload.php';
+    require_once '../../cmsimple/functions.php';
     require_once "../../cmsimple/classes/CSRFProtection.php";
     require_once './classes/DbService.php';
     require_once "./classes/ForgotPasswordController.php";
@@ -23,10 +24,10 @@ namespace {
 
     const CMSIMPLE_URL = "http://example.com";
 
-    function uenc(string $string): string
-    {
-        return $string;
-    }
+    // function uenc(string $string): string
+    // {
+    //     return $string;
+    // }
 }
 
 namespace Register {
