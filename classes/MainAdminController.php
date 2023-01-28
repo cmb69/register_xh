@@ -341,7 +341,7 @@ class MainAdminController
     public function editGroupsAction(): string
     {
         $filename = $this->dbService->dataFolder() . 'groups.csv';
-        if (is_file($filename)) {
+        if ($this->dbService->hasGroupsFile()) {
             $groups = $this->dbService->readGroups();
             return $this->renderGroupsForm($groups)
                 . $this->view->message('info', count($groups) . ' ' . $this->lang['entries_in_csv'] . $filename);
