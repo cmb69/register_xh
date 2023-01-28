@@ -38,11 +38,6 @@ class View
      */
     public function plural($key, $count): string
     {
-        /**
-         * @var array<string,array<string,string>> $plugin_tx
-         */
-        global $plugin_tx;
-
         if ($count == 0) {
             $key .= '_0';
         } else {
