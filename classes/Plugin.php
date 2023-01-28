@@ -215,7 +215,6 @@ class Plugin
                     $plugin_cf["register"],
                     $plugin_tx["register"],
                     $_XH_csrfProtection,
-                    new View("{$pth['folder']['plugins']}register/", $plugin_tx['register']),
                     new DbService(self::dataFolder())
                 );
                 ob_start();

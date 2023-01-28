@@ -51,14 +51,13 @@ class MainAdminController
         array $config,
         array $lang,
         CsrfProtector $csrfProtector,
-        View $view,
         DbService $dbService
     ) {
         $this->pluginFolder = $pluginFolder;
         $this->config = $config;
         $this->lang = $lang;
         $this->csrfProtector = $csrfProtector;
-        $this->view = $view;
+        $this->view = new View($this->pluginFolder, $this->lang);
         $this->dbService = $dbService;
     }
 
