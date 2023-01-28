@@ -10,6 +10,7 @@ namespace Register;
 
 use XH_includeVar;
 
+use ApprovalTests\Approvals;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
@@ -41,7 +42,7 @@ class ForgotPasswordControllerTest extends TestCase
         $conf = $plugin_cf['register'];
         $plugin_tx = XH_includeVar("./languages/en.php", 'plugin_tx');
         $lang = $plugin_tx['register'];
-        $this->view = $this->createMock(View::class);
+        $this->view = new View("./", $lang);
         $this->userRepository = $this->createStub(UserRepository::class);
         $this->mailService = $this->createMock(MailService::class);
         $this->subject = new ForgotPasswordController(
@@ -56,60 +57,31 @@ class ForgotPasswordControllerTest extends TestCase
 
     public function testDefaultAction(): void
     {
-        $this->view->expects($this->once())->method("render")->with(
-            $this->equalTo("forgotten-form"),
-            $this->equalTo([
-                "actionUrl" => "?",
-                "email" => "john@example.com",
-            ])
-        );
         $_POST["email"] = "john@example.com";
-        $this->subject->defaultAction();
+        $response = $this->subject->defaultAction();
+        Approvals::verifyHtml($response);
     }
 
     public function testPasswordForgottenActionEmptyEmail(): void
     {
-        $this->view->expects($this->once())->method("message")->with(
-            $this->equalTo("fail"),
-            $this->equalTo("Please enter your email address.")
-        );
-        $this->view->expects($this->once())->method("render")->with(
-            $this->equalTo("forgotten-form"),
-            $this->equalTo([
-                "actionUrl" => "?",
-                "email" => "",
-            ])
-        );
         $_POST["email"] = "";
-        $this->subject->passwordForgottenAction();
+        $response = $this->subject->passwordForgottenAction();
+        Approvals::verifyHtml($response);
     }
 
     public function testPasswordForgottenActionInvalidEmail(): void
     {
-        $this->view->expects($this->once())->method("message")->with(
-            $this->equalTo("fail"),
-            $this->equalTo("The given email address is invalid.")
-        );
-        $this->view->expects($this->once())->method("render")->with(
-            $this->equalTo("forgotten-form"),
-            $this->equalTo([
-                "actionUrl" => "?",
-                "email" => "invalid",
-            ])
-        );
         $_POST["email"] = "invalid";
-        $this->subject->passwordForgottenAction();
+        $response = $this->subject->passwordForgottenAction();
+        Approvals::verifyHtml($response);
     }
 
     public function testPasswordForgottenActionUnknownEmail(): void
     {
         $this->userRepository->method("findByEmail")->willReturn(null);
-        $this->view->expects($this->once())->method("message")->with(
-            $this->equalTo("success"),
-            $this->equalTo("If the email you specified exists in our system, we've sent a password reset link to it.")
-        );
         $_POST["email"] = "jane@example.com";
-        $this->subject->passwordForgottenAction();
+        $response = $this->subject->passwordForgottenAction();
+        Approvals::verifyHtml($response);
     }
 
     public function testPasswordForgottenActionKnownEmail(): void
@@ -117,23 +89,17 @@ class ForgotPasswordControllerTest extends TestCase
         $_SERVER["SERVER_NAME"] = "example.com";
         $john = new User("john", "12345", [], "John Dow", "john@example.com", "");
         $this->userRepository->method("findByEmail")->willReturn($john);
-        $this->view->expects($this->once())->method("message")->with(
-            $this->equalTo("success"),
-            $this->equalTo("If the email you specified exists in our system, we've sent a password reset link to it.")
-        );
         $_POST["email"] = "john@example.com";
-        $this->subject->passwordForgottenAction();
+        $response = $this->subject->passwordForgottenAction();
+        Approvals::verifyHtml($response);
     }
 
     public function testResetPasswordActionUnknownUsername(): void
     {
         $_GET = ["username" => "colt"];
         $this->userRepository->method("findByUsername")->willReturn(null);
-        $this->view->expects($this->once())->method("message")->with(
-            $this->equalTo("fail"),
-            $this->equalTo("The entered validation code is invalid.")
-        );
-        $this->subject->resetPasswordAction();
+        $response = $this->subject->resetPasswordAction();
+        Approvals::verifyHtml($response);
     }
 
     public function testResetPasswordActionWrongMac(): void
@@ -145,11 +111,8 @@ class ForgotPasswordControllerTest extends TestCase
         ];
         $john = new User("john", "12345", [], "John Dow", "john@example.com", "");
         $this->userRepository->method("findByUsername")->willReturn($john);
-        $this->view->expects($this->once())->method("message")->with(
-            $this->equalTo("fail"),
-            $this->equalTo("The entered validation code is invalid.")
-        );
-        $this->subject->resetPasswordAction();
+        $response = $this->subject->resetPasswordAction();
+        Approvals::verifyHtml($response);
     }
 
     public function testResetPasswordActionSuccess(): void
@@ -161,21 +124,16 @@ class ForgotPasswordControllerTest extends TestCase
         ];
         $john = new User("john", "12345", [], "John Dow", "john@example.com", "");
         $this->userRepository->method("findByUsername")->willReturn($john);
-        $this->view->expects($this->once())->method("render")->with(
-            $this->equalTo("change_password")
-        );
-        $this->subject->resetPasswordAction();
+        $response = $this->subject->resetPasswordAction();
+        Approvals::verifyHtml($response);
     }
 
     public function testChangePasswordActionUnknownUsername(): void
     {
         $_GET = ["username" => "colt"];
         $this->userRepository->method("findByUsername")->willReturn(null);
-        $this->view->expects($this->once())->method("message")->with(
-            $this->equalTo("fail"),
-            $this->equalTo("The entered validation code is invalid.")
-        );
-        $this->subject->changePasswordAction();
+        $response = $this->subject->changePasswordAction();
+        Approvals::verifyHtml($response);
     }
 
     public function testChangePasswordActionWrongMac(): void
@@ -187,11 +145,8 @@ class ForgotPasswordControllerTest extends TestCase
         ];
         $john = new User("john", "12345", [], "John Dow", "john@example.com", "");
         $this->userRepository->method("findByUsername")->willReturn($john);
-        $this->view->expects($this->once())->method("message")->with(
-            $this->equalTo("fail"),
-            $this->equalTo("The entered validation code is invalid.")
-        );
-        $this->subject->changePasswordAction();
+        $response = $this->subject->changePasswordAction();
+        Approvals::verifyHtml($response);
     }
 
     public function testChangePasswordActionSuccess(): void
@@ -209,10 +164,7 @@ class ForgotPasswordControllerTest extends TestCase
         $john = new User("john", "12345", [], "John Dow", "john@example.com", "");
         $this->userRepository->method("findByUsername")->willReturn($john);
         $this->userRepository->method("update")->willReturn(true);
-        $this->view->expects($this->once())->method("message")->with(
-            $this->equalTo("success"),
-            $this->equalTo("An email has been sent to you with your user data.")
-        );
-        $this->subject->changePasswordAction();
+        $response = $this->subject->changePasswordAction();
+        Approvals::verifyHtml($response);
     }
 }
