@@ -405,9 +405,7 @@ class Plugin
             self::currentUser(),
             new View("{$pth['folder']['plugins']}register/", $plugin_tx['register'])
         );
-        ob_start();
-        $controller->execute();
-        return (string) ob_get_clean();
+        return $controller->execute();
     }
 
     public static function handleloggedInForm(): string

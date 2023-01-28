@@ -63,15 +63,12 @@ class LoginFormController
         $this->view = $view;
     }
 
-    /**
-     * @return void
-     */
-    public function execute()
+    public function execute(): string
     {
         if ($this->currentUser === null) {
-            echo $this->renderLoginForm();
+            return $this->renderLoginForm();
         } else {
-            echo $this->renderLoggedInForm();
+            return $this->renderLoggedInForm();
         }
     }
 
