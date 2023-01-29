@@ -12,7 +12,6 @@ namespace Register;
 
 use XH\CSRFProtection as CsrfProtector;
 use XH\PageDataRouter;
-use XH\Pages;
 
 class Plugin
 {
@@ -50,25 +49,11 @@ class Plugin
 
         $dbService = new DbService(self::dataFolder());
         if (!self::currentUser() && $function === 'registerlogin') {
-            $controller = new LoginController(
-                $plugin_cf["register"],
-                $plugin_tx["register"],
-                new UserRepository($dbService),
-                new UserGroupRepository($dbService),
-                new LoginManager(time()),
-                new Logger()
-            );
+            $controller = Dic::makeLoginController($dbService);
             $controller->loginAction();
         }
         if (self::currentUser() && $function === 'registerlogout') {
-            $controller = new LoginController(
-                $plugin_cf["register"],
-                $plugin_tx["register"],
-                new UserRepository($dbService),
-                new UserGroupRepository($dbService),
-                new LoginManager(time()),
-                new Logger()
-            );
+            $controller = Dic::makeLoginController($dbService);
             $controller->logoutAction();
         }
         if (!(self::isAdmin() && $edit)) {
@@ -119,11 +104,9 @@ class Plugin
         /**
          * @var string $o
          * @var string $su
-         * @var array<int,string> $h
-         * @var array<string,array<string,string>> $plugin_cf
          * @var array<string,array<string,string>> $plugin_tx
          */
-        global $o, $pth, $su, $h, $plugin_cf, $plugin_tx;
+        global $o, $su, $plugin_tx;
 
         switch ($su) {
             case uenc($plugin_tx['register']['register']):
@@ -151,12 +134,7 @@ class Plugin
                 $method = null;
         }
         if ($method !== null) {
-            $controller = new SpecialPageController(
-                $h,
-                $plugin_cf['register'],
-                $plugin_tx['register'],
-                new View("{$pth['folder']['plugins']}register/", $plugin_tx['register'])
-            );
+            $controller = Dic::makeSpecialPageController();
             ob_start();
             $controller->{$method}();
             $o .= (string) ob_get_clean();
@@ -185,11 +163,9 @@ class Plugin
          * @var string $o
          * @var string $admin
          * @var string $action
-         * @var array<string,array<string,string>> $plugin_cf
          * @var array<string,array<string,string>> $plugin_tx
-         * @var CsrfProtector $_XH_csrfProtection
          */
-        global $o, $pth, $sn, $admin, $action, $plugin_cf, $plugin_tx, $_XH_csrfProtection;
+        global $o, $admin, $action, $plugin_tx;
 
         $o .= print_plugin_admin('off');
         pluginmenu('ROW');
@@ -211,15 +187,7 @@ class Plugin
                 $o .= self::renderInfo();
                 break;
             case 'plugin_main':
-                $temp = new MainAdminController(
-                    "{$pth['folder']['plugins']}register/",
-                    $plugin_cf["register"],
-                    $plugin_tx["register"],
-                    $_XH_csrfProtection,
-                    new DbService(self::dataFolder()),
-                    $sn,
-                    new Pages()
-                );
+                $temp = Dic::makeMainAdminController(new DbService(self::dataFolder()));
                 switch ($action) {
                     case 'editusers':
                         $o .= $temp->editUsersAction();
@@ -290,25 +258,12 @@ class Plugin
 
     public static function handleUserRegistration(): string
     {
-        /**
-         * @var array<string,array<string,string>> $plugin_cf
-         * @var array<string,array<string,string>> $plugin_tx
-         */
-        global $pth, $plugin_cf, $plugin_tx;
-
         // In case user is logged in, no registration page is shown
         if (self::currentUser()) {
             header('Location: ' . CMSIMPLE_URL);
             exit;
         }
-        $controller = new RegistrationController(
-            $plugin_cf["register"],
-            $plugin_tx["register"],
-            new ValidationService($plugin_tx["register"]),
-            new View("{$pth['folder']['plugins']}register/", $plugin_tx['register']),
-            new UserRepository(new DbService(self::dataFolder())),
-            new MailService()
-        );
+        $controller = Dic::makeRegistrationController(new DbService(self::dataFolder()));
         if (isset($_POST['action']) && $_POST['action'] === 'register_user') {
             $action = 'registerUserAction';
         } elseif (isset($_GET['action']) && $_GET['action'] === 'register_activate_user') {
@@ -321,25 +276,12 @@ class Plugin
 
     public static function handleForgotPassword(): string
     {
-        /**
-         * @var array<string,array<string,string>> $plugin_cf
-         * @var array<string,array<string,string>> $plugin_tx
-         */
-        global $pth, $plugin_cf, $plugin_tx;
-
         // In case user is logged in, no password forgotten page is shown
         if (self::currentUser()) {
             header('Location: ' . CMSIMPLE_URL);
             exit;
         }
-        $controller = new ForgotPasswordController(
-            $plugin_cf["register"],
-            $plugin_tx["register"],
-            time(),
-            new View("{$pth['folder']['plugins']}register/", $plugin_tx['register']),
-            new UserRepository(new DbService(self::dataFolder())),
-            new MailService()
-        );
+        $controller = Dic::makeForgotPasswordController(new DbService(self::dataFolder()));
         if (isset($_POST['action']) && $_POST['action'] === 'forgotten_password') {
             $action = 'passwordForgottenAction';
         } elseif (isset($_GET['action']) && $_GET['action'] === 'registerResetPassword') {
@@ -355,25 +297,14 @@ class Plugin
     public static function handleUserPrefs(): string
     {
         /**
-         * @var array<string,array<string,string>> $plugin_cf
          * @var array<string,array<string,string>> $plugin_tx
          */
-        global $pth, $plugin_cf, $plugin_tx;
+        global $plugin_tx;
     
         if (!self::currentUser()) {
             return XH_message('fail', $plugin_tx['register']['access_error_text']);
         }
-        $controller = new UserPrefsController(
-            $plugin_cf["register"],
-            $plugin_tx["register"],
-            new CsrfProtector('register_csrf_token', false),
-            new ValidationService($plugin_tx["register"]),
-            new UserRepository(new DbService(self::dataFolder())),
-            new View("{$pth['folder']['plugins']}register/", $plugin_tx['register']),
-            new MailService(),
-            new LoginManager(time()),
-            new Logger()
-        );
+        $controller = Dic::makeUserPrefsController(new DbService(self::dataFolder()));
         if (isset($_POST['action']) && $_POST['action'] === 'edit_user_prefs' && isset($_POST['submit'])) {
             $action = 'editAction';
         } elseif (isset($_POST['action']) && $_POST['action'] === 'edit_user_prefs' && isset($_POST['delete'])) {
@@ -386,22 +317,7 @@ class Plugin
 
     public static function handleLoginForm(): string
     {
-        /**
-         * @var array<string,array<string,string>> $plugin_cf
-         * @var array<string,array<string,string>> $plugin_tx
-         * @var string $sn
-         * @var string $su
-         */
-        global $pth, $plugin_cf, $plugin_tx, $sn, $su;
-    
-        $controller = new LoginFormController(
-            $plugin_cf["register"],
-            $plugin_tx["register"],
-            $sn,
-            $su,
-            self::currentUser(),
-            new View("{$pth['folder']['plugins']}register/", $plugin_tx['register'])
-        );
+        $controller = Dic::makeLoginFormController(self::currentUser());
         return $controller->execute();
     }
 
