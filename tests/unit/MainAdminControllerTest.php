@@ -59,7 +59,6 @@ class MainAdminControllerTest extends TestCase
             "add" => [""],
             "groupname" => ["guest"],
             "grouploginpage" => [""],
-
         ];
         $dbService = $this->createStub(DbService::class);
         $dbService->expects($this->never())->method('writeGroups');
@@ -74,7 +73,6 @@ class MainAdminControllerTest extends TestCase
             "delete" => [0 => "1"],
             "groupname" => ["to_be_deleted", "guest"],
             "grouploginpage" => ["", "Start"],
-
         ];
         $dbService = $this->createStub(DbService::class);
         $dbService->expects($this->never())->method('writeGroups');
@@ -88,7 +86,6 @@ class MainAdminControllerTest extends TestCase
         $_POST = [
             "groupname" => ["illegal name", "guest"],
             "grouploginpage" => ["", "Start"],
-
         ];
         $dbService = $this->createStub(DbService::class);
         $dbService->expects($this->never())->method('writeGroups');
@@ -102,7 +99,6 @@ class MainAdminControllerTest extends TestCase
         $_POST = [
             "groupname" => ["admin", "guest"],
             "grouploginpage" => ["", "Start"],
-
         ];
         $dbService = $this->createStub(DbService::class);
         $dbService->expects($this->once())->method('writeGroups')->willReturn(true);
@@ -116,7 +112,6 @@ class MainAdminControllerTest extends TestCase
         $_POST = [
             "groupname" => ["admin", "guest"],
             "grouploginpage" => ["", "Start"],
-
         ];
         $dbService = $this->createStub(DbService::class);
         $dbService->expects($this->once())->method('writeGroups')->willReturn(false);
