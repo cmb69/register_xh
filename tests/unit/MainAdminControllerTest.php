@@ -15,6 +15,25 @@ use XH\Pages;
 
 class MainAdminControllerTest extends TestCase
 {
+    public function testEditUsersActionRendersUsers()
+    {
+        $dbService = $this->createStub(DbService::class);
+        $dbService->method('hasUsersFile')->willReturn(true);
+        $dbService->method('readUsers')->willReturn([$this->makeJohn(), $this->makeJane()]);
+        $sut = $this->makeMainAdminController($dbService);
+        $response = $sut->editUsersAction();
+        Approvals::verifyHtml($response);
+    }
+
+    public function testEditUsersActionFailsIfNoUsersFile()
+    {
+        $dbService = $this->createStub(DbService::class);
+        $dbService->method('hasUsersFile')->willReturn(false);
+        $sut = $this->makeMainAdminController($dbService);
+        $response = $sut->editUsersAction();
+        Approvals::verifyHtml($response);
+    }
+
     public function testEditGroupActionRendersGroups()
     {
         $dbService = $this->createStub(DbService::class);
@@ -150,5 +169,29 @@ class MainAdminControllerTest extends TestCase
         $pages->method('level')->willReturnMap([[0, 1], [1, 2]]);
         $pages->method('heading')->willReturnMap([[0, "Foo"], [1, "Bar"]]);
         return $pages;
+    }
+
+    private function makeJohn(): User
+    {
+        return new User(
+            "john",
+            '$2y$10$gOae/VL5wrESo5Uf6ZcWhuNlAEycCGW5Ov5opny5PWxa.gbl4SHQW',
+            ["guest"],
+            "John Doe",
+            "john@example.com",
+            "activated"
+        );
+    }
+
+    private function makeJane(): User
+    {
+        return new User(
+            "jane",
+            '$2y$10$gOae/VL5wrESo5Uf6ZcWhuNlAEycCGW5Ov5opny5PWxa.gbl4SHQW',
+            ["admin"],
+            "Jane Doe",
+            "jane@example.com",
+            "activated"
+        );
     }
 }
