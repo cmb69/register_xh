@@ -20,9 +20,26 @@ class MainAdminControllerTest extends TestCase
         $dbService = $this->createStub(DbService::class);
         $dbService->method('hasUsersFile')->willReturn(true);
         $dbService->method('readUsers')->willReturn([$this->makeJohn(), $this->makeJane()]);
+        $dbService->method('hasGroupsFile')->willReturn(true);
+        $dbService->method('readGroups')->willReturn([new UserGroup("users", ""), new UserGroup("guest", "")]);
         $sut = $this->makeMainAdminController($dbService);
         $response = $sut->editUsersAction();
         Approvals::verifyHtml($response);
+    }
+
+    public function testEditUsersActionIncludesScripts()
+    {
+        global $hjs;
+
+        $dbService = $this->createStub(DbService::class);
+        $dbService->method('hasUsersFile')->willReturn(true);
+        $dbService->method('readUsers')->willReturn([$this->makeJohn(), $this->makeJane()]);
+        $dbService->method('hasGroupsFile')->willReturn(true);
+        $dbService->method('readGroups')->willReturn([new UserGroup("users", "")]);
+        $sut = $this->makeMainAdminController($dbService);
+        $hjs = "";
+        $sut->editUsersAction();
+        Approvals::verifyHtml($hjs);
     }
 
     public function testEditUsersActionFailsIfNoUsersFile()
@@ -31,6 +48,128 @@ class MainAdminControllerTest extends TestCase
         $dbService->method('hasUsersFile')->willReturn(false);
         $sut = $this->makeMainAdminController($dbService);
         $response = $sut->editUsersAction();
+        Approvals::verifyHtml($response);
+    }
+
+    public function testSaveUsersCanAddRecord()
+    {
+        $_POST = [
+            "add" => [""],
+            "username" => ["cmb"],
+            "password" => ["test"],
+            "oldpassword" => ["test"],
+            "name" => ["Christoph Becker"],
+            "email" => ["chris@example.com"],
+            "accessgroups" => ["users"],
+            "status" => ["activated"],
+        ];
+        $dbService = $this->createStub(DbService::class);
+        $dbService->expects($this->never())->method('writeUsers');
+        $dbService->method('hasGroupsFile')->willReturn(true);
+        $dbService->method('readGroups')->willReturn([new UserGroup("users", "")]);
+        $sut = $this->makeMainAdminController($dbService);
+        $response = $sut->saveUsersAction();
+        Approvals::verifyHtml($response);
+    }
+
+    public function testSaveUsersCanDeleteRecord()
+    {
+        $_POST = [
+            "delete" => [0 => "1"],
+            "username" => ["to_be_deleted", "cmb"],
+            "password" => ["to_be_deleted", "test"],
+            "oldpassword" => ["to_be_deleted", "test"],
+            "name" => ["Toby Deleted", "Christoph Becker"],
+            "email" => ["to_be_deleted@example.com", "chris@example.com"],
+            "accessgroups" => ["", "users"],
+            "status" => ["activated", "activated"],
+        ];
+        $dbService = $this->createStub(DbService::class);
+        $dbService->expects($this->never())->method('writeUsers');
+        $dbService->method('hasGroupsFile')->willReturn(true);
+        $dbService->method('readGroups')->willReturn([new UserGroup("users", "")]);
+        $sut = $this->makeMainAdminController($dbService);
+        $response = $sut->saveUsersAction();
+        Approvals::verifyHtml($response);
+    }
+
+    public function testSaveUsersFailsOnInvalidUserName()
+    {
+        $_POST = [
+            "username" => [""],
+            "password" => ["test"],
+            "oldpassword" => ["test"],
+            "name" => ["Christoph Becker"],
+            "email" => ["cmb@example.com"],
+            "accessgroups" => ["users"],
+            "status" => ["activated"],
+        ];
+        $dbService = $this->createStub(DbService::class);
+        $dbService->expects($this->never())->method('writeUsers');
+        $dbService->method('hasGroupsFile')->willReturn(true);
+        $dbService->method('readGroups')->willReturn([new UserGroup("users", "")]);
+        $sut = $this->makeMainAdminController($dbService);
+        $response = $sut->saveUsersAction();
+        Approvals::verifyHtml($response);
+    }
+
+    public function testSaveUsersFailsOnInvalidUserNameWhenChangingPassword()
+    {
+        $_POST = [
+            "username" => [""],
+            "password" => ["new"],
+            "oldpassword" => ["old"],
+            "name" => ["Christoph Becker"],
+            "email" => ["cmb@example.com"],
+            "accessgroups" => ["users"],
+            "status" => ["activated"],
+        ];
+        $dbService = $this->createStub(DbService::class);
+        $dbService->expects($this->never())->method('writeUsers');
+        $dbService->method('hasGroupsFile')->willReturn(true);
+        $dbService->method('readGroups')->willReturn([new UserGroup("users", "")]);
+        $sut = $this->makeMainAdminController($dbService);
+        $response = $sut->saveUsersAction();
+        Approvals::verifyHtml($response);
+    }
+
+    public function testSaveUsersFailsOnDuplicateUserNameAndEmail()
+    {
+        $_POST = [
+            "username" => ["cmb", "cmb"],
+            "password" => ["pw1", "pw2"],
+            "oldpassword" => ["pw1", "pw2"],
+            "name" => ["Christoph Becker", "Christoph Becker"],
+            "email" => ["cmb@example.com", "cmb@example.com"],
+            "accessgroups" => ["users", "users"],
+            "status" => ["activated", "activated"],
+        ];
+        $dbService = $this->createStub(DbService::class);
+        $dbService->expects($this->never())->method('writeUsers');
+        $dbService->method('hasGroupsFile')->willReturn(true);
+        $dbService->method('readGroups')->willReturn([new UserGroup("users", "")]);
+        $sut = $this->makeMainAdminController($dbService);
+        $response = $sut->saveUsersAction();
+        Approvals::verifyHtml($response);
+    }
+
+    public function testSaveUsersSuccessfullySaves()
+    {
+        $_POST = [
+            "username" => ["cmb"],
+            "password" => ["pw"],
+            "oldpassword" => ["pw"],
+            "name" => ["Christoph Becker"],
+            "email" => ["cmb@example.com"],
+            "accessgroups" => ["users"],
+            "status" => ["activated"],
+        ];
+        $dbService = $this->createStub(DbService::class);
+        $dbService->expects($this->once())->method('writeUsers')->willReturn(true);
+        $dbService->method('hasGroupsFile')->willReturn(true);
+        $dbService->method('readGroups')->willReturn([new UserGroup("users", "")]);
+        $sut = $this->makeMainAdminController($dbService);
+        $response = $sut->saveUsersAction();
         Approvals::verifyHtml($response);
     }
 

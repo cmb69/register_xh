@@ -1,4 +1,16 @@
 
+<div class="xh_fail">
+  <span>Error</span>
+  <ul>
+    <li>
+<div>Error in Username ""</div>
+<ul>
+  <li>Please choose a Username.</li>
+</ul>
+</li>
+  </ul>
+</div>
+
 <h1>User Administration</h1>
 <div class="register_admin_main">
   <table>
@@ -25,7 +37,6 @@
     <label for="register_toggle_details">Details</label>
     <select id="register_group_selectbox" title="Filter by access group">
       <option value="">All</option>
-      <option value="guest">guest</option>
       <option value="users">users</option>
     </select>
   </div>
@@ -47,34 +58,18 @@
       </tr>
       <tr id="register_user_0">
         <td><button title="Delete User" onclick="register.removeRow(this); return false">Delete</button></td>
-        <td><input type="text" value="John Doe" name="name[0]"></td>
-        <td><input type="text" value="guest" name="accessgroups[0]"></td>
+        <td><input type="text" value="Christoph Becker" name="name[0]"></td>
+        <td><input type="text" value="users" name="accessgroups[0]"></td>
         <td><select name="status[0]"><option value="activated" selected="selected">activated</option><option value="locked">locked</option><option value="">deactivated</option></select></td>
       </tr>
       <tr class="register_second_row">
         <td><button type="button" onclick="register.mailTo(this)" title="Email">Mail</i></button></td>
-        <td><input type="text" value="john" name="username[0]"></td>
-        <td><input type="email" value="john@example.com" name="email[0]"></td>
+        <td><input type="text" value="" name="username[0]"></td>
+        <td><input type="email" value="cmb@example.com" name="email[0]"></td>
         <td>
           <button onclick="register.changePassword(this.nextElementSibling); return false">Change Password...</button>
-          <input type="hidden" value="$2y$10$gOae/VL5wrESo5Uf6ZcWhuNlAEycCGW5Ov5opny5PWxa.gbl4SHQW" name="password[0]">
-          <input type="hidden" value="$2y$10$gOae/VL5wrESo5Uf6ZcWhuNlAEycCGW5Ov5opny5PWxa.gbl4SHQW" name="oldpassword[0]">
-        </td>
-      </tr>
-      <tr id="register_user_1">
-        <td><button title="Delete User" onclick="register.removeRow(this); return false">Delete</button></td>
-        <td><input type="text" value="Jane Doe" name="name[1]"></td>
-        <td><input type="text" value="admin" name="accessgroups[1]"></td>
-        <td><select name="status[1]"><option value="activated" selected="selected">activated</option><option value="locked">locked</option><option value="">deactivated</option></select></td>
-      </tr>
-      <tr class="register_second_row">
-        <td><button type="button" onclick="register.mailTo(this)" title="Email">Mail</i></button></td>
-        <td><input type="text" value="jane" name="username[1]"></td>
-        <td><input type="email" value="jane@example.com" name="email[1]"></td>
-        <td>
-          <button onclick="register.changePassword(this.nextElementSibling); return false">Change Password...</button>
-          <input type="hidden" value="$2y$10$gOae/VL5wrESo5Uf6ZcWhuNlAEycCGW5Ov5opny5PWxa.gbl4SHQW" name="password[1]">
-          <input type="hidden" value="$2y$10$gOae/VL5wrESo5Uf6ZcWhuNlAEycCGW5Ov5opny5PWxa.gbl4SHQW" name="oldpassword[1]">
+          <input type="hidden" value="test" name="password[0]">
+          <input type="hidden" value="test" name="oldpassword[0]">
         </td>
       </tr>
     </table>
@@ -82,4 +77,3 @@
   </form>
 </div>
 <script type="text/javascript">register.init()</script>
-<p class="xh_info">2 Entries in CSV file users.csv</p>

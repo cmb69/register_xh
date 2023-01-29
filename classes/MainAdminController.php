@@ -145,7 +145,7 @@ class MainAdminController
                     if ($newuser->getUsername() === $username[$j]) {
                         $entryErrors[] = $this->lang['err_username_exists'];
                     }
-                    if ($newuser->getEmail() === $email) { // FIXME?: $email[$j]
+                    if ($newuser->getEmail() === $email[$j]) {
                         $entryErrors[] = $this->lang['err_email_exists'];
                     }
                 }
@@ -247,9 +247,11 @@ class MainAdminController
             }
         }
 
-        $hjs .= '<script type="text/javascript" src="' . $this->pluginFolder . 'admin.min.js"></script>'
-            . '<script type="text/javascript">register.tx={' . implode(',', $txts) . '};'
-            . 'register.maxNumberOfUsers=' . $this->calcMaxRecords(7, 4) . ';</script>';
+        $txts = implode(',', $txts);
+        $maxRecords = $this->calcMaxRecords(7, 4);
+        $hjs .= "\n<script type=\"text/javascript\" src=\"{$this->pluginFolder}admin.min.js\"></script>"
+            . "\n<script type=\"text/javascript\">register.tx={{$txts}};"
+            . "register.maxNumberOfUsers={$maxRecords};</script>";
 
         $data = [
             'csrfTokenInput' => new HtmlString($this->csrfProtector->tokenInput()),
