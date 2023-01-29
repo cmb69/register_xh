@@ -20,6 +20,7 @@ namespace {
     require_once "./classes/SystemCheckService.php";
     require_once "./classes/User.php";
     require_once "./classes/UserGroup.php";
+    require_once "./classes/UserGroupRepository.php";
     require_once "./classes/UserPrefsController.php";
     require_once "./classes/UserRepository.php";
     require_once "./classes/ValidationService.php";
