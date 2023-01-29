@@ -82,7 +82,8 @@ class UserPrefsControllerTest extends TestCase
             $this->view,
             $mailService,
             $this->loginManager,
-            $this->logger
+            $this->logger,
+            "/User-Preferences"
         );
     }
 

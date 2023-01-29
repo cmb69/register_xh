@@ -59,6 +59,9 @@ class UserPrefsController
      */
     private $logger;
 
+    /** @var string */
+    private $actionUrl;
+
     /**
      * @param array<string,string> $config
      * @param array<string,string> $lang
@@ -73,7 +76,8 @@ class UserPrefsController
         View $view,
         MailService $mailService,
         LoginManager $loginManager,
-        Logger $logger
+        Logger $logger,
+        string $actionUrl
     ) {
         $this->config = $config;
         $this->lang = $lang;
@@ -85,6 +89,7 @@ class UserPrefsController
         $this->mailService = $mailService;
         $this->loginManager = $loginManager;
         $this->logger = $logger;
+        $this->actionUrl = $actionUrl;
     }
 
     public function defaultAction(): string
@@ -229,17 +234,11 @@ class UserPrefsController
      */
     private function renderForm($name, $email): string
     {
-        /**
-         * @var string $sn
-         * @var string $su
-         */
-        global $sn, $su;
-
         $csrfTokenInput = $this->csrfProtector->tokenInput();
         $this->csrfProtector->store();
         return $this->view->render('userprefs-form', [
             'csrfTokenInput' => new HtmlString($csrfTokenInput),
-            'actionUrl' => "$sn?$su",
+            'actionUrl' => $this->actionUrl,
             'name' => $name,
             'email' => $email,
         ]);

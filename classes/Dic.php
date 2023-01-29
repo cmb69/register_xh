@@ -85,7 +85,7 @@ class Dic
 
     public static function makeUserPrefsController(DbService $dbService): UserPrefsController
     {
-        global $pth, $plugin_cf, $plugin_tx;
+        global $pth, $plugin_cf, $plugin_tx, $sn, $su;
 
         return new UserPrefsController(
             $plugin_cf["register"],
@@ -97,7 +97,8 @@ class Dic
             new View("{$pth['folder']['plugins']}register/", $plugin_tx['register']),
             new MailService(),
             new LoginManager(time(), new Session()),
-            new Logger()
+            new Logger(),
+            "$sn?$su"
         );
     }
 
