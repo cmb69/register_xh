@@ -75,7 +75,7 @@ class MainAdminController
     public function editUsersAction(): string
     {
         $fn = $this->dbService->dataFolder() . 'users.csv';
-        if (is_file($fn)) {
+        if ($this->dbService->hasUsersFile()) {
             $this->dbService->lock(LOCK_SH);
             $users  = $this->dbService->readUsers();
             $this->dbService->lock(LOCK_UN);

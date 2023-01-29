@@ -30,6 +30,11 @@ class DbService
         return $this->dirname;
     }
 
+    public function hasUsersFile(): bool
+    {
+        return is_file($this->dataFolder() . 'users.csv');
+    }
+
     public function hasGroupsFile(): bool
     {
         return is_file($this->dataFolder() . 'groups.csv');
