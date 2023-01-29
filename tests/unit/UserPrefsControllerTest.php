@@ -26,6 +26,9 @@ class UserPrefsControllerTest extends TestCase
      */
     private $users;
 
+    /** @var Session|MockObject */
+    private $session;
+
     /**
      * @var MockObject
      */
@@ -61,6 +64,7 @@ class UserPrefsControllerTest extends TestCase
         $conf = $plugin_cf['register'];
         $plugin_tx = XH_includeVar("./languages/en.php", 'plugin_tx');
         $lang = $plugin_tx['register'];
+        $this->session = $this->createStub(Session::class);
         $this->csrfProtector = $this->createMock(CsrfProtector::class);
         $validationService = $this->createStub(ValidationService::class);
         $this->userRepository = $this->createMock(UserRepository::class);
@@ -71,6 +75,7 @@ class UserPrefsControllerTest extends TestCase
         $this->subject = new UserPrefsController(
             $conf,
             $lang,
+            $this->session,
             $this->csrfProtector,
             $validationService,
             $this->userRepository,

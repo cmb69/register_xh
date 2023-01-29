@@ -337,11 +337,12 @@ class Plugin
         global $pth;
         static $user = null;
 
+        $session = new Session();
         if (!$user) {
             // it would be nice if XH had an API to get the session name without starting a session
             $sessionfile = $pth['folder']['cmsimple'] . '.sessionname';
             if (is_file($sessionfile) && isset($_COOKIE[file_get_contents($sessionfile)])) {
-                XH_startSession();
+                $session->start();
             }
             if (isset($_SESSION['username'])) {
                 $userRepository = new UserRepository(new DbService(self::dataFolder()));
@@ -349,7 +350,7 @@ class Plugin
                 if ($rec) {
                     $user = $rec;
                 } else {
-                    (new LoginManager(time()))->logout();
+                    (new LoginManager(time(), $session))->logout();
                     $user = null;
                 }
             } else {

@@ -17,9 +17,13 @@ class LoginManager
     /** @var int */
     private $now;
 
-    public function __construct(int $now)
+    /** @var Session $session */
+    private $session;
+
+    public function __construct(int $now, Session $session)
     {
         $this->now = $now;
+        $this->session = $session;
     }
 
     /**
@@ -42,7 +46,7 @@ class LoginManager
             );
         }
 
-        XH_startSession();
+        $this->session->start();
         session_regenerate_id(true);
         $_SESSION['username'] = $user->getUsername();
     }
@@ -52,7 +56,7 @@ class LoginManager
      */
     public function logout()
     {
-        XH_startSession();
+        $this->session->start();
         session_regenerate_id(true);
         unset($_SESSION['username']);
         $this->forget();

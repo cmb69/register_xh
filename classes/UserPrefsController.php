@@ -66,6 +66,7 @@ class UserPrefsController
     public function __construct(
         array $config,
         array $lang,
+        Session $session,
         CsrfProtector $csrfProtector,
         ValidationService $validationService,
         UserRepository $userRepository,
@@ -76,7 +77,7 @@ class UserPrefsController
     ) {
         $this->config = $config;
         $this->lang = $lang;
-        XH_startSession();
+        $session->start();
         $this->csrfProtector = $csrfProtector;
         $this->validationService = $validationService;
         $this->userRepository = $userRepository;

@@ -42,6 +42,9 @@ class LoginController
      */
     private $logger;
 
+    /** @var Session */
+    private $session;
+
     /**
      * @param array<string,string> $config
      * @param array<string,string> $lang
@@ -52,7 +55,8 @@ class LoginController
         UserRepository $userRepository,
         UserGroupRepository $userGroupRepository,
         LoginManager $loginManager,
-        Logger $logger
+        Logger $logger,
+        Session $session
     ) {
         $this->config = $config;
         $this->lang = $lang;
@@ -60,6 +64,7 @@ class LoginController
         $this->userGroupRepository = $userGroupRepository;
         $this->loginManager = $loginManager;
         $this->logger = $logger;
+        $this->session = $session;
     }
 
     /**
@@ -109,7 +114,7 @@ class LoginController
      */
     public function logoutAction()
     {
-        XH_startSession();
+        $this->session->start();
         $username = $_SESSION['username'] ?? '';
         $this->loginManager->logout();
         $this->logger->logInfo('logout', "$username logged out");

@@ -22,8 +22,9 @@ class Dic
             $plugin_tx["register"],
             new UserRepository($dbService),
             new UserGroupRepository($dbService),
-            new LoginManager(time()),
-            new Logger()
+            new LoginManager(time(), new Session()),
+            new Logger(),
+            new Session()
         );
     }
 
@@ -89,12 +90,13 @@ class Dic
         return new UserPrefsController(
             $plugin_cf["register"],
             $plugin_tx["register"],
+            new Session(),
             new CsrfProtector('register_csrf_token', false),
             new ValidationService($plugin_tx["register"]),
             new UserRepository($dbService),
             new View("{$pth['folder']['plugins']}register/", $plugin_tx['register']),
             new MailService(),
-            new LoginManager(time()),
+            new LoginManager(time(), new Session()),
             new Logger()
         );
     }
