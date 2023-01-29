@@ -67,10 +67,7 @@ class LoginController
         $this->session = $session;
     }
 
-    /**
-     * @return void
-     */
-    public function loginAction()
+    public function loginAction(): RedirectResponse
     {
         $username = $_POST['username'] ?? '';
         $password = $_POST['password'] ?? '';
@@ -96,23 +93,18 @@ class LoginController
             } else {
                 $loginPage = '?'. uenc($this->lang['loggedin']);
             }
-            header('Location: ' . CMSIMPLE_URL . $loginPage);
-            exit;
+            return new RedirectResponse(CMSIMPLE_URL . $loginPage);
         } else {
             $this->loginManager->forget();
             $this->logger->logError('login', "$username wrong password");
 
             // go to login error page
             $errorTitle = uenc($this->lang['login_error']);
-            header('Location: ' . CMSIMPLE_URL . '?' . $errorTitle);
-            exit;
+            return new RedirectResponse(CMSIMPLE_URL . '?' . $errorTitle);
         }
     }
 
-    /**
-     * @return void
-     */
-    public function logoutAction()
+    public function logoutAction(): RedirectResponse
     {
         $this->session->start();
         $username = $_SESSION['username'] ?? '';
@@ -120,7 +112,6 @@ class LoginController
         $this->logger->logInfo('logout', "$username logged out");
     
         $logoutTitle = uenc($this->lang['loggedout']);
-        header('Location: ' . CMSIMPLE_URL . '?' . $logoutTitle);
-        exit;
+        return new RedirectResponse(CMSIMPLE_URL . '?' . $logoutTitle);
     }
 }

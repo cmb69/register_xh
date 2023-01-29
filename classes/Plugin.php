@@ -50,11 +50,11 @@ class Plugin
         $dbService = new DbService(self::dataFolder());
         if (!self::currentUser() && $function === 'registerlogin') {
             $controller = Dic::makeLoginController($dbService);
-            $controller->loginAction();
+            $controller->loginAction()->trigger();
         }
         if (self::currentUser() && $function === 'registerlogout') {
             $controller = Dic::makeLoginController($dbService);
-            $controller->logoutAction();
+            $controller->logoutAction()->trigger();
         }
         if (!(self::isAdmin() && $edit)) {
             self::handleImplicitPages();
