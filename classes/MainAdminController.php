@@ -90,7 +90,7 @@ class MainAdminController
     {
         $this->csrfProtector->check();
         $errors = [];
-        if (is_file($this->dbService->dataFolder() . 'groups.csv')) {
+        if ($this->dbService->hasGroupsFile()) {
             $groups = $this->dbService->readGroups();
         } else {
             $groups = [];
