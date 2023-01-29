@@ -220,13 +220,12 @@ class Plugin
                     $sn,
                     new Pages()
                 );
-                ob_start();
                 switch ($action) {
                     case 'editusers':
-                        $temp->editUsersAction();
+                        $o .= $temp->editUsersAction();
                         break;
                     case 'saveusers':
-                        $temp->saveUsersAction();
+                        $o .= $temp->saveUsersAction();
                         break;
                     case 'editgroups':
                         $o .= $temp->editGroupsAction();
@@ -235,7 +234,6 @@ class Plugin
                         $o .= $temp->saveGroupsAction();
                         break;
                 }
-                $o .= ob_get_clean();
                 break;
             default:
                 $o .= plugin_admin_common();

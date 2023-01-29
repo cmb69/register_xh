@@ -72,27 +72,21 @@ class MainAdminController
         $this->pages = $pages;
     }
 
-    /**
-     * @return void
-     */
-    public function editUsersAction()
+    public function editUsersAction(): string
     {
         $fn = $this->dbService->dataFolder() . 'users.csv';
         if (is_file($fn)) {
             $this->dbService->lock(LOCK_SH);
             $users  = $this->dbService->readUsers();
             $this->dbService->lock(LOCK_UN);
-            $this->renderUsersForm($users);
-            echo $this->view->message('info', count($users) . ' ' . $this->lang['entries_in_csv'] . $fn);
+            return $this->renderUsersForm($users)
+                . $this->view->message('info', count($users) . ' ' . $this->lang['entries_in_csv'] . $fn);
         } else {
-            echo $this->view->message('fail', $this->lang['err_csv_missing'] . ' (' . $fn . ')');
+            return $this->view->message('fail', $this->lang['err_csv_missing'] . ' (' . $fn . ')');
         }
     }
 
-    /**
-     * @return void
-     */
-    public function saveUsersAction()
+    public function saveUsersAction(): string
     {
         $this->csrfProtector->check();
         $errors = [];
@@ -198,6 +192,7 @@ class MainAdminController
             $added = true;
         }
 
+        $o = "";
         // In case that nothing got deleted or added, store back (save got pressed)
         if (!$deleted && !$added && empty($errors)) {
             $this->dbService->lock(LOCK_EX);
@@ -208,18 +203,19 @@ class MainAdminController
             $this->dbService->lock(LOCK_UN);
 
             if (!empty($errors)) {
-                echo $this->renderErrorView($errors);
+                $o .= $this->renderErrorView($errors);
             } else {
-                echo $this->view->message(
+                $o .= $this->view->message(
                     'success',
                     $this->lang['csv_written'] . ' (' . $this->dbService->dataFolder() . 'users.csv' . ')'
                 );
             }
         } elseif (!empty($errors)) {
-            echo $this->renderErrorView($errors);
+            $o .= $this->renderErrorView($errors);
         }
 
-        $this->renderUsersForm($newusers);
+        $o .= $this->renderUsersForm($newusers);
+        return $o;
     }
 
     /**
@@ -232,9 +228,8 @@ class MainAdminController
 
     /**
      * @param User[] $users
-     * @return void
      */
-    private function renderUsersForm(array $users)
+    private function renderUsersForm(array $users): string
     {
         /**
          * @var string $hjs
@@ -271,7 +266,7 @@ class MainAdminController
         }
         $data['groupStrings'] = $groupStrings;
         $data['statusSelects'] = $statusSelects;
-        echo $this->view->render('admin-users', $data);
+        return $this->view->render('admin-users', $data);
     }
 
     /**
