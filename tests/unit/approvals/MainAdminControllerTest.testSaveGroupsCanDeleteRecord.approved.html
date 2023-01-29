@@ -1,0 +1,21 @@
+
+<h1>Group Administration</h1>
+<div class="register_admin_main">
+  <form method="POST" action="/?&amp;register">
+    <input type="hidden" value="savegroups" name="action">
+    <input type="hidden" value="plugin_main" name="admin">
+        <table>
+      <tr>
+        <th>Groupname</th>
+        <th>Login</th>
+        <th><button name="add[0]">Add</button></th>
+      </tr>
+      <tr>
+        <td><input type="text" size="10" value="guest" name="groupname[0]"></td>
+        <td><select name="grouploginpage[0]"><option value="">--- NONE ---</option><option value="foo">Foo</option><option value="bar">&nbsp;&nbsp;&nbsp;Bar</option></select></td>
+        <td><button name="delete[0]" value="1">Delete</i></td>
+      </tr>
+    </table>
+    <input class="submit" type="submit" value="Save" name="send">
+  </form>
+</div>
