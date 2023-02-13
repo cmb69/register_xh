@@ -8,6 +8,8 @@
 
 namespace Register;
 
+use Register\Value\HtmlString;
+
 class View
 {
     /** @var string */

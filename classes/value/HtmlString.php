@@ -6,7 +6,7 @@
  * This file is part of Register_XH.
  */
 
-namespace Register;
+namespace Register\Value;
 
 class HtmlString
 {

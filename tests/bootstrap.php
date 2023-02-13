@@ -5,6 +5,7 @@ require_once '../../cmsimple/functions.php';
 require_once "../../cmsimple/classes/CSRFProtection.php";
 require_once "../../cmsimple/classes/Pages.php";
 
+require_once "./classes/value/HtmlString.php";
 require_once "./classes/value/User.php";
 require_once "./classes/value/UserGroup.php";
 
@@ -19,7 +20,6 @@ require_once "./classes/infra/UserGroupRepository.php";
 require_once "./classes/infra/UserRepository.php";
 
 require_once "./classes/ForgotPasswordController.php";
-require_once "./classes/HtmlString.php";
 require_once "./classes/InfoController.php";
 require_once "./classes/LoginController.php";
 require_once "./classes/LoginFormController.php";

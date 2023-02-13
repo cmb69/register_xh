@@ -12,6 +12,7 @@ namespace Register;
 
 use XH\CSRFProtection as CsrfProtector;
 
+use Register\Value\HtmlString;
 use Register\Logic\ValidationService;
 use Register\Infra\Logger;
 use Register\Infra\MailService;

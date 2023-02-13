@@ -13,6 +13,7 @@ namespace Register;
 use XH\CSRFProtection as CsrfProtector;
 use XH\Pages;
 
+use Register\Value\HtmlString;
 use Register\Value\User;
 use Register\Value\UserGroup;
 use Register\Logic\ValidationService;

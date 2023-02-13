@@ -6,6 +6,8 @@
 
 namespace Register;
 
+use Register\Value\HtmlString;
+
 class PageDataController
 {
     /**
