@@ -12,6 +12,7 @@ use ApprovalTests\Approvals;
 use PHPUnit\Framework\TestCase;
 
 use Register\Infra\SystemChecker;
+use Register\Infra\View;
 
 class InfoControllerTest extends TestCase
 {

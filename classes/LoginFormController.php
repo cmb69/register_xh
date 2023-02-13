@@ -11,6 +11,7 @@
 namespace Register;
 
 use Register\Value\User;
+use Register\Infra\View;
 
 class LoginFormController
 {

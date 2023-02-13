@@ -2,7 +2,7 @@
 
 use Register\Value\User;
 use Register\Value\UserGroup;
-use Register\View;
+use Register\Infra\View;
 
 /**
  * @var View $this

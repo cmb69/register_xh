@@ -17,6 +17,7 @@ use PHPUnit\Framework\TestCase;
 use Register\Value\User;
 use Register\Infra\MailService;
 use Register\Infra\UserRepository;
+use Register\Infra\View;
 
 class ForgotPasswordControllerTest extends TestCase
 {

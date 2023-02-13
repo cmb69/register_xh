@@ -11,6 +11,7 @@
 namespace Register;
 
 use Register\Value\HtmlString;
+use Register\Infra\View;
 
 class SpecialPageController
 {

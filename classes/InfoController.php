@@ -9,6 +9,7 @@
 namespace Register;
 
 use Register\Infra\SystemChecker;
+use Register\Infra\View;
 
 class InfoController
 {

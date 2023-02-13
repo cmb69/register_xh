@@ -18,6 +18,7 @@ use Register\Infra\Logger;
 use Register\Infra\MailService;
 use Register\Infra\Session;
 use Register\Infra\UserRepository;
+use Register\Infra\View;
 
 class UserPrefsController
 {

@@ -19,6 +19,7 @@ use Register\Infra\MailService;
 use Register\Infra\Session;
 use Register\Infra\UserGroupRepository;
 use Register\Infra\UserRepository;
+use Register\Infra\View;
 
 class Dic
 {

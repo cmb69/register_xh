@@ -19,6 +19,7 @@ use Register\Infra\DbService;
 use Register\Infra\SystemChecker;
 use Register\Infra\Session;
 use Register\Infra\UserRepository;
+use Register\Infra\View;
 
 class Plugin
 {

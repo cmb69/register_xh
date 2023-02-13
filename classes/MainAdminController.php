@@ -18,6 +18,7 @@ use Register\Value\User;
 use Register\Value\UserGroup;
 use Register\Logic\ValidationService;
 use Register\Infra\DbService;
+use Register\Infra\View;
 
 class MainAdminController
 {

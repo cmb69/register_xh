@@ -18,6 +18,7 @@ require_once "./classes/infra/Session.php";
 require_once "./classes/infra/SystemChecker.php";
 require_once "./classes/infra/UserGroupRepository.php";
 require_once "./classes/infra/UserRepository.php";
+require_once "./classes/infra/View.php";
 
 require_once "./classes/ForgotPasswordController.php";
 require_once "./classes/InfoController.php";
@@ -29,7 +30,6 @@ require_once "./classes/Plugin.php";
 require_once "./classes/RedirectResponse.php";
 require_once "./classes/RegistrationController.php";
 require_once "./classes/UserPrefsController.php";
-require_once "./classes/View.php";
 
 const CMSIMPLE_XH_VERSION = "CMSimple_XH 1.7.5";
 const CMSIMPLE_URL = "http://example.com";

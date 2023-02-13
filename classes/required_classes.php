@@ -10,7 +10,7 @@
 
 use Register\PageDataController;
 use Register\Plugin;
-use Register\View;
+use Register\Infra\View;
 
 function register_access(string $groupString): string
 {
