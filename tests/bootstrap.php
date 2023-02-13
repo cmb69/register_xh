@@ -15,6 +15,7 @@ require_once './classes/infra/DbService.php';
 require_once "./classes/infra/Logger.php";
 require_once "./classes/infra/LoginManager.php";
 require_once "./classes/infra/MailService.php";
+require_once "./classes/infra/RedirectResponse.php";
 require_once "./classes/infra/Session.php";
 require_once "./classes/infra/SystemChecker.php";
 require_once "./classes/infra/UserGroupRepository.php";
@@ -27,7 +28,6 @@ require_once "./classes/LoginController.php";
 require_once "./classes/LoginFormController.php";
 require_once "./classes/MainAdminController.php";
 require_once "./classes/Plugin.php";
-require_once "./classes/RedirectResponse.php";
 require_once "./classes/RegistrationController.php";
 require_once "./classes/UserPrefsController.php";
 

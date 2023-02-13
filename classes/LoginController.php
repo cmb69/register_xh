@@ -13,6 +13,7 @@ namespace Register;
 use Register\Value\User;
 use Register\Infra\Logger;
 use Register\Infra\LoginManager;
+use Register\Infra\RedirectResponse;
 use Register\Infra\Session;
 use Register\Infra\UserGroupRepository;
 use Register\Infra\UserRepository;
