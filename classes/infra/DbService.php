@@ -48,7 +48,7 @@ class DbService
      */
     public function lock(bool $exclusive)
     {
-        $fn = $this->dirname . '/.lock';
+        $fn = $this->dataFolder() . '/.lock';
         touch($fn);
         if ($fp = fopen($fn, 'r')) {
             flock($fp, $exclusive ? LOCK_EX : LOCK_SH);
@@ -74,7 +74,7 @@ class DbService
      */
     public function readGroups(): array
     {
-        $filename = "{$this->dirname}groups.csv";
+        $filename = $this->dataFolder() . "groups.csv";
         $groupArray = array();
         if (is_file($filename)) {
             $fp = fopen($filename, "r");
@@ -114,7 +114,7 @@ class DbService
      */
     public function writeGroups(array $array)
     {
-        $filename = "{$this->dirname}groups.csv";
+        $filename = $this->dataFolder() . "groups.csv";
         // remove old backup
         if (is_file($filename . ".bak")) {
             unlink($filename . ".bak");
@@ -161,7 +161,7 @@ class DbService
      */
     public function readUsers()
     {
-        $filename = "{$this->dirname}users.csv";
+        $filename = $this->dataFolder() . "users.csv";
         $userArray = array();
 
         if (is_file($filename)) {
@@ -209,7 +209,7 @@ class DbService
      */
     public function writeUsers(array $array)
     {
-        $filename = "{$this->dirname}users.csv";
+        $filename = $this->dataFolder() . "users.csv";
         // remove old backup
         if (is_file($filename . ".bak")) {
             unlink($filename . ".bak");
