@@ -219,14 +219,11 @@ class Plugin
          */
         global $pth, $plugin_tx;
 
-        $systemCheckService = new SystemCheckService(
+        $controller = new InfoController(
             $pth['folder']['plugins'],
             $plugin_tx['register'],
             self::dataFolder(),
-            new SystemChecker()
-        );
-        $controller = new InfoController(
-            $systemCheckService,
+            new SystemChecker(),
             new View("{$pth['folder']['plugins']}register/", $plugin_tx['register'])
         );
         return $controller->execute();

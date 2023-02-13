@@ -10,9 +10,19 @@ namespace Register;
 
 class InfoController
 {
-    /**
-     * @var SystemCheckService
-     */
+    /** @var string */
+    private $pluginsFolder;
+
+    /** @var array<string,string> */
+    private $lang;
+
+    /** @var string */
+    private $dataFolder;
+
+    /** @var SystemChecker */
+    private $systemChecker;
+
+    /** @var SystemCheckService */
     private $systemCheckService;
 
     /**
@@ -20,9 +30,24 @@ class InfoController
      */
     private $view;
 
-    public function __construct(SystemCheckService $systemCheckService, View $view)
-    {
-        $this->systemCheckService = $systemCheckService;
+    /** @param array<string,string> $lang */
+    public function __construct(
+        string $pluginsFolder,
+        array $lang,
+        string $dataFolder,
+        SystemChecker $systemChecker,
+        View $view
+    ) {
+        $this->pluginsFolder = $pluginsFolder;
+        $this->lang = $lang;
+        $this->dataFolder = $dataFolder;
+        $this->systemChecker = $systemChecker;
+        $this->systemCheckService = new SystemCheckService(
+            $this->pluginsFolder,
+            $this->lang,
+            $this->dataFolder,
+            $this->systemChecker
+        );
         $this->view = $view;
     }
 
