@@ -8,6 +8,8 @@
 
 namespace Register;
 
+use Register\Infra\SystemChecker;
+
 class InfoController
 {
     /** @var string */

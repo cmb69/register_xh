@@ -11,6 +11,8 @@ namespace Register;
 use ApprovalTests\Approvals;
 use PHPUnit\Framework\TestCase;
 
+use Register\Infra\SystemChecker;
+
 class InfoControllerTest extends TestCase
 {
     public function testRendersPluginInfo()

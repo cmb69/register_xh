@@ -19,7 +19,7 @@
  * along with Register_XH.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-namespace Register;
+namespace Register\Infra;
 
 class SystemChecker
 {
