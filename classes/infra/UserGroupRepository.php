@@ -27,9 +27,9 @@ class UserGroupRepository
      */
     public function findByGroupname(string $groupname)
     {
-        $this->dbService->lock(LOCK_SH);
+        $lock = $this->dbService->lock(false);
         $groups = $this->dbService->readGroups();
-        $this->dbService->lock(LOCK_UN);
+        $this->dbService->unlock($lock);
         foreach ($groups as $group) {
             if ($group->getGroupname() == $groupname) {
                 return $group;

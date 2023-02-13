@@ -44,23 +44,28 @@ class DbService
     }
 
     /**
-     * @param int $mode
-     * @return void
+     * @return resource|null
      */
-    public function lock($mode)
+    public function lock(bool $exclusive)
     {
-        static $fp;
-    
         $fn = $this->dirname . '/.lock';
         touch($fn);
-        if ($mode != LOCK_UN) {
-            if ($fp = fopen($fn, 'r')) {
-                flock($fp, $mode);
-            }
-        } else {
-            flock($fp, $mode);
-            fclose($fp);
-            unset($fp);
+        if ($fp = fopen($fn, 'r')) {
+            flock($fp, $exclusive ? LOCK_EX : LOCK_SH);
+            return $fp;
+        }
+        return null;
+    }
+
+    /**
+     * @param resource|null $stream
+     * @return void
+     */
+    public function unlock($stream)
+    {
+        if ($stream !== null) {
+            flock($stream, LOCK_UN);
+            fclose($stream);
         }
     }
 

@@ -67,9 +67,9 @@ class UserAdminController
     {
         $fn = $this->dbService->dataFolder() . 'users.csv';
         if ($this->dbService->hasUsersFile()) {
-            $this->dbService->lock(LOCK_SH);
+            $lock = $this->dbService->lock(false);
             $users  = $this->dbService->readUsers();
-            $this->dbService->lock(LOCK_UN);
+            $this->dbService->unlock($lock);
             return $this->renderUsersForm($users)
                 . $this->view->message('info', count($users) . ' ' . $this->lang['entries_in_csv'] . $fn);
         } else {
@@ -186,12 +186,12 @@ class UserAdminController
         $o = "";
         // In case that nothing got deleted or added, store back (save got pressed)
         if (!$deleted && !$added && empty($errors)) {
-            $this->dbService->lock(LOCK_EX);
+            $lock = $this->dbService->lock(true);
             if (!$this->dbService->writeUsers($newusers)) {
                 $errors[] = $this->lang['err_cannot_write_csv']
                     . ' (' . $this->dbService->dataFolder() . 'users.csv' . ')';
             }
-            $this->dbService->lock(LOCK_UN);
+            $this->dbService->unlock($lock);
 
             if (!empty($errors)) {
                 $o .= $this->view->render('error', ['errors' => $errors]);
