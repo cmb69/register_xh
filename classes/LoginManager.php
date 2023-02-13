@@ -10,6 +10,8 @@
 
 namespace Register;
 
+use Register\Infra\Session;
+
 class LoginManager
 {
     const REMEMBER_PERIOD = 100 * 24 * 60 * 60;

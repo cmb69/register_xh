@@ -11,6 +11,7 @@ namespace Register;
 use PHPUnit\Framework\TestCase;
 
 use Register\Infra\Logger;
+use Register\Infra\Session;
 
 class LoginControllerTest extends TestCase
 {

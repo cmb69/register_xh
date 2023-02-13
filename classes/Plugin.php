@@ -15,6 +15,7 @@ use XH\PageDataRouter;
 
 use Register\Value\UserGroup;
 use Register\Infra\SystemChecker;
+use Register\Infra\Session;
 
 class Plugin
 {

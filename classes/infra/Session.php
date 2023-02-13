@@ -4,7 +4,7 @@
  * Copyright (c) 2023 Christoph M. Becker
  */
 
-namespace Register;
+namespace Register\Infra;
 
 class Session
 {

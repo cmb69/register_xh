@@ -11,6 +11,7 @@
 namespace Register;
 
 use Register\Infra\Logger;
+use Register\Infra\Session;
 
 class LoginController
 {

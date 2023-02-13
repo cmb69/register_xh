@@ -14,6 +14,7 @@ use XH\CSRFProtection as CsrfProtector;
 
 use Register\Infra\Logger;
 use Register\Infra\MailService;
+use Register\Infra\Session;
 
 class UserPrefsController
 {

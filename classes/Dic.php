@@ -13,6 +13,7 @@ use XH\Pages;
 
 use Register\Infra\Logger;
 use Register\Infra\MailService;
+use Register\Infra\Session;
 
 class Dic
 {
