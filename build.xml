@@ -2,15 +2,6 @@
 
 <project name="Register" default="help">
 
-  <fileset id="php-sources" dir=".">
-    <include name="*.php"/>
-    <include name="classes/*.php"/>
-  </fileset>
-
-  <fileset id="unit-tests" dir="tests/unit">
-    <include name="*Test.php"/>
-  </fileset>
-
   <target name="help" description="lists available targets">
     <exec executable="phing" outputProperty="help">
       <arg value="-l"/>
