@@ -79,6 +79,6 @@ function register_pd_view(array $pageData)
         $pageData,
         new View("{$pth['folder']['plugins']}register/", $plugin_tx['register'])
     );
-    $controller->execute($sn . "?" . $su);
+    $controller($sn . "?" . $su);
     return (string) ob_get_clean();
 }

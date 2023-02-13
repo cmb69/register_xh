@@ -44,7 +44,7 @@ class PageDataController
     /**
      * @return void
      */
-    public function execute(string $url)
+    public function __invoke(string $url)
     {
         echo $this->view->render("page_data", [
             "action" => $url,
