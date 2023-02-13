@@ -15,6 +15,7 @@ use Register\Value\User;
 use Register\Logic\ValidationService;
 use Register\Infra\DbService;
 use Register\Infra\Logger;
+use Register\Infra\LoginManager;
 use Register\Infra\MailService;
 use Register\Infra\Session;
 use Register\Infra\UserGroupRepository;

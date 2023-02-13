@@ -8,10 +8,9 @@
  * This file is part of Register_XH.
  */
 
-namespace Register;
+namespace Register\Infra;
 
 use Register\Value\User;
-use Register\Infra\Session;
 
 class LoginManager
 {
