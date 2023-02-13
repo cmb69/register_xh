@@ -19,7 +19,6 @@ require_once "./classes/RedirectResponse.php";
 require_once "./classes/RegistrationController.php";
 require_once "./classes/Session.php";
 require_once "./classes/SystemChecker.php";
-require_once "./classes/SystemCheckService.php";
 require_once "./classes/User.php";
 require_once "./classes/UserGroup.php";
 require_once "./classes/UserGroupRepository.php";
