@@ -28,12 +28,6 @@
     </exec>
   </target>
 
-  <target name="compat" description="checks PHP requirements">
-    <exec executable="phpcompatinfo" passthru="true" checkreturn="true">
-      <arg line="analyser:run --ansi classes"/>
-    </exec>
-  </target>
-
   <target name="unit-tests" description="runs all unit tests">
     <exec executable="phpunit" passthru="true" checkreturn="true"/>
   </target>
