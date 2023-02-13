@@ -22,7 +22,7 @@ class InfoControllerTest extends TestCase
         $systemChecker->method('checkExtension')->willReturn(true);
         $systemChecker->method('checkWritability')->willReturn(true);
         $systemCheckService = new SystemCheckService("", $lang, "", $systemChecker);
-        $subject = new InfoController("2.0", $systemCheckService, new View("./", $lang));
+        $subject = new InfoController($systemCheckService, new View("./", $lang));
 
         $response = $subject->execute();
 

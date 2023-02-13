@@ -11,11 +11,6 @@ namespace Register;
 class InfoController
 {
     /**
-     * @var string
-     */
-    private $pluginVersion;
-
-    /**
      * @var SystemCheckService
      */
     private $systemCheckService;
@@ -25,9 +20,8 @@ class InfoController
      */
     private $view;
 
-    public function __construct(string $pluginVersion, SystemCheckService $systemCheckService, View $view)
+    public function __construct(SystemCheckService $systemCheckService, View $view)
     {
-        $this->pluginVersion = $pluginVersion;
         $this->systemCheckService = $systemCheckService;
         $this->view = $view;
     }
@@ -35,7 +29,7 @@ class InfoController
     public function execute(): string
     {
         return $this->view->render('info', [
-            'version' => $this->pluginVersion,
+            'version' => Plugin::VERSION,
             'checks' => $this->systemCheckService->getChecks(),
         ]);
     }

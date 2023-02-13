@@ -226,7 +226,6 @@ class Plugin
             new SystemChecker()
         );
         $controller = new InfoController(
-            self::VERSION,
             $systemCheckService,
             new View("{$pth['folder']['plugins']}register/", $plugin_tx['register'])
         );
