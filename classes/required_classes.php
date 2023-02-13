@@ -63,19 +63,3 @@ function Register_loggedInForm(): string
 {
     return Plugin::handleloggedInForm();
 }
-
-/**
- * @param array<string,string> $pageData
- * @return string
- */
-function register_pd_view(array $pageData)
-{
-    global $pth, $tx, $plugin_tx, $sn, $su;
-
-    $controller = new PageDataController(
-        $pth['folder']['corestyle'],
-        $tx['editmenu']['help'],
-        new View("{$pth['folder']['plugins']}register/", $plugin_tx['register'])
-    );
-    return $controller($pageData, $sn . "?" . $su);
-}
