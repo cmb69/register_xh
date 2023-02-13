@@ -9,6 +9,7 @@
 namespace Register;
 
 use Register\Value\UserGroup;
+use Register\Infra\DbService;
 
 class UserGroupRepository
 {

@@ -11,6 +11,7 @@ namespace Register;
 use PHPUnit\Framework\TestCase;
 
 use Register\Value\User;
+use Register\Infra\DbService;
 
 class UserRepositoryTest extends TestCase
 {

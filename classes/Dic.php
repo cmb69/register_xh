@@ -12,6 +12,7 @@ use XH\CSRFProtection as CsrfProtector;
 use XH\Pages;
 
 use Register\Value\User;
+use Register\Infra\DbService;
 use Register\Infra\Logger;
 use Register\Infra\MailService;
 use Register\Infra\Session;

@@ -8,12 +8,12 @@ require_once "../../cmsimple/classes/Pages.php";
 require_once "./classes/value/User.php";
 require_once "./classes/value/UserGroup.php";
 
+require_once './classes/infra/DbService.php';
 require_once "./classes/infra/Logger.php";
 require_once "./classes/infra/MailService.php";
 require_once "./classes/infra/Session.php";
 require_once "./classes/infra/SystemChecker.php";
 
-require_once './classes/DbService.php';
 require_once "./classes/ForgotPasswordController.php";
 require_once "./classes/HtmlString.php";
 require_once "./classes/InfoController.php";

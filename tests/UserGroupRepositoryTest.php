@@ -8,9 +8,10 @@
 
 namespace Register;
 
-use Register\Value\UserGroup;
-
 use PHPUnit\Framework\TestCase;
+
+use Register\Value\UserGroup;
+use Register\Infra\DbService;
 
 class UserGroupRepositoryTest extends TestCase
 {

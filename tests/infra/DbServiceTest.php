@@ -1,6 +1,6 @@
 <?php
 
-namespace Register;
+namespace Register\Infra;
 
 use PHPUnit\Framework\TestCase;
 use org\bovigo\vfs\vfsStream;

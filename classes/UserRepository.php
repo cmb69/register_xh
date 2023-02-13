@@ -9,6 +9,7 @@
 namespace Register;
 
 use Register\Value\User;
+use Register\Infra\DbService;
 
 class UserRepository
 {
