@@ -70,7 +70,7 @@ function Register_loggedInForm(): string
  */
 function register_pd_view(array $pageData)
 {
-    global $pth, $tx, $plugin_tx;
+    global $pth, $tx, $plugin_tx, $sn, $su;
 
     ob_start();
     $controller = new PageDataController(
@@ -79,6 +79,6 @@ function register_pd_view(array $pageData)
         $pageData,
         new View("{$pth['folder']['plugins']}register/", $plugin_tx['register'])
     );
-    $controller->execute();
+    $controller->execute($sn . "?" . $su);
     return (string) ob_get_clean();
 }

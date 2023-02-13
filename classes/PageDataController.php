@@ -29,8 +29,12 @@ class PageDataController
     /**
      * @param array<string,string> $pageData
      */
-    public function __construct(string $coreStyleFolder, string $helpText, array $pageData, View $view)
-    {
+    public function __construct(
+        string $coreStyleFolder,
+        string $helpText,
+        array $pageData,
+        View $view
+    ) {
         $this->coreStyleFolder = $coreStyleFolder;
         $this->helpText = $helpText;
         $this->pageData = $pageData;
@@ -40,16 +44,10 @@ class PageDataController
     /**
      * @return void
      */
-    public function execute()
+    public function execute(string $url)
     {
-        /**
-         * @var string $sn
-         * @var string $su
-         */
-        global $sn, $su;
-
         echo $this->view->render("page_data", [
-            "action" => "$sn?$su",
+            "action" => $url,
             "iconFilename" => $this->coreStyleFolder . "help_icon.png",
             "iconAlt" => $this->helpText,
             "accessGroups" => $this->pageData["register_access"],
