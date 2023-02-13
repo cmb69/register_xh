@@ -75,8 +75,7 @@ function register_pd_view(array $pageData)
     $controller = new PageDataController(
         $pth['folder']['corestyle'],
         $tx['editmenu']['help'],
-        $pageData,
         new View("{$pth['folder']['plugins']}register/", $plugin_tx['register'])
     );
-    return $controller($sn . "?" . $su);
+    return $controller($pageData, $sn . "?" . $su);
 }

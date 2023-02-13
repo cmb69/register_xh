@@ -17,37 +17,28 @@ class PageDataController
     private $helpText;
 
     /**
-     * @var array<string,string>
-     */
-    private $pageData;
-
-    /**
      * @var View
      */
     private $view;
 
-    /**
-     * @param array<string,string> $pageData
-     */
     public function __construct(
         string $coreStyleFolder,
         string $helpText,
-        array $pageData,
         View $view
     ) {
         $this->coreStyleFolder = $coreStyleFolder;
         $this->helpText = $helpText;
-        $this->pageData = $pageData;
         $this->view = $view;
     }
 
-    public function __invoke(string $url): string
+    /** @param array<string,string> $pageData */
+    public function __invoke(array $pageData, string $url): string
     {
         return $this->view->render("page_data", [
             "action" => $url,
             "iconFilename" => $this->coreStyleFolder . "help_icon.png",
             "iconAlt" => $this->helpText,
-            "accessGroups" => $this->pageData["register_access"],
+            "accessGroups" => $pageData["register_access"],
         ]);
     }
 }
