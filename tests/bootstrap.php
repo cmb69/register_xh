@@ -29,6 +29,7 @@ require_once "./classes/LoginFormController.php";
 require_once "./classes/MainAdminController.php";
 require_once "./classes/Plugin.php";
 require_once "./classes/RegistrationController.php";
+require_once "./classes/ShowPageDataTab.php";
 require_once "./classes/UserPrefsController.php";
 
 const CMSIMPLE_XH_VERSION = "CMSimple_XH 1.7.5";
