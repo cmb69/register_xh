@@ -6,12 +6,11 @@
  * This file is part of Register_XH.
  */
 
-namespace Register;
+namespace Register\Infra;
 
 use PHPUnit\Framework\TestCase;
 
 use Register\Value\User;
-use Register\Infra\DbService;
 
 class UserRepositoryTest extends TestCase
 {

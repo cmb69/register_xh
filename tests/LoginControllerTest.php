@@ -13,6 +13,7 @@ use PHPUnit\Framework\TestCase;
 use Register\Value\User;
 use Register\Infra\Logger;
 use Register\Infra\Session;
+use Register\Infra\UserRepository;
 
 class LoginControllerTest extends TestCase
 {

@@ -16,6 +16,7 @@ use Register\Logic\ValidationService;
 use Register\Infra\Logger;
 use Register\Infra\MailService;
 use Register\Infra\Session;
+use Register\Infra\UserRepository;
 
 class UserPrefsController
 {

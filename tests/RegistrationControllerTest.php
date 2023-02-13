@@ -17,6 +17,7 @@ use PHPUnit\Framework\TestCase;
 use Register\Value\User;
 use Register\Logic\ValidationService;
 use Register\Infra\MailService;
+use Register\Infra\UserRepository;
 
 class RegistrationControllerTest extends TestCase
 {

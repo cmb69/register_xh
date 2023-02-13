@@ -11,6 +11,7 @@
 namespace Register;
 
 use Register\Infra\MailService;
+use Register\Infra\UserRepository;
 
 class ForgotPasswordController
 {

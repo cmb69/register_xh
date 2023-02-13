@@ -11,8 +11,9 @@
 namespace Register;
 
 use Register\Value\User;
-use Register\Infra\MailService;
 use Register\Logic\ValidationService;
+use Register\Infra\MailService;
+use Register\Infra\UserRepository;
 
 class RegistrationController
 {
