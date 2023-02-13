@@ -10,6 +10,8 @@
 
 namespace Register;
 
+use Register\Infra\MailService;
+
 class ForgotPasswordController
 {
     const TTL = 3600;

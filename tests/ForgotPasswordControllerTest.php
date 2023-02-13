@@ -14,6 +14,8 @@ use ApprovalTests\Approvals;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
+use Register\Infra\MailService;
+
 class ForgotPasswordControllerTest extends TestCase
 {
     /**

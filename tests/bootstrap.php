@@ -8,6 +8,7 @@ require_once "../../cmsimple/classes/Pages.php";
 require_once "./classes/value/UserGroup.php";
 
 require_once "./classes/infra/Logger.php";
+require_once "./classes/infra/MailService.php";
 require_once "./classes/infra/SystemChecker.php";
 
 require_once './classes/DbService.php';
@@ -17,7 +18,6 @@ require_once "./classes/InfoController.php";
 require_once "./classes/LoginController.php";
 require_once "./classes/LoginFormController.php";
 require_once "./classes/LoginManager.php";
-require_once "./classes/MailService.php";
 require_once "./classes/MainAdminController.php";
 require_once "./classes/Plugin.php";
 require_once "./classes/RedirectResponse.php";

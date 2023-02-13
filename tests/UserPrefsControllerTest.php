@@ -15,6 +15,7 @@ use PHPUnit\Framework\TestCase;
 use XH\CSRFProtection as CsrfProtector;
 
 use Register\Infra\Logger;
+use Register\Infra\MailService;
 
 class UserPrefsControllerTest extends TestCase
 {

@@ -10,6 +10,8 @@
 
 namespace Register;
 
+use Register\Infra\MailService;
+
 class RegistrationController
 {
     /**

@@ -12,6 +12,7 @@ use XH\CSRFProtection as CsrfProtector;
 use XH\Pages;
 
 use Register\Infra\Logger;
+use Register\Infra\MailService;
 
 class Dic
 {
