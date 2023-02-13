@@ -163,7 +163,7 @@ class ForgotPasswordController
         }
 
         $password = $_POST["password1"];
-        $user->changePassword($password);
+        $user = $user->withPassword($password);
         if (!$this->userRepository->update($user)) {
             return $this->view->message("fail", $this->lang['err_cannot_write_csv']);
         }

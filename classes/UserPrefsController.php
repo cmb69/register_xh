@@ -160,9 +160,9 @@ class UserPrefsController
         $oldemail = $entry->getEmail();
 
         // read user entry, update it and write it back to CSV file
-        $entry->setPassword((string) password_hash($password1, PASSWORD_DEFAULT));
-        $entry->setEmail($email);
-        $entry->setName($name);
+        $entry = $entry->withPassword((string) password_hash($password1, PASSWORD_DEFAULT));
+        $entry = $entry->withEmail($email);
+        $entry = $entry->withName($name);
 
         if (!$this->userRepository->update($entry)) {
             return $this->view->message("fail", $this->lang['err_cannot_write_csv']);

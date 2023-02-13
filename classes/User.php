@@ -102,52 +102,46 @@ class User
         return $this->status === "locked";
     }
 
-    /**
-     * @return void
-     */
-    public function setPassword(string $password)
+    public function withPassword(string $password): self
     {
-        $this->password = $password;
+        $that = clone $this;
+        $that->password = $password;
+        return $that;
     }
 
-    /**
-     * @param array<int,string> $accessgroups
-     * @return void
-     */
-    public function setAccessgroups(array $accessgroups)
+    /** @param array<int,string> $accessgroups */
+    public function withAccessgroups(array $accessgroups): self
     {
-        $this->accessgroups = $accessgroups;
+        $that = clone $this;
+        $that->accessgroups = $accessgroups;
+        return $that;
     }
 
-    /**
-     * @return void
-     */
-    public function setName(string $name)
+    public function withName(string $name): self
     {
-        $this->name = $name;
+        $that = clone $this;
+        $that->name = $name;
+        return $that;
     }
 
-    /**
-     * @return void
-     */
-    public function setEmail(string $email)
+    public function withEmail(string $email): self
     {
-        $this->email = $email;
+        $that = clone $this;
+        $that->email = $email;
+        return $that;
     }
 
-    /**
-     * @return void
-     */
-    public function activate()
+    public function activate(): self
     {
-        $this->status = "activated";
+        $that = clone $this;
+        $that->status = "activated";
+        return $that;
     }
 
-    /**
-     * @return void
-     */
-    public function changePassword(string $password)
+    public function withNewPassword(string $password): self
     {
-        $this->password = (string) password_hash($password, PASSWORD_DEFAULT);
+        $that = clone $this;
+        $that->password = (string) password_hash($password, PASSWORD_DEFAULT);
+        return $that;
     }
 }

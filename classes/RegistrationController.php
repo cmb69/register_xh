@@ -160,8 +160,8 @@ class RegistrationController
             return $this->view->message("fail", $this->lang['err_status_invalid']);
         }
 
-        $entry->activate();
-        $entry->setAccessgroups(array($this->config['group_activated']));
+        $entry = $entry->activate();
+        $entry = $entry->withAccessgroups(array($this->config['group_activated']));
         $this->userRepository->update($entry);
         return $this->view->message('success', $this->lang['activated']);
     }

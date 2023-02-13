@@ -50,7 +50,7 @@ class UserRepositoryTest extends TestCase
         $dbService = $this->makeDbService();
         $john = $this->john();
         $dbService->writeUsers([$john, $this->jane()]);
-        $john->setName("Henry Doe");
+        $john = $john->withName("Henry Doe");
         $sut = new UserRepository($dbService);
         $this->assertTrue($sut->update($john));
         $this->assertEquals([$john, $this->jane()], $dbService->readUsers());
