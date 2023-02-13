@@ -6,18 +6,14 @@
 * This file is part of Register_XH.
 */
 
-namespace Register;
+namespace Register\Value;
 
 class UserGroup
 {
-    /**
-     * @var string
-     */
+    /** @var string */
     private $groupname;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     private $loginpage;
 
     public function __construct(string $groupname, string $loginpage)

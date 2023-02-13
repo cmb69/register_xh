@@ -6,6 +6,8 @@ use PHPUnit\Framework\TestCase;
 use org\bovigo\vfs\vfsStream;
 use org\bovigo\vfs\vfsStreamDirectory;
 
+use Register\Value\UserGroup;
+
 class DbServiceTest extends TestCase
 {
     /**

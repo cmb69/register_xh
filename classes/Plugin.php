@@ -13,6 +13,8 @@ namespace Register;
 use XH\CSRFProtection as CsrfProtector;
 use XH\PageDataRouter;
 
+use Register\Value\UserGroup;
+
 class Plugin
 {
     const VERSION = "2.0-dev";

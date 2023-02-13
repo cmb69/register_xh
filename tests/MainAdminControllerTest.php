@@ -13,6 +13,8 @@ use PHPUnit\Framework\TestCase;
 use XH\CSRFProtection as CsrfProtector;
 use XH\Pages;
 
+use Register\Value\UserGroup;
+
 class MainAdminControllerTest extends TestCase
 {
     public function testEditUsersActionRendersUsers()

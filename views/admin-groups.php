@@ -1,6 +1,6 @@
 <?php
 
-use Register\UserGroup;
+use Register\Value\UserGroup;
 use Register\View;
 
 /**
