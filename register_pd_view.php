@@ -11,11 +11,8 @@ if (!defined("CMSIMPLE_XH_VERSION")) {
     header("HTTP/1.1 403 Forbidden");
 }
 
-/**
- * @param array<string,string> $pageData
- * @return string
- */
-function register_pd_view(array $pageData)
+/** @param array<string,string> $pageData */
+function register_pd_view(array $pageData): string
 {
     global $pth, $tx, $plugin_tx, $sn, $su;
 

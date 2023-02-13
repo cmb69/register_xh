@@ -16,16 +16,11 @@ class PageDataController
     /** @var string */
     private $helpText;
 
-    /**
-     * @var View
-     */
+    /** @var View */
     private $view;
 
-    public function __construct(
-        string $coreStyleFolder,
-        string $helpText,
-        View $view
-    ) {
+    public function __construct(string $coreStyleFolder, string $helpText, View $view)
+    {
         $this->coreStyleFolder = $coreStyleFolder;
         $this->helpText = $helpText;
         $this->view = $view;
