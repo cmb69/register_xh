@@ -4,6 +4,7 @@ parameters:
     - classes/
     - views/
     - index.php
+    - register_pd_view.php
   bootstrapFiles:
     - phpstan.php
   scanFiles:

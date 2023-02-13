@@ -129,4 +129,15 @@ class Dic
             new View("{$pth['folder']['plugins']}register/", $plugin_tx['register'])
         );
     }
+
+    public static function makeShowPageDataTab(): ShowPageDataTab
+    {
+        global $pth, $tx, $plugin_tx;
+
+        return new ShowPageDataTab(
+            $pth['folder']['corestyle'],
+            $tx['editmenu']['help'],
+            new View("{$pth['folder']['plugins']}register/", $plugin_tx['register'])
+        );
+    }
 }
