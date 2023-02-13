@@ -13,6 +13,7 @@ use XH\Pages;
 
 use Register\Value\User;
 use Register\Infra\DbService;
+use Register\Logic\ValidationService;
 use Register\Infra\Logger;
 use Register\Infra\MailService;
 use Register\Infra\Session;

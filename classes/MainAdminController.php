@@ -15,6 +15,7 @@ use XH\Pages;
 
 use Register\Value\User;
 use Register\Value\UserGroup;
+use Register\Logic\ValidationService;
 use Register\Infra\DbService;
 
 class MainAdminController

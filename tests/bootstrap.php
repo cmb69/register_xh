@@ -8,6 +8,8 @@ require_once "../../cmsimple/classes/Pages.php";
 require_once "./classes/value/User.php";
 require_once "./classes/value/UserGroup.php";
 
+require_once "./classes/logic/ValidationService.php";
+
 require_once './classes/infra/DbService.php';
 require_once "./classes/infra/Logger.php";
 require_once "./classes/infra/MailService.php";
@@ -27,7 +29,6 @@ require_once "./classes/RegistrationController.php";
 require_once "./classes/UserGroupRepository.php";
 require_once "./classes/UserPrefsController.php";
 require_once "./classes/UserRepository.php";
-require_once "./classes/ValidationService.php";
 require_once "./classes/View.php";
 
 const CMSIMPLE_XH_VERSION = "CMSimple_XH 1.7.5";

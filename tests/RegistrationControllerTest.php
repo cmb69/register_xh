@@ -15,6 +15,7 @@ use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
 use Register\Value\User;
+use Register\Logic\ValidationService;
 use Register\Infra\MailService;
 
 class RegistrationControllerTest extends TestCase
