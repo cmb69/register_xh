@@ -15,5 +15,5 @@ function register_pd_view(array $pageData): string
 {
     global $sn, $su;
 
-    return Dic::makePageDataController()($pageData, $sn . "?" . $su);
+    return Dic::makeShowPageDataTab()($pageData, $sn . "?" . $su);
 }

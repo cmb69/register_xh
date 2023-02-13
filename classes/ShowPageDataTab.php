@@ -8,7 +8,7 @@ namespace Register;
 
 use Register\Infra\View;
 
-class PageDataController
+class ShowPageDataTab
 {
     /** @var string */
     private $coreStyleFolder;
