@@ -17,6 +17,7 @@ use Register\Infra\DbService;
 use Register\Infra\Logger;
 use Register\Infra\MailService;
 use Register\Infra\Session;
+use Register\Infra\UserGroupRepository;
 use Register\Infra\UserRepository;
 
 class Dic
