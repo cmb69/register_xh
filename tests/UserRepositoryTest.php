@@ -10,6 +10,8 @@ namespace Register;
 
 use PHPUnit\Framework\TestCase;
 
+use Register\Value\User;
+
 class UserRepositoryTest extends TestCase
 {
     public function testFindsExistingUserByName(): void

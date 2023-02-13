@@ -13,6 +13,7 @@ namespace Register;
 use XH\CSRFProtection as CsrfProtector;
 use XH\PageDataRouter;
 
+use Register\Value\User;
 use Register\Value\UserGroup;
 use Register\Infra\SystemChecker;
 use Register\Infra\Session;

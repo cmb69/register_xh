@@ -8,6 +8,8 @@
 
 namespace Register;
 
+use Register\Value\User;
+
 class UserRepository
 {
     /**

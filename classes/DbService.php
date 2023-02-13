@@ -10,6 +10,7 @@
 
 namespace Register;
 
+use Register\Value\User;
 use Register\Value\UserGroup;
 
 class DbService

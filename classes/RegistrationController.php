@@ -10,6 +10,7 @@
 
 namespace Register;
 
+use Register\Value\User;
 use Register\Infra\MailService;
 
 class RegistrationController

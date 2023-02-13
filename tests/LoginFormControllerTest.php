@@ -11,6 +11,8 @@ namespace Register;
 use ApprovalTests\Approvals;
 use PHPUnit\Framework\TestCase;
 
+use Register\Value\User;
+
 class LoginFormControllerTest extends TestCase
 {
     public function testLoginForm()

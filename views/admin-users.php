@@ -1,7 +1,7 @@
 <?php
 
+use Register\Value\User;
 use Register\Value\UserGroup;
-use Register\User;
 use Register\View;
 
 /**
