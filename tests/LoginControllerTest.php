@@ -10,6 +10,8 @@ namespace Register;
 
 use PHPUnit\Framework\TestCase;
 
+use Register\Infra\Logger;
+
 class LoginControllerTest extends TestCase
 {
     /** @var array<string,string> */

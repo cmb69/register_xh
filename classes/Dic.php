@@ -11,6 +11,8 @@ namespace Register;
 use XH\CSRFProtection as CsrfProtector;
 use XH\Pages;
 
+use Register\Infra\Logger;
+
 class Dic
 {
     public static function makeLoginController(DbService $dbService): LoginController

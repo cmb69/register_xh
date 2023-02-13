@@ -14,6 +14,8 @@ use PHPUnit\Framework\TestCase;
 
 use XH\CSRFProtection as CsrfProtector;
 
+use Register\Infra\Logger;
+
 class UserPrefsControllerTest extends TestCase
 {
     /**

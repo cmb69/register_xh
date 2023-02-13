@@ -7,11 +7,12 @@ require_once "../../cmsimple/classes/Pages.php";
 
 require_once "./classes/value/UserGroup.php";
 
+require_once "./classes/infra/Logger.php";
+
 require_once './classes/DbService.php';
 require_once "./classes/ForgotPasswordController.php";
 require_once "./classes/HtmlString.php";
 require_once "./classes/InfoController.php";
-require_once "./classes/Logger.php";
 require_once "./classes/LoginController.php";
 require_once "./classes/LoginFormController.php";
 require_once "./classes/LoginManager.php";
