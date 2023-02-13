@@ -5,14 +5,18 @@ use Register\Infra\View;
 /**
  * @var View $this
  * @var string $action
- * @var string $helpIcon
+ * @var string $iconFilename
+ * @var string $iconAlt
  * @var string $accessGroups
  */
 ?>
 
 <form action="<?=$this->esc($action)?>" method="post" id="register">
   <p>
-    <?=$this->esc($helpIcon)?>
+    <div class="pl_tooltip">
+      <img src="<?=$this->esc($iconFilename)?>" alt="<?=$this->esc($iconAlt)?>">
+      <div><?=$this->text("hint_accessgroups")?></div>
+    </div>
     <label>
       <?=$this->text("accessgroups")?><br/>
       <input name="register_access" value="<?=$this->esc($accessGroups)?>">

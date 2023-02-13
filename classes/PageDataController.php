@@ -6,11 +6,16 @@
 
 namespace Register;
 
-use Register\Value\HtmlString;
 use Register\Infra\View;
 
 class PageDataController
 {
+    /** @var string */
+    private $coreStyleFolder;
+
+    /** @var string */
+    private $helpText;
+
     /**
      * @var array<string,string>
      */
@@ -24,8 +29,10 @@ class PageDataController
     /**
      * @param array<string,string> $pageData
      */
-    public function __construct(array $pageData, View $view)
+    public function __construct(string $coreStyleFolder, string $helpText, array $pageData, View $view)
     {
+        $this->coreStyleFolder = $coreStyleFolder;
+        $this->helpText = $helpText;
         $this->pageData = $pageData;
         $this->view = $view;
     }
@@ -43,7 +50,8 @@ class PageDataController
 
         echo $this->view->render("page_data", [
             "action" => "$sn?$su",
-            "helpIcon" => new HtmlString(XH_helpIcon($this->view->text("hint_accessgroups"))),
+            "iconFilename" => $this->coreStyleFolder . "help_icon.png",
+            "iconAlt" => $this->helpText,
             "accessGroups" => $this->pageData["register_access"],
         ]);
     }
