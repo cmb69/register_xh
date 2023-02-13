@@ -22,12 +22,6 @@
     <exec executable="phpstan" passthru="true" checkreturn="true"/>
   </target>
 
-  <target name="mess" description="detects code flaws">
-    <exec executable="phpmd" passthru="true" checkreturn="true">
-      <arg line="classes ansi codesize,unusedcode --ignore-violations-on-exit"/>
-    </exec>
-  </target>
-
   <target name="unit-tests" description="runs all unit tests">
     <exec executable="phpunit" passthru="true" checkreturn="true"/>
   </target>
