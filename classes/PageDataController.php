@@ -41,12 +41,9 @@ class PageDataController
         $this->view = $view;
     }
 
-    /**
-     * @return void
-     */
-    public function __invoke(string $url)
+    public function __invoke(string $url): string
     {
-        echo $this->view->render("page_data", [
+        return $this->view->render("page_data", [
             "action" => $url,
             "iconFilename" => $this->coreStyleFolder . "help_icon.png",
             "iconAlt" => $this->helpText,
