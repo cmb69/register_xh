@@ -27,8 +27,7 @@ class UserRepository
         $lock = $this->dbService->lock(false);
         $users = $this->dbService->readUsers();
         $this->dbService->unlock($lock);
-        $user = $this->searchUserArray($users, 'username', $username);
-        return $user ? $user : null;
+        return $this->searchUserArray($users, 'username', $username);
     }
 
     public function findByEmail(string $email): ?User
@@ -36,23 +35,21 @@ class UserRepository
         $lock = $this->dbService->lock(false);
         $users = $this->dbService->readUsers();
         $this->dbService->unlock($lock);
-        $user = $this->searchUserArray($users, 'email', $email);
-        return $user ? $user : null;
+        return $this->searchUserArray($users, 'email', $email);
     }
 
     /**
      * @param User[] $users
      * @param mixed $value
-     * @return User|false
      */
-    private function searchUserArray(array $users, string $key, $value)
+    private function searchUserArray(array $users, string $key, $value): ?User
     {
         foreach ($users as $user) {
             if ($user->{"get$key"}() == $value) {
                 return $user;
             }
         }
-        return false;
+        return null;
     }
 
     public function add(User $user): bool
