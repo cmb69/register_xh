@@ -24,14 +24,15 @@ require_once "./classes/infra/View.php";
 
 require_once "./classes/ActivateUser.php";
 require_once "./classes/ForgotPasswordController.php";
+require_once "./classes/GroupAdminController.php";
 require_once "./classes/InfoController.php";
 require_once "./classes/LoginController.php";
 require_once "./classes/LoginFormController.php";
-require_once "./classes/MainAdminController.php";
 require_once "./classes/Plugin.php";
 require_once "./classes/RegisterUser.php";
 require_once "./classes/ShowPageDataTab.php";
 require_once "./classes/ShowRegistrationForm.php";
+require_once "./classes/UserAdminController.php";
 require_once "./classes/UserPrefsController.php";
 
 const CMSIMPLE_XH_VERSION = "CMSimple_XH 1.7.5";

@@ -11,7 +11,6 @@
 namespace Register;
 
 use XH\CSRFProtection as CsrfProtector;
-use XH\Pages;
 
 use Register\Value\HtmlString;
 use Register\Value\User;
@@ -20,41 +19,28 @@ use Register\Logic\ValidationService;
 use Register\Infra\DbService;
 use Register\Infra\View;
 
-class MainAdminController
+class UserAdminController
 {
     /** @var string */
     private $pluginFolder;
 
-    /**
-     * @var array<string,string>
-     */
+    /** @var array<string,string> */
     private $config;
 
-    /**
-     * @var array<string,string>
-     */
+    /** @var array<string,string> */
     private $lang;
 
-    /**
-     * @var CsrfProtector
-     */
+    /** @var CsrfProtector */
     private $csrfProtector;
 
-    /**
-     * @var View
-     */
+    /** @var View */
     private $view;
 
-    /**
-     * @var DbService
-     */
+    /** @var DbService */
     private $dbService;
 
     /** @var string */
     private $scriptName;
-
-    /** @var Pages */
-    private $pages;
 
     /**
      * @param array<string,string> $config
@@ -66,8 +52,7 @@ class MainAdminController
         array $lang,
         CsrfProtector $csrfProtector,
         DbService $dbService,
-        string $scriptName,
-        Pages $pages
+        string $scriptName
     ) {
         $this->pluginFolder = $pluginFolder;
         $this->config = $config;
@@ -76,7 +61,6 @@ class MainAdminController
         $this->view = new View($this->pluginFolder, $this->lang);
         $this->dbService = $dbService;
         $this->scriptName = $scriptName;
-        $this->pages = $pages;
     }
 
     public function editUsersAction(): string
@@ -210,7 +194,7 @@ class MainAdminController
             $this->dbService->lock(LOCK_UN);
 
             if (!empty($errors)) {
-                $o .= $this->renderErrorView($errors);
+                $o .= $this->view->render('error', ['errors' => $errors]);
             } else {
                 $o .= $this->view->message(
                     'success',
@@ -218,29 +202,17 @@ class MainAdminController
                 );
             }
         } elseif (!empty($errors)) {
-            $o .= $this->renderErrorView($errors);
+            $o .= $this->view->render('error', ['errors' => $errors]);
         }
 
         $o .= $this->renderUsersForm($newusers);
         return $o;
     }
 
-    /**
-     * @param string[] $errors
-     */
-    private function renderErrorView(array $errors): string
-    {
-        return $this->view->render('error', ['errors' => $errors]);
-    }
-
-    /**
-     * @param User[] $users
-     */
+    /** @param User[] $users */
     private function renderUsersForm(array $users): string
     {
-        /**
-         * @var string $hjs
-         */
+        /** @var string $hjs */
         global $hjs;
 
         $jsKeys = ['name', 'username', 'password', 'accessgroups', 'status', 'email', 'prefsemailsubject'];
@@ -278,9 +250,7 @@ class MainAdminController
         return $this->view->render('admin-users', $data);
     }
 
-    /**
-     * @return UserGroup[]
-     */
+    /** @return UserGroup[] */
     private function findGroups(): array
     {
         $groups = $this->dbService->readGroups();
@@ -337,102 +307,6 @@ class MainAdminController
         foreach ($opts as $opt => $label) {
             $sel = $opt == $value ? ' selected="selected"' : '';
             $o .= '<option value="' . $opt . '"' . $sel . '>' . $label . '</option>';
-        }
-        $o .= '</select>';
-        return $o;
-    }
-
-    public function editGroupsAction(): string
-    {
-        $filename = $this->dbService->dataFolder() . 'groups.csv';
-        if ($this->dbService->hasGroupsFile()) {
-            $groups = $this->dbService->readGroups();
-            return $this->renderGroupsForm($groups)
-                . $this->view->message('info', count($groups) . ' ' . $this->lang['entries_in_csv'] . $filename);
-        } else {
-            return $this->view->message('fail', $this->lang['err_csv_missing'] . ' (' . $filename . ')');
-        }
-    }
-
-    public function saveGroupsAction(): string
-    {
-        $this->csrfProtector->check();
-        $errors = [];
-
-        $delete = $_POST['delete'] ?? [];
-        $add = $_POST['add'] ?? '';
-        $groupname = $_POST['groupname'] ?? [];
-
-        $deleted = false;
-        $added   = false;
-
-        $newgroups = array();
-        foreach (array_keys($groupname) as $j) {
-            if (!preg_match("/^[A-Za-z0-9_-]+$/", $groupname[$j])) {
-                $errors[] = $this->lang['err_group_illegal'];
-            }
-
-            if (!isset($delete[$j]) || $delete[$j] == '') {
-                $entry = new UserGroup($groupname[$j], $_POST['grouploginpage'][$j]);
-                $newgroups[] = $entry;
-            } else {
-                $deleted = true;
-            }
-        }
-        if ($add != '') {
-            $entry = new UserGroup("NewGroup", '');
-            $newgroups[] = $entry;
-            $added = true;
-        }
-
-        $o = "";
-        // In case that nothing got deleted or added, store back (save got pressed)
-        if (!$deleted && !$added && empty($errors)) {
-            if (!$this->dbService->writeGroups($newgroups)) {
-                $errors[] = $this->lang['err_cannot_write_csv']
-                    . ' (' . $this->dbService->dataFolder() . 'groups.csv' . ')';
-            }
-            if (!empty($errors)) {
-                $o .= $this->renderErrorView($errors);
-            } else {
-                $o .= $this->view->message(
-                    'success',
-                    $this->lang['csv_written'] . '(' . $this->dbService->dataFolder() . 'groups.csv' . ')'
-                );
-            }
-        } elseif (!empty($errors)) {
-            $o .= $this->renderErrorView($errors);
-        }
-
-        $o .= $this->renderGroupsForm($newgroups);
-        return $o;
-    }
-
-    /**
-     * @param UserGroup[] $groups
-     */
-    private function renderGroupsForm(array $groups): string
-    {
-        $data = [
-            'csrfTokenInput' => new HtmlString($this->csrfProtector->tokenInput()),
-            'actionUrl' => "{$this->scriptName}?&register",
-            'groups' => $groups,
-        ];
-        $selects = [];
-        foreach ($groups as $i => $entry) {
-            $selects[] = new HtmlString($this->pageSelectbox($entry->getLoginpage(), $i));
-        }
-        $data['selects'] = $selects;
-        return $this->view->render('admin-groups', $data);
-    }
-
-    private function pageSelectbox(string $loginpage, int $n): string
-    {
-        $o = '<select name="grouploginpage[' . $n . ']"><option value="">' . $this->lang['label_none'] . '</option>';
-        for ($i = 0; $i < $this->pages->getCount(); $i++) {
-            $sel = $this->pages->url($i) == $loginpage ? ' selected="selected"' : '';
-            $o .= '<option value="' . $this->pages->url($i). '"' . $sel . '>'
-                . str_repeat('&nbsp;', 3 * ($this->pages->level($i) - 1)) . $this->pages->heading($i) . '</option>';
         }
         $o .= '</select>';
         return $o;

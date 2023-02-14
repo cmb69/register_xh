@@ -197,19 +197,18 @@ class Plugin
                 $o .= self::renderInfo();
                 break;
             case 'plugin_main':
-                $temp = Dic::makeMainAdminController(new DbService(self::dataFolder()));
                 switch ($action) {
                     case 'editusers':
-                        $o .= $temp->editUsersAction();
+                        $o .= Dic::makeUserAdminController(new DbService(self::dataFolder()))->editUsersAction();
                         break;
                     case 'saveusers':
-                        $o .= $temp->saveUsersAction();
+                        $o .= Dic::makeUserAdminController(new DbService(self::dataFolder()))->saveUsersAction();
                         break;
                     case 'editgroups':
-                        $o .= $temp->editGroupsAction();
+                        $o .= Dic::makeGroupAdminController(new DbService(self::dataFolder()))->editGroupsAction();
                         break;
                     case 'savegroups':
-                        $o .= $temp->saveGroupsAction();
+                        $o .= Dic::makeGroupAdminController(new DbService(self::dataFolder()))->saveGroupsAction();
                         break;
                 }
                 break;

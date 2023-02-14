@@ -79,6 +79,12 @@ class View
         }
     }
 
+    /** @param scalar $value */
+    public function raw($value): string
+    {
+        return (string) $value;
+    }
+
     /**
      * @param mixed $args
      */
