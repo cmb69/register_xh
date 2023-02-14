@@ -132,11 +132,25 @@ class Dic
         );
     }
 
-    public static function makeUserPrefsController(): UserPrefsController
+    public static function makeShowUserPreferences(): ShowUserPreferences
+    {
+        global $plugin_tx, $sn, $su;
+
+        return new ShowUserPreferences(
+            $plugin_tx["register"],
+            new Session(),
+            new CsrfProtector('register_csrf_token', false),
+            self::makeUserRepository(),
+            self::makeView(),
+            "$sn?$su"
+        );
+    }
+
+    public static function makeEditUser(): EditUser
     {
         global $plugin_cf, $plugin_tx, $sn, $su;
 
-        return new UserPrefsController(
+        return new EditUser(
             $plugin_cf["register"],
             $plugin_tx["register"],
             new Session(),
@@ -145,6 +159,20 @@ class Dic
             self::makeUserRepository(),
             self::makeView(),
             new MailService(),
+            "$sn?$su"
+        );
+    }
+
+    public static function makeUnregisterUser(): UnregisterUser
+    {
+        global $plugin_tx, $sn, $su;
+
+        return new UnregisterUser(
+            $plugin_tx["register"],
+            new Session(),
+            new CsrfProtector('register_csrf_token', false),
+            self::makeUserRepository(),
+            self::makeView(),
             new LoginManager(time(), new Session()),
             new Logger(),
             "$sn?$su"

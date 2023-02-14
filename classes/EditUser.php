@@ -14,59 +14,33 @@ use XH\CSRFProtection as CsrfProtector;
 
 use Register\Value\HtmlString;
 use Register\Logic\ValidationService;
-use Register\Infra\Logger;
-use Register\Infra\LoginManager;
 use Register\Infra\MailService;
 use Register\Infra\Session;
 use Register\Infra\UserRepository;
 use Register\Infra\View;
 
-class UserPrefsController
+class EditUser
 {
-    /**
-     * @var array<string,string>
-     */
+    /** @var array<string,string> */
     private $config;
 
-    /**
-     * @var array<string,string>
-     */
+    /** @var array<string,string> */
     private $lang;
 
-    /**
-     * @var CsrfProtector
-     */
+    /** @var CsrfProtector */
     private $csrfProtector;
 
-    /**
-     * @var ValidationService
-     */
+    /** @var ValidationService */
     private $validationService;
 
-    /**
-     * @var UserRepository
-     */
+    /** @var UserRepository */
     private $userRepository;
 
-    /**
-     * @var View
-     */
+    /** @var View */
     private $view;
 
-    /**
-     * @var MailService
-     */
+    /** @var MailService */
     private $mailService;
-
-    /**
-     * @var LoginManager
-     */
-    private $loginManager;
-
-    /**
-     * @var Logger
-     */
-    private $logger;
 
     /** @var string */
     private $actionUrl;
@@ -84,8 +58,6 @@ class UserPrefsController
         UserRepository $userRepository,
         View $view,
         MailService $mailService,
-        LoginManager $loginManager,
-        Logger $logger,
         string $actionUrl
     ) {
         $this->config = $config;
@@ -96,26 +68,10 @@ class UserPrefsController
         $this->userRepository = $userRepository;
         $this->view = $view;
         $this->mailService = $mailService;
-        $this->loginManager = $loginManager;
-        $this->logger = $logger;
         $this->actionUrl = $actionUrl;
     }
 
-    public function defaultAction(): string
-    {
-        $username = $_SESSION['username'] ?? '';
-
-        $user = $this->userRepository->findByUsername($username);
-        if ($user === null) {
-            return $this->view->message('fail', $this->lang['err_username_does_not_exist'] . " ('" . $username . "')");
-        } elseif ($user->isLocked()) {
-            return $this->view->message('fail', $this->lang['user_locked'] . ':' .$username);
-        } else {
-            return $this->renderForm($user->getName(), $user->getEmail());
-        }
-    }
-
-    public function editAction(): string
+    public function __invoke(): string
     {
         $this->csrfProtector->check();
 
@@ -129,20 +85,27 @@ class UserPrefsController
         // set user name from session
         $username = $_SESSION['username'];
 
-        $entry = $this->userRepository->findByUsername($username);
-        if ($entry === null) {
+        $user = $this->userRepository->findByUsername($username);
+        if ($user === null) {
             return $this->view->message('fail', $this->lang['err_username_does_not_exist'] . " ('" . $username . "')");
         }
 
         // Test if user is locked
-        if ($entry->isLocked()) {
+        if ($user->isLocked()) {
             return $this->view->message('fail', $this->lang['user_locked'] . ':' .$username);
         }
 
         // check that old password got entered correctly
-        if (!password_verify($oldpassword, $entry->getPassword())) {
+        if (!password_verify($oldpassword, $user->getPassword())) {
+            $csrfTokenInput = $this->csrfProtector->tokenInput();
+            $this->csrfProtector->store();
             return $this->view->message("fail", $this->lang['err_old_password_wrong'])
-                . $this->renderForm($name, $email);
+                . $this->view->render('userprefs-form', [
+                    'csrfTokenInput' => new HtmlString($csrfTokenInput),
+                    'actionUrl' => $this->actionUrl,
+                    'name' => $name,
+                    'email' => $email,
+                ]);
         }
 
         if ($password1 == "" && $password2 == "") {
@@ -150,26 +113,33 @@ class UserPrefsController
             $password2 = $oldpassword;
         }
         if ($email == "") {
-            $email = $entry->getEmail();
+            $email = $user->getEmail();
         }
         if ($name == "") {
-            $name = $entry->getName();
+            $name = $user->getName();
         }
 
         $errors = $this->validationService->validateUser($name, $username, $password1, $password2, $email);
         if ($errors) {
+            $csrfTokenInput = $this->csrfProtector->tokenInput();
+            $this->csrfProtector->store();
             return $this->view->render('error', ['errors' => $errors])
-                . $this->renderForm($name, $email);
+                . $this->view->render('userprefs-form', [
+                    'csrfTokenInput' => new HtmlString($csrfTokenInput),
+                    'actionUrl' => $this->actionUrl,
+                    'name' => $name,
+                    'email' => $email,
+                ]);
         }
 
-        $oldemail = $entry->getEmail();
+        $oldemail = $user->getEmail();
 
         // read user entry, update it and write it back to CSV file
-        $entry = $entry->withPassword((string) password_hash($password1, PASSWORD_DEFAULT));
-        $entry = $entry->withEmail($email);
-        $entry = $entry->withName($name);
+        $user = $user->withPassword((string) password_hash($password1, PASSWORD_DEFAULT))
+            ->withEmail($email)
+            ->withName($name);
 
-        if (!$this->userRepository->update($entry)) {
+        if (!$this->userRepository->update($user)) {
             return $this->view->message("fail", $this->lang['err_cannot_write_csv']);
         }
 
@@ -197,59 +167,5 @@ class UserPrefsController
     private function trimmedPostString(string $param): string
     {
         return (isset($_POST[$param]) && is_string($_POST[$param])) ? trim($_POST[$param]) : "";
-    }
-
-    public function deleteAction(): string
-    {
-        $this->csrfProtector->check();
-    
-        // Get form data if available
-        $oldpassword = $_POST['oldpassword'] ?? '';
-        $name = $_POST['name'] ?? '';
-        $email = $_POST['email'] ?? '';
-
-        // set user name from session
-        $username = $_SESSION['username'] ?? "";
-
-        $entry = $this->userRepository->findByUsername($username);
-        if ($entry === null) {
-            return $this->view->message('fail', $this->lang['err_username_does_not_exist'] . " ('" . $username . "')");
-        }
-
-        // Test if user is locked
-        if ($entry->isLocked()) {
-            return $this->view->message('fail', $this->lang['user_locked'] . ':' .$username);
-        }
-
-        // Form Handling - Delete User ================================================
-        if (!password_verify($oldpassword, $entry->getPassword())) {
-            return $this->view->message("fail", $this->lang['err_old_password_wrong'])
-                . $this->renderForm($name, $email);
-        }
-
-        if (!$this->userRepository->delete($entry)) {
-            return $this->view->message("fail", $this->lang['err_cannot_write_csv']);
-        }
-
-        $username = $_SESSION['username'] ?? '';
-        $this->loginManager->logout();
-        $this->logger->logInfo('logout', "$username deleted and logged out");
-        return $this->view->message('success', $this->lang['user_deleted'] . ': '.$username);
-    }
-
-    /**
-     * @param string $name
-     * @param string $email
-     */
-    private function renderForm($name, $email): string
-    {
-        $csrfTokenInput = $this->csrfProtector->tokenInput();
-        $this->csrfProtector->store();
-        return $this->view->render('userprefs-form', [
-            'csrfTokenInput' => new HtmlString($csrfTokenInput),
-            'actionUrl' => $this->actionUrl,
-            'name' => $name,
-            'email' => $email,
-        ]);
     }
 }

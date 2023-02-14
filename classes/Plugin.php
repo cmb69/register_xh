@@ -206,15 +206,13 @@ class Plugin
         if (!self::currentUser()) {
             return XH_message('fail', $plugin_tx['register']['access_error_text']);
         }
-        $controller = Dic::makeUserPrefsController();
         if (isset($_POST['action']) && $_POST['action'] === 'edit_user_prefs' && isset($_POST['submit'])) {
-            $action = 'editAction';
-        } elseif (isset($_POST['action']) && $_POST['action'] === 'edit_user_prefs' && isset($_POST['delete'])) {
-            $action = 'deleteAction';
-        } else {
-            $action = 'defaultAction';
+            return Dic::makeEditUser()();
         }
-        return $controller->{$action}();
+        if (isset($_POST['action']) && $_POST['action'] === 'edit_user_prefs' && isset($_POST['delete'])) {
+            return Dic::makeUnregisterUser()();
+        }
+        return Dic::makeShowUserPreferences()();
     }
 
     public static function handleLoginForm(): string
