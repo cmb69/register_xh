@@ -231,7 +231,7 @@ class Plugin
         $controller = new ShowPluginInfo(
             $pth['folder']['plugins'],
             $plugin_tx['register'],
-            self::dataFolder(),
+            new DbService(self::dataFolder()),
             new SystemChecker(),
             new View("{$pth['folder']['plugins']}register/", $plugin_tx['register'])
         );
