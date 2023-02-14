@@ -221,20 +221,7 @@ class Plugin
      */
     private static function renderInfo()
     {
-        /**
-         * @var array{folder:array<string,string>,file:array<string,string>} $pth
-         * @var array<string,array<string,string>> $plugin_tx
-         */
-        global $pth, $plugin_tx;
-
-        $controller = new ShowPluginInfo(
-            $pth['folder']['plugins'],
-            $plugin_tx['register'],
-            Dic::makeDbService(),
-            new SystemChecker(),
-            new View("{$pth['folder']['plugins']}register/", $plugin_tx['register'])
-        );
-        return $controller();
+        return Dic::makeShowPluginInfo()();
     }
 
     public static function handlePageAccess(string $groupString): string
@@ -347,7 +334,7 @@ class Plugin
                 $session->start();
             }
             if (isset($_SESSION['username'])) {
-                $userRepository = new UserRepository(Dic::makeDbService());
+                $userRepository = Dic::makeUserRepository();
                 $rec = $userRepository->findByUsername($_SESSION['username']);
                 if ($rec) {
                     $user = $rec;
