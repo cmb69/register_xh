@@ -193,7 +193,7 @@ class Plugin
         $o .= pluginmenu('SHOW');
         switch ($admin) {
             case '':
-                $o .= self::renderInfo();
+                $o .= Dic::makeShowPluginInfo()();
                 break;
             case 'plugin_main':
                 switch ($action) {
@@ -214,14 +214,6 @@ class Plugin
             default:
                 $o .= plugin_admin_common();
         }
-    }
-    
-    /**
-     * @return string
-     */
-    private static function renderInfo()
-    {
-        return Dic::makeShowPluginInfo()();
     }
 
     public static function handlePageAccess(string $groupString): string
