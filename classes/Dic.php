@@ -68,14 +68,25 @@ class Dic
 
     public static function makeRegistrationController(DbService $dbService): RegistrationController
     {
-        global $pth, $plugin_cf, $plugin_tx, $sn, $su;
+        global $pth, $plugin_tx, $sn, $su;
 
         return new RegistrationController(
             $sn,
             $su,
+            new View("{$pth['folder']['plugins']}register/", $plugin_tx['register'])
+        );
+    }
+
+    public static function makeRegisterUser(DbService $dbService): RegisterUser
+    {
+        global $pth, $plugin_cf, $plugin_tx, $sn, $su;
+
+        return new RegisterUser(
+            $sn,
+            $su,
             $plugin_cf["register"],
             $plugin_tx["register"],
-            new ValidationService($plugin_tx["register"]),
+            new ValidationService($plugin_tx['register']),
             new View("{$pth['folder']['plugins']}register/", $plugin_tx['register']),
             new UserRepository($dbService),
             new MailService()

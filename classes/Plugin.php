@@ -271,7 +271,7 @@ class Plugin
         }
         $controller = Dic::makeRegistrationController(new DbService(self::dataFolder()));
         if (isset($_POST['action']) && $_POST['action'] === 'register_user') {
-            $action = 'registerUserAction';
+            return Dic::makeRegisterUser(new DbService(self::dataFolder()))();
         } elseif (isset($_GET['action']) && $_GET['action'] === 'register_activate_user') {
             return Dic::makeActivateUser(new DbService(self::dataFolder()))();
         } else {
