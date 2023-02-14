@@ -3,6 +3,7 @@ parameters:
   paths:
     - classes/
     - views/
+    - admin.php
     - index.php
     - register_pd_view.php
   bootstrapFiles:

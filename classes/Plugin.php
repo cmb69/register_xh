@@ -36,11 +36,9 @@ class Plugin
          * @var bool $edit
          * @var string $function
          * @var array<string,array<string,string>> $plugin_cf
-         * @var array<string,array<string,string>> $plugin_tx
          * @var PageDataRouter $pd_router
-         * @var array{folder:array<string,string>,file:array<string,string>} $pth
          */
-        global $edit, $function, $plugin_cf, $plugin_tx, $pd_router, $pth;
+        global $edit, $function, $plugin_cf, $pd_router;
 
         $pd_router->add_interest("register_access");
 
@@ -67,15 +65,6 @@ class Plugin
         }
         if (!(self::isAdmin() && $edit)) {
             self::handleImplicitPages();
-        }
-        if (self::isAdmin()) {
-            $pd_router->add_tab(
-                $plugin_tx["register"]["label_access"],
-                "{$pth['folder']['plugins']}/register/register_pd_view.php"
-            );
-            if (self::isAdministrationRequested()) {
-                self::handleAdministration();
-            }
         }
     }
 
@@ -153,67 +142,6 @@ class Plugin
     private static function isAdmin(): bool
     {
         return XH_ADM; // @phpstan-ignore-line
-    }
-
-    /**
-     * @return bool
-     */
-    private static function isAdministrationRequested()
-    {
-        return XH_wantsPluginAdministration('register');
-    }
-
-    /**
-     * @return void
-     */
-    private static function handleAdministration()
-    {
-        /**
-         * @var string $o
-         * @var string $admin
-         * @var string $action
-         * @var array<string,array<string,string>> $plugin_tx
-         */
-        global $o, $admin, $action, $plugin_tx;
-
-        $o .= print_plugin_admin('off');
-        pluginmenu('ROW');
-        pluginmenu(
-            'TAB',
-            '?&amp;register&amp;admin=plugin_main&amp;action=editgroups',
-            '',
-            XH_hsc($plugin_tx['register']['mnu_group_admin'])
-        );
-        pluginmenu(
-            'TAB',
-            '?&amp;register&amp;admin=plugin_main&amp;action=editusers',
-            '',
-            XH_hsc($plugin_tx['register']['mnu_user_admin'])
-        );
-        $o .= pluginmenu('SHOW');
-        switch ($admin) {
-            case '':
-                $o .= Dic::makeShowPluginInfo()();
-                break;
-            case 'plugin_main':
-                switch ($action) {
-                    case 'editusers':
-                        $o .= Dic::makeUserAdminController()->editUsersAction();
-                        break;
-                    case 'saveusers':
-                        $o .= Dic::makeUserAdminController()->saveUsersAction();
-                        break;
-                    case 'editgroups':
-                        $o .= Dic::makeGroupAdminController()->editGroupsAction();
-                        break;
-                    case 'savegroups':
-                        $o .= Dic::makeGroupAdminController()->saveGroupsAction();
-                        break;
-                }
-                break;
-            default:
-                $o .= plugin_admin_common();
-        }
     }
 
     public static function handlePageAccess(string $groupString): string
