@@ -231,13 +231,17 @@ class Dic
     private static function makeDbService(): DbService
     {
         global $pth, $cf, $plugin_cf, $sl;
-    
-        $folder = $pth["folder"]["content"];
-        if ($sl !== $cf["language"]["default"]) {
-            $folder = dirname($folder) . "/";
+        static $instance;
+
+        if (!isset($instance)) {
+            $folder = $pth["folder"]["content"];
+            if ($sl !== $cf["language"]["default"]) {
+                $folder = dirname($folder) . "/";
+            }
+            $folder .= "register/";
+            $instance = new DbService($folder, $plugin_cf['register']['group_default']);
         }
-        $folder .= "register/";
-        return new DbService($folder, $plugin_cf['register']['group_default']);
+        return $instance;
     }
 
     private static function makeView(): View
