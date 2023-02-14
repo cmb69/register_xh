@@ -16,18 +16,18 @@ class DicTest extends TestCase
 {
     public function setUp(): void
     {
-        global $pth, $h, $c, $_XH_csrfProtection, $tx, $plugin_cf, $plugin_tx, $sn, $su;
+        global $pth, $h, $c, $_XH_csrfProtection, $cf, $tx, $plugin_cf, $plugin_tx, $sn, $sl, $su;
 
-        $pth = [
-            "folder" => ["base" => "", "content" => "", "corestyle" => "", "plugins" => ""],
-        ];
+        $pth = ["folder" => ["content" => "", "corestyle" => "", "plugins" => ""]];
         $h = [];
         $c = [];
         $_XH_csrfProtection = $this->createStub(CsrfProtector::class);
+        $cf = XH_includeVar("../../cmsimple/config.php", "cf");
         $tx = XH_includeVar("../../cmsimple/languages/en.php", "tx");
         $plugin_cf = XH_includeVar("./config/config.php", "plugin_cf");
         $plugin_tx = XH_includeVar("./languages/en.php", "plugin_tx");
         $sn = "/";
+        $sl = "en";
         $su = "";
     }
 

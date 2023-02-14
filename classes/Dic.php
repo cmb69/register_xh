@@ -202,10 +202,10 @@ class Dic
 
     private static function makeDbService(): DbService
     {
-        global $pth, $plugin_cf;
+        global $pth, $cf, $plugin_cf, $sl;
     
         $folder = $pth["folder"]["content"];
-        if ($pth["folder"]["base"] === "../") {
+        if ($sl !== $cf["language"]["default"]) {
             $folder = dirname($folder) . "/";
         }
         $folder .= "register/";
