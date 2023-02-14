@@ -401,32 +401,43 @@ class MainAdminController
     }
 
     /**
-     * @param UserGroup[] $groups
+     * @param list<UserGroup> $groups
      */
     private function renderGroupsForm(array $groups): string
     {
-        $data = [
+        return $this->view->render('admin-groups', [
             'csrfTokenInput' => new HtmlString($this->csrfProtector->tokenInput()),
             'actionUrl' => "{$this->scriptName}?&register",
             'groups' => $groups,
-        ];
-        $selects = [];
-        foreach ($groups as $i => $entry) {
-            $selects[] = new HtmlString($this->pageSelectbox($entry->getLoginpage(), $i));
-        }
-        $data['selects'] = $selects;
-        return $this->view->render('admin-groups', $data);
+            'selects' => $this->selects($groups),
+        ]);
     }
 
-    private function pageSelectbox(string $loginpage, int $n): string
+    /**
+     * @param list<UserGroup> $groups
+     * @return list<list<array{selected:string,indent:string,url:string,heading:string}>>
+     */
+    private function selects(array $groups): array
     {
-        $o = '<select name="grouploginpage[' . $n . ']"><option value="">' . $this->lang['label_none'] . '</option>';
-        for ($i = 0; $i < $this->pages->getCount(); $i++) {
-            $sel = $this->pages->url($i) == $loginpage ? ' selected="selected"' : '';
-            $o .= '<option value="' . $this->pages->url($i). '"' . $sel . '>'
-                . str_repeat('&nbsp;', 3 * ($this->pages->level($i) - 1)) . $this->pages->heading($i) . '</option>';
+        $selects = [];
+        foreach ($groups as $group) {
+            $selects[] = $this->options($group->getLoginpage());
         }
-        $o .= '</select>';
-        return $o;
+        return $selects;
+    }
+
+    /** @return list<array{selected:string,indent:string,url:string,heading:string}> */
+    private function options(string $loginpage): array
+    {
+        $res = [];
+        for ($i = 0; $i < $this->pages->getCount(); $i++) {
+            $res[] = [
+                "selected" => $this->pages->url($i) === $loginpage ? "selected" : "",
+                "indent" => str_repeat("\xC2\xA0", 3 * ($this->pages->level($i) - 1)),
+                "url" => $this->pages->url($i),
+                "heading" => $this->pages->heading($i),
+            ];
+        }
+        return $res;
     }
 }

@@ -8,7 +8,7 @@ use Register\Infra\View;
  * @var string $actionUrl
  * @var string $csrfTokenInput
  * @var array<int,UserGroup> $groups
- * @var array<int,string> $selects
+ * @var list<list<array{selected:bool,indent:string,url:string,heading:string}>> $selects
  * @var string $saveLabel
  */
 ?>
@@ -28,7 +28,16 @@ use Register\Infra\View;
 <?php foreach ($groups as $i => $entry):?>
       <tr>
         <td><input type="text" size="10" value="<?=$this->esc($entry->getGroupname())?>" name="groupname[<?=$this->esc($i)?>]"></td>
-        <td><?=$this->esc($selects[$i])?></td>
+        <td>
+<?php   foreach ($selects as $j => $select):?>
+          <select name="grouploginpage[<?=$this->esc($j)?>]">
+            <option value=""><?=$this->text("label_none")?></option>
+<?php     foreach ($select as $options):?>
+            <option value="<?=$this->esc($options["url"])?>" <?=$this->esc($options["selected"])?>><?=$this->esc($options["indent"])?><?=$this->raw($options["heading"])?></option>
+<?php     endforeach?>
+          </select>
+<?php   endforeach?>
+        </td>
         <td><button name="delete[<?=$this->esc($i)?>]" value="1"><?=$this->text("label_delete")?></i></td>
       </tr>
 <?php endforeach?>
