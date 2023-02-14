@@ -57,7 +57,7 @@ class Plugin
             }
         }
 
-        $dbService = new DbService(self::dataFolder());
+        $dbService = self::makeDbService();
         if (!self::currentUser() && $function === 'registerlogin') {
             $controller = Dic::makeLoginController($dbService);
             $controller->loginAction()->trigger();
@@ -199,16 +199,16 @@ class Plugin
             case 'plugin_main':
                 switch ($action) {
                     case 'editusers':
-                        $o .= Dic::makeUserAdminController(new DbService(self::dataFolder()))->editUsersAction();
+                        $o .= Dic::makeUserAdminController(self::makeDbService())->editUsersAction();
                         break;
                     case 'saveusers':
-                        $o .= Dic::makeUserAdminController(new DbService(self::dataFolder()))->saveUsersAction();
+                        $o .= Dic::makeUserAdminController(self::makeDbService())->saveUsersAction();
                         break;
                     case 'editgroups':
-                        $o .= Dic::makeGroupAdminController(new DbService(self::dataFolder()))->editGroupsAction();
+                        $o .= Dic::makeGroupAdminController(self::makeDbService())->editGroupsAction();
                         break;
                     case 'savegroups':
-                        $o .= Dic::makeGroupAdminController(new DbService(self::dataFolder()))->saveGroupsAction();
+                        $o .= Dic::makeGroupAdminController(self::makeDbService())->saveGroupsAction();
                         break;
                 }
                 break;
@@ -231,7 +231,7 @@ class Plugin
         $controller = new ShowPluginInfo(
             $pth['folder']['plugins'],
             $plugin_tx['register'],
-            new DbService(self::dataFolder()),
+            self::makeDbService(),
             new SystemChecker(),
             new View("{$pth['folder']['plugins']}register/", $plugin_tx['register'])
         );
@@ -269,12 +269,12 @@ class Plugin
             exit;
         }
         if (isset($_POST['action']) && $_POST['action'] === 'register_user') {
-            return Dic::makeRegisterUser(new DbService(self::dataFolder()))();
+            return Dic::makeRegisterUser(self::makeDbService())();
         }
         if (isset($_GET['action']) && $_GET['action'] === 'register_activate_user') {
-            return Dic::makeActivateUser(new DbService(self::dataFolder()))();
+            return Dic::makeActivateUser(self::makeDbService())();
         }
-        return Dic::makeShowRegistrationForm(new DbService(self::dataFolder()))();
+        return Dic::makeShowRegistrationForm(self::makeDbService())();
     }
 
     public static function handleForgotPassword(): string
@@ -284,7 +284,7 @@ class Plugin
             header('Location: ' . CMSIMPLE_URL);
             exit;
         }
-        $controller = Dic::makeForgotPasswordController(new DbService(self::dataFolder()));
+        $controller = Dic::makeForgotPasswordController(self::makeDbService());
         if (isset($_POST['action']) && $_POST['action'] === 'forgotten_password') {
             $action = 'passwordForgottenAction';
         } elseif (isset($_GET['action']) && $_GET['action'] === 'registerResetPassword') {
@@ -307,7 +307,7 @@ class Plugin
         if (!self::currentUser()) {
             return XH_message('fail', $plugin_tx['register']['access_error_text']);
         }
-        $controller = Dic::makeUserPrefsController(new DbService(self::dataFolder()));
+        $controller = Dic::makeUserPrefsController(self::makeDbService());
         if (isset($_POST['action']) && $_POST['action'] === 'edit_user_prefs' && isset($_POST['submit'])) {
             $action = 'editAction';
         } elseif (isset($_POST['action']) && $_POST['action'] === 'edit_user_prefs' && isset($_POST['delete'])) {
@@ -348,7 +348,7 @@ class Plugin
                 $session->start();
             }
             if (isset($_SESSION['username'])) {
-                $userRepository = new UserRepository(new DbService(self::dataFolder()));
+                $userRepository = new UserRepository(self::makeDbService());
                 $rec = $userRepository->findByUsername($_SESSION['username']);
                 if ($rec) {
                     $user = $rec;
@@ -363,20 +363,18 @@ class Plugin
         return $user;
     }
 
-    private static function dataFolder(): string
+    private static function makeDbService(): DbService
     {
         /**
-         * @var string $sl
-         * @var array<string,array<string,string>> $cf
          * @var array{folder:array<string,string>,file:array<string,string>} $pth
          */
-        global $sl, $cf, $pth;
+        global $pth;
     
-        if ($sl === $cf['language']['default']) {
-            $folder = "{$pth['folder']['content']}register/";
-        } else {
-            $folder = dirname($pth['folder']['content']) . "/register/";
+        $folder = $pth["folder"]["content"];
+        if ($pth["folder"]["base"] === "../") {
+            $folder = dirname($folder) . "/";
         }
-        return $folder;
+        $folder .= "register/";
+        return new DbService($folder);
     }
 }
