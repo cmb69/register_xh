@@ -23,11 +23,13 @@ require_once "./classes/infra/UserRepository.php";
 require_once "./classes/infra/View.php";
 
 require_once "./classes/ActivateUser.php";
+require_once "./classes/Dic.php";
 require_once "./classes/ForgotPasswordController.php";
 require_once "./classes/GroupAdminController.php";
 require_once "./classes/LoginController.php";
 require_once "./classes/Plugin.php";
 require_once "./classes/RegisterUser.php";
+require_once "./classes/SpecialPageController.php";
 require_once "./classes/ShowLoginForm.php";
 require_once "./classes/ShowPageDataTab.php";
 require_once "./classes/ShowPluginInfo.php";

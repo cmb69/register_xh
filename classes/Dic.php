@@ -11,7 +11,6 @@ namespace Register;
 use XH\CSRFProtection as CsrfProtector;
 use XH\Pages;
 
-use Register\Value\User;
 use Register\Logic\ValidationService;
 use Register\Infra\DbService;
 use Register\Infra\Logger;
@@ -42,7 +41,7 @@ class Dic
 
     public static function makeSpecialPageController(): SpecialPageController
     {
-        global $h, $plugin_cf, $plugin_tx, $pth;
+        global $h, $plugin_cf, $plugin_tx;
 
         return new SpecialPageController(
             $h,
@@ -178,10 +177,6 @@ class Dic
 
     public static function makeShowPluginInfo(): ShowPluginInfo
     {
-        /**
-         * @var array{folder:array<string,string>,file:array<string,string>} $pth
-         * @var array<string,array<string,string>> $plugin_tx
-         */
         global $pth, $plugin_tx;
 
         return new ShowPluginInfo(
@@ -200,9 +195,6 @@ class Dic
 
     private static function makeValidationService(): ValidationService
     {
-        /**
-         * @var array<string,array<string,string>> $plugin_tx
-         */
         global $plugin_tx;
 
         return new ValidationService($plugin_tx["register"]);
@@ -210,10 +202,6 @@ class Dic
 
     private static function makeDbService(): DbService
     {
-        /**
-         * @var array{folder:array<string,string>,file:array<string,string>} $pth
-         * @var array<string,array<string,string>> $plugin_cf
-         */
         global $pth, $plugin_cf;
     
         $folder = $pth["folder"]["content"];
@@ -226,10 +214,6 @@ class Dic
 
     private static function makeView(): View
     {
-        /**
-         * @var array{folder:array<string,string>,file:array<string,string>} $pth
-         * @var array<string,array<string,string>> $plugin_tx
-         */
         global $pth, $plugin_tx;
 
         return new View("{$pth['folder']['plugins']}register/", $plugin_tx['register']);
