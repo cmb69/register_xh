@@ -228,14 +228,14 @@ class Plugin
          */
         global $pth, $plugin_tx;
 
-        $controller = new InfoController(
+        $controller = new ShowPluginInfo(
             $pth['folder']['plugins'],
             $plugin_tx['register'],
             self::dataFolder(),
             new SystemChecker(),
             new View("{$pth['folder']['plugins']}register/", $plugin_tx['register'])
         );
-        return $controller->execute();
+        return $controller();
     }
 
     public static function handlePageAccess(string $groupString): string

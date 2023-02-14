@@ -11,7 +11,7 @@ namespace Register;
 use Register\Infra\SystemChecker;
 use Register\Infra\View;
 
-class InfoController
+class ShowPluginInfo
 {
     /** @var string */
     private $pluginsFolder;
@@ -49,7 +49,7 @@ class InfoController
         $this->view = $view;
     }
 
-    public function execute(): string
+    public function __invoke(): string
     {
         return $this->view->render('info', [
             'version' => Plugin::VERSION,

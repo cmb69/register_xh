@@ -14,7 +14,7 @@ use PHPUnit\Framework\TestCase;
 use Register\Infra\SystemChecker;
 use Register\Infra\View;
 
-class InfoControllerTest extends TestCase
+class ShowPluginInfoTest extends TestCase
 {
     public function testRendersPluginInfo()
     {
@@ -24,9 +24,9 @@ class InfoControllerTest extends TestCase
         $systemChecker->method('checkVersion')->willReturn(true);
         $systemChecker->method('checkExtension')->willReturn(true);
         $systemChecker->method('checkWritability')->willReturn(true);
-        $subject = new InfoController("", $lang, "", $systemChecker, new View("./", $lang));
+        $subject = new ShowPluginInfo("", $lang, "", $systemChecker, new View("./", $lang));
 
-        $response = $subject->execute();
+        $response = $subject();
 
         Approvals::verifyHtml($response);
     }
