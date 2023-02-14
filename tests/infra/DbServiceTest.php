@@ -19,8 +19,30 @@ class DbServiceTest extends TestCase
 
     protected function setUp(): void
     {
-        $this->root = vfsStream::setup('root');
-        $this->subject = new DbService(vfsStream::url('root/'), "guest");
+        $this->root = vfsStream::setup("root");
+        $this->subject = new DbService(vfsStream::url("root/register/"), "guest");
+    }
+
+    public function testUsersAndGroupsFileAreCreatedAutomatically(): void
+    {
+        $this->assertTrue($this->subject->hasUsersFile());
+        $this->assertTrue($this->subject->hasGroupsFile());
+    }
+
+    public function testCanAquireLock(): void
+    {
+        $lock = $this->subject->lock(false);
+        $this->assertIsResource($lock);
+        $this->subject->unlock($lock);
+    }
+
+    public function testReturnsNullIfLockCannotBeAquired(): void
+    {
+        $lockFilename = $this->subject->dataFolder() . ".lock";
+        touch($lockFilename);
+        chmod($lockFilename, 0000);
+        $lock = $this->subject->lock(true);
+        $this->assertNull($lock);
     }
 
     public function testWriteAndReadGroups()
@@ -54,13 +76,19 @@ class DbServiceTest extends TestCase
     {
         $this->subject->writeGroups([]);
         $this->subject->writeGroups([]);
-        $this->assertFileEquals(vfsStream::url('root/groups.csv.bak'), vfsStream::url('root/groups.csv'));
+        $this->assertFileEquals(
+            vfsStream::url('root/register/groups.csv.bak'),
+            vfsStream::url('root/register/groups.csv')
+        );
     }
 
     public function testUsersBackup()
     {
         $this->subject->writeUsers([]);
         $this->subject->writeUsers([]);
-        $this->assertFileEquals(vfsStream::url('root/users.csv.bak'), vfsStream::url('root/users.csv'));
+        $this->assertFileEquals(
+            vfsStream::url('root/register/users.csv.bak'),
+            vfsStream::url('root/register/users.csv')
+        );
     }
 }

@@ -64,7 +64,7 @@ class DbService
     {
         $fn = $this->dataFolder() . '/.lock';
         touch($fn);
-        if ($fp = fopen($fn, 'r')) {
+        if ($fp = @fopen($fn, 'r')) {
             flock($fp, $exclusive ? LOCK_EX : LOCK_SH);
             return $fp;
         }
