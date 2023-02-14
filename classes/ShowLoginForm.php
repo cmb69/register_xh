@@ -58,8 +58,7 @@ class ShowLoginForm
         $this->view = $view;
     }
 
-    /** @param User|null $currentUser */
-    public function __invoke($currentUser): string
+    public function __invoke(?User $currentUser): string
     {
         if ($currentUser === null) {
             return $this->renderLoginForm();
@@ -84,8 +83,7 @@ class ShowLoginForm
         return $this->view->render('loginform', $data);
     }
 
-    /** @param User|null $currentUser */
-    private function renderLoggedInForm($currentUser): string
+    private function renderLoggedInForm(?User $currentUser): string
     {
         $user = $currentUser;
         assert($user instanceof User);

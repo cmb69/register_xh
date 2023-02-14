@@ -306,10 +306,7 @@ class Plugin
         return self::currentUser() ? registerloginform() : "";
     }
 
-    /**
-     * @return User|null
-     */
-    private static function currentUser()
+    private static function currentUser(): ?User
     {
         /**
          * @var array{folder:array<string,string>,file:array<string,string>} $pth

@@ -75,11 +75,7 @@ class LoginManager
         }
     }
 
-    /**
-     * @param User|null $user
-     * @param string|null $token
-     */
-    public function isUserAuthenticated($user, string $password, $token): bool
+    public function isUserAuthenticated(?User $user, string $password, ?string $token): bool
     {
         return $user
             && ($user->isActivated() || $user->isLocked())

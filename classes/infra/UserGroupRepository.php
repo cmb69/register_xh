@@ -22,10 +22,7 @@ class UserGroupRepository
         $this->dbService = $dbService;
     }
 
-    /**
-     * @return UserGroup|null
-     */
-    public function findByGroupname(string $groupname)
+    public function findByGroupname(string $groupname): ?UserGroup
     {
         $lock = $this->dbService->lock(false);
         $groups = $this->dbService->readGroups();

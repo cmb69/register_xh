@@ -22,10 +22,7 @@ class UserRepository
         $this->dbService = $dbService;
     }
 
-    /**
-     * @return User|null
-     */
-    public function findByUsername(string $username)
+    public function findByUsername(string $username): ?User
     {
         $lock = $this->dbService->lock(false);
         $users = $this->dbService->readUsers();
@@ -34,10 +31,7 @@ class UserRepository
         return $user ? $user : null;
     }
 
-    /**
-     * @return User|null
-     */
-    public function findByEmail(string $email)
+    public function findByEmail(string $email): ?User
     {
         $lock = $this->dbService->lock(false);
         $users = $this->dbService->readUsers();
