@@ -20,6 +20,9 @@ class DbService
      */
     private $dirname;
 
+    /** @var bool */
+    private $initialized = false;
+
     /**
      * @param string $dirname
      */
@@ -30,6 +33,24 @@ class DbService
 
     public function dataFolder(): string
     {
+        global $plugin_cf;
+
+        if ($this->initialized) {
+            return $this->dirname;
+        }
+        $this->initialized = true;
+        if (!is_dir($this->dirname)) {
+            mkdir($this->dirname, 0777, true);
+            chmod($this->dirname, 0777);
+        }
+        if (!is_file("{$this->dirname}users.csv")) {
+            $this->writeUsers([]);
+        }
+        if (!is_file("{$this->dirname}groups.csv")) {
+            $this->writeGroups(
+                [new UserGroup($plugin_cf['register']['group_default'], '')]
+            );
+        }
         return $this->dirname;
     }
 

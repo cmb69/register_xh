@@ -368,27 +368,14 @@ class Plugin
         /**
          * @var string $sl
          * @var array<string,array<string,string>> $cf
-         * @var array<string,array<string,string>> $plugin_cf
          * @var array{folder:array<string,string>,file:array<string,string>} $pth
          */
-        global $sl, $cf, $plugin_cf, $pth;
+        global $sl, $cf, $pth;
     
         if ($sl === $cf['language']['default']) {
             $folder = "{$pth['folder']['content']}register/";
         } else {
             $folder = dirname($pth['folder']['content']) . "/register/";
-        }
-        if (!is_dir($folder)) {
-            mkdir($folder, 0777, true);
-            chmod($folder, 0777);
-        }
-        if (!is_file("{$folder}users.csv")) {
-            (new DbService($folder))->writeUsers([]);
-        }
-        if (!is_file("{$folder}groups.csv")) {
-            (new DbService($folder))->writeGroups(
-                [new UserGroup($plugin_cf['register']['group_default'], '')]
-            );
         }
         return $folder;
     }

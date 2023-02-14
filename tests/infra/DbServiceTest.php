@@ -23,6 +23,9 @@ class DbServiceTest extends TestCase
 
     protected function setUp(): void
     {
+        global $plugin_cf;
+
+        $plugin_cf = ['register' => ['group_default' => "guest"]];
         $this->root = vfsStream::setup('root');
         $this->subject = new DbService(vfsStream::url('root/'));
     }
