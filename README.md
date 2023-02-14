@@ -24,7 +24,7 @@ per email. It is used by some other plugins to add user management (e.g.
 ## Requirements
 
 Register_XH is a plugin for [CMSimple_XH](https://cmsimple-xh.org/).
-It requires CMSimple_XH ≥ 1.7.0 and PHP ≥ 7.0.2 with the hash and session extensions.
+It requires CMSimple_XH ≥ 1.7.0 and PHP ≥ 7.1.0 with the hash and session extensions.
 
 ## Download
 
@@ -186,7 +186,7 @@ not work as expected.
 Depending on the PHP ini settings `max_input_vars`,
 `suhosin.post.max_vars` and `suhosin.request.max_vars`
 there is a limit on the maximum number of users that can be administrated in
-the plugin back-end. In a default configuration of PHP ≥ 7.0.2 at most 142
+the plugin back-end. In a default configuration of PHP at most 142
 users are allowed. The plugin checks this limit, and does not permit more
 users to be added. If this limit is exceeded, you have to administrate the
 users in `users.csv` manually.

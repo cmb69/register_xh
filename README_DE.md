@@ -25,7 +25,7 @@ und [Forum_XH](https://github.com/cmb69/forum_xh)).
 ## Voraussetzungen
 
 Register_XH ist ein Plugin für [CMSimple_XH](https://www.cmsimple-xh.org/de/).
-Es benötigt CMSimple_XH ≥ 1.7.0 und PHP ≥ 7.0.2 mit den hash und session Extensions.
+Es benötigt CMSimple_XH ≥ 1.7.0 und PHP ≥ 7.1.0 mit den hash und session Extensions.
 
 ## Download
 
@@ -199,7 +199,7 @@ In Abhängigkeit der PHP ini Einstellungen `max_input_vars`,
 `suhosin.post.max_vars` und `suhosin.request.max_vars`
 gibt es eine Obergrenze für die Höchstanzahl von Benutzern, die im
 Plugin-Back-End verwaltet werden können. In der Standardkonfiguration von PHP
-≥ 7.0.2 sind höchstens 142 Benutzer erlaubt. Das Plugin überprüft diese
+sind höchstens 142 Benutzer erlaubt. Das Plugin überprüft diese
 Grenze, und verhindert das Hinzufügen weiterer Benutzer. Wenn die Obergrenze
 überschritten wurde, müssen Sie die Benutzer manuell in
 `user.csv` verwalten.

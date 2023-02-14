@@ -64,7 +64,7 @@ class ShowPluginInfo
     public function getChecks()
     {
         return array(
-            $this->checkPhpVersion('7.0.2'),
+            $this->checkPhpVersion('7.1.0'),
             $this->checkExtension('hash'),
             $this->checkExtension('session'),
             $this->checkXhVersion('1.7.0'),
