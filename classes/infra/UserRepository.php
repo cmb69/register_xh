@@ -27,9 +27,9 @@ class UserRepository
      */
     public function findByUsername(string $username)
     {
-        $this->dbService->lock(LOCK_SH);
+        $lock = $this->dbService->lock(false);
         $users = $this->dbService->readUsers();
-        $this->dbService->lock(LOCK_UN);
+        $this->dbService->unlock($lock);
         $user = $this->searchUserArray($users, 'username', $username);
         return $user ? $user : null;
     }
@@ -39,9 +39,9 @@ class UserRepository
      */
     public function findByEmail(string $email)
     {
-        $this->dbService->lock(LOCK_SH);
+        $lock = $this->dbService->lock(false);
         $users = $this->dbService->readUsers();
-        $this->dbService->lock(LOCK_UN);
+        $this->dbService->unlock($lock);
         $user = $this->searchUserArray($users, 'email', $email);
         return $user ? $user : null;
     }
@@ -63,21 +63,21 @@ class UserRepository
 
     public function add(User $user): bool
     {
-        $this->dbService->lock(LOCK_EX);
+        $lock = $this->dbService->lock(true);
         $users = $this->dbService->readUsers();
         $users[] = $user;
         $result = $this->dbService->writeUsers($users);
-        $this->dbService->lock(LOCK_UN);
+        $this->dbService->unlock($lock);
         return $result;
     }
 
     public function update(User $user): bool
     {
-        $this->dbService->lock(LOCK_EX);
+        $lock = $this->dbService->lock(true);
         $users = $this->dbService->readUsers();
         $userArray = $this->replaceUser($users, $user);
         $result = $this->dbService->writeUsers($userArray);
-        $this->dbService->lock(LOCK_UN);
+        $this->dbService->unlock($lock);
         return $result;
     }
 
@@ -101,11 +101,11 @@ class UserRepository
 
     public function delete(User $user): bool
     {
-        $this->dbService->lock(LOCK_EX);
+        $lock = $this->dbService->lock(true);
         $users = $this->dbService->readUsers();
         $userArray = $this->deleteUser($users, $user->getUsername());
         $result = $this->dbService->writeUsers($userArray);
-        $this->dbService->lock(LOCK_UN);
+        $this->dbService->unlock($lock);
         return $result;
     }
 

@@ -57,13 +57,12 @@ class Plugin
             }
         }
 
-        $dbService = new DbService(self::dataFolder());
         if (!self::currentUser() && $function === 'registerlogin') {
-            $controller = Dic::makeLoginController($dbService);
+            $controller = Dic::makeLoginController();
             $controller->loginAction()->trigger();
         }
         if (self::currentUser() && $function === 'registerlogout') {
-            $controller = Dic::makeLoginController($dbService);
+            $controller = Dic::makeLoginController();
             $controller->logoutAction()->trigger();
         }
         if (!(self::isAdmin() && $edit)) {
@@ -194,48 +193,27 @@ class Plugin
         $o .= pluginmenu('SHOW');
         switch ($admin) {
             case '':
-                $o .= self::renderInfo();
+                $o .= Dic::makeShowPluginInfo()();
                 break;
             case 'plugin_main':
                 switch ($action) {
                     case 'editusers':
-                        $o .= Dic::makeUserAdminController(new DbService(self::dataFolder()))->editUsersAction();
+                        $o .= Dic::makeUserAdminController()->editUsersAction();
                         break;
                     case 'saveusers':
-                        $o .= Dic::makeUserAdminController(new DbService(self::dataFolder()))->saveUsersAction();
+                        $o .= Dic::makeUserAdminController()->saveUsersAction();
                         break;
                     case 'editgroups':
-                        $o .= Dic::makeGroupAdminController(new DbService(self::dataFolder()))->editGroupsAction();
+                        $o .= Dic::makeGroupAdminController()->editGroupsAction();
                         break;
                     case 'savegroups':
-                        $o .= Dic::makeGroupAdminController(new DbService(self::dataFolder()))->saveGroupsAction();
+                        $o .= Dic::makeGroupAdminController()->saveGroupsAction();
                         break;
                 }
                 break;
             default:
                 $o .= plugin_admin_common();
         }
-    }
-    
-    /**
-     * @return string
-     */
-    private static function renderInfo()
-    {
-        /**
-         * @var array{folder:array<string,string>,file:array<string,string>} $pth
-         * @var array<string,array<string,string>> $plugin_tx
-         */
-        global $pth, $plugin_tx;
-
-        $controller = new ShowPluginInfo(
-            $pth['folder']['plugins'],
-            $plugin_tx['register'],
-            self::dataFolder(),
-            new SystemChecker(),
-            new View("{$pth['folder']['plugins']}register/", $plugin_tx['register'])
-        );
-        return $controller();
     }
 
     public static function handlePageAccess(string $groupString): string
@@ -269,12 +247,12 @@ class Plugin
             exit;
         }
         if (isset($_POST['action']) && $_POST['action'] === 'register_user') {
-            return Dic::makeRegisterUser(new DbService(self::dataFolder()))();
+            return Dic::makeRegisterUser()();
         }
         if (isset($_GET['action']) && $_GET['action'] === 'register_activate_user') {
-            return Dic::makeActivateUser(new DbService(self::dataFolder()))();
+            return Dic::makeActivateUser()();
         }
-        return Dic::makeShowRegistrationForm(new DbService(self::dataFolder()))();
+        return Dic::makeShowRegistrationForm()();
     }
 
     public static function handleForgotPassword(): string
@@ -284,7 +262,7 @@ class Plugin
             header('Location: ' . CMSIMPLE_URL);
             exit;
         }
-        $controller = Dic::makeForgotPasswordController(new DbService(self::dataFolder()));
+        $controller = Dic::makeForgotPasswordController();
         if (isset($_POST['action']) && $_POST['action'] === 'forgotten_password') {
             $action = 'passwordForgottenAction';
         } elseif (isset($_GET['action']) && $_GET['action'] === 'registerResetPassword') {
@@ -307,7 +285,7 @@ class Plugin
         if (!self::currentUser()) {
             return XH_message('fail', $plugin_tx['register']['access_error_text']);
         }
-        $controller = Dic::makeUserPrefsController(new DbService(self::dataFolder()));
+        $controller = Dic::makeUserPrefsController();
         if (isset($_POST['action']) && $_POST['action'] === 'edit_user_prefs' && isset($_POST['submit'])) {
             $action = 'editAction';
         } elseif (isset($_POST['action']) && $_POST['action'] === 'edit_user_prefs' && isset($_POST['delete'])) {
@@ -348,7 +326,7 @@ class Plugin
                 $session->start();
             }
             if (isset($_SESSION['username'])) {
-                $userRepository = new UserRepository(new DbService(self::dataFolder()));
+                $userRepository = Dic::makeUserRepository();
                 $rec = $userRepository->findByUsername($_SESSION['username']);
                 if ($rec) {
                     $user = $rec;
@@ -361,35 +339,5 @@ class Plugin
             }
         }
         return $user;
-    }
-
-    private static function dataFolder(): string
-    {
-        /**
-         * @var string $sl
-         * @var array<string,array<string,string>> $cf
-         * @var array<string,array<string,string>> $plugin_cf
-         * @var array{folder:array<string,string>,file:array<string,string>} $pth
-         */
-        global $sl, $cf, $plugin_cf, $pth;
-    
-        if ($sl === $cf['language']['default']) {
-            $folder = "{$pth['folder']['content']}register/";
-        } else {
-            $folder = dirname($pth['folder']['content']) . "/register/";
-        }
-        if (!is_dir($folder)) {
-            mkdir($folder, 0777, true);
-            chmod($folder, 0777);
-        }
-        if (!is_file("{$folder}users.csv")) {
-            (new DbService($folder))->writeUsers([]);
-        }
-        if (!is_file("{$folder}groups.csv")) {
-            (new DbService($folder))->writeGroups(
-                [new UserGroup($plugin_cf['register']['group_default'], '')]
-            );
-        }
-        return $folder;
     }
 }

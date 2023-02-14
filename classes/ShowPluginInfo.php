@@ -8,6 +8,7 @@
 
 namespace Register;
 
+use Register\Infra\DbService;
 use Register\Infra\SystemChecker;
 use Register\Infra\View;
 
@@ -22,8 +23,8 @@ class ShowPluginInfo
     /** @var array<string,string> */
     private $lang;
 
-    /** @var string */
-    private $dataFolder;
+    /** @var DbService */
+    private $dbService;
 
     /** @var SystemChecker */
     private $systemChecker;
@@ -37,14 +38,14 @@ class ShowPluginInfo
     public function __construct(
         string $pluginsFolder,
         array $lang,
-        string $dataFolder,
+        DbService $dbService,
         SystemChecker $systemChecker,
         View $view
     ) {
         $this->pluginsFolder = $pluginsFolder;
         $this->pluginFolder = $this->pluginsFolder . "register/";
         $this->lang = $lang;
-        $this->dataFolder = $dataFolder;
+        $this->dbService = $dbService;
         $this->systemChecker = $systemChecker;
         $this->view = $view;
     }
@@ -70,7 +71,7 @@ class ShowPluginInfo
             $this->checkWritability($this->pluginFolder . "css/"),
             $this->checkWritability($this->pluginFolder . "config/"),
             $this->checkWritability($this->pluginFolder . "languages/"),
-            $this->checkWritability($this->dataFolder)
+            $this->checkWritability($this->dbService->dataFolder())
         );
     }
 

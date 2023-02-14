@@ -15,21 +15,37 @@ use Register\Value\UserGroup;
 
 class DbService
 {
-    /**
-     * @var string
-     */
+    /** @var string */
     private $dirname;
 
-    /**
-     * @param string $dirname
-     */
-    public function __construct($dirname)
+    /** @var string */
+    private $defaultGroupName;
+
+    /** @var bool */
+    private $initialized = false;
+
+    public function __construct(string $dirname, string $defaultGroupName)
     {
         $this->dirname = $dirname;
+        $this->defaultGroupName = $defaultGroupName;
     }
 
     public function dataFolder(): string
     {
+        if ($this->initialized) {
+            return $this->dirname;
+        }
+        $this->initialized = true;
+        if (!is_dir($this->dirname)) {
+            mkdir($this->dirname, 0777, true);
+            chmod($this->dirname, 0777);
+        }
+        if (!is_file("{$this->dirname}users.csv")) {
+            $this->writeUsers([]);
+        }
+        if (!is_file("{$this->dirname}groups.csv")) {
+            $this->writeGroups([new UserGroup($this->defaultGroupName, '')]);
+        }
         return $this->dirname;
     }
 
@@ -43,33 +59,34 @@ class DbService
         return is_file($this->dataFolder() . 'groups.csv');
     }
 
-    /**
-     * @param int $mode
-     * @return void
-     */
-    public function lock($mode)
+    /** @return resource|null */
+    public function lock(bool $exclusive)
     {
-        static $fp;
-    
-        $fn = $this->dirname . '/.lock';
+        $fn = $this->dataFolder() . '/.lock';
         touch($fn);
-        if ($mode != LOCK_UN) {
-            if ($fp = fopen($fn, 'r')) {
-                flock($fp, $mode);
-            }
-        } else {
-            flock($fp, $mode);
-            fclose($fp);
-            unset($fp);
+        if ($fp = @fopen($fn, 'r')) {
+            flock($fp, $exclusive ? LOCK_EX : LOCK_SH);
+            return $fp;
         }
+        return null;
     }
 
     /**
-     * @return UserGroup[]
+     * @param resource|null $stream
+     * @return void
      */
+    public function unlock($stream)
+    {
+        if ($stream !== null) {
+            flock($stream, LOCK_UN);
+            fclose($stream);
+        }
+    }
+
+    /** @return UserGroup[] */
     public function readGroups(): array
     {
-        $filename = "{$this->dirname}groups.csv";
+        $filename = $this->dataFolder() . "groups.csv";
         $groupArray = array();
         if (is_file($filename)) {
             $fp = fopen($filename, "r");
@@ -86,9 +103,7 @@ class DbService
         return $groupArray;
     }
 
-    /**
-     * @return ?UserGroup
-     */
+    /** @return ?UserGroup */
     private function readGroupLine(string $line)
     {
         if (!empty($line) && strpos($line, '//') !== 0) {
@@ -103,13 +118,10 @@ class DbService
         return null;
     }
 
-    /**
-     * @param UserGroup[] $array
-     * @return bool
-     */
-    public function writeGroups(array $array)
+    /** @param UserGroup[] $array */
+    public function writeGroups(array $array): bool
     {
-        $filename = "{$this->dirname}groups.csv";
+        $filename = $this->dataFolder() . "groups.csv";
         // remove old backup
         if (is_file($filename . ".bak")) {
             unlink($filename . ".bak");
@@ -151,12 +163,10 @@ class DbService
         return true;
     }
 
-    /**
-     * @return User[]
-     */
+    /** @return User[] */
     public function readUsers()
     {
-        $filename = "{$this->dirname}users.csv";
+        $filename = $this->dataFolder() . "users.csv";
         $userArray = array();
 
         if (is_file($filename)) {
@@ -176,11 +186,8 @@ class DbService
         return $userArray;
     }
 
-    /**
-     * @param string $line
-     * @return ?User
-     */
-    private function readUserLine($line)
+    /** @return ?User */
+    private function readUserLine(string $line)
     {
         list($username,$password,$accessgroups,$name,$email,$status) = explode(':', rtrim($line));
         // line must not start with '//' and all fields must be set
@@ -198,13 +205,10 @@ class DbService
         return null;
     }
 
-    /**
-     * @param User[] $array
-     * @return bool
-     */
-    public function writeUsers(array $array)
+    /** @param User[] $array */
+    public function writeUsers(array $array): bool
     {
-        $filename = "{$this->dirname}users.csv";
+        $filename = $this->dataFolder() . "users.csv";
         // remove old backup
         if (is_file($filename . ".bak")) {
             unlink($filename . ".bak");
