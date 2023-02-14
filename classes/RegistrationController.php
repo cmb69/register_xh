@@ -80,7 +80,14 @@ class RegistrationController
 
     public function defaultAction(): string
     {
-        return $this->form('', '', '', '', '');
+        return $this->view->render('registerform', [
+            'actionUrl' => $this->scriptName . "?" .$this->selectedUrl,
+            'name' => "",
+            'username' => "",
+            'password1' => "",
+            'password2' => "",
+            'email' => "",
+        ]);
     }
 
     public function registerUserAction(): string
@@ -94,7 +101,14 @@ class RegistrationController
         $errors = $this->validationService->validateUser($name, $username, $password1, $password2, $email);
         if ($errors) {
             return $this->view->render('error', ['errors' => $errors])
-                . $this->form($name, $username, $password1, $password2, $email);
+                . $this->view->render('registerform', [
+                    'actionUrl' => $this->scriptName . "?" .$this->selectedUrl,
+                    'name' => $name,
+                    'username' => $username,
+                    'password1' => $password1,
+                    'password2' => $password2,
+                    'email' => $email,
+                ]);
         }
 
         if ($this->userRepository->findByUsername($username)) {
@@ -146,17 +160,5 @@ class RegistrationController
             )
         );
         return $this->view->message('success', $this->lang['registered']);
-    }
-
-    private function form(string $name, string $username, string $password1, string $password2, string $email): string
-    {
-        return $this->view->render('registerform', [
-            'actionUrl' => $this->scriptName . "?" .$this->selectedUrl,
-            'name' => $name,
-            'username' => $username,
-            'password1' => $password1,
-            'password2' => $password2,
-            'email' => $email,
-        ]);
     }
 }
