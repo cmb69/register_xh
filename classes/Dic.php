@@ -118,11 +118,42 @@ class Dic
         );
     }
 
-    public static function makeForgotPasswordController(): ForgotPasswordController
+    public static function makeShowPasswordForgottenForm(): ShowPasswordForgottenForm
+    {
+        return new ShowPasswordForgottenForm(self::makeView());
+    }
+
+    public static function makePasswordForgotten(): PasswordForgotten
     {
         global $plugin_cf, $plugin_tx;
 
-        return new ForgotPasswordController(
+        return new PasswordForgotten(
+            $plugin_cf["register"],
+            $plugin_tx["register"],
+            time(),
+            self::makeView(),
+            self::makeUserRepository(),
+            new MailService()
+        );
+    }
+
+    public static function makeResetPassword(): ResetPassword
+    {
+        global $plugin_tx;
+
+        return new ResetPassword(
+            $plugin_tx["register"],
+            time(),
+            self::makeView(),
+            self::makeUserRepository()
+        );
+    }
+
+    public static function makeChangePassword(): ChangePassword
+    {
+        global $plugin_cf, $plugin_tx;
+
+        return new ChangePassword(
             $plugin_cf["register"],
             $plugin_tx["register"],
             time(),

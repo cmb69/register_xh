@@ -14,6 +14,7 @@ use XH\PageDataRouter;
 
 use Register\Value\User;
 use Register\Infra\LoginManager;
+use Register\Infra\Request;
 use Register\Infra\Session;
 
 class Plugin
@@ -178,17 +179,15 @@ class Plugin
             header('Location: ' . CMSIMPLE_URL);
             exit;
         }
-        $controller = Dic::makeForgotPasswordController();
         if (isset($_POST['action']) && $_POST['action'] === 'forgotten_password') {
-            $action = 'passwordForgottenAction';
+            return Dic::makePasswordForgotten()(new Request);
         } elseif (isset($_GET['action']) && $_GET['action'] === 'registerResetPassword') {
-            $action = 'resetPasswordAction';
+            return Dic::makeResetPassword()(new Request());
         } elseif (isset($_GET['action']) && $_GET['action'] === 'register_change_password') {
-            $action = 'changePasswordAction';
+            return Dic::makeChangePassword()(new Request());
         } else {
-            $action = 'defaultAction';
+            return Dic::makeShowPasswordForgottenForm()(new Request());
         }
-        return $controller->{$action}();
     }
 
     public static function handleUserPrefs(): string
