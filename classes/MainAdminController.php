@@ -210,7 +210,7 @@ class MainAdminController
             $this->dbService->lock(LOCK_UN);
 
             if (!empty($errors)) {
-                $o .= $this->renderErrorView($errors);
+                $o .= $this->view->render('error', ['errors' => $errors]);
             } else {
                 $o .= $this->view->message(
                     'success',
@@ -218,19 +218,11 @@ class MainAdminController
                 );
             }
         } elseif (!empty($errors)) {
-            $o .= $this->renderErrorView($errors);
+            $o .= $this->view->render('error', ['errors' => $errors]);
         }
 
         $o .= $this->renderUsersForm($newusers);
         return $o;
-    }
-
-    /**
-     * @param string[] $errors
-     */
-    private function renderErrorView(array $errors): string
-    {
-        return $this->view->render('error', ['errors' => $errors]);
     }
 
     /**
@@ -393,7 +385,7 @@ class MainAdminController
                     . ' (' . $this->dbService->dataFolder() . 'groups.csv' . ')';
             }
             if (!empty($errors)) {
-                $o .= $this->renderErrorView($errors);
+                $o .= $this->view->render('error', ['errors' => $errors]);
             } else {
                 $o .= $this->view->message(
                     'success',
@@ -401,7 +393,7 @@ class MainAdminController
                 );
             }
         } elseif (!empty($errors)) {
-            $o .= $this->renderErrorView($errors);
+            $o .= $this->view->render('error', ['errors' => $errors]);
         }
 
         $o .= $this->renderGroupsForm($newgroups);
