@@ -20,21 +20,23 @@ class DbService
      */
     private $dirname;
 
+    /** @var string */
+    private $defaultGroupName;
+
     /** @var bool */
     private $initialized = false;
 
     /**
      * @param string $dirname
      */
-    public function __construct($dirname)
+    public function __construct($dirname, string $defaultGroupName)
     {
         $this->dirname = $dirname;
+        $this->defaultGroupName = $defaultGroupName;
     }
 
     public function dataFolder(): string
     {
-        global $plugin_cf;
-
         if ($this->initialized) {
             return $this->dirname;
         }
@@ -48,7 +50,7 @@ class DbService
         }
         if (!is_file("{$this->dirname}groups.csv")) {
             $this->writeGroups(
-                [new UserGroup($plugin_cf['register']['group_default'], '')]
+                [new UserGroup($this->defaultGroupName, '')]
             );
         }
         return $this->dirname;

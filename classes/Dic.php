@@ -206,14 +206,15 @@ class Dic
     {
         /**
          * @var array{folder:array<string,string>,file:array<string,string>} $pth
+         * @var array<string,array<string,string>> $plugin_cf
          */
-        global $pth;
+        global $pth, $plugin_cf;
     
         $folder = $pth["folder"]["content"];
         if ($pth["folder"]["base"] === "../") {
             $folder = dirname($folder) . "/";
         }
         $folder .= "register/";
-        return new DbService($folder);
+        return new DbService($folder, $plugin_cf['register']['group_default']);
     }
 }
