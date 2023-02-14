@@ -16,7 +16,7 @@ use PHPUnit\Framework\TestCase;
 
 use Register\Infra\View;
 
-class RegistrationControllerTest extends TestCase
+class ShowRegistrationFormTest extends TestCase
 {
     /**
      * @var RegistrationController
@@ -33,16 +33,16 @@ class RegistrationControllerTest extends TestCase
         $plugin_tx = XH_includeVar("./languages/en.php", 'plugin_tx');
         $lang = $plugin_tx['register'];
         $this->view = new View("./", $lang);
-        $this->subject = new RegistrationController(
+        $this->subject = new ShowRegistrationForm(
             "",
             "",
             $this->view
         );
     }
 
-    public function testdefaultAction(): void
+    public function testShowsRegistrationForm(): void
     {
-        $response = $this->subject->defaultAction();
+        $response = ($this->subject)();
         Approvals::verifyHtml($response);
     }
 }

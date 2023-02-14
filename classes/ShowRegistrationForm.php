@@ -12,7 +12,7 @@ namespace Register;
 
 use Register\Infra\View;
 
-class RegistrationController
+class ShowRegistrationForm
 {
     /** @var string */
     private $scriptName;
@@ -35,7 +35,7 @@ class RegistrationController
         $this->view = $view;
     }
 
-    public function defaultAction(): string
+    public function __invoke(): string
     {
         return $this->view->render('registerform', [
             'actionUrl' => $this->scriptName . "?" .$this->selectedUrl,

@@ -66,11 +66,11 @@ class Dic
         );
     }
 
-    public static function makeRegistrationController(DbService $dbService): RegistrationController
+    public static function makeShowRegistrationForm(DbService $dbService): ShowRegistrationForm
     {
         global $pth, $plugin_tx, $sn, $su;
 
-        return new RegistrationController(
+        return new ShowRegistrationForm(
             $sn,
             $su,
             new View("{$pth['folder']['plugins']}register/", $plugin_tx['register'])
