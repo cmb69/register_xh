@@ -152,19 +152,15 @@ class Dic
         );
     }
 
-    /**
-     * @param User|null $user
-     */
-    public static function makeLoginFormController($user): LoginFormController
+    public static function makeShowLoginForm(): ShowLoginForm
     {
         global $plugin_cf, $plugin_tx, $sn, $su;
 
-        return new LoginFormController(
+        return new ShowLoginForm(
             $plugin_cf["register"],
             $plugin_tx["register"],
             $sn,
             $su,
-            $user,
             self::makeView()
         );
     }

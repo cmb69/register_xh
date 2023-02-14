@@ -14,7 +14,7 @@ use PHPUnit\Framework\TestCase;
 use Register\Value\User;
 use Register\Infra\View;
 
-class LoginFormControllerTest extends TestCase
+class ShowLoginFormTest extends TestCase
 {
     public function testLoginForm()
     {
@@ -25,9 +25,9 @@ class LoginFormControllerTest extends TestCase
         $conf = $plugin_cf['register'];
         $plugin_tx = XH_includeVar("./languages/en.php", 'plugin_tx');
         $lang = $plugin_tx['register'];
-        $subject = new LoginFormController($conf, $lang, "/", "Foo", null, new View("./", $lang));
+        $subject = new ShowLoginForm($conf, $lang, "/", "Foo", new View("./", $lang));
 
-        $response = $subject->execute();
+        $response = $subject(null);
 
         Approvals::verifyHtml($response);
     }
@@ -40,9 +40,9 @@ class LoginFormControllerTest extends TestCase
         $plugin_tx = XH_includeVar("./languages/en.php", 'plugin_tx');
         $lang = $plugin_tx['register'];
         $user = new User("jane", "", [], "Jane Doe", "jane@example.com", "activated");
-        $subject = new LoginFormController([], $lang, "/", "Foo", $user, new View("./", $lang));
+        $subject = new ShowLoginForm([], $lang, "/", "Foo", new View("./", $lang));
 
-        $response = $subject->execute();
+        $response = $subject($user);
 
         Approvals::verifyHtml($response);
     }

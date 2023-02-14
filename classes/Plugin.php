@@ -298,8 +298,8 @@ class Plugin
 
     public static function handleLoginForm(): string
     {
-        $controller = Dic::makeLoginFormController(self::currentUser());
-        return $controller->execute();
+        $controller = Dic::makeShowLoginForm();
+        return $controller(self::currentUser());
     }
 
     public static function handleloggedInForm(): string

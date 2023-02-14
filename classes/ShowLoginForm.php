@@ -13,7 +13,7 @@ namespace Register;
 use Register\Value\User;
 use Register\Infra\View;
 
-class LoginFormController
+class ShowLoginForm
 {
     /**
      * @var array<string,string>
@@ -36,11 +36,6 @@ class LoginFormController
     private $currentPage;
 
     /**
-     * @var User|null
-     */
-    private $currentUser;
-
-    /**
      * @var View
      */
     private $view;
@@ -48,30 +43,28 @@ class LoginFormController
     /**
      * @param array<string,string> $conf
      * @param array<string,string> $lang
-     * @param User|null $currentUser
      */
     public function __construct(
         array $conf,
         array $lang,
         string $scriptName,
         string $currentPage,
-        $currentUser,
         View $view
     ) {
         $this->conf = $conf;
         $this->lang = $lang;
         $this->scriptName = $scriptName;
         $this->currentPage = $currentPage;
-        $this->currentUser = $currentUser;
         $this->view = $view;
     }
 
-    public function execute(): string
+    /** @param User|null $currentUser */
+    public function __invoke($currentUser): string
     {
-        if ($this->currentUser === null) {
+        if ($currentUser === null) {
             return $this->renderLoginForm();
         } else {
-            return $this->renderLoggedInForm();
+            return $this->renderLoggedInForm($currentUser);
         }
     }
 
@@ -91,9 +84,10 @@ class LoginFormController
         return $this->view->render('loginform', $data);
     }
 
-    private function renderLoggedInForm(): string
+    /** @param User|null $currentUser */
+    private function renderLoggedInForm($currentUser): string
     {
-        $user = $this->currentUser;
+        $user = $currentUser;
         assert($user instanceof User);
         $userPrefUrl = uenc($this->lang['user_prefs']);
         $data = [
