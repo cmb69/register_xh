@@ -24,6 +24,7 @@ require_once "./classes/infra/View.php";
 
 require_once "./classes/ActivateUser.php";
 require_once "./classes/ForgotPasswordController.php";
+require_once "./classes/GroupAdminController.php";
 require_once "./classes/InfoController.php";
 require_once "./classes/LoginController.php";
 require_once "./classes/LoginFormController.php";

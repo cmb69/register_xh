@@ -53,9 +53,6 @@ class MainAdminController
     /** @var string */
     private $scriptName;
 
-    /** @var Pages */
-    private $pages;
-
     /**
      * @param array<string,string> $config
      * @param array<string,string> $lang
@@ -66,8 +63,7 @@ class MainAdminController
         array $lang,
         CsrfProtector $csrfProtector,
         DbService $dbService,
-        string $scriptName,
-        Pages $pages
+        string $scriptName
     ) {
         $this->pluginFolder = $pluginFolder;
         $this->config = $config;
@@ -76,7 +72,6 @@ class MainAdminController
         $this->view = new View($this->pluginFolder, $this->lang);
         $this->dbService = $dbService;
         $this->scriptName = $scriptName;
-        $this->pages = $pages;
     }
 
     public function editUsersAction(): string
@@ -332,112 +327,5 @@ class MainAdminController
         }
         $o .= '</select>';
         return $o;
-    }
-
-    public function editGroupsAction(): string
-    {
-        $filename = $this->dbService->dataFolder() . 'groups.csv';
-        if ($this->dbService->hasGroupsFile()) {
-            $groups = $this->dbService->readGroups();
-            return $this->renderGroupsForm($groups)
-                . $this->view->message('info', count($groups) . ' ' . $this->lang['entries_in_csv'] . $filename);
-        } else {
-            return $this->view->message('fail', $this->lang['err_csv_missing'] . ' (' . $filename . ')');
-        }
-    }
-
-    public function saveGroupsAction(): string
-    {
-        $this->csrfProtector->check();
-        $errors = [];
-
-        $delete = $_POST['delete'] ?? [];
-        $add = $_POST['add'] ?? '';
-        $groupname = $_POST['groupname'] ?? [];
-
-        $deleted = false;
-        $added   = false;
-
-        $newgroups = array();
-        foreach (array_keys($groupname) as $j) {
-            if (!preg_match("/^[A-Za-z0-9_-]+$/", $groupname[$j])) {
-                $errors[] = $this->lang['err_group_illegal'];
-            }
-
-            if (!isset($delete[$j]) || $delete[$j] == '') {
-                $entry = new UserGroup($groupname[$j], $_POST['grouploginpage'][$j]);
-                $newgroups[] = $entry;
-            } else {
-                $deleted = true;
-            }
-        }
-        if ($add != '') {
-            $entry = new UserGroup("NewGroup", '');
-            $newgroups[] = $entry;
-            $added = true;
-        }
-
-        $o = "";
-        // In case that nothing got deleted or added, store back (save got pressed)
-        if (!$deleted && !$added && empty($errors)) {
-            if (!$this->dbService->writeGroups($newgroups)) {
-                $errors[] = $this->lang['err_cannot_write_csv']
-                    . ' (' . $this->dbService->dataFolder() . 'groups.csv' . ')';
-            }
-            if (!empty($errors)) {
-                $o .= $this->view->render('error', ['errors' => $errors]);
-            } else {
-                $o .= $this->view->message(
-                    'success',
-                    $this->lang['csv_written'] . '(' . $this->dbService->dataFolder() . 'groups.csv' . ')'
-                );
-            }
-        } elseif (!empty($errors)) {
-            $o .= $this->view->render('error', ['errors' => $errors]);
-        }
-
-        $o .= $this->renderGroupsForm($newgroups);
-        return $o;
-    }
-
-    /**
-     * @param list<UserGroup> $groups
-     */
-    private function renderGroupsForm(array $groups): string
-    {
-        return $this->view->render('admin-groups', [
-            'csrfTokenInput' => new HtmlString($this->csrfProtector->tokenInput()),
-            'actionUrl' => "{$this->scriptName}?&register",
-            'groups' => $groups,
-            'selects' => $this->selects($groups),
-        ]);
-    }
-
-    /**
-     * @param list<UserGroup> $groups
-     * @return list<list<array{selected:string,indent:string,url:string,heading:string}>>
-     */
-    private function selects(array $groups): array
-    {
-        $selects = [];
-        foreach ($groups as $group) {
-            $selects[] = $this->options($group->getLoginpage());
-        }
-        return $selects;
-    }
-
-    /** @return list<array{selected:string,indent:string,url:string,heading:string}> */
-    private function options(string $loginpage): array
-    {
-        $res = [];
-        for ($i = 0; $i < $this->pages->getCount(); $i++) {
-            $res[] = [
-                "selected" => $this->pages->url($i) === $loginpage ? "selected" : "",
-                "indent" => str_repeat("\xC2\xA0", 3 * ($this->pages->level($i) - 1)),
-                "url" => $this->pages->url($i),
-                "heading" => $this->pages->heading($i),
-            ];
-        }
-        return $res;
     }
 }

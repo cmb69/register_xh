@@ -205,10 +205,10 @@ class Plugin
                         $o .= Dic::makeMainAdminController(new DbService(self::dataFolder()))->saveUsersAction();
                         break;
                     case 'editgroups':
-                        $o .= Dic::makeMainAdminController(new DbService(self::dataFolder()))->editGroupsAction();
+                        $o .= Dic::makeGroupAdminController(new DbService(self::dataFolder()))->editGroupsAction();
                         break;
                     case 'savegroups':
-                        $o .= Dic::makeMainAdminController(new DbService(self::dataFolder()))->saveGroupsAction();
+                        $o .= Dic::makeGroupAdminController(new DbService(self::dataFolder()))->saveGroupsAction();
                         break;
                 }
                 break;
