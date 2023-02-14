@@ -113,48 +113,4 @@ class RegistrationControllerTest extends TestCase
         $response = $this->subject->registerUserAction();
         Approvals::verifyHtml($response);
     }
-
-    public function testActivateUserActionNoUser(): void
-    {
-        $_GET = [
-            "username" => "john",
-            "nonce" => "",
-        ];
-        $response = $this->subject->activateUserAction();
-        Approvals::verifyHtml($response);
-    }
-
-    public function testActivateUserEmptyState(): void
-    {
-        $_GET = [
-            "username" => "john",
-            "nonce" => "",
-        ];
-        $this->userRepository->method("findByUsername")->willReturn($this->users["john"]);
-        $response = $this->subject->activateUserAction();
-        Approvals::verifyHtml($response);
-    }
-
-    public function testActivateUserInvalidState(): void
-    {
-        $_GET = [
-            "username" => "jane",
-            "nonce" => "",
-        ];
-        $this->userRepository->method("findByUsername")->willReturn($this->users["jane"]);
-        $response = $this->subject->activateUserAction();
-        Approvals::verifyHtml($response);
-    }
-
-    public function testActivateUserSuccess(): void
-    {
-        $_GET = [
-            "username" => "jane",
-            "nonce" => "12345",
-        ];
-        $this->userRepository->method("findByUsername")->willReturn($this->users["jane"]);
-        $this->userRepository->expects($this->once())->method("update");
-        $response = $this->subject->activateUserAction();
-        Approvals::verifyHtml($response);
-    }
 }

@@ -82,6 +82,18 @@ class Dic
         );
     }
 
+    public static function makeActivateUser(DbService $dbService): ActivateUser
+    {
+        global $pth, $plugin_cf, $plugin_tx;
+
+        return new ActivateUser(
+            $plugin_cf["register"],
+            $plugin_tx["register"],
+            new UserRepository($dbService),
+            new View("{$pth['folder']['plugins']}register/", $plugin_tx['register'])
+        );
+    }
+
     public static function makeForgotPasswordController(DbService $dbService): ForgotPasswordController
     {
         global $pth, $plugin_cf, $plugin_tx;
