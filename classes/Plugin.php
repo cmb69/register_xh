@@ -269,15 +269,13 @@ class Plugin
             header('Location: ' . CMSIMPLE_URL);
             exit;
         }
-        $controller = Dic::makeRegistrationController(new DbService(self::dataFolder()));
         if (isset($_POST['action']) && $_POST['action'] === 'register_user') {
-            $action = 'registerUserAction';
-        } elseif (isset($_GET['action']) && $_GET['action'] === 'register_activate_user') {
-            $action = 'activateUserAction';
-        } else {
-            $action = 'defaultAction';
+            return Dic::makeRegisterUser(new DbService(self::dataFolder()))();
         }
-        return $controller->{$action}();
+        if (isset($_GET['action']) && $_GET['action'] === 'register_activate_user') {
+            return Dic::makeActivateUser(new DbService(self::dataFolder()))();
+        }
+        return Dic::makeShowRegistrationForm(new DbService(self::dataFolder()))();
     }
 
     public static function handleForgotPassword(): string

@@ -66,17 +66,42 @@ class Dic
         );
     }
 
-    public static function makeRegistrationController(DbService $dbService): RegistrationController
+    public static function makeShowRegistrationForm(DbService $dbService): ShowRegistrationForm
     {
-        global $pth, $plugin_cf, $plugin_tx;
+        global $pth, $plugin_tx, $sn, $su;
 
-        return new RegistrationController(
+        return new ShowRegistrationForm(
+            $sn,
+            $su,
+            new View("{$pth['folder']['plugins']}register/", $plugin_tx['register'])
+        );
+    }
+
+    public static function makeRegisterUser(DbService $dbService): RegisterUser
+    {
+        global $pth, $plugin_cf, $plugin_tx, $sn, $su;
+
+        return new RegisterUser(
+            $sn,
+            $su,
             $plugin_cf["register"],
             $plugin_tx["register"],
-            new ValidationService($plugin_tx["register"]),
+            new ValidationService($plugin_tx['register']),
             new View("{$pth['folder']['plugins']}register/", $plugin_tx['register']),
             new UserRepository($dbService),
             new MailService()
+        );
+    }
+
+    public static function makeActivateUser(DbService $dbService): ActivateUser
+    {
+        global $pth, $plugin_cf, $plugin_tx;
+
+        return new ActivateUser(
+            $plugin_cf["register"],
+            $plugin_tx["register"],
+            new UserRepository($dbService),
+            new View("{$pth['folder']['plugins']}register/", $plugin_tx['register'])
         );
     }
 

@@ -16,36 +16,30 @@ use Register\Infra\MailService;
 use Register\Infra\UserRepository;
 use Register\Infra\View;
 
-class RegistrationController
+class RegisterUser
 {
-    /**
-     * @var array<string,string>
-     */
+    /** @var string */
+    private $scriptName;
+
+    /** @var string */
+    private $selectedUrl;
+
+    /** @var array<string,string> */
     private $config;
 
-    /**
-     * @var array<string,string>
-     */
+    /** @var array<string,string> */
     private $lang;
 
-    /**
-     * @var ValidationService
-     */
+    /** @var ValidationService */
     private $validationService;
 
-    /**
-     * @var View
-     */
+    /** @var View */
     private $view;
 
-    /**
-     * @var UserRepository
-     */
+    /** @var UserRepository */
     private $userRepository;
 
-    /**
-     * @var MailService
-     */
+    /** @var MailService */
     private $mailService;
 
     /**
@@ -53,6 +47,8 @@ class RegistrationController
      * @param array<string,string> $lang
      */
     public function __construct(
+        string $scriptName,
+        string $selectedUrl,
         array $config,
         array $lang,
         ValidationService $validationService,
@@ -60,6 +56,8 @@ class RegistrationController
         UserRepository $userRepository,
         MailService $mailService
     ) {
+        $this->scriptName = $scriptName;
+        $this->selectedUrl = $selectedUrl;
         $this->config = $config;
         $this->lang = $lang;
         $this->validationService = $validationService;
@@ -68,18 +66,8 @@ class RegistrationController
         $this->mailService = $mailService;
     }
 
-    public function defaultAction(): string
+    public function __invoke(): string
     {
-        return $this->form('', '', '', '', '');
-    }
-
-    public function registerUserAction(): string
-    {
-        /**
-         * @var string $su
-         */
-        global $su;
-
         $name      = isset($_POST['name']) && is_string($_POST["name"]) ? trim($_POST['name']) : '';
         $username  = isset($_POST['username']) && is_string($_POST["username"]) ? trim($_POST['username']) : '';
         $password1 = isset($_POST['password1']) && is_string($_POST["password1"]) ? trim($_POST['password1']) : '';
@@ -89,7 +77,14 @@ class RegistrationController
         $errors = $this->validationService->validateUser($name, $username, $password1, $password2, $email);
         if ($errors) {
             return $this->view->render('error', ['errors' => $errors])
-                . $this->form($name, $username, $password1, $password2, $email);
+                . $this->view->render('registerform', [
+                    'actionUrl' => $this->scriptName . "?" .$this->selectedUrl,
+                    'name' => $name,
+                    'username' => $username,
+                    'password1' => $password1,
+                    'password2' => $password2,
+                    'email' => $email,
+                ]);
         }
 
         if ($this->userRepository->findByUsername($username)) {
@@ -122,7 +117,7 @@ class RegistrationController
             . ' ' . $this->lang['fromip'] . ": {$_SERVER['REMOTE_ADDR']} \n\n";
         if (!$user) {
             $content .= $this->lang['emailtext2'] . "\n\n"
-                . '<' . CMSIMPLE_URL . '?' . $su . '&'
+                . '<' . CMSIMPLE_URL . '?' . $this->selectedUrl . '&'
                 . 'action=register_activate_user&username='.$username.'&nonce='
                 . $status . '>';
         } else {
@@ -141,50 +136,5 @@ class RegistrationController
             )
         );
         return $this->view->message('success', $this->lang['registered']);
-    }
-
-    public function activateUserAction(): string
-    {
-        if (isset($_GET['username']) && isset($_GET['nonce'])) {
-            return $this->activateUser($_GET['username'], $_GET['nonce']);
-        }
-        return "";
-    }
-
-    private function activateUser(string $user, string $nonce): string
-    {
-        $entry = $this->userRepository->findByUsername($user);
-        if ($entry === null) {
-            return $this->view->message("fail", $this->lang['err_username_notfound'] . $user);
-        }
-        if ($entry->getStatus() == "") {
-            return $this->view->message("fail", $this->lang['err_status_empty']);
-        }
-        if ($nonce != $entry->getStatus()) {
-            return $this->view->message("fail", $this->lang['err_status_invalid']);
-        }
-
-        $entry = $entry->activate();
-        $entry = $entry->withAccessgroups(array($this->config['group_activated']));
-        $this->userRepository->update($entry);
-        return $this->view->message('success', $this->lang['activated']);
-    }
-
-    private function form(string $name, string $username, string $password1, string $password2, string $email): string
-    {
-        /**
-         * @var string $sn
-         * @var string $su
-         */
-        global $sn, $su;
-
-        return $this->view->render('registerform', [
-            'actionUrl' => "$sn?$su",
-            'name' => $name,
-            'username' => $username,
-            'password1' => $password1,
-            'password2' => $password2,
-            'email' => $email,
-        ]);
     }
 }

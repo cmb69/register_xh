@@ -20,31 +20,21 @@ use Register\Infra\MailService;
 use Register\Infra\UserRepository;
 use Register\Infra\View;
 
-class RegistrationControllerTest extends TestCase
+class RegisterUserTest extends TestCase
 {
-    /**
-     * @var RegistrationController
-     */
+    /** @var RegisterUser */
     private $subject;
 
-    /**
-     * @var array<string,User>
-     */
+    /** @var array<string,User> */
     private $users;
 
-    /**
-     * @var Stub
-     */
+    /** @var ValidationService */
     private $validationService;
 
-    /**
-     * @var MockObject
-     */
+    /** @var View */
     private $view;
 
-    /**
-     * @var MockObject
-     */
+    /** @var UserRepository */
     private $userRepository;
 
     public function setUp(): void
@@ -61,7 +51,9 @@ class RegistrationControllerTest extends TestCase
         $this->view = new View("./", $lang);
         $this->userRepository = $this->createMock(UserRepository::class);
         $mailService = $this->createStub(MailService::class);
-        $this->subject = new RegistrationController(
+        $this->subject = new RegisterUser(
+            "",
+            "",
             $conf,
             $lang,
             $this->validationService,
@@ -71,27 +63,21 @@ class RegistrationControllerTest extends TestCase
         );
     }
 
-    public function testdefaultAction(): void
-    {
-        $response = $this->subject->defaultAction();
-        Approvals::verifyHtml($response);
-    }
-
-    public function testRegisterActionValidationError(): void
+    public function testValidationError(): void
     {
         $this->validationService->method("validateUser")->willReturn(["error"]);
-        $response = $this->subject->registerUserAction();
+        $response = ($this->subject)();
         Approvals::verifyHtml($response);
     }
 
-    public function testRegisterActionExistingUser(): void
+    public function testExistingUser(): void
     {
         $this->userRepository->method("findByUsername")->willReturn($this->users["jane"]);
-        $response = $this->subject->registerUserAction();
+        $response = ($this->subject)();
         Approvals::verifyHtml($response);
     }
 
-    public function testRegisterActionExistingEmail(): void
+    public function testExistingEmail(): void
     {
         global $cf;
 
@@ -99,60 +85,16 @@ class RegistrationControllerTest extends TestCase
         $_SERVER["REMOTE_ADDR"] = "example.com";
         $_SERVER['SERVER_NAME'] = "example.com";
         $this->userRepository->method("findByEmail")->willReturn($this->users["john"]);
-        $response = $this->subject->registerUserAction();
+        $response = ($this->subject)();
         Approvals::verifyHtml($response);
     }
 
-    public function testRegisterActionSuccess(): void
+    public function testSuccess(): void
     {
         $_SERVER["REMOTE_ADDR"] = "example.com";
         $_SERVER['SERVER_NAME'] = "example.com";
         $this->userRepository->expects($this->once())->method("add")->willReturn(true);
-        $response = $this->subject->registerUserAction();
-        Approvals::verifyHtml($response);
-    }
-
-    public function testActivateUserActionNoUser(): void
-    {
-        $_GET = [
-            "username" => "john",
-            "nonce" => "",
-        ];
-        $response = $this->subject->activateUserAction();
-        Approvals::verifyHtml($response);
-    }
-
-    public function testActivateUserEmptyState(): void
-    {
-        $_GET = [
-            "username" => "john",
-            "nonce" => "",
-        ];
-        $this->userRepository->method("findByUsername")->willReturn($this->users["john"]);
-        $response = $this->subject->activateUserAction();
-        Approvals::verifyHtml($response);
-    }
-
-    public function testActivateUserInvalidState(): void
-    {
-        $_GET = [
-            "username" => "jane",
-            "nonce" => "",
-        ];
-        $this->userRepository->method("findByUsername")->willReturn($this->users["jane"]);
-        $response = $this->subject->activateUserAction();
-        Approvals::verifyHtml($response);
-    }
-
-    public function testActivateUserSuccess(): void
-    {
-        $_GET = [
-            "username" => "jane",
-            "nonce" => "12345",
-        ];
-        $this->userRepository->method("findByUsername")->willReturn($this->users["jane"]);
-        $this->userRepository->expects($this->once())->method("update");
-        $response = $this->subject->activateUserAction();
+        $response = ($this->subject)();
         Approvals::verifyHtml($response);
     }
 }
