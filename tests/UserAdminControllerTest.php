@@ -11,13 +11,12 @@ namespace Register;
 use ApprovalTests\Approvals;
 use PHPUnit\Framework\TestCase;
 use XH\CSRFProtection as CsrfProtector;
-use XH\Pages;
 
 use Register\Value\User;
 use Register\Value\UserGroup;
 use Register\Infra\DbService;
 
-class MainAdminControllerTest extends TestCase
+class UserAdminControllerTest extends TestCase
 {
     public function testEditUsersActionRendersUsers()
     {
@@ -26,7 +25,7 @@ class MainAdminControllerTest extends TestCase
         $dbService->method('readUsers')->willReturn([$this->makeJohn(), $this->makeJane()]);
         $dbService->method('hasGroupsFile')->willReturn(true);
         $dbService->method('readGroups')->willReturn([new UserGroup("users", ""), new UserGroup("guest", "")]);
-        $sut = $this->makeMainAdminController($dbService);
+        $sut = $this->makeUserAdminController($dbService);
         $response = $sut->editUsersAction();
         Approvals::verifyHtml($response);
     }
@@ -40,7 +39,7 @@ class MainAdminControllerTest extends TestCase
         $dbService->method('readUsers')->willReturn([$this->makeJohn(), $this->makeJane()]);
         $dbService->method('hasGroupsFile')->willReturn(true);
         $dbService->method('readGroups')->willReturn([new UserGroup("users", "")]);
-        $sut = $this->makeMainAdminController($dbService);
+        $sut = $this->makeUserAdminController($dbService);
         $hjs = "";
         $sut->editUsersAction();
         Approvals::verifyHtml($hjs);
@@ -50,7 +49,7 @@ class MainAdminControllerTest extends TestCase
     {
         $dbService = $this->createStub(DbService::class);
         $dbService->method('hasUsersFile')->willReturn(false);
-        $sut = $this->makeMainAdminController($dbService);
+        $sut = $this->makeUserAdminController($dbService);
         $response = $sut->editUsersAction();
         Approvals::verifyHtml($response);
     }
@@ -71,7 +70,7 @@ class MainAdminControllerTest extends TestCase
         $dbService->expects($this->never())->method('writeUsers');
         $dbService->method('hasGroupsFile')->willReturn(true);
         $dbService->method('readGroups')->willReturn([new UserGroup("users", "")]);
-        $sut = $this->makeMainAdminController($dbService);
+        $sut = $this->makeUserAdminController($dbService);
         $response = $sut->saveUsersAction();
         Approvals::verifyHtml($response);
     }
@@ -92,7 +91,7 @@ class MainAdminControllerTest extends TestCase
         $dbService->expects($this->never())->method('writeUsers');
         $dbService->method('hasGroupsFile')->willReturn(true);
         $dbService->method('readGroups')->willReturn([new UserGroup("users", "")]);
-        $sut = $this->makeMainAdminController($dbService);
+        $sut = $this->makeUserAdminController($dbService);
         $response = $sut->saveUsersAction();
         Approvals::verifyHtml($response);
     }
@@ -112,7 +111,7 @@ class MainAdminControllerTest extends TestCase
         $dbService->expects($this->never())->method('writeUsers');
         $dbService->method('hasGroupsFile')->willReturn(true);
         $dbService->method('readGroups')->willReturn([new UserGroup("users", "")]);
-        $sut = $this->makeMainAdminController($dbService);
+        $sut = $this->makeUserAdminController($dbService);
         $response = $sut->saveUsersAction();
         Approvals::verifyHtml($response);
     }
@@ -132,7 +131,7 @@ class MainAdminControllerTest extends TestCase
         $dbService->expects($this->never())->method('writeUsers');
         $dbService->method('hasGroupsFile')->willReturn(true);
         $dbService->method('readGroups')->willReturn([new UserGroup("users", "")]);
-        $sut = $this->makeMainAdminController($dbService);
+        $sut = $this->makeUserAdminController($dbService);
         $response = $sut->saveUsersAction();
         Approvals::verifyHtml($response);
     }
@@ -152,7 +151,7 @@ class MainAdminControllerTest extends TestCase
         $dbService->expects($this->never())->method('writeUsers');
         $dbService->method('hasGroupsFile')->willReturn(true);
         $dbService->method('readGroups')->willReturn([new UserGroup("users", "")]);
-        $sut = $this->makeMainAdminController($dbService);
+        $sut = $this->makeUserAdminController($dbService);
         $response = $sut->saveUsersAction();
         Approvals::verifyHtml($response);
     }
@@ -172,20 +171,19 @@ class MainAdminControllerTest extends TestCase
         $dbService->expects($this->once())->method('writeUsers')->willReturn(true);
         $dbService->method('hasGroupsFile')->willReturn(true);
         $dbService->method('readGroups')->willReturn([new UserGroup("users", "")]);
-        $sut = $this->makeMainAdminController($dbService);
+        $sut = $this->makeUserAdminController($dbService);
         $response = $sut->saveUsersAction();
         Approvals::verifyHtml($response);
     }
-    private function makeMainAdminController(DbService $dbService): MainAdminController
+    private function makeUserAdminController(DbService $dbService): UserAdminController
     {
-        return new MainAdminController(
+        return new UserAdminController(
             "./",
             $this->makeConf(),
             $this->makeLang(),
             $this->makeCsrfProtector(false),
             $dbService,
-            "/",
-            $this->makePages()
+            "/"
         );
     }
 
@@ -210,16 +208,6 @@ class MainAdminControllerTest extends TestCase
             $csrfProtector->expects($this->once())->method('check');
         }
         return $csrfProtector;
-    }
-
-    private function makePages(): Pages
-    {
-        $pages = $this->createStub(Pages::class);
-        $pages->method('getCount')->willReturn(2);
-        $pages->method('url')->willReturnMap([[0, "foo"], [1, "bar"]]);
-        $pages->method('level')->willReturnMap([[0, 1], [1, 2]]);
-        $pages->method('heading')->willReturnMap([[0, "Foo"], [1, "Bar"]]);
-        return $pages;
     }
 
     private function makeJohn(): User

@@ -11,7 +11,6 @@
 namespace Register;
 
 use XH\CSRFProtection as CsrfProtector;
-use XH\Pages;
 
 use Register\Value\HtmlString;
 use Register\Value\User;
@@ -20,34 +19,24 @@ use Register\Logic\ValidationService;
 use Register\Infra\DbService;
 use Register\Infra\View;
 
-class MainAdminController
+class UserAdminController
 {
     /** @var string */
     private $pluginFolder;
 
-    /**
-     * @var array<string,string>
-     */
+    /** @var array<string,string> */
     private $config;
 
-    /**
-     * @var array<string,string>
-     */
+    /** @var array<string,string> */
     private $lang;
 
-    /**
-     * @var CsrfProtector
-     */
+    /** @var CsrfProtector */
     private $csrfProtector;
 
-    /**
-     * @var View
-     */
+    /** @var View */
     private $view;
 
-    /**
-     * @var DbService
-     */
+    /** @var DbService */
     private $dbService;
 
     /** @var string */
@@ -220,14 +209,10 @@ class MainAdminController
         return $o;
     }
 
-    /**
-     * @param User[] $users
-     */
+    /** @param User[] $users */
     private function renderUsersForm(array $users): string
     {
-        /**
-         * @var string $hjs
-         */
+        /** @var string $hjs */
         global $hjs;
 
         $jsKeys = ['name', 'username', 'password', 'accessgroups', 'status', 'email', 'prefsemailsubject'];
@@ -265,9 +250,7 @@ class MainAdminController
         return $this->view->render('admin-users', $data);
     }
 
-    /**
-     * @return UserGroup[]
-     */
+    /** @return UserGroup[] */
     private function findGroups(): array
     {
         $groups = $this->dbService->readGroups();

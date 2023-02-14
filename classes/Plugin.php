@@ -199,10 +199,10 @@ class Plugin
             case 'plugin_main':
                 switch ($action) {
                     case 'editusers':
-                        $o .= Dic::makeMainAdminController(new DbService(self::dataFolder()))->editUsersAction();
+                        $o .= Dic::makeUserAdminController(new DbService(self::dataFolder()))->editUsersAction();
                         break;
                     case 'saveusers':
-                        $o .= Dic::makeMainAdminController(new DbService(self::dataFolder()))->saveUsersAction();
+                        $o .= Dic::makeUserAdminController(new DbService(self::dataFolder()))->saveUsersAction();
                         break;
                     case 'editgroups':
                         $o .= Dic::makeGroupAdminController(new DbService(self::dataFolder()))->editGroupsAction();

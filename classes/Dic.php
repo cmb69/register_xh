@@ -51,11 +51,11 @@ class Dic
         );
     }
 
-    public static function makeMainAdminController(DbService $dbService): MainAdminController
+    public static function makeUserAdminController(DbService $dbService): UserAdminController
     {
         global $pth, $plugin_cf, $plugin_tx, $_XH_csrfProtection, $sn;
 
-        return new MainAdminController(
+        return new UserAdminController(
             "{$pth['folder']['plugins']}register/",
             $plugin_cf["register"],
             $plugin_tx["register"],
