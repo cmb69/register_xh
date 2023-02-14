@@ -178,4 +178,19 @@ class Dic
             new View("{$pth['folder']['plugins']}register/", $plugin_tx['register'])
         );
     }
+
+    public static function makeDbService(): DbService
+    {
+        /**
+         * @var array{folder:array<string,string>,file:array<string,string>} $pth
+         */
+        global $pth;
+    
+        $folder = $pth["folder"]["content"];
+        if ($pth["folder"]["base"] === "../") {
+            $folder = dirname($folder) . "/";
+        }
+        $folder .= "register/";
+        return new DbService($folder);
+    }
 }
