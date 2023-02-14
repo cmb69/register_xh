@@ -62,6 +62,8 @@ class RegistrationControllerTest extends TestCase
         $this->userRepository = $this->createMock(UserRepository::class);
         $mailService = $this->createStub(MailService::class);
         $this->subject = new RegistrationController(
+            "",
+            "",
             $conf,
             $lang,
             $this->validationService,

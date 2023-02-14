@@ -18,6 +18,12 @@ use Register\Infra\View;
 
 class RegistrationController
 {
+    /** @var string */
+    private $scriptName;
+
+    /** @var string */
+    private $selectedUrl;
+
     /**
      * @var array<string,string>
      */
@@ -53,6 +59,8 @@ class RegistrationController
      * @param array<string,string> $lang
      */
     public function __construct(
+        string $scriptName,
+        string $selectedUrl,
         array $config,
         array $lang,
         ValidationService $validationService,
@@ -60,6 +68,8 @@ class RegistrationController
         UserRepository $userRepository,
         MailService $mailService
     ) {
+        $this->scriptName = $scriptName;
+        $this->selectedUrl = $selectedUrl;
         $this->config = $config;
         $this->lang = $lang;
         $this->validationService = $validationService;
@@ -75,11 +85,6 @@ class RegistrationController
 
     public function registerUserAction(): string
     {
-        /**
-         * @var string $su
-         */
-        global $su;
-
         $name      = isset($_POST['name']) && is_string($_POST["name"]) ? trim($_POST['name']) : '';
         $username  = isset($_POST['username']) && is_string($_POST["username"]) ? trim($_POST['username']) : '';
         $password1 = isset($_POST['password1']) && is_string($_POST["password1"]) ? trim($_POST['password1']) : '';
@@ -122,7 +127,7 @@ class RegistrationController
             . ' ' . $this->lang['fromip'] . ": {$_SERVER['REMOTE_ADDR']} \n\n";
         if (!$user) {
             $content .= $this->lang['emailtext2'] . "\n\n"
-                . '<' . CMSIMPLE_URL . '?' . $su . '&'
+                . '<' . CMSIMPLE_URL . '?' . $this->selectedUrl . '&'
                 . 'action=register_activate_user&username='.$username.'&nonce='
                 . $status . '>';
         } else {
@@ -172,14 +177,8 @@ class RegistrationController
 
     private function form(string $name, string $username, string $password1, string $password2, string $email): string
     {
-        /**
-         * @var string $sn
-         * @var string $su
-         */
-        global $sn, $su;
-
         return $this->view->render('registerform', [
-            'actionUrl' => "$sn?$su",
+            'actionUrl' => $this->scriptName . "?" .$this->selectedUrl,
             'name' => $name,
             'username' => $username,
             'password1' => $password1,
