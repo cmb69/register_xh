@@ -40,7 +40,7 @@ class Plugin
             $function = "registerlogin";
         }
 
-        if (!($edit && self::isAdmin()) && $plugin_cf['register']['hide_pages']) {
+        if (!($edit && defined("XH_ADM") && XH_ADM) && $plugin_cf['register']['hide_pages']) {
             if ($temp = self::currentUser()) {
                 self::removeHiddenPages($temp->getAccessgroups());
             } else {
@@ -56,7 +56,7 @@ class Plugin
             $controller = Dic::makeLoginController();
             $controller->logoutAction()->trigger();
         }
-        if (!(self::isAdmin() && $edit)) {
+        if (!(defined("XH_ADM") && XH_ADM && $edit)) {
             self::handleImplicitPages();
         }
     }
@@ -130,11 +130,6 @@ class Plugin
             $controller->{$method}();
             $o .= (string) ob_get_clean();
         }
-    }
-
-    private static function isAdmin(): bool
-    {
-        return XH_ADM; // @phpstan-ignore-line
     }
 
     public static function handlePageAccess(string $groupString): string
