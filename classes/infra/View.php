@@ -18,45 +18,31 @@ class View
     /** @var array<string,string> */
     private $lang;
 
-    /**
-     * @param array<string,string> $lang
-     */
+    /** @param array<string,string> $lang */
     public function __construct(string $pluginFolder, array $lang)
     {
         $this->pluginFolder = $pluginFolder;
         $this->lang = $lang;
     }
 
-    /**
-     * @param string $key
-     * @return string
-     */
-    public function text($key)
+    /** @param scalar $args */
+    public function text(string $key, ...$args): string
     {
-        $args = func_get_args();
-        array_shift($args);
-        return $this->esc(vsprintf($this->lang[$key], $args));
+        return $this->esc(sprintf($this->lang[$key], ...$args));
     }
 
-    /**
-     * @param string $key
-     * @param int $count
-     */
-    public function plural($key, $count): string
+    /** @param scalar $args */
+    public function plural(string $key, int $count, ...$args): string
     {
         if ($count == 0) {
             $key .= '_0';
         } else {
             $key .= XH_numberSuffix($count);
         }
-        $args = func_get_args();
-        array_shift($args);
-        return $this->esc(vsprintf($this->lang[$key], $args));
+        return $this->esc(sprintf($this->lang[$key], ...$args));
     }
 
-    /**
-     * @param array<string,mixed> $_data
-     */
+    /** @param array<string,mixed> $_data */
     public function render(string $_template, array $_data): string
     {
         $_template = "{$this->pluginFolder}views/{$_template}.php";
@@ -66,17 +52,13 @@ class View
         return (string) ob_get_clean();
     }
 
-    /**
-     * @param mixed $value
-     * @return mixed
-     */
-    public function esc($value)
+    /** @param scalar|HtmlString $value */
+    public function esc($value): string
     {
         if ($value instanceof HtmlString) {
-            return $value;
-        } else {
-            return XH_hsc($value);
+            return (string) $value;
         }
+        return XH_hsc((string) $value);
     }
 
     /** @param scalar $value */
@@ -85,9 +67,7 @@ class View
         return (string) $value;
     }
 
-    /**
-     * @param mixed $args
-     */
+    /** @param scalar $args */
     public function message(string $type, string $message, ...$args): string
     {
         return XH_message($type, $message, ...$args);
