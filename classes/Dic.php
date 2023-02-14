@@ -48,7 +48,7 @@ class Dic
             $h,
             $plugin_cf['register'],
             $plugin_tx['register'],
-            new View("{$pth['folder']['plugins']}register/", $plugin_tx['register'])
+            self::makeView()
         );
     }
 
@@ -82,26 +82,26 @@ class Dic
 
     public static function makeShowRegistrationForm(): ShowRegistrationForm
     {
-        global $pth, $plugin_tx, $sn, $su;
+        global $sn, $su;
 
         return new ShowRegistrationForm(
             $sn,
             $su,
-            new View("{$pth['folder']['plugins']}register/", $plugin_tx['register'])
+            self::makeView()
         );
     }
 
     public static function makeRegisterUser(): RegisterUser
     {
-        global $pth, $plugin_cf, $plugin_tx, $sn, $su;
+        global $plugin_cf, $plugin_tx, $sn, $su;
 
         return new RegisterUser(
             $sn,
             $su,
             $plugin_cf["register"],
             $plugin_tx["register"],
-            new ValidationService($plugin_tx['register']),
-            new View("{$pth['folder']['plugins']}register/", $plugin_tx['register']),
+            self::makeValidationService(),
+            self::makeView(),
             self::makeUserRepository(),
             new MailService()
         );
@@ -109,25 +109,25 @@ class Dic
 
     public static function makeActivateUser(): ActivateUser
     {
-        global $pth, $plugin_cf, $plugin_tx;
+        global $plugin_cf, $plugin_tx;
 
         return new ActivateUser(
             $plugin_cf["register"],
             $plugin_tx["register"],
             self::makeUserRepository(),
-            new View("{$pth['folder']['plugins']}register/", $plugin_tx['register'])
+            self::makeView()
         );
     }
 
     public static function makeForgotPasswordController(): ForgotPasswordController
     {
-        global $pth, $plugin_cf, $plugin_tx;
+        global $plugin_cf, $plugin_tx;
 
         return new ForgotPasswordController(
             $plugin_cf["register"],
             $plugin_tx["register"],
             time(),
-            new View("{$pth['folder']['plugins']}register/", $plugin_tx['register']),
+            self::makeView(),
             self::makeUserRepository(),
             new MailService()
         );
@@ -135,16 +135,16 @@ class Dic
 
     public static function makeUserPrefsController(): UserPrefsController
     {
-        global $pth, $plugin_cf, $plugin_tx, $sn, $su;
+        global $plugin_cf, $plugin_tx, $sn, $su;
 
         return new UserPrefsController(
             $plugin_cf["register"],
             $plugin_tx["register"],
             new Session(),
             new CsrfProtector('register_csrf_token', false),
-            new ValidationService($plugin_tx["register"]),
+            self::makeValidationService(),
             self::makeUserRepository(),
-            new View("{$pth['folder']['plugins']}register/", $plugin_tx['register']),
+            self::makeView(),
             new MailService(),
             new LoginManager(time(), new Session()),
             new Logger(),
@@ -157,7 +157,7 @@ class Dic
      */
     public static function makeLoginFormController($user): LoginFormController
     {
-        global $pth, $plugin_cf, $plugin_tx, $sn, $su;
+        global $plugin_cf, $plugin_tx, $sn, $su;
 
         return new LoginFormController(
             $plugin_cf["register"],
@@ -165,18 +165,18 @@ class Dic
             $sn,
             $su,
             $user,
-            new View("{$pth['folder']['plugins']}register/", $plugin_tx['register'])
+            self::makeView()
         );
     }
 
     public static function makeShowPageDataTab(): ShowPageDataTab
     {
-        global $pth, $tx, $plugin_tx;
+        global $pth, $tx;
 
         return new ShowPageDataTab(
             $pth['folder']['corestyle'],
             $tx['editmenu']['help'],
-            new View("{$pth['folder']['plugins']}register/", $plugin_tx['register'])
+            self::makeView()
         );
     }
 
@@ -193,13 +193,23 @@ class Dic
             $plugin_tx['register'],
             self::makeDbService(),
             new SystemChecker(),
-            new View("{$pth['folder']['plugins']}register/", $plugin_tx['register'])
+            self::makeView()
         );
     }
 
     public static function makeUserRepository(): UserRepository
     {
         return new UserRepository(self::makeDbService());
+    }
+
+    private static function makeValidationService(): ValidationService
+    {
+        /**
+         * @var array<string,array<string,string>> $plugin_tx
+         */
+        global $plugin_tx;
+
+        return new ValidationService($plugin_tx["register"]);
     }
 
     private static function makeDbService(): DbService
@@ -216,5 +226,16 @@ class Dic
         }
         $folder .= "register/";
         return new DbService($folder, $plugin_cf['register']['group_default']);
+    }
+
+    private static function makeView(): View
+    {
+        /**
+         * @var array{folder:array<string,string>,file:array<string,string>} $pth
+         * @var array<string,array<string,string>> $plugin_tx
+         */
+        global $pth, $plugin_tx;
+
+        return new View("{$pth['folder']['plugins']}register/", $plugin_tx['register']);
     }
 }
