@@ -11,6 +11,7 @@
 namespace Register;
 
 use Register\Value\HtmlString;
+use Register\Infra\Response;
 use Register\Infra\View;
 
 class SpecialPageController
@@ -42,142 +43,149 @@ class SpecialPageController
         $this->view = $view;
     }
 
-    /**
-     * @return void
-     */
-    public function registrationPageAction()
+    public function registrationPageAction(): Response
     {
         /**
          * @var string $title
          */
         global $title;
 
+        $response = new Response();
         if ($this->conf['allowed_register'] && !in_array($this->text['register'], $this->headings)) {
             $title = XH_hsc($this->text['register']);
-            echo $this->renderPageView(
-                $this->text['register'],
-                $this->text['register_form1'],
-                Plugin::handleUserRegistration()
+            $response->body(
+                $this->renderPageView(
+                    $this->text['register'],
+                    $this->text['register_form1'],
+                    Plugin::handleUserRegistration()
+                )
             );
         }
+        return $response;
     }
 
-    /**
-     * @return void
-     */
-    public function passwordForgottenPageAction()
+    public function passwordForgottenPageAction(): Response
     {
         /**
          * @var string $title
          */
         global $title;
 
+        $response = new Response();
         if (!in_array($this->text['forgot_password'], $this->headings)) {
             $title = XH_hsc($this->text['forgot_password']);
-            echo $this->renderPageView(
-                $this->text['forgot_password'],
-                $this->text['reminderexplanation'],
-                Plugin::handleForgotPassword()
+            $response->body(
+                $this->renderPageView(
+                    $this->text['forgot_password'],
+                    $this->text['reminderexplanation'],
+                    Plugin::handleForgotPassword()
+                )
             );
         }
+        return $response;
     }
 
-    /**
-     * @return void
-     */
-    public function userPrefsPageAction()
+    public function userPrefsPageAction(): Response
     {
         /**
          * @var string $title
          */
         global $title;
 
+        $response = new Response();
         if (!in_array($this->text['user_prefs'], $this->headings)) {
             $title = XH_hsc($this->text['user_prefs']);
-            echo $this->renderPageView(
-                $this->text['user_prefs'],
-                $this->text['changeexplanation'],
-                Plugin::handleUserPrefs()
+            $response->body(
+                $this->renderPageView(
+                    $this->text['user_prefs'],
+                    $this->text['changeexplanation'],
+                    Plugin::handleUserPrefs()
+                )
             );
         }
+        return $response;
     }
 
-    /**
-     * @return void
-     */
-    public function loginErrorPageAction()
+    public function loginErrorPageAction(): Response
     {
         /**
          * @var string $title
          */
         global $title;
 
+        $response = new Response();
         header('HTTP/1.1 403 Forbidden');
         if (!in_array($this->text['login_error'], $this->headings)) {
             $title = $this->text['login_error'];
-            echo $this->renderPageView(
-                $this->text['login_error'],
-                $this->text['login_error_text']
+            $response->body(
+                $this->renderPageView(
+                    $this->text['login_error'],
+                    $this->text['login_error_text']
+                )
             );
         }
+        return $response;
     }
 
-    /**
-     * @return void
-     */
-    public function logoutPageAction()
+    public function logoutPageAction(): Response
     {
         /**
          * @var string $title
          */
         global $title;
 
+        $response = new Response();
         if (!in_array($this->text['loggedout'], $this->headings)) {
             $title = $this->text['loggedout'];
-            echo $this->renderPageView(
-                $this->text['loggedout'],
-                $this->text['loggedout_text']
+            $response->body(
+                $this->renderPageView(
+                    $this->text['loggedout'],
+                    $this->text['loggedout_text']
+                )
             );
         }
+        return $response;
     }
 
-    /**
-     * @return void
-     */
-    public function loginPageAction()
+    public function loginPageAction(): Response
     {
         /**
          * @var string $title
          */
         global $title;
 
+        $response = new Response();
         if (!in_array($this->text['loggedin'], $this->headings)) {
             $title = $this->text['loggedin'];
-            echo $this->renderPageView(
-                $this->text['loggedin'],
-                $this->text['loggedin_text']
+            $response->body(
+                $this->renderPageView(
+                    $this->text['loggedin'],
+                    $this->text['loggedin_text']
+                )
             );
         }
+        return $response;
     }
 
-    /**
-     * @return void
-     */
-    public function accessErrorPageAction()
+    public function accessErrorPageAction(): Response
     {
         /**
          * @var string $title
          */
         global $title;
 
+        $response = new Response();
         header('HTTP/1.1 403 Forbidden');
         if (!in_array($this->text['access_error'], $this->headings)) {
             $title = $this->text['access_error'];
-            echo $this->renderPageView(
-                $this->text['access_error'],
-                $this->text['access_error_text']
+            $response->body(
+                $this->renderPageView(
+                    $this->text['access_error'],
+                    $this->text['access_error_text']
+                )
             );
         }
+        return $response;
     }
 
     /**

@@ -127,9 +127,7 @@ class Plugin
         }
         if ($method !== null) {
             $controller = Dic::makeSpecialPageController();
-            ob_start();
-            $controller->{$method}();
-            $o .= (string) ob_get_clean();
+            $o .= $controller->{$method}()->fire();
         }
     }
 
