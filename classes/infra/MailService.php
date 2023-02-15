@@ -12,19 +12,12 @@ namespace Register\Infra;
 
 class MailService
 {
-    /**
-     * @var array<string,string>
-     */
-    private $config;
+    /** @var bool */
+    private $fixMailHeaders;
 
-    public function __construct()
+    public function __construct(bool $fixMailHeaders)
     {
-        /**
-         * @var array<string,array<string,string>> $plugin_cf
-         */
-        global $plugin_cf;
-
-        $this->config = $plugin_cf['register'];
+        $this->$fixMailHeaders = $fixMailHeaders;
     }
 
     /**
@@ -38,7 +31,7 @@ class MailService
     {
         $headers[] = 'MIME-Version: 1.0';
         $headers[] = 'Content-type: text/plain; charset=UTF-8';
-        $sep = $this->config['fix_mail_headers'] ? "\n" : "\r\n";
+        $sep = $this->fixMailHeaders ? "\n" : "\r\n";
         return mail($to, '=?UTF-8?B?'.base64_encode($subject).'?=', $message, implode($sep, $headers));
     }
 }

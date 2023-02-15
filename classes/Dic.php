@@ -92,7 +92,7 @@ class Dic
             self::makeValidationService(),
             self::makeView(),
             self::makeUserRepository(),
-            new MailService()
+            self::makeMailService()
         );
     }
 
@@ -123,7 +123,7 @@ class Dic
             time(),
             self::makeView(),
             self::makeUserRepository(),
-            new MailService()
+            self::makeMailService()
         );
     }
 
@@ -149,7 +149,7 @@ class Dic
             time(),
             self::makeView(),
             self::makeUserRepository(),
-            new MailService()
+            self::makeMailService()
         );
     }
 
@@ -178,7 +178,7 @@ class Dic
             self::makeValidationService(),
             self::makeUserRepository(),
             self::makeView(),
-            new MailService()
+            self::makeMailService()
         );
     }
 
@@ -258,6 +258,13 @@ class Dic
             $instance = new DbService($folder, $plugin_cf['register']['group_default']);
         }
         return $instance;
+    }
+
+    private static function makeMailService(): MailService
+    {
+        global $plugin_cf;
+
+        return new MailService($plugin_cf["register"]["fix_mail_headers"]);
     }
 
     private static function makeView(): View
