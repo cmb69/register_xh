@@ -70,9 +70,9 @@ class UserAdminController
             $users  = $this->dbService->readUsers();
             $this->dbService->unlock($lock);
             $o = $this->renderUsersForm($users, $request->url(), $response)
-                . $this->view->message('info', count($users) . ' ' . $this->lang['entries_in_csv'] . $fn);
+                . $this->view->messagep('info', count($users), 'entries_in_csv', $fn);
         } else {
-            $o = $this->view->message('fail', $this->lang['err_csv_missing'] . ' (' . $fn . ')');
+            $o = $this->view->message('fail', 'err_csv_missing', $fn);
         }
         return $response->body($o);
     }
@@ -197,10 +197,8 @@ class UserAdminController
             if (!empty($errors)) {
                 $o .= $this->view->render('error', ['errors' => $errors]);
             } else {
-                $o .= $this->view->message(
-                    'success',
-                    $this->lang['csv_written'] . ' (' . $this->dbService->dataFolder() . 'users.csv' . ')'
-                );
+                $filename = $this->dbService->dataFolder() . 'users.csv';
+                $o .= $this->view->message('success', 'csv_written', $filename);
             }
         } elseif (!empty($errors)) {
             $o .= $this->view->render('error', ['errors' => $errors]);

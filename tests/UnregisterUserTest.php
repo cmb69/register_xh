@@ -66,7 +66,6 @@ class UnregisterUserTest extends TestCase
         $this->loginManager = $this->createStub(LoginManager::class);
         $this->logger = $this->createMock(Logger::class);
         $this->subject = new UnregisterUser(
-            $lang,
             $this->session,
             $this->csrfProtector,
             $this->userRepository,

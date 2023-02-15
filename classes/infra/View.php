@@ -39,7 +39,19 @@ class View
         } else {
             $key .= XH_numberSuffix($count);
         }
-        return $this->esc(sprintf($this->lang[$key], ...$args));
+        return $this->esc(sprintf($this->lang[$key], $count, ...$args));
+    }
+
+    /** @param scalar $args */
+    public function message(string $type, string $key, ...$args): string
+    {
+        return "\n<p class=\"xh_$type\">" . $this->text($key, ...$args) . "</p>";
+    }
+
+    /** @param scalar $args */
+    public function messagep(string $type, int $count, string $key, ...$args): string
+    {
+        return "\n<p class=\"xh_$type\">" . $this->plural($key, $count, ...$args) . "</p>";
     }
 
     /** @param array<string,mixed> $_data */
@@ -65,11 +77,5 @@ class View
     public function raw($value): string
     {
         return (string) $value;
-    }
-
-    /** @param scalar $args */
-    public function message(string $type, string $message, ...$args): string
-    {
-        return XH_message($type, $message, ...$args);
     }
 }

@@ -79,7 +79,7 @@ class RegisterUser
         }
 
         if ($this->userRepository->findByUsername($username)) {
-            return $this->view->message("fail", $this->lang['err_username_exists']);
+            return $this->view->message("fail", 'err_username_exists');
         }
         $user = $this->userRepository->findByEmail($email);
 
@@ -96,7 +96,7 @@ class RegisterUser
             );
 
             if (!$this->userRepository->add($newUser)) {
-                return $this->view->message("fail", $this->lang['err_cannot_write_csv']);
+                return $this->view->message("fail", 'err_cannot_write_csv');
             }
         }
 
@@ -130,6 +130,6 @@ class RegisterUser
                 'Cc: '  . $this->config['senderemail']
             )
         );
-        return $this->view->message('success', $this->lang['registered']);
+        return $this->view->message('success', 'registered');
     }
 }

@@ -56,7 +56,6 @@ class ShowUserPreferencesTest extends TestCase
         $this->userRepository = $this->createMock(UserRepository::class);
         $this->view = new View("./", $lang);
         $this->subject = new ShowUserPreferences(
-            $lang,
             $this->session,
             $this->csrfProtector,
             $this->userRepository,

@@ -18,23 +18,16 @@ class ActivateUser
     /** @var array<string,string> */
     private $conf;
 
-    /** @var array<string,string> */
-    private $lang;
-
     /** @var UserRepository */
     private $userRepository;
 
     /** @var View */
     private $view;
 
-    /**
-     * @param array<string,string> $conf
-     * @param array<string,string> $lang
-     */
-    public function __construct(array $conf, array $lang, UserRepository $userRepository, View $view)
+    /** @param array<string,string> $conf */
+    public function __construct(array $conf, UserRepository $userRepository, View $view)
     {
         $this->conf = $conf;
-        $this->lang = $lang;
         $this->userRepository = $userRepository;
         $this->view = $view;
     }
@@ -51,16 +44,16 @@ class ActivateUser
     {
         $user = $this->userRepository->findByUsername($username);
         if ($user === null) {
-            return $this->view->message("fail", $this->lang['err_username_notfound'] . $username);
+            return $this->view->message("fail", 'err_username_notfound', $username);
         }
         if ($user->getStatus() == "") {
-            return $this->view->message("fail", $this->lang['err_status_empty']);
+            return $this->view->message("fail", 'err_status_empty');
         }
         if ($nonce != $user->getStatus()) {
-            return $this->view->message("fail", $this->lang['err_status_invalid']);
+            return $this->view->message("fail", 'err_status_invalid');
         }
         $user = $user->activate()->withAccessgroups([$this->conf['group_activated']]);
         $this->userRepository->update($user);
-        return $this->view->message('success', $this->lang['activated']);
+        return $this->view->message('success', 'activated');
     }
 }

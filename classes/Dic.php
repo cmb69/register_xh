@@ -98,11 +98,10 @@ class Dic
 
     public static function makeActivateUser(): ActivateUser
     {
-        global $plugin_cf, $plugin_tx;
+        global $plugin_cf;
 
         return new ActivateUser(
             $plugin_cf["register"],
-            $plugin_tx["register"],
             self::makeUserRepository(),
             self::makeView()
         );
@@ -129,10 +128,7 @@ class Dic
 
     public static function makeResetPassword(): ResetPassword
     {
-        global $plugin_tx;
-
         return new ResetPassword(
-            $plugin_tx["register"],
             time(),
             self::makeView(),
             self::makeUserRepository()
@@ -155,10 +151,7 @@ class Dic
 
     public static function makeShowUserPreferences(): ShowUserPreferences
     {
-        global $plugin_tx;
-
         return new ShowUserPreferences(
-            $plugin_tx["register"],
             new Session(),
             new CsrfProtector('register_csrf_token', false),
             self::makeUserRepository(),
@@ -184,10 +177,7 @@ class Dic
 
     public static function makeUnregisterUser(): UnregisterUser
     {
-        global $plugin_tx;
-
         return new UnregisterUser(
-            $plugin_tx["register"],
             new Session(),
             new CsrfProtector('register_csrf_token', false),
             self::makeUserRepository(),

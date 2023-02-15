@@ -22,9 +22,6 @@ use Register\Infra\View;
 
 class UnregisterUser
 {
-    /** @var array<string,string> */
-    private $lang;
-
     /** @var CsrfProtector */
     private $csrfProtector;
 
@@ -40,9 +37,7 @@ class UnregisterUser
     /** @var Logger */
     private $logger;
 
-    /** @param array<string,string> $lang */
     public function __construct(
-        array $lang,
         Session $session,
         CsrfProtector $csrfProtector,
         UserRepository $userRepository,
@@ -50,7 +45,6 @@ class UnregisterUser
         LoginManager $loginManager,
         Logger $logger
     ) {
-        $this->lang = $lang;
         $session->start();
         $this->csrfProtector = $csrfProtector;
         $this->userRepository = $userRepository;
@@ -73,19 +67,19 @@ class UnregisterUser
 
         $entry = $this->userRepository->findByUsername($username);
         if ($entry === null) {
-            return $this->view->message('fail', $this->lang['err_username_does_not_exist'] . " ('" . $username . "')");
+            return $this->view->message('fail', 'err_username_does_not_exist', $username);
         }
 
         // Test if user is locked
         if ($entry->isLocked()) {
-            return $this->view->message('fail', $this->lang['user_locked'] . ':' .$username);
+            return $this->view->message('fail', 'user_locked', $username);
         }
 
         // Form Handling - Delete User ================================================
         if (!password_verify($oldpassword, $entry->getPassword())) {
             $csrfTokenInput = $this->csrfProtector->tokenInput();
             $this->csrfProtector->store();
-            return $this->view->message("fail", $this->lang['err_old_password_wrong'])
+            return $this->view->message("fail", 'err_old_password_wrong')
                 . $this->view->render('userprefs-form', [
                     'csrfTokenInput' => new HtmlString($csrfTokenInput),
                     'actionUrl' => $request->url()->relative(),
@@ -95,12 +89,12 @@ class UnregisterUser
         }
 
         if (!$this->userRepository->delete($entry)) {
-            return $this->view->message("fail", $this->lang['err_cannot_write_csv']);
+            return $this->view->message("fail", 'err_cannot_write_csv');
         }
 
         $username = $_SESSION['username'] ?? '';
         $this->loginManager->logout();
         $this->logger->logInfo('logout', "$username deleted and logged out");
-        return $this->view->message('success', $this->lang['user_deleted'] . ': '.$username);
+        return $this->view->message('success', 'user_deleted', $username);
     }
 }

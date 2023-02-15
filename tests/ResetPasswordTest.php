@@ -41,7 +41,6 @@ class ResetPasswordTest extends TestCase
         $this->view = new View("./", $lang);
         $this->userRepository = $this->createStub(UserRepository::class);
         $this->subject = new ResetPassword(
-            $lang,
             1637449200,
             $this->view,
             $this->userRepository

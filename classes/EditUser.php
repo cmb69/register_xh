@@ -83,19 +83,19 @@ class EditUser
 
         $user = $this->userRepository->findByUsername($username);
         if ($user === null) {
-            return $this->view->message('fail', $this->lang['err_username_does_not_exist'] . " ('" . $username . "')");
+            return $this->view->message('fail', 'err_username_does_not_exist', $username);
         }
 
         // Test if user is locked
         if ($user->isLocked()) {
-            return $this->view->message('fail', $this->lang['user_locked'] . ':' .$username);
+            return $this->view->message('fail', 'user_locked', $username);
         }
 
         // check that old password got entered correctly
         if (!password_verify($oldpassword, $user->getPassword())) {
             $csrfTokenInput = $this->csrfProtector->tokenInput();
             $this->csrfProtector->store();
-            return $this->view->message("fail", $this->lang['err_old_password_wrong'])
+            return $this->view->message("fail", 'err_old_password_wrong')
                 . $this->view->render('userprefs-form', [
                     'csrfTokenInput' => new HtmlString($csrfTokenInput),
                     'actionUrl' => $request->url()->relative(),
@@ -136,7 +136,7 @@ class EditUser
             ->withName($name);
 
         if (!$this->userRepository->update($user)) {
-            return $this->view->message("fail", $this->lang['err_cannot_write_csv']);
+            return $this->view->message("fail", 'err_cannot_write_csv');
         }
 
         // prepare email for user information about updates
@@ -157,7 +157,7 @@ class EditUser
                 'Cc: '  . $oldemail . ', ' . $this->config['senderemail']
             )
         );
-        return $this->view->message('success', $this->lang['prefsupdated']);
+        return $this->view->message('success', 'prefsupdated');
     }
 
     private function trimmedPostString(string $param): string

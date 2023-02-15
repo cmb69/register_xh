@@ -65,10 +65,10 @@ class ChangePassword
 
         $user = $this->userRepository->findByUsername($username);
         if (!$user || !hash_equals(hash_hmac("sha1", $username . $time, $user->getPassword()), $mac)) {
-            return $this->view->message("fail", $this->lang['err_status_invalid']);
+            return $this->view->message("fail", 'err_status_invalid');
         }
         if ($this->now > $time + self::TTL) {
-            return $this->view->message("fail", $this->lang["forgotten_expired"]);
+            return $this->view->message("fail", "forgotten_expired");
         }
 
         if (!isset($_POST["password1"], $_POST["password2"]) || $_POST["password1"] !== $_POST["password2"]) {
@@ -78,7 +78,7 @@ class ChangePassword
                 "time" => $time,
                 "nonce" => $mac,
             ]);
-            return $this->view->message("fail", $this->lang['err_password2'])
+            return $this->view->message("fail", 'err_password2')
                 . $this->view->render("change_password", [
                     "url" => $url->relative(),
                 ]);
@@ -87,7 +87,7 @@ class ChangePassword
         $password = $_POST["password1"];
         $user = $user->withPassword($password);
         if (!$this->userRepository->update($user)) {
-            return $this->view->message("fail", $this->lang['err_cannot_write_csv']);
+            return $this->view->message("fail", 'err_cannot_write_csv');
         }
 
         // prepare email content for user data email
@@ -103,6 +103,6 @@ class ChangePassword
             $content,
             array('From: ' . $this->config['senderemail'])
         );
-        return $this->view->message('success', $this->lang['remindersent']);
+        return $this->view->message('success', 'remindersent');
     }
 }

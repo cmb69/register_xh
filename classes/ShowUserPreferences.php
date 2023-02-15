@@ -20,9 +20,6 @@ use Register\Infra\View;
 
 class ShowUserPreferences
 {
-    /** @var array<string,string> */
-    private $lang;
-
     /** @var CsrfProtector */
     private $csrfProtector;
 
@@ -32,15 +29,12 @@ class ShowUserPreferences
     /** @var View */
     private $view;
 
-    /** @param array<string,string> $lang */
     public function __construct(
-        array $lang,
         Session $session,
         CsrfProtector $csrfProtector,
         UserRepository $userRepository,
         View $view
     ) {
-        $this->lang = $lang;
         $session->start();
         $this->csrfProtector = $csrfProtector;
         $this->userRepository = $userRepository;
@@ -53,9 +47,9 @@ class ShowUserPreferences
 
         $user = $this->userRepository->findByUsername($username);
         if ($user === null) {
-            return $this->view->message('fail', $this->lang['err_username_does_not_exist'] . " ('" . $username . "')");
+            return $this->view->message('fail', 'err_username_does_not_exist', $username);
         } elseif ($user->isLocked()) {
-            return $this->view->message('fail', $this->lang['user_locked'] . ':' .$username);
+            return $this->view->message('fail', 'user_locked', $username);
         } else {
             $csrfTokenInput = $this->csrfProtector->tokenInput();
             $this->csrfProtector->store();

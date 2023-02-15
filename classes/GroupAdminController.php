@@ -62,9 +62,9 @@ class GroupAdminController
         if ($this->dbService->hasGroupsFile()) {
             $groups = $this->dbService->readGroups();
             return $this->renderGroupsForm($groups, $request->url())
-                . $this->view->message('info', count($groups) . ' ' . $this->lang['entries_in_csv'] . $filename);
+                . $this->view->messagep('info', count($groups), 'entries_in_csv', $filename);
         } else {
-            return $this->view->message('fail', $this->lang['err_csv_missing'] . ' (' . $filename . ')');
+            return $this->view->message('fail', 'err_csv_missing', $filename);
         }
     }
 
@@ -109,10 +109,8 @@ class GroupAdminController
             if (!empty($errors)) {
                 $o .= $this->view->render('error', ['errors' => $errors]);
             } else {
-                $o .= $this->view->message(
-                    'success',
-                    $this->lang['csv_written'] . '(' . $this->dbService->dataFolder() . 'groups.csv' . ')'
-                );
+                $filename = $this->dbService->dataFolder() . 'groups.csv';
+                $o .= $this->view->message('success', 'csv_written', $filename);
             }
         } elseif (!empty($errors)) {
             $o .= $this->view->render('error', ['errors' => $errors]);

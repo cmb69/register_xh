@@ -41,7 +41,6 @@ class ActivateUserTest extends TestCase
         $this->userRepository = $this->createMock(UserRepository::class);
         $this->subject = new ActivateUser(
             $conf,
-            $lang,
             $this->userRepository,
             $this->view,
         );

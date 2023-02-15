@@ -60,14 +60,14 @@ class PasswordForgotten
         $email = $_POST['email'] ?? '';
 
         if ($email == '') {
-            return $this->view->message("fail", $this->lang['err_email'])
+            return $this->view->message("fail", 'err_email')
                 . $this->view->render('forgotten-form', [
                     'actionUrl' => $request->url()->relative(),
                     'email' => $email,
                 ]);
         }
         if (!preg_match("/^[^\s()<>@,;:\"\/\[\]?=]+@\w[\w-]*(\.\w[\w-]*)*\.[a-z]{2,}$/i", $email)) {
-            return $this->view->message("fail", $this->lang['err_email_invalid'])
+            return $this->view->message("fail", 'err_email_invalid')
                 . $this->view->render('forgotten-form', [
                     'actionUrl' => $request->url()->relative(),
                     'email' => $email,
@@ -99,6 +99,6 @@ class PasswordForgotten
                 array('From: ' . $this->config['senderemail'])
             );
         }
-        return $this->view->message('success', $this->lang['remindersent_reset']);
+        return $this->view->message('success', 'remindersent_reset');
     }
 }

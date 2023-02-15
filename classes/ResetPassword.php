@@ -18,9 +18,6 @@ class ResetPassword
 {
     private const TTL = 3600;
 
-    /** @var array<string,string> */
-    private $lang;
-
     /** @var int */
     private $now;
 
@@ -30,14 +27,11 @@ class ResetPassword
     /** @var UserRepository */
     private $userRepository;
 
-    /** @param array<string,string> $lang */
     public function __construct(
-        array $lang,
         int $now,
         View $view,
         UserRepository $userRepository
     ) {
-        $this->lang = $lang;
         $this->now = $now;
         $this->view = $view;
         $this->userRepository = $userRepository;
@@ -51,10 +45,10 @@ class ResetPassword
 
         $user = $this->userRepository->findByUsername($username);
         if (!$user || !hash_equals(hash_hmac("sha1", $username . $time, $user->getPassword()), $mac)) {
-            return $this->view->message("fail", $this->lang['err_status_invalid']);
+            return $this->view->message("fail", 'err_status_invalid');
         }
         if ($this->now > $time + self::TTL) {
-            return $this->view->message("fail", $this->lang["forgotten_expired"]);
+            return $this->view->message("fail", "forgotten_expired");
         }
         $url = $request->url()->withParams([
             "action" => "register_change_password",
