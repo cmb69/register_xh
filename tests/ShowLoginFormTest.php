@@ -22,7 +22,7 @@ class ShowLoginFormTest extends TestCase
     {
         global $cf;
 
-        $cf['uri']['word_separator'] = "|";
+        $cf['uri']['word_separator'] = "-";
         $plugin_cf = XH_includeVar("./config/config.php", 'plugin_cf');
         $conf = $plugin_cf['register'];
         $plugin_tx = XH_includeVar("./languages/en.php", 'plugin_tx');
@@ -40,7 +40,7 @@ class ShowLoginFormTest extends TestCase
     {
         global $cf;
 
-        $cf['uri']['word_separator'] = "|";
+        $cf['uri']['word_separator'] = "-";
         $plugin_tx = XH_includeVar("./languages/en.php", 'plugin_tx');
         $lang = $plugin_tx['register'];
         $user = new User("jane", "", [], "Jane Doe", "jane@example.com", "activated");

@@ -27,8 +27,13 @@ class Url
 
     public function withPage(string $page): self
     {
+        global $cf;
+
+        if (!isset($cf['uri']['word_separator'])) {
+            $cf['uri']['word_separator'] = "-";
+        }
         $that = clone $this;
-        $that->page = $page;
+        $that->page = uenc($page);
         return $that;
     }
 

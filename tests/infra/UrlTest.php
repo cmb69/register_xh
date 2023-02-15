@@ -53,4 +53,14 @@ class UrlTest extends TestCase
             "space" => ["Page", ["foo" => "bar baz"], "http://example.com/?Page&foo=bar%20baz"],
         ];
     }
+
+    public function testWithPageAppliesUencWhileConstructorDoesNot(): void
+    {
+        global $tx;
+
+        $tx = ["urichar" => ["org" => "ä", "new" => "ae"]];
+        $url = new Url("/", "A Päge");
+        $this->assertEquals("/?A Päge", $url->relative());
+        $this->assertEquals("/?A-Paege", $url->withPage("A Päge")->relative());
+    }
 }
