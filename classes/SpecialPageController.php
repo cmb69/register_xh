@@ -25,9 +25,7 @@ class SpecialPageController
     /** @var array<string,string> */
     private $text;
 
-    /**
-     * @var View
-     */
+    /** @var View */
     private $view;
 
     /**
@@ -45,14 +43,9 @@ class SpecialPageController
 
     public function registrationPageAction(): Response
     {
-        /**
-         * @var string $title
-         */
-        global $title;
-
         $response = new Response();
         if ($this->conf['allowed_register'] && !in_array($this->text['register'], $this->headings)) {
-            $title = XH_hsc($this->text['register']);
+            $response->setTitle($this->text['register']);
             $response->body(
                 $this->renderPageView(
                     $this->text['register'],
@@ -66,14 +59,9 @@ class SpecialPageController
 
     public function passwordForgottenPageAction(): Response
     {
-        /**
-         * @var string $title
-         */
-        global $title;
-
         $response = new Response();
         if (!in_array($this->text['forgot_password'], $this->headings)) {
-            $title = XH_hsc($this->text['forgot_password']);
+            $response->setTitle($this->text['forgot_password']);
             $response->body(
                 $this->renderPageView(
                     $this->text['forgot_password'],
@@ -87,14 +75,9 @@ class SpecialPageController
 
     public function userPrefsPageAction(): Response
     {
-        /**
-         * @var string $title
-         */
-        global $title;
-
         $response = new Response();
         if (!in_array($this->text['user_prefs'], $this->headings)) {
-            $title = XH_hsc($this->text['user_prefs']);
+            $response->setTitle($this->text['user_prefs']);
             $response->body(
                 $this->renderPageView(
                     $this->text['user_prefs'],
@@ -108,15 +91,10 @@ class SpecialPageController
 
     public function loginErrorPageAction(): Response
     {
-        /**
-         * @var string $title
-         */
-        global $title;
-
         $response = new Response();
         header('HTTP/1.1 403 Forbidden');
         if (!in_array($this->text['login_error'], $this->headings)) {
-            $title = $this->text['login_error'];
+            $response->setTitle($this->text['login_error']);
             $response->body(
                 $this->renderPageView(
                     $this->text['login_error'],
@@ -129,14 +107,9 @@ class SpecialPageController
 
     public function logoutPageAction(): Response
     {
-        /**
-         * @var string $title
-         */
-        global $title;
-
         $response = new Response();
         if (!in_array($this->text['loggedout'], $this->headings)) {
-            $title = $this->text['loggedout'];
+            $response->setTitle($this->text['loggedout']);
             $response->body(
                 $this->renderPageView(
                     $this->text['loggedout'],
@@ -149,14 +122,9 @@ class SpecialPageController
 
     public function loginPageAction(): Response
     {
-        /**
-         * @var string $title
-         */
-        global $title;
-
         $response = new Response();
         if (!in_array($this->text['loggedin'], $this->headings)) {
-            $title = $this->text['loggedin'];
+            $response->setTitle($this->text['loggedin']);
             $response->body(
                 $this->renderPageView(
                     $this->text['loggedin'],
@@ -169,15 +137,10 @@ class SpecialPageController
 
     public function accessErrorPageAction(): Response
     {
-        /**
-         * @var string $title
-         */
-        global $title;
-
         $response = new Response();
         header('HTTP/1.1 403 Forbidden');
         if (!in_array($this->text['access_error'], $this->headings)) {
-            $title = $this->text['access_error'];
+            $response->setTitle($this->text['access_error']);
             $response->body(
                 $this->renderPageView(
                     $this->text['access_error'],

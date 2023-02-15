@@ -20,6 +20,9 @@ class Response
     private $script = null;
 
     /** @var string|null */
+    private $title = null;
+
+    /** @var string|null */
     private $location = null;
 
     public function body(string $string): self
@@ -38,6 +41,12 @@ class Response
     public function addScript(string $filename): self
     {
         $this->script = $filename;
+        return $this;
+    }
+
+    public function setTitle(string $title): self
+    {
+        $this->title = $title;
         return $this;
     }
 
@@ -63,6 +72,11 @@ class Response
         return $this->script;
     }
 
+    public function title(): ?string
+    {
+        return $this->title;
+    }
+
     public function location(): ?string
     {
         return $this->location;
@@ -71,7 +85,7 @@ class Response
     /** @return string|never */
     public function fire()
     {
-        global $hjs;
+        global $hjs, $title;
 
         if ($this->location !== null) {
             while (ob_get_level()) {
@@ -89,6 +103,9 @@ class Response
         if ($this->script !== null) {
             $filename = XH_hsc($this->script);
             $hjs .= "\n<script src=\"$filename\"></script>";
+        }
+        if ($this->title !== null) {
+            $title = XH_hsc($this->title);
         }
         return $this->output;
     }
