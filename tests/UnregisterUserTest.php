@@ -16,7 +16,9 @@ use XH\CSRFProtection as CsrfProtector;
 use Register\Value\User;
 use Register\Infra\Logger;
 use Register\Infra\LoginManager;
+use Register\Infra\Request;
 use Register\Infra\Session;
+use Register\Infra\Url;
 use Register\Infra\UserRepository;
 use Register\Infra\View;
 
@@ -46,6 +48,9 @@ class UnregisterUserTest extends TestCase
     /** @var Logger */
     private $logger;
 
+    /** @var Request */
+    private $request;
+
     public function setUp(): void
     {
         $this->users = [
@@ -70,12 +75,14 @@ class UnregisterUserTest extends TestCase
             $this->logger,
             "/User-Preferences"
         );
+        $this->request = $this->createStub(Request::class);
+        $this->request->method("url")->willReturn(new Url("/", "User-Preferences"));
     }
 
     public function testNoUser(): void
     {
         $this->csrfProtector->expects($this->once())->method("check");
-        $response = ($this->subject)();
+        $response = ($this->subject)($this->request);
         Approvals::verifyHtml($response);
     }
 
@@ -84,7 +91,7 @@ class UnregisterUserTest extends TestCase
         $_SESSION = ["username" => "jane"];
         $this->userRepository->method("findByUsername")->willReturn($this->users["jane"]);
         $this->csrfProtector->expects($this->once())->method("check");
-        $response = ($this->subject)();
+        $response = ($this->subject)($this->request);
         Approvals::verifyHtml($response);
     }
 
@@ -94,7 +101,7 @@ class UnregisterUserTest extends TestCase
         $_POST = ["oldpassword" => "54321"];
         $this->userRepository->method("findByUsername")->willReturn($this->users["john"]);
         $this->csrfProtector->expects($this->once())->method("check");
-        $response = ($this->subject)();
+        $response = ($this->subject)($this->request);
         Approvals::verifyHtml($response);
     }
 
@@ -106,7 +113,7 @@ class UnregisterUserTest extends TestCase
         $this->userRepository->expects($this->once())->method("delete")->willReturn(true);
         $this->csrfProtector->expects($this->once())->method("check");
         $this->loginManager->expects($this->once())->method("logout")->with();
-        $response = ($this->subject)();
+        $response = ($this->subject)($this->request);
         Approvals::verifyHtml($response);
     }
 }

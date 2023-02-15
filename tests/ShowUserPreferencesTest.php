@@ -14,9 +14,9 @@ use PHPUnit\Framework\TestCase;
 use XH\CSRFProtection as CsrfProtector;
 
 use Register\Value\User;
-use Register\Infra\Logger;
-use Register\Infra\LoginManager;
+use Register\Infra\Request;
 use Register\Infra\Session;
+use Register\Infra\Url;
 use Register\Infra\UserRepository;
 use Register\Infra\View;
 
@@ -40,6 +40,9 @@ class ShowUserPreferencesTest extends TestCase
     /** @var View */
     private $view;
 
+    /** @var Request */
+    private $request;
+
     public function setUp(): void
     {
         $this->users = [
@@ -52,22 +55,21 @@ class ShowUserPreferencesTest extends TestCase
         $this->csrfProtector = $this->createMock(CsrfProtector::class);
         $this->userRepository = $this->createMock(UserRepository::class);
         $this->view = new View("./", $lang);
-        $this->loginManager = $this->createStub(LoginManager::class);
-        $this->logger = $this->createMock(Logger::class);
         $this->subject = new ShowUserPreferences(
             $lang,
             $this->session,
             $this->csrfProtector,
             $this->userRepository,
-            $this->view,
-            "/User-Preferences"
+            $this->view
         );
+        $this->request = $this->createStub(Request::class);
+        $this->request->method("url")->willReturn(new Url("/", "User-Preferences"));
     }
 
     public function testNoUser(): void
     {
         $_SESSION = ["username" => "john"];
-        $response = ($this->subject)();
+        $response = ($this->subject)($this->request);
         Approvals::verifyHtml($response);
     }
 
@@ -75,7 +77,7 @@ class ShowUserPreferencesTest extends TestCase
     {
         $_SESSION = ["username" => "jane"];
         $this->userRepository->method("findByUsername")->willReturn($this->users["jane"]);
-        $response = ($this->subject)();
+        $response = ($this->subject)($this->request);
         Approvals::verifyHtml($response);
     }
 
@@ -83,7 +85,7 @@ class ShowUserPreferencesTest extends TestCase
     {
         $_SESSION = ["username" => "john"];
         $this->userRepository->method("findByUsername")->willReturn($this->users["john"]);
-        $response = ($this->subject)();
+        $response = ($this->subject)($this->request);
         Approvals::verifyHtml($response);
     }
 }

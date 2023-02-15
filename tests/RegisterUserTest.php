@@ -11,12 +11,13 @@ namespace Register;
 use XH_includeVar;
 
 use ApprovalTests\Approvals;
-use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
 use Register\Value\User;
 use Register\Logic\ValidationService;
 use Register\Infra\MailService;
+use Register\Infra\Request;
+use Register\Infra\Url;
 use Register\Infra\UserRepository;
 use Register\Infra\View;
 
@@ -37,6 +38,9 @@ class RegisterUserTest extends TestCase
     /** @var UserRepository */
     private $userRepository;
 
+    /** @var Request */
+    private $request;
+
     public function setUp(): void
     {
         $this->users = [
@@ -52,8 +56,6 @@ class RegisterUserTest extends TestCase
         $this->userRepository = $this->createMock(UserRepository::class);
         $mailService = $this->createStub(MailService::class);
         $this->subject = new RegisterUser(
-            "",
-            "",
             $conf,
             $lang,
             $this->validationService,
@@ -61,19 +63,21 @@ class RegisterUserTest extends TestCase
             $this->userRepository,
             $mailService
         );
+        $this->request = $this->createStub(Request::class);
+        $this->request->method("url")->willReturn(new Url("", ""));
     }
 
     public function testValidationError(): void
     {
         $this->validationService->method("validateUser")->willReturn(["error"]);
-        $response = ($this->subject)();
+        $response = ($this->subject)($this->request);
         Approvals::verifyHtml($response);
     }
 
     public function testExistingUser(): void
     {
         $this->userRepository->method("findByUsername")->willReturn($this->users["jane"]);
-        $response = ($this->subject)();
+        $response = ($this->subject)($this->request);
         Approvals::verifyHtml($response);
     }
 
@@ -85,7 +89,7 @@ class RegisterUserTest extends TestCase
         $_SERVER["REMOTE_ADDR"] = "example.com";
         $_SERVER['SERVER_NAME'] = "example.com";
         $this->userRepository->method("findByEmail")->willReturn($this->users["john"]);
-        $response = ($this->subject)();
+        $response = ($this->subject)($this->request);
         Approvals::verifyHtml($response);
     }
 
@@ -94,7 +98,7 @@ class RegisterUserTest extends TestCase
         $_SERVER["REMOTE_ADDR"] = "example.com";
         $_SERVER['SERVER_NAME'] = "example.com";
         $this->userRepository->expects($this->once())->method("add")->willReturn(true);
-        $response = ($this->subject)();
+        $response = ($this->subject)($this->request);
         Approvals::verifyHtml($response);
     }
 }

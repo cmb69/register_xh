@@ -72,14 +72,16 @@ class ChangePassword
         }
 
         if (!isset($_POST["password1"], $_POST["password2"]) || $_POST["password1"] !== $_POST["password2"]) {
-            $o = $this->view->message("fail", $this->lang['err_password2']);
-            $username = urlencode($username);
-            $time = urlencode($time);
-            $mac = urlencode($mac);
-            return $o . $this->view->render("change_password", [
-                "url" => $request->url()->relative()
-                    . "&action=register_change_password&username=$username&time=$time&nonce=$mac",
+            $url = $request->url()->withParams([
+                "action" => "register_change_password",
+                "username" => $username,
+                "time" => $time,
+                "nonce" => $mac,
             ]);
+            return $this->view->message("fail", $this->lang['err_password2'])
+                . $this->view->render("change_password", [
+                    "url" => $url->relative(),
+                ]);
         }
 
         $password = $_POST["password1"];

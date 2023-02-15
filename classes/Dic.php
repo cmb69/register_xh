@@ -53,50 +53,40 @@ class Dic
 
     public static function makeUserAdminController(): UserAdminController
     {
-        global $pth, $plugin_cf, $plugin_tx, $_XH_csrfProtection, $sn;
+        global $pth, $plugin_cf, $plugin_tx, $_XH_csrfProtection;
 
         return new UserAdminController(
             "{$pth['folder']['plugins']}register/",
             $plugin_cf["register"],
             $plugin_tx["register"],
             $_XH_csrfProtection,
-            self::makeDbService(),
-            $sn
+            self::makeDbService()
         );
     }
 
     public static function makeGroupAdminController(): GroupAdminController
     {
-        global $pth, $plugin_tx, $_XH_csrfProtection, $sn;
+        global $pth, $plugin_tx, $_XH_csrfProtection;
 
         return new GroupAdminController(
             "{$pth['folder']['plugins']}register/",
             $plugin_tx["register"],
             $_XH_csrfProtection,
             self::makeDbService(),
-            $sn,
             new Pages()
         );
     }
 
     public static function makeShowRegistrationForm(): ShowRegistrationForm
     {
-        global $sn, $su;
-
-        return new ShowRegistrationForm(
-            $sn,
-            $su,
-            self::makeView()
-        );
+        return new ShowRegistrationForm(self::makeView());
     }
 
     public static function makeRegisterUser(): RegisterUser
     {
-        global $plugin_cf, $plugin_tx, $sn, $su;
+        global $plugin_cf, $plugin_tx;
 
         return new RegisterUser(
-            $sn,
-            $su,
             $plugin_cf["register"],
             $plugin_tx["register"],
             self::makeValidationService(),
@@ -165,21 +155,20 @@ class Dic
 
     public static function makeShowUserPreferences(): ShowUserPreferences
     {
-        global $plugin_tx, $sn, $su;
+        global $plugin_tx;
 
         return new ShowUserPreferences(
             $plugin_tx["register"],
             new Session(),
             new CsrfProtector('register_csrf_token', false),
             self::makeUserRepository(),
-            self::makeView(),
-            "$sn?$su"
+            self::makeView()
         );
     }
 
     public static function makeEditUser(): EditUser
     {
-        global $plugin_cf, $plugin_tx, $sn, $su;
+        global $plugin_cf, $plugin_tx;
 
         return new EditUser(
             $plugin_cf["register"],
@@ -189,14 +178,13 @@ class Dic
             self::makeValidationService(),
             self::makeUserRepository(),
             self::makeView(),
-            new MailService(),
-            "$sn?$su"
+            new MailService()
         );
     }
 
     public static function makeUnregisterUser(): UnregisterUser
     {
-        global $plugin_tx, $sn, $su;
+        global $plugin_tx;
 
         return new UnregisterUser(
             $plugin_tx["register"],
@@ -205,19 +193,17 @@ class Dic
             self::makeUserRepository(),
             self::makeView(),
             new LoginManager(time(), new Session()),
-            new Logger(),
-            "$sn?$su"
+            new Logger()
         );
     }
 
     public static function makeShowLoginForm(): ShowLoginForm
     {
-        global $plugin_cf, $plugin_tx, $sn, $su;
+        global $plugin_cf, $plugin_tx, $su;
 
         return new ShowLoginForm(
             $plugin_cf["register"],
             $plugin_tx["register"],
-            $sn,
             $su,
             self::makeView()
         );

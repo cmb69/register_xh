@@ -17,6 +17,8 @@ use Register\Value\User;
 use Register\Value\UserGroup;
 use Register\Logic\ValidationService;
 use Register\Infra\DbService;
+use Register\Infra\Request;
+use Register\Infra\Url;
 use Register\Infra\View;
 
 class UserAdminController
@@ -39,9 +41,6 @@ class UserAdminController
     /** @var DbService */
     private $dbService;
 
-    /** @var string */
-    private $scriptName;
-
     /**
      * @param array<string,string> $config
      * @param array<string,string> $lang
@@ -51,8 +50,7 @@ class UserAdminController
         array $config,
         array $lang,
         CsrfProtector $csrfProtector,
-        DbService $dbService,
-        string $scriptName
+        DbService $dbService
     ) {
         $this->pluginFolder = $pluginFolder;
         $this->config = $config;
@@ -60,24 +58,23 @@ class UserAdminController
         $this->csrfProtector = $csrfProtector;
         $this->view = new View($this->pluginFolder, $this->lang);
         $this->dbService = $dbService;
-        $this->scriptName = $scriptName;
     }
 
-    public function editUsersAction(): string
+    public function editUsersAction(Request $request): string
     {
         $fn = $this->dbService->dataFolder() . 'users.csv';
         if ($this->dbService->hasUsersFile()) {
             $lock = $this->dbService->lock(false);
             $users  = $this->dbService->readUsers();
             $this->dbService->unlock($lock);
-            return $this->renderUsersForm($users)
+            return $this->renderUsersForm($users, $request->url())
                 . $this->view->message('info', count($users) . ' ' . $this->lang['entries_in_csv'] . $fn);
         } else {
             return $this->view->message('fail', $this->lang['err_csv_missing'] . ' (' . $fn . ')');
         }
     }
 
-    public function saveUsersAction(): string
+    public function saveUsersAction(Request $request): string
     {
         $this->csrfProtector->check();
         $errors = [];
@@ -205,12 +202,12 @@ class UserAdminController
             $o .= $this->view->render('error', ['errors' => $errors]);
         }
 
-        $o .= $this->renderUsersForm($newusers);
+        $o .= $this->renderUsersForm($newusers, $request->url());
         return $o;
     }
 
     /** @param User[] $users */
-    private function renderUsersForm(array $users): string
+    private function renderUsersForm(array $users, Url $url): string
     {
         /** @var string $hjs */
         global $hjs;
@@ -237,7 +234,7 @@ class UserAdminController
             'defaultGroup' => $this->config['group_default'],
             'statusSelectActivated' => new HtmlString($this->statusSelectbox('activated')),
             'groups' => $this->findGroups(),
-            'actionUrl' => "{$this->scriptName}?&register",
+            'actionUrl' => $url->withPage("register")->relative(),
             'users' => $users,
         ];
         $groupStrings = $statusSelects = [];

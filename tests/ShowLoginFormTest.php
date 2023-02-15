@@ -12,6 +12,8 @@ use ApprovalTests\Approvals;
 use PHPUnit\Framework\TestCase;
 
 use Register\Value\User;
+use Register\Infra\Request;
+use Register\Infra\Url;
 use Register\Infra\View;
 
 class ShowLoginFormTest extends TestCase
@@ -25,9 +27,11 @@ class ShowLoginFormTest extends TestCase
         $conf = $plugin_cf['register'];
         $plugin_tx = XH_includeVar("./languages/en.php", 'plugin_tx');
         $lang = $plugin_tx['register'];
-        $subject = new ShowLoginForm($conf, $lang, "/", "Foo", new View("./", $lang));
+        $subject = new ShowLoginForm($conf, $lang, "Foo", new View("./", $lang));
 
-        $response = $subject(null);
+        $request = $this->createStub(Request::class);
+        $request->method("url")->willReturn(new Url("/", "Foo"));
+        $response = $subject(null, $request);
 
         Approvals::verifyHtml($response);
     }
@@ -40,9 +44,11 @@ class ShowLoginFormTest extends TestCase
         $plugin_tx = XH_includeVar("./languages/en.php", 'plugin_tx');
         $lang = $plugin_tx['register'];
         $user = new User("jane", "", [], "Jane Doe", "jane@example.com", "activated");
-        $subject = new ShowLoginForm([], $lang, "/", "Foo", new View("./", $lang));
+        $subject = new ShowLoginForm([], $lang, "Foo", new View("./", $lang));
 
-        $response = $subject($user);
+        $request = $this->createStub(Request::class);
+        $request->method("url")->willReturn(new Url("/", "Foo"));
+        $response = $subject($user, $request);
 
         Approvals::verifyHtml($response);
     }

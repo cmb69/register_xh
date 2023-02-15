@@ -77,15 +77,19 @@ class PasswordForgotten
         $user = $this->userRepository->findByEmail($email);
         if ($user) {
             $mac = hash_hmac("sha1", $user->getUsername() . $this->now, $user->getPassword());
+            $url = $request->url()->withParams([
+                "action" => "registerResetPassword",
+                "username" => $user->getUsername(),
+                "time" => (string) $this->now,
+                "mac" => $mac,
+            ]);
             // prepare email content for user data email
             $content = $this->lang['emailtext1'] . "\n\n"
                 . ' ' . $this->lang['name'] . ": " . $user->getName() . "\n"
                 . ' ' . $this->lang['username'] . ": " . $user->getUsername() . "\n";
             $content .= ' ' . $this->lang['email'] . ": " . $user->getEmail() . "\n";
             $content .= "\n" . $this->lang['emailtext3'] ."\n\n"
-                . '<' . $request->url()->absolute() . '&'
-                . 'action=registerResetPassword&username=' . urlencode($user->getUsername()) . '&time='
-                . urlencode((string) $this->now) . '&mac=' . urlencode($mac) . '>';
+                . '<' . $url->absolute() . '>';
 
             // send reminder email
             $this->mailService->sendMail(

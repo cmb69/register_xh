@@ -16,6 +16,8 @@ use XH\Pages;
 use Register\Value\HtmlString;
 use Register\Value\UserGroup;
 use Register\Infra\DbService;
+use Register\Infra\Request;
+use Register\Infra\Url;
 use Register\Infra\View;
 
 class GroupAdminController
@@ -35,9 +37,6 @@ class GroupAdminController
     /** @var DbService */
     private $dbService;
 
-    /** @var string */
-    private $scriptName;
-
     /** @var Pages */
     private $pages;
 
@@ -47,7 +46,6 @@ class GroupAdminController
         array $lang,
         CsrfProtector $csrfProtector,
         DbService $dbService,
-        string $scriptName,
         Pages $pages
     ) {
         $this->pluginFolder = $pluginFolder;
@@ -55,23 +53,22 @@ class GroupAdminController
         $this->csrfProtector = $csrfProtector;
         $this->view = new View($this->pluginFolder, $this->lang);
         $this->dbService = $dbService;
-        $this->scriptName = $scriptName;
         $this->pages = $pages;
     }
 
-    public function editGroupsAction(): string
+    public function editGroupsAction(Request $request): string
     {
         $filename = $this->dbService->dataFolder() . 'groups.csv';
         if ($this->dbService->hasGroupsFile()) {
             $groups = $this->dbService->readGroups();
-            return $this->renderGroupsForm($groups)
+            return $this->renderGroupsForm($groups, $request->url())
                 . $this->view->message('info', count($groups) . ' ' . $this->lang['entries_in_csv'] . $filename);
         } else {
             return $this->view->message('fail', $this->lang['err_csv_missing'] . ' (' . $filename . ')');
         }
     }
 
-    public function saveGroupsAction(): string
+    public function saveGroupsAction(Request $request): string
     {
         $this->csrfProtector->check();
         $errors = [];
@@ -121,16 +118,16 @@ class GroupAdminController
             $o .= $this->view->render('error', ['errors' => $errors]);
         }
 
-        $o .= $this->renderGroupsForm($newgroups);
+        $o .= $this->renderGroupsForm($newgroups, $request->url());
         return $o;
     }
 
     /** @param list<UserGroup> $groups */
-    private function renderGroupsForm(array $groups): string
+    private function renderGroupsForm(array $groups, Url $url): string
     {
         return $this->view->render('admin-groups', [
             'csrfTokenInput' => new HtmlString($this->csrfProtector->tokenInput()),
-            'actionUrl' => "{$this->scriptName}?&register",
+            'actionUrl' => $url->withPage("register")->relative(),
             'groups' => $groups,
             'selects' => $this->selects($groups),
         ]);

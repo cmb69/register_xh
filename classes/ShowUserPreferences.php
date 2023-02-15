@@ -13,6 +13,7 @@ namespace Register;
 use XH\CSRFProtection as CsrfProtector;
 
 use Register\Value\HtmlString;
+use Register\Infra\Request;
 use Register\Infra\Session;
 use Register\Infra\UserRepository;
 use Register\Infra\View;
@@ -31,27 +32,22 @@ class ShowUserPreferences
     /** @var View */
     private $view;
 
-    /** @var string */
-    private $actionUrl;
-
     /** @param array<string,string> $lang */
     public function __construct(
         array $lang,
         Session $session,
         CsrfProtector $csrfProtector,
         UserRepository $userRepository,
-        View $view,
-        string $actionUrl
+        View $view
     ) {
         $this->lang = $lang;
         $session->start();
         $this->csrfProtector = $csrfProtector;
         $this->userRepository = $userRepository;
         $this->view = $view;
-        $this->actionUrl = $actionUrl;
     }
 
-    public function __invoke(): string
+    public function __invoke(Request $request): string
     {
         $username = $_SESSION['username'] ?? '';
 
@@ -65,7 +61,7 @@ class ShowUserPreferences
             $this->csrfProtector->store();
             return $this->view->render('userprefs-form', [
                 'csrfTokenInput' => new HtmlString($csrfTokenInput),
-                'actionUrl' => $this->actionUrl,
+                'actionUrl' => $request->url()->relative(),
                 'name' => $user->getName(),
                 'email' => $user->getEmail(),
             ]);

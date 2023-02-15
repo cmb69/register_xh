@@ -15,6 +15,7 @@ use XH\CSRFProtection as CsrfProtector;
 use Register\Value\HtmlString;
 use Register\Infra\Logger;
 use Register\Infra\LoginManager;
+use Register\Infra\Request;
 use Register\Infra\Session;
 use Register\Infra\UserRepository;
 use Register\Infra\View;
@@ -39,9 +40,6 @@ class UnregisterUser
     /** @var Logger */
     private $logger;
 
-    /** @var string */
-    private $actionUrl;
-
     /** @param array<string,string> $lang */
     public function __construct(
         array $lang,
@@ -50,8 +48,7 @@ class UnregisterUser
         UserRepository $userRepository,
         View $view,
         LoginManager $loginManager,
-        Logger $logger,
-        string $actionUrl
+        Logger $logger
     ) {
         $this->lang = $lang;
         $session->start();
@@ -60,10 +57,9 @@ class UnregisterUser
         $this->view = $view;
         $this->loginManager = $loginManager;
         $this->logger = $logger;
-        $this->actionUrl = $actionUrl;
     }
 
-    public function __invoke(): string
+    public function __invoke(Request $request): string
     {
         $this->csrfProtector->check();
     
@@ -92,7 +88,7 @@ class UnregisterUser
             return $this->view->message("fail", $this->lang['err_old_password_wrong'])
                 . $this->view->render('userprefs-form', [
                     'csrfTokenInput' => new HtmlString($csrfTokenInput),
-                    'actionUrl' => $this->actionUrl,
+                    'actionUrl' => $request->url()->relative(),
                     'name' => $name,
                     'email' => $email,
                 ]);

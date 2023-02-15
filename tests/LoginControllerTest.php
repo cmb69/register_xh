@@ -70,7 +70,7 @@ class LoginControllerTest extends TestCase
             $this->session
         );
         $response = $sut->loginAction();
-        $this->assertEquals("http://example.com?Logged-in", $response->location());
+        $this->assertEquals("http://example.com/?Logged-in", $response->location());
     }
 
     public function testLoginActionFailureRedirects(): void
@@ -85,7 +85,7 @@ class LoginControllerTest extends TestCase
             $this->session
         );
         $response = $sut->loginAction();
-        $this->assertEquals("http://example.com?Login-Error", $response->location());
+        $this->assertEquals("http://example.com/?Login-Error", $response->location());
     }
 
     public function testLogoutActionRedirects(): void
@@ -100,7 +100,7 @@ class LoginControllerTest extends TestCase
             $this->session
         );
         $response = $sut->logoutAction();
-        $this->assertEquals("http://example.com?Logged-out", $response->location());
+        $this->assertEquals("http://example.com/?Logged-out", $response->location());
     }
 
     private function jane(): User

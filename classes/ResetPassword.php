@@ -56,13 +56,17 @@ class ResetPassword
         if ($this->now > $time + self::TTL) {
             return $this->view->message("fail", $this->lang["forgotten_expired"]);
         }
-
+        $url = $request->url()->withParams([
+            "action" => "register_change_password",
+            "username" => $username,
+            "time" => $time,
+            "mac" => $mac,
+        ]);
         $username = urlencode($username);
         $time = urlencode($time);
         $mac = urlencode($mac);
         return $this->view->render("change_password", [
-            "url" => $request->url()->relative()
-                . "&action=register_change_password&username=$username&time=$time&mac=$mac",
+            "url" => $url->relative(),
         ]);
     }
 }

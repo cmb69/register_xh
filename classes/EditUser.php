@@ -15,6 +15,7 @@ use XH\CSRFProtection as CsrfProtector;
 use Register\Value\HtmlString;
 use Register\Logic\ValidationService;
 use Register\Infra\MailService;
+use Register\Infra\Request;
 use Register\Infra\Session;
 use Register\Infra\UserRepository;
 use Register\Infra\View;
@@ -42,9 +43,6 @@ class EditUser
     /** @var MailService */
     private $mailService;
 
-    /** @var string */
-    private $actionUrl;
-
     /**
      * @param array<string,string> $config
      * @param array<string,string> $lang
@@ -57,8 +55,7 @@ class EditUser
         ValidationService $validationService,
         UserRepository $userRepository,
         View $view,
-        MailService $mailService,
-        string $actionUrl
+        MailService $mailService
     ) {
         $this->config = $config;
         $this->lang = $lang;
@@ -68,10 +65,9 @@ class EditUser
         $this->userRepository = $userRepository;
         $this->view = $view;
         $this->mailService = $mailService;
-        $this->actionUrl = $actionUrl;
     }
 
-    public function __invoke(): string
+    public function __invoke(Request $request): string
     {
         $this->csrfProtector->check();
 
@@ -102,7 +98,7 @@ class EditUser
             return $this->view->message("fail", $this->lang['err_old_password_wrong'])
                 . $this->view->render('userprefs-form', [
                     'csrfTokenInput' => new HtmlString($csrfTokenInput),
-                    'actionUrl' => $this->actionUrl,
+                    'actionUrl' => $request->url()->relative(),
                     'name' => $name,
                     'email' => $email,
                 ]);
@@ -126,7 +122,7 @@ class EditUser
             return $this->view->render('error', ['errors' => $errors])
                 . $this->view->render('userprefs-form', [
                     'csrfTokenInput' => new HtmlString($csrfTokenInput),
-                    'actionUrl' => $this->actionUrl,
+                    'actionUrl' => $request->url()->relative(),
                     'name' => $name,
                     'email' => $email,
                 ]);

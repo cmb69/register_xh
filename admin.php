@@ -10,6 +10,7 @@
 
 use XH\PageDataRouter;
 use Register\Dic;
+use Register\Infra\Request;
 
 if (!defined("CMSIMPLE_XH_VERSION")) {
     header("HTTP/1.1 403 Forbidden");
@@ -33,9 +34,15 @@ $pd_router->add_tab(
 if (XH_wantsPluginAdministration("register")) {
     $o .= print_plugin_admin("off");
     pluginmenu("ROW");
-    $temp = "?&register&admin=plugin_main&action=editgroups";
+    $temp = (new Request())->url()->withPage("register")->withParams([
+        "admin" => "plugin_main",
+        "action" => "editgroups",
+    ])->relative();
     pluginmenu("TAB", XH_hsc($temp), "", XH_hsc($plugin_tx["register"]["mnu_group_admin"]));
-    $temp = "?&register&admin=plugin_main&action=editusers";
+    $temp = (new Request())->url()->withPage("register")->withParams([
+        "admin" => "plugin_main",
+        "action" => "editusers",
+    ])->relative();
     pluginmenu("TAB", XH_hsc($temp), "", XH_hsc($plugin_tx["register"]["mnu_user_admin"]));
     $o .= pluginmenu("SHOW");
     switch ($admin) {
@@ -45,16 +52,16 @@ if (XH_wantsPluginAdministration("register")) {
         case "plugin_main":
             switch ($action) {
                 case "editusers":
-                    $o .= Dic::makeUserAdminController()->editUsersAction();
+                    $o .= Dic::makeUserAdminController()->editUsersAction(new Request());
                     break;
                 case "saveusers":
-                    $o .= Dic::makeUserAdminController()->saveUsersAction();
+                    $o .= Dic::makeUserAdminController()->saveUsersAction(new Request());
                     break;
                 case "editgroups":
-                    $o .= Dic::makeGroupAdminController()->editGroupsAction();
+                    $o .= Dic::makeGroupAdminController()->editGroupsAction(new Request());
                     break;
                 case "savegroups":
-                    $o .= Dic::makeGroupAdminController()->saveGroupsAction();
+                    $o .= Dic::makeGroupAdminController()->saveGroupsAction(new Request());
                     break;
             }
             break;

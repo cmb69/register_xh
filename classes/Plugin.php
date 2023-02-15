@@ -164,12 +164,12 @@ class Plugin
             exit;
         }
         if (isset($_POST['action']) && $_POST['action'] === 'register_user') {
-            return Dic::makeRegisterUser()();
+            return Dic::makeRegisterUser()(new Request());
         }
         if (isset($_GET['action']) && $_GET['action'] === 'register_activate_user') {
             return Dic::makeActivateUser()();
         }
-        return Dic::makeShowRegistrationForm()();
+        return Dic::makeShowRegistrationForm()(new Request());
     }
 
     public static function handleForgotPassword(): string
@@ -201,17 +201,17 @@ class Plugin
             return XH_message('fail', $plugin_tx['register']['access_error_text']);
         }
         if (isset($_POST['action']) && $_POST['action'] === 'edit_user_prefs' && isset($_POST['submit'])) {
-            return Dic::makeEditUser()();
+            return Dic::makeEditUser()(new Request());
         }
         if (isset($_POST['action']) && $_POST['action'] === 'edit_user_prefs' && isset($_POST['delete'])) {
-            return Dic::makeUnregisterUser()();
+            return Dic::makeUnregisterUser()(new Request());
         }
-        return Dic::makeShowUserPreferences()();
+        return Dic::makeShowUserPreferences()(new Request());
     }
 
     public static function handleLoginForm(): string
     {
-        return Dic::makeShowLoginForm()(self::currentUser());
+        return Dic::makeShowLoginForm()(self::currentUser(), new Request());
     }
 
     public static function handleloggedInForm(): string

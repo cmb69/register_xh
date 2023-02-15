@@ -10,35 +10,25 @@
 
 namespace Register;
 
+use Register\Infra\Request;
 use Register\Infra\View;
 
 class ShowRegistrationForm
 {
-    /** @var string */
-    private $scriptName;
-
-    /** @var string */
-    private $selectedUrl;
-
     /**
      * @var View
      */
     private $view;
 
-    public function __construct(
-        string $scriptName,
-        string $selectedUrl,
-        View $view
-    ) {
-        $this->scriptName = $scriptName;
-        $this->selectedUrl = $selectedUrl;
+    public function __construct(View $view)
+    {
         $this->view = $view;
     }
 
-    public function __invoke(): string
+    public function __invoke(Request $request): string
     {
         return $this->view->render('registerform', [
-            'actionUrl' => $this->scriptName . "?" .$this->selectedUrl,
+            'actionUrl' => $request->url()->relative(),
             'name' => "",
             'username' => "",
             'password1' => "",

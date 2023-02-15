@@ -13,17 +13,12 @@ namespace Register;
 use Register\Value\User;
 use Register\Logic\ValidationService;
 use Register\Infra\MailService;
+use Register\Infra\Request;
 use Register\Infra\UserRepository;
 use Register\Infra\View;
 
 class RegisterUser
 {
-    /** @var string */
-    private $scriptName;
-
-    /** @var string */
-    private $selectedUrl;
-
     /** @var array<string,string> */
     private $config;
 
@@ -47,8 +42,6 @@ class RegisterUser
      * @param array<string,string> $lang
      */
     public function __construct(
-        string $scriptName,
-        string $selectedUrl,
         array $config,
         array $lang,
         ValidationService $validationService,
@@ -56,8 +49,6 @@ class RegisterUser
         UserRepository $userRepository,
         MailService $mailService
     ) {
-        $this->scriptName = $scriptName;
-        $this->selectedUrl = $selectedUrl;
         $this->config = $config;
         $this->lang = $lang;
         $this->validationService = $validationService;
@@ -66,7 +57,7 @@ class RegisterUser
         $this->mailService = $mailService;
     }
 
-    public function __invoke(): string
+    public function __invoke(Request $request): string
     {
         $name      = isset($_POST['name']) && is_string($_POST["name"]) ? trim($_POST['name']) : '';
         $username  = isset($_POST['username']) && is_string($_POST["username"]) ? trim($_POST['username']) : '';
@@ -78,7 +69,7 @@ class RegisterUser
         if ($errors) {
             return $this->view->render('error', ['errors' => $errors])
                 . $this->view->render('registerform', [
-                    'actionUrl' => $this->scriptName . "?" .$this->selectedUrl,
+                    'actionUrl' => $request->url()->relative(),
                     'name' => $name,
                     'username' => $username,
                     'password1' => $password1,
@@ -110,6 +101,11 @@ class RegisterUser
         }
 
         // prepare email content for registration activation
+        $url = $request->url()->withParams([
+            "action" => "register_activate_user",
+            "username" => $username,
+            "nonce" => $status,
+        ]);
         $content = $this->lang['emailtext1'] . "\n\n"
             . ' ' . $this->lang['name'] . ": $name \n"
             . ' ' . $this->lang['username'] . ": $username \n"
@@ -117,9 +113,7 @@ class RegisterUser
             . ' ' . $this->lang['fromip'] . ": {$_SERVER['REMOTE_ADDR']} \n\n";
         if (!$user) {
             $content .= $this->lang['emailtext2'] . "\n\n"
-                . '<' . CMSIMPLE_URL . '?' . $this->selectedUrl . '&'
-                . 'action=register_activate_user&username='.$username.'&nonce='
-                . $status . '>';
+                . '<' . $url->absolute() . '>';
         } else {
             $content .= $this->lang['emailtext4'] . "\n\n"
                 . '<' . CMSIMPLE_URL . '?' . uenc($this->lang['forgot_password']) . '>';

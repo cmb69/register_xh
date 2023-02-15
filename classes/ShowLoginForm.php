@@ -11,6 +11,7 @@
 namespace Register;
 
 use Register\Value\User;
+use Register\Infra\Request;
 use Register\Infra\View;
 
 class ShowLoginForm
@@ -24,11 +25,6 @@ class ShowLoginForm
      * @var array<string,string>
      */
     private $lang;
-
-    /**
-     * @var string
-     */
-    private $scriptName;
 
     /**
      * @var string
@@ -47,43 +43,41 @@ class ShowLoginForm
     public function __construct(
         array $conf,
         array $lang,
-        string $scriptName,
         string $currentPage,
         View $view
     ) {
         $this->conf = $conf;
         $this->lang = $lang;
-        $this->scriptName = $scriptName;
         $this->currentPage = $currentPage;
         $this->view = $view;
     }
 
-    public function __invoke(?User $currentUser): string
+    public function __invoke(?User $currentUser, Request $request): string
     {
         if ($currentUser === null) {
-            return $this->renderLoginForm();
+            return $this->renderLoginForm($request);
         } else {
-            return $this->renderLoggedInForm($currentUser);
+            return $this->renderLoggedInForm($currentUser, $request);
         }
     }
 
-    private function renderLoginForm(): string
+    private function renderLoginForm(Request $request): string
     {
         $forgotPasswordUrl = uenc($this->lang['forgot_password']);
         $registerUrl = uenc($this->lang['register']);
         $data = [
-            'actionUrl' => "$this->scriptName?$this->currentPage",
+            'actionUrl' => $request->url()->relative(),
             'hasForgotPasswordLink' => $this->conf['password_forgotten']
                 && urldecode($this->currentPage) != $forgotPasswordUrl,
-            'forgotPasswordUrl' => "$this->scriptName?$forgotPasswordUrl",
+            'forgotPasswordUrl' => $request->url()->withPage($forgotPasswordUrl)->relative(),
             'hasRememberMe' => $this->conf['remember_user'],
             'isRegisterAllowed' => $this->conf['allowed_register'],
-            'registerUrl' => "$this->scriptName?$registerUrl",
+            'registerUrl' => $request->url()->withPage($registerUrl)->relative(),
         ];
         return $this->view->render('loginform', $data);
     }
 
-    private function renderLoggedInForm(?User $currentUser): string
+    private function renderLoggedInForm(?User $currentUser, Request $request): string
     {
         $user = $currentUser;
         assert($user instanceof User);
@@ -93,7 +87,7 @@ class ShowLoginForm
             'hasUserPrefs' => $user->isActivated() &&
                 urldecode($this->currentPage) != $userPrefUrl,
             'userPrefUrl' => "?$userPrefUrl",
-            'logoutUrl' => "$this->scriptName?&function=registerlogout",
+            'logoutUrl' => $request->url()->withPage("")->withParams(["function" => "registerlogout"])->relative(),
         ];
         return $this->view->render('loggedin-area', $data);
     }

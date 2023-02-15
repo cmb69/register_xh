@@ -9,17 +9,16 @@
 namespace Register;
 
 use ApprovalTests\Approvals;
-use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
 use XH\CSRFProtection as CsrfProtector;
 
 use Register\Value\User;
 use Register\Logic\ValidationService;
-use Register\Infra\Logger;
-use Register\Infra\LoginManager;
 use Register\Infra\MailService;
+use Register\Infra\Request;
 use Register\Infra\Session;
+use Register\Infra\Url;
 use Register\Infra\UserRepository;
 use Register\Infra\View;
 
@@ -43,6 +42,9 @@ class EditUserTest extends TestCase
     /** @var View */
     private $view;
 
+    /** @var Request */
+    private $request;
+
     public function setUp(): void
     {
         $this->users = [
@@ -59,8 +61,6 @@ class EditUserTest extends TestCase
         $this->userRepository = $this->createMock(UserRepository::class);
         $this->view = new View("./", $lang);
         $mailService = $this->createStub(MailService::class);
-        $this->loginManager = $this->createStub(LoginManager::class);
-        $this->logger = $this->createMock(Logger::class);
         $this->subject = new EditUser(
             $conf,
             $lang,
@@ -69,16 +69,17 @@ class EditUserTest extends TestCase
             $validationService,
             $this->userRepository,
             $this->view,
-            $mailService,
-            "/User-Preferences"
+            $mailService
         );
+        $this->request = $this->createStub(Request::class);
+        $this->request->method("url")->willReturn(new Url("/", "User-Preferences"));
     }
 
     public function testNoUser(): void
     {
         $_SESSION['username'] = "cmb";
         $this->csrfProtector->expects($this->once())->method("check");
-        $response = ($this->subject)();
+        $response = ($this->subject)($this->request);
         Approvals::verifyHtml($response);
     }
 
@@ -87,7 +88,7 @@ class EditUserTest extends TestCase
         $_SESSION = ["username" => "jane"];
         $this->userRepository->method("findByUsername")->willReturn($this->users["jane"]);
         $this->csrfProtector->expects($this->once())->method("check");
-        $response = ($this->subject)();
+        $response = ($this->subject)($this->request);
         Approvals::verifyHtml($response);
     }
 
@@ -97,7 +98,7 @@ class EditUserTest extends TestCase
         $_POST = ["oldpassword" => "54321"];
         $this->userRepository->method("findByUsername")->willReturn($this->users["john"]);
         $this->csrfProtector->expects($this->once())->method("check");
-        $response = ($this->subject)();
+        $response = ($this->subject)($this->request);
         Approvals::verifyHtml($response);
     }
 
@@ -110,7 +111,7 @@ class EditUserTest extends TestCase
         $this->userRepository->method("findByUsername")->willReturn($this->users["john"]);
         $this->csrfProtector->expects($this->once())->method("check");
         $this->userRepository->expects($this->once())->method("update")->willReturn(true);
-        $response = ($this->subject)();
+        $response = ($this->subject)($this->request);
         Approvals::verifyHtml($response);
     }
 }
