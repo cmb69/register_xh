@@ -22,6 +22,9 @@ class Response
     /** @var string|null */
     private $title = null;
 
+    /** @var bool */
+    private $forbidden = false;
+
     /** @var string|null */
     private $location = null;
 
@@ -47,6 +50,12 @@ class Response
     public function setTitle(string $title): self
     {
         $this->title = $title;
+        return $this;
+    }
+
+    public function forbid(): self
+    {
+        $this->forbidden = true;
         return $this;
     }
 
@@ -94,6 +103,9 @@ class Response
             header('Location: ' . $this->location);
             echo $this->output;
             exit;
+        }
+        if ($this->forbidden) {
+            header("HTTP/1.1 403 Forbidden");
         }
         foreach ($this->meta as $key => $data) {
             $key = XH_hsc($key);

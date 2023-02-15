@@ -92,7 +92,7 @@ class SpecialPageController
     public function loginErrorPageAction(): Response
     {
         $response = new Response();
-        header('HTTP/1.1 403 Forbidden');
+        $response->forbid();
         if (!in_array($this->text['login_error'], $this->headings)) {
             $response->setTitle($this->text['login_error']);
             $response->body(
@@ -138,7 +138,7 @@ class SpecialPageController
     public function accessErrorPageAction(): Response
     {
         $response = new Response();
-        header('HTTP/1.1 403 Forbidden');
+        $response->forbid();
         if (!in_array($this->text['access_error'], $this->headings)) {
             $response->setTitle($this->text['access_error']);
             $response->body(
