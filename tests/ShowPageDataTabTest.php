@@ -9,6 +9,8 @@ namespace Register;
 use PHPUnit\Framework\TestCase;
 use ApprovalTests\Approvals;
 
+use Register\Infra\Request;
+use Register\Infra\Url;
 use Register\Infra\View;
 
 class ShowPageDataTabTest extends TestCase
@@ -20,7 +22,9 @@ class ShowPageDataTabTest extends TestCase
             "Help",
             new View("./", XH_includeVar("./languages/en.php", "plugin_tx")["register"])
         );
-        $response = $sut(["register_access" => "cmb"], "./?SomePage");
+        $request = $this->createStub(Request::class);
+        $request->method("url")->willReturn(new Url("./", "SomePage"));
+        $response = $sut(["register_access" => "cmb"], $request);
         Approvals::verifyHtml($response);
     }
 }
