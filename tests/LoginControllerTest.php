@@ -13,7 +13,9 @@ use PHPUnit\Framework\TestCase;
 use Register\Value\User;
 use Register\Infra\Logger;
 use Register\Infra\LoginManager;
+use Register\Infra\Request;
 use Register\Infra\Session;
+use Register\Infra\Url;
 use Register\Infra\UserGroupRepository;
 use Register\Infra\UserRepository;
 
@@ -40,11 +42,11 @@ class LoginControllerTest extends TestCase
     /** @var Session&MockObject */
     private $session;
 
+    /** @var Request&MockObject */
+    private $request;
+
     public function setUp(): void
     {
-        global $cf;
-
-        $cf['uri']['word_separator'] = "-";
         $plugin_cf = XH_includeVar("./config/config.php", 'plugin_cf');
         $this->conf = $plugin_cf['register'];
         $plugin_tx = XH_includeVar("./languages/en.php", 'plugin_tx');
@@ -54,6 +56,8 @@ class LoginControllerTest extends TestCase
         $this->loginManager = $this->createStub(LoginManager::class);
         $this->logger = $this->createStub(Logger::class);
         $this->session = $this->createStub(Session::class);
+        $this->request = $this->createStub(Request::class);
+        $this->request->method("url")->willReturn(new Url("/", "irrelevant page"));
     }
 
     public function testLoginActionSuccessRedirects(): void
@@ -69,7 +73,7 @@ class LoginControllerTest extends TestCase
             $this->logger,
             $this->session
         );
-        $response = $sut->loginAction();
+        $response = $sut->loginAction($this->request);
         $this->assertEquals("http://example.com/?Logged-in", $response->location());
     }
 
@@ -84,7 +88,7 @@ class LoginControllerTest extends TestCase
             $this->logger,
             $this->session
         );
-        $response = $sut->loginAction();
+        $response = $sut->loginAction($this->request);
         $this->assertEquals("http://example.com/?Login-Error", $response->location());
     }
 
@@ -99,7 +103,7 @@ class LoginControllerTest extends TestCase
             $this->logger,
             $this->session
         );
-        $response = $sut->logoutAction();
+        $response = $sut->logoutAction($this->request);
         $this->assertEquals("http://example.com/?Logged-out", $response->location());
     }
 

@@ -83,9 +83,6 @@ class RegisterUserTest extends TestCase
 
     public function testExistingEmail(): void
     {
-        global $cf;
-
-        $cf['uri']['word_separator'] = "|";
         $_SERVER["REMOTE_ADDR"] = "example.com";
         $_SERVER['SERVER_NAME'] = "example.com";
         $this->userRepository->method("findByEmail")->willReturn($this->users["john"]);

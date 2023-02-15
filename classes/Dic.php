@@ -199,12 +199,11 @@ class Dic
 
     public static function makeShowLoginForm(): ShowLoginForm
     {
-        global $plugin_cf, $plugin_tx, $su;
+        global $plugin_cf, $plugin_tx;
 
         return new ShowLoginForm(
             $plugin_cf["register"],
             $plugin_tx["register"],
-            $su,
             self::makeView()
         );
     }

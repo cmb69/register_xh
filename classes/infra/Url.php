@@ -25,15 +25,32 @@ class Url
         $this->page = $page;
     }
 
+    public function pageMatches(string $other): bool
+    {
+        return $this->page === $this->uenc($other);
+    }
+
     public function withPage(string $page): self
+    {
+        $that = clone $this;
+        $that->page = $this->uenc($page);
+        return $that;
+    }
+
+    private function uenc(string $page): string
     {
         global $cf;
 
         if (!isset($cf['uri']['word_separator'])) {
             $cf['uri']['word_separator'] = "-";
         }
+        return uenc($page);
+    }
+
+    public function withEncodedPage(string $page): self
+    {
         $that = clone $this;
-        $that->page = uenc($page);
+        $that->page = $page;
         return $that;
     }
 

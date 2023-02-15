@@ -101,22 +101,23 @@ class RegisterUser
         }
 
         // prepare email content for registration activation
-        $url = $request->url()->withParams([
-            "action" => "register_activate_user",
-            "username" => $username,
-            "nonce" => $status,
-        ]);
         $content = $this->lang['emailtext1'] . "\n\n"
             . ' ' . $this->lang['name'] . ": $name \n"
             . ' ' . $this->lang['username'] . ": $username \n"
             . ' ' . $this->lang['email'] . ": $email \n"
             . ' ' . $this->lang['fromip'] . ": {$_SERVER['REMOTE_ADDR']} \n\n";
         if (!$user) {
-            $content .= $this->lang['emailtext2'] . "\n\n"
+            $url = $request->url()->withParams([
+                "action" => "register_activate_user",
+                "username" => $username,
+                "nonce" => $status,
+            ]);
+                $content .= $this->lang['emailtext2'] . "\n\n"
                 . '<' . $url->absolute() . '>';
         } else {
+            $url = $request->url()->withPage($this->lang['forgot_password']);
             $content .= $this->lang['emailtext4'] . "\n\n"
-                . '<' . CMSIMPLE_URL . '?' . uenc($this->lang['forgot_password']) . '>';
+                . '<' . $url->absolute() . '>';
         }
 
         // send activation email

@@ -27,11 +27,6 @@ class ShowLoginForm
     private $lang;
 
     /**
-     * @var string
-     */
-    private $currentPage;
-
-    /**
      * @var View
      */
     private $view;
@@ -43,12 +38,10 @@ class ShowLoginForm
     public function __construct(
         array $conf,
         array $lang,
-        string $currentPage,
         View $view
     ) {
         $this->conf = $conf;
         $this->lang = $lang;
-        $this->currentPage = $currentPage;
         $this->view = $view;
     }
 
@@ -63,16 +56,15 @@ class ShowLoginForm
 
     private function renderLoginForm(Request $request): string
     {
-        $forgotPasswordUrl = uenc($this->lang['forgot_password']);
-        $registerUrl = uenc($this->lang['register']);
+        $forgotPasswordPage = $this->lang['forgot_password'];
         $data = [
             'actionUrl' => $request->url()->relative(),
             'hasForgotPasswordLink' => $this->conf['password_forgotten']
-                && urldecode($this->currentPage) != $forgotPasswordUrl,
-            'forgotPasswordUrl' => $request->url()->withPage($forgotPasswordUrl)->relative(),
+                && !$request->url()->pageMatches($forgotPasswordPage),
+            'forgotPasswordUrl' => $request->url()->withPage($forgotPasswordPage)->relative(),
             'hasRememberMe' => $this->conf['remember_user'],
             'isRegisterAllowed' => $this->conf['allowed_register'],
-            'registerUrl' => $request->url()->withPage($registerUrl)->relative(),
+            'registerUrl' => $request->url()->withPage($this->lang['register'])->relative(),
         ];
         return $this->view->render('loginform', $data);
     }
@@ -81,12 +73,12 @@ class ShowLoginForm
     {
         $user = $currentUser;
         assert($user instanceof User);
-        $userPrefUrl = uenc($this->lang['user_prefs']);
+        $userPrefPage = $this->lang['user_prefs'];
         $data = [
             'fullName' => $user->getName(),
             'hasUserPrefs' => $user->isActivated() &&
-                urldecode($this->currentPage) != $userPrefUrl,
-            'userPrefUrl' => "?$userPrefUrl",
+                !$request->url()->pageMatches($userPrefPage),
+            'userPrefUrl' => $request->url()->withPage($userPrefPage)->relative(),
             'logoutUrl' => $request->url()->withPage("")->withParams(["function" => "registerlogout"])->relative(),
         ];
         return $this->view->render('loggedin-area', $data);

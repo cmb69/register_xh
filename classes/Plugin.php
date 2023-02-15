@@ -51,11 +51,11 @@ class Plugin
 
         if (!self::currentUser() && $function === 'registerlogin') {
             $controller = Dic::makeLoginController();
-            $controller->loginAction()->trigger();
+            $controller->loginAction(new Request())->trigger();
         }
         if (self::currentUser() && $function === 'registerlogout') {
             $controller = Dic::makeLoginController();
-            $controller->logoutAction()->trigger();
+            $controller->logoutAction(new Request())->trigger();
         }
         if (!(defined("XH_ADM") && XH_ADM && $edit)) {
             self::handleImplicitPages();

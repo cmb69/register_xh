@@ -14,6 +14,7 @@ use Register\Value\User;
 use Register\Infra\Logger;
 use Register\Infra\LoginManager;
 use Register\Infra\RedirectResponse;
+use Register\Infra\Request;
 use Register\Infra\Session;
 use Register\Infra\UserGroupRepository;
 use Register\Infra\UserRepository;
@@ -75,7 +76,7 @@ class LoginController
         $this->session = $session;
     }
 
-    public function loginAction(): RedirectResponse
+    public function loginAction(Request $request): RedirectResponse
     {
         $username = $_POST['username'] ?? '';
         $password = $_POST['password'] ?? '';
@@ -97,29 +98,24 @@ class LoginController
             // go to login page if exists or to default page otherwise
             $group = $this->userGroupRepository->findByGroupname($entry->getAccessgroups()[0]);
             if ($group && $group->getLoginpage()) {
-                $loginPage = '?' . $group->getLoginpage();
+                $url = $request->url()->withEncodedPage($group->getLoginpage());
             } else {
-                $loginPage = '?'. uenc($this->lang['loggedin']);
+                $url = $request->url()->withPage($this->lang['loggedin']);
             }
-            return new RedirectResponse(CMSIMPLE_URL . $loginPage);
+            return new RedirectResponse($url->absolute());
         } else {
             $this->loginManager->forget();
             $this->logger->logError('login', "$username wrong password");
-
-            // go to login error page
-            $errorTitle = uenc($this->lang['login_error']);
-            return new RedirectResponse(CMSIMPLE_URL . '?' . $errorTitle);
+            return new RedirectResponse($request->url()->withPage($this->lang['login_error'])->absolute());
         }
     }
 
-    public function logoutAction(): RedirectResponse
+    public function logoutAction(Request $request): RedirectResponse
     {
         $this->session->start();
         $username = $_SESSION['username'] ?? '';
         $this->loginManager->logout();
         $this->logger->logInfo('logout', "$username logged out");
-    
-        $logoutTitle = uenc($this->lang['loggedout']);
-        return new RedirectResponse(CMSIMPLE_URL . '?' . $logoutTitle);
+        return new RedirectResponse($request->url()->withPage($this->lang['loggedout'])->absolute());
     }
 }
