@@ -99,25 +99,25 @@ class GroupAdminController
             $added = true;
         }
 
-        $o = "";
-        // In case that nothing got deleted or added, store back (save got pressed)
-        if (!$deleted && !$added && empty($errors)) {
-            if (!$this->dbService->writeGroups($newgroups)) {
-                $errors[] = $this->lang['err_cannot_write_csv']
-                    . ' (' . $this->dbService->dataFolder() . 'groups.csv' . ')';
-            }
-            if (!empty($errors)) {
-                $o .= $this->view->render('error', ['errors' => $errors]);
-            } else {
-                $filename = $this->dbService->dataFolder() . 'groups.csv';
-                $o .= $this->view->message('success', 'csv_written', $filename);
-            }
-        } elseif (!empty($errors)) {
-            $o .= $this->view->render('error', ['errors' => $errors]);
+        if (!empty($errors)) {
+            return $this->view->render('error', ['errors' => $errors])
+                . $this->renderGroupsForm($newgroups, $request->url());
         }
-
-        $o .= $this->renderGroupsForm($newgroups, $request->url());
-        return $o;
+        if ($deleted || $added) {
+            return $this->renderGroupsForm($newgroups, $request->url());
+        }
+        // In case that nothing got deleted or added, store back (save got pressed)
+        if (!$this->dbService->writeGroups($newgroups)) {
+            $errors[] = $this->lang['err_cannot_write_csv']
+                . ' (' . $this->dbService->dataFolder() . 'groups.csv' . ')';
+        }
+        if (!empty($errors)) {
+            return $this->view->render('error', ['errors' => $errors])
+                . $this->renderGroupsForm($newgroups, $request->url());
+        }
+        $filename = $this->dbService->dataFolder() . 'groups.csv';
+        return $this->view->message('success', 'csv_written', $filename)
+            . $this->renderGroupsForm($newgroups, $request->url());
     }
 
     /** @param list<UserGroup> $groups */
