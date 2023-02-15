@@ -13,7 +13,7 @@ namespace Register;
 use Register\Value\User;
 use Register\Infra\Logger;
 use Register\Infra\LoginManager;
-use Register\Infra\RedirectResponse;
+use Register\Infra\Response;
 use Register\Infra\Request;
 use Register\Infra\Session;
 use Register\Infra\UserGroupRepository;
@@ -76,7 +76,7 @@ class LoginController
         $this->session = $session;
     }
 
-    public function loginAction(Request $request): RedirectResponse
+    public function loginAction(Request $request): Response
     {
         $username = $_POST['username'] ?? '';
         $password = $_POST['password'] ?? '';
@@ -102,20 +102,20 @@ class LoginController
             } else {
                 $url = $request->url()->withPage($this->lang['loggedin']);
             }
-            return new RedirectResponse($url->absolute());
+            return (new Response)->redirect($url->absolute());
         } else {
             $this->loginManager->forget();
             $this->logger->logError('login', "$username wrong password");
-            return new RedirectResponse($request->url()->withPage($this->lang['login_error'])->absolute());
+            return (new Response)->redirect($request->url()->withPage($this->lang['login_error'])->absolute());
         }
     }
 
-    public function logoutAction(Request $request): RedirectResponse
+    public function logoutAction(Request $request): Response
     {
         $this->session->start();
         $username = $_SESSION['username'] ?? '';
         $this->loginManager->logout();
         $this->logger->logInfo('logout', "$username logged out");
-        return new RedirectResponse($request->url()->withPage($this->lang['loggedout'])->absolute());
+        return (new Response)->redirect($request->url()->withPage($this->lang['loggedout'])->absolute());
     }
 }

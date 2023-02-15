@@ -18,6 +18,7 @@ use Register\Value\UserGroup;
 use Register\Logic\ValidationService;
 use Register\Infra\DbService;
 use Register\Infra\Request;
+use Register\Infra\Response;
 use Register\Infra\Url;
 use Register\Infra\View;
 
@@ -60,22 +61,25 @@ class UserAdminController
         $this->dbService = $dbService;
     }
 
-    public function editUsersAction(Request $request): string
+    public function editUsersAction(Request $request): Response
     {
+        $response = new Response();
         $fn = $this->dbService->dataFolder() . 'users.csv';
         if ($this->dbService->hasUsersFile()) {
             $lock = $this->dbService->lock(false);
             $users  = $this->dbService->readUsers();
             $this->dbService->unlock($lock);
-            return $this->renderUsersForm($users, $request->url())
+            $o = $this->renderUsersForm($users, $request->url(), $response)
                 . $this->view->message('info', count($users) . ' ' . $this->lang['entries_in_csv'] . $fn);
         } else {
-            return $this->view->message('fail', $this->lang['err_csv_missing'] . ' (' . $fn . ')');
+            $o = $this->view->message('fail', $this->lang['err_csv_missing'] . ' (' . $fn . ')');
         }
+        return $response->body($o);
     }
 
-    public function saveUsersAction(Request $request): string
+    public function saveUsersAction(Request $request): Response
     {
+        $response = new Response();
         $this->csrfProtector->check();
         $errors = [];
         if ($this->dbService->hasGroupsFile()) {
@@ -202,21 +206,16 @@ class UserAdminController
             $o .= $this->view->render('error', ['errors' => $errors]);
         }
 
-        $o .= $this->renderUsersForm($newusers, $request->url());
-        return $o;
+        $o .= $this->renderUsersForm($newusers, $request->url(), $response);
+        return $response->body($o);
     }
 
     /** @param User[] $users */
-    private function renderUsersForm(array $users, Url $url): string
+    private function renderUsersForm(array $users, Url $url, Response $response): string
     {
-        /** @var string $hjs */
-        global $hjs;
-
-        $txts = (string) json_encode($this->texts(), JSON_HEX_APOS | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
-        $maxRecords = $this->calcMaxRecords(7, 4);
-        $hjs .= "\n<script type=\"text/javascript\" src=\"{$this->pluginFolder}admin.min.js\"></script>";
-        $hjs .= "\n<meta name=\"register_texts\" content='$txts'>";
-        $hjs .= "\n<meta name=\"register_max_number_of_users\" content=\"$maxRecords\">";
+        $response->addScript($this->pluginFolder . "admin.min.js");
+        $response->addMeta("register_texts", $this->texts());
+        $response->addMeta("register_max_number_of_users", $this->calcMaxRecords(7, 4));
 
         $data = [
             'csrfTokenInput' => new HtmlString($this->csrfProtector->tokenInput()),

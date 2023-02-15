@@ -38,22 +38,35 @@ class UserAdminControllerTest extends TestCase
         $dbService->method('readGroups')->willReturn([new UserGroup("users", ""), new UserGroup("guest", "")]);
         $sut = $this->makeUserAdminController($dbService);
         $response = $sut->editUsersAction($this->request);
-        Approvals::verifyHtml($response);
+        Approvals::verifyHtml($response->output());
     }
 
     public function testEditUsersActionIncludesScripts()
     {
-        global $hjs;
-
         $dbService = $this->createStub(DbService::class);
         $dbService->method('hasUsersFile')->willReturn(true);
         $dbService->method('readUsers')->willReturn([$this->makeJohn(), $this->makeJane()]);
         $dbService->method('hasGroupsFile')->willReturn(true);
         $dbService->method('readGroups')->willReturn([new UserGroup("users", "")]);
         $sut = $this->makeUserAdminController($dbService);
-        $hjs = "";
-        $sut->editUsersAction($this->request);
-        Approvals::verifyHtml($hjs);
+        $response = $sut->editUsersAction($this->request);
+        $expected = [
+            "register_texts" => [
+                "name" => "Full Name",
+                "username" => "Username",
+                "password" => "Password",
+                "email" => "Email",
+                "accessgroups" => "Access Groups",
+                "status" => "Status",
+                "prefsemailsubject" => "Account data changed for",
+                "confirmLeave" => "Unsaved changes will be lost!",
+                "newPassword" => "New Password (may contain only alphanumeric characters and underscores):",
+                "tooManyUsers" => "There are too many users!",
+            ],
+            "register_max_number_of_users" => 142,
+        ];
+        $this->assertEquals($expected, $response->meta());
+        $this->assertEquals("./admin.min.js", $response->script());
     }
 
     public function testEditUsersActionFailsIfNoUsersFile()
@@ -62,7 +75,7 @@ class UserAdminControllerTest extends TestCase
         $dbService->method('hasUsersFile')->willReturn(false);
         $sut = $this->makeUserAdminController($dbService);
         $response = $sut->editUsersAction($this->request);
-        Approvals::verifyHtml($response);
+        Approvals::verifyHtml($response->output());
     }
 
     public function testSaveUsersCanAddRecord()
@@ -83,7 +96,7 @@ class UserAdminControllerTest extends TestCase
         $dbService->method('readGroups')->willReturn([new UserGroup("users", "")]);
         $sut = $this->makeUserAdminController($dbService);
         $response = $sut->saveUsersAction($this->request);
-        Approvals::verifyHtml($response);
+        Approvals::verifyHtml($response->output());
     }
 
     public function testSaveUsersCanDeleteRecord()
@@ -104,7 +117,7 @@ class UserAdminControllerTest extends TestCase
         $dbService->method('readGroups')->willReturn([new UserGroup("users", "")]);
         $sut = $this->makeUserAdminController($dbService);
         $response = $sut->saveUsersAction($this->request);
-        Approvals::verifyHtml($response);
+        Approvals::verifyHtml($response->output());
     }
 
     public function testSaveUsersFailsOnInvalidUserName()
@@ -124,7 +137,7 @@ class UserAdminControllerTest extends TestCase
         $dbService->method('readGroups')->willReturn([new UserGroup("users", "")]);
         $sut = $this->makeUserAdminController($dbService);
         $response = $sut->saveUsersAction($this->request);
-        Approvals::verifyHtml($response);
+        Approvals::verifyHtml($response->output());
     }
 
     public function testSaveUsersFailsOnInvalidUserNameWhenChangingPassword()
@@ -144,7 +157,7 @@ class UserAdminControllerTest extends TestCase
         $dbService->method('readGroups')->willReturn([new UserGroup("users", "")]);
         $sut = $this->makeUserAdminController($dbService);
         $response = $sut->saveUsersAction($this->request);
-        Approvals::verifyHtml($response);
+        Approvals::verifyHtml($response->output());
     }
 
     public function testSaveUsersFailsOnDuplicateUserNameAndEmail()
@@ -164,7 +177,7 @@ class UserAdminControllerTest extends TestCase
         $dbService->method('readGroups')->willReturn([new UserGroup("users", "")]);
         $sut = $this->makeUserAdminController($dbService);
         $response = $sut->saveUsersAction($this->request);
-        Approvals::verifyHtml($response);
+        Approvals::verifyHtml($response->output());
     }
 
     public function testSaveUsersSuccessfullySaves()
@@ -184,7 +197,7 @@ class UserAdminControllerTest extends TestCase
         $dbService->method('readGroups')->willReturn([new UserGroup("users", "")]);
         $sut = $this->makeUserAdminController($dbService);
         $response = $sut->saveUsersAction($this->request);
-        Approvals::verifyHtml($response);
+        Approvals::verifyHtml($response->output());
     }
     private function makeUserAdminController(DbService $dbService): UserAdminController
     {

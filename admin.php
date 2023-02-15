@@ -52,10 +52,10 @@ if (XH_wantsPluginAdministration("register")) {
         case "plugin_main":
             switch ($action) {
                 case "editusers":
-                    $o .= Dic::makeUserAdminController()->editUsersAction(new Request());
+                    $o .= Dic::makeUserAdminController()->editUsersAction(new Request())->fire();
                     break;
                 case "saveusers":
-                    $o .= Dic::makeUserAdminController()->saveUsersAction(new Request());
+                    $o .= Dic::makeUserAdminController()->saveUsersAction(new Request())->fire();
                     break;
                 case "editgroups":
                     $o .= Dic::makeGroupAdminController()->editGroupsAction(new Request());
