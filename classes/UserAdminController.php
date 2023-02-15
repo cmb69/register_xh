@@ -212,22 +212,11 @@ class UserAdminController
         /** @var string $hjs */
         global $hjs;
 
-        $jsKeys = ['name', 'username', 'password', 'accessgroups', 'status', 'email', 'prefsemailsubject'];
-        $txts = array();
-        foreach ($this->lang as $key => $val) {
-            $val = addcslashes($val, "\0..\037\"\$");
-            if (strpos($key, 'js_') === 0) {
-                $txts[] = substr($key, 3) . ':"' . $val . '"';
-            } elseif (in_array($key, $jsKeys)) {
-                $txts[] = "$key:\"$val\"";
-            }
-        }
-
-        $txts = implode(',', $txts);
+        $txts = (string) json_encode($this->texts(), JSON_HEX_APOS | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
         $maxRecords = $this->calcMaxRecords(7, 4);
-        $hjs .= "\n<script type=\"text/javascript\" src=\"{$this->pluginFolder}admin.min.js\"></script>"
-            . "\n<script type=\"text/javascript\">register.tx={{$txts}};"
-            . "register.maxNumberOfUsers={$maxRecords};</script>";
+        $hjs .= "\n<script type=\"text/javascript\" src=\"{$this->pluginFolder}admin.min.js\"></script>";
+        $hjs .= "\n<meta name=\"register_texts\" content='$txts'>";
+        $hjs .= "\n<meta name=\"register_max_number_of_users\" content=\"$maxRecords\">";
 
         $data = [
             'csrfTokenInput' => new HtmlString($this->csrfProtector->tokenInput()),
@@ -245,6 +234,21 @@ class UserAdminController
         $data['groupStrings'] = $groupStrings;
         $data['statusSelects'] = $statusSelects;
         return $this->view->render('admin-users', $data);
+    }
+
+    /** @return array<string,string> */
+    private function texts(): array
+    {
+        $extraKeys = ['name', 'username', 'password', 'accessgroups', 'status', 'email', 'prefsemailsubject'];
+        $txts = [];
+        foreach ($this->lang as $key => $val) {
+            if (strpos($key, 'js_') === 0) {
+                $txts[substr($key, 3)] =  $val;
+            } elseif (in_array($key, $extraKeys, true)) {
+                $txts[$key] = $val;
+            }
+        }
+        return $txts;
     }
 
     /** @return UserGroup[] */
