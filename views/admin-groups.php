@@ -29,14 +29,12 @@ use Register\Infra\View;
       <tr>
         <td><input type="text" size="10" value="<?=$this->esc($entry->getGroupname())?>" name="groupname[<?=$this->esc($i)?>]"></td>
         <td>
-<?php   foreach ($selects as $j => $select):?>
-          <select name="grouploginpage[<?=$this->esc($j)?>]">
+          <select name="grouploginpage[<?=$this->esc($i)?>]">
             <option value=""><?=$this->text("label_none")?></option>
-<?php     foreach ($select as $options):?>
+<?php   foreach ($selects[$i] as $options):?>
             <option value="<?=$this->esc($options["url"])?>" <?=$this->esc($options["selected"])?>><?=$this->esc($options["indent"])?><?=$this->raw($options["heading"])?></option>
-<?php     endforeach?>
-          </select>
 <?php   endforeach?>
+          </select>
         </td>
         <td><button name="delete[<?=$this->esc($i)?>]" value="1"><?=$this->text("label_delete")?></i></td>
       </tr>
