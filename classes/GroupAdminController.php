@@ -71,39 +71,20 @@ class GroupAdminController
     public function saveGroupsAction(Request $request): string
     {
         $this->csrfProtector->check();
-        $errors = [];
 
         $delete = $_POST['delete'] ?? [];
         $add = $_POST['add'] ?? '';
         $groupname = $_POST['groupname'] ?? [];
+        $groupLoginPages = $_POST['grouploginpage'] ?? [];
 
-        $deleted = false;
-        $added   = false;
-
-        $newgroups = array();
-        foreach (array_keys($groupname) as $j) {
-            if (!preg_match("/^[A-Za-z0-9_-]+$/", $groupname[$j])) {
-                $errors[] = ['err_group_illegal'];
-            }
-
-            if (!isset($delete[$j]) || $delete[$j] == '') {
-                $entry = new UserGroup($groupname[$j], $_POST['grouploginpage'][$j]);
-                $newgroups[] = $entry;
-            } else {
-                $deleted = true;
-            }
-        }
-        if ($add != '') {
-            $entry = new UserGroup("NewGroup", '');
-            $newgroups[] = $entry;
-            $added = true;
-        }
+        $processor = new AdminProcessor();
+        [$newgroups, $save, $errors] = $processor->processGroups($add, $delete, $groupname, $groupLoginPages);
 
         if (!empty($errors)) {
             return $this->renderErrorMessages($errors)
                 . $this->renderGroupsForm($newgroups, $request->url());
         }
-        if ($deleted || $added) {
+        if (!$save) {
             return $this->renderGroupsForm($newgroups, $request->url());
         }
         $filename = $this->dbService->dataFolder() . 'groups.csv';

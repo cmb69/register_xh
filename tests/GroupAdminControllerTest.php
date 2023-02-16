@@ -50,7 +50,7 @@ class GroupAdminControllerTest extends TestCase
     public function testSaveGroupsCanAddRecord()
     {
         $_POST = [
-            "add" => [""],
+            "add" => "on",
             "groupname" => ["guest"],
             "grouploginpage" => [""],
         ];
