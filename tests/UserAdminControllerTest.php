@@ -78,48 +78,6 @@ class UserAdminControllerTest extends TestCase
         Approvals::verifyHtml($response->output());
     }
 
-    public function testSaveUsersCanAddRecord()
-    {
-        $_POST = [
-            "add" => "on",
-            "username" => ["cmb"],
-            "password" => ["test"],
-            "oldpassword" => ["test"],
-            "name" => ["Christoph Becker"],
-            "email" => ["chris@example.com"],
-            "accessgroups" => ["users"],
-            "status" => ["activated"],
-        ];
-        $dbService = $this->createStub(DbService::class);
-        $dbService->expects($this->never())->method('writeUsers');
-        $dbService->method('hasGroupsFile')->willReturn(true);
-        $dbService->method('readGroups')->willReturn([new UserGroup("users", "")]);
-        $sut = $this->makeUserAdminController($dbService);
-        $response = $sut->saveUsersAction($this->request);
-        Approvals::verifyHtml($response->output());
-    }
-
-    public function testSaveUsersCanDeleteRecord()
-    {
-        $_POST = [
-            "delete" => [0 => "1"],
-            "username" => ["to_be_deleted", "cmb"],
-            "password" => ["to_be_deleted", "test"],
-            "oldpassword" => ["to_be_deleted", "test"],
-            "name" => ["Toby Deleted", "Christoph Becker"],
-            "email" => ["to_be_deleted@example.com", "chris@example.com"],
-            "accessgroups" => ["", "users"],
-            "status" => ["activated", "activated"],
-        ];
-        $dbService = $this->createStub(DbService::class);
-        $dbService->expects($this->never())->method('writeUsers');
-        $dbService->method('hasGroupsFile')->willReturn(true);
-        $dbService->method('readGroups')->willReturn([new UserGroup("users", "")]);
-        $sut = $this->makeUserAdminController($dbService);
-        $response = $sut->saveUsersAction($this->request);
-        Approvals::verifyHtml($response->output());
-    }
-
     public function testSaveUsersFailsOnInvalidUserName()
     {
         $_POST = [

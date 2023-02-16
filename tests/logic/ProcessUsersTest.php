@@ -17,10 +17,8 @@ class ProcessUsersTest extends TestCase
 {
     public function testProcessesUsersSuccessfully(): void
     {
-        [$users, $save, $errors] = (new AdminProcessor())->processUsers(
+        [$users, $errors] = (new AdminProcessor())->processUsers(
             $this->groups(),
-            "",
-            ["", ""],
             ["jane", "john"],
             ["54321", "12345"],
             ["54321", "12345"],
@@ -31,56 +29,13 @@ class ProcessUsersTest extends TestCase
             "guest"
         );
         $this->assertEquals([$this->jane(), $this->john()], $users);
-        $this->assertTrue($save);
-        $this->assertEmpty($errors);
-    }
-
-    public function testCanAddUser(): void
-    {
-        [$users, $save, $errors] = (new AdminProcessor())->processUsers(
-            $this->groups(),
-            "on",
-            [],
-            [],
-            [],
-            [],
-            [],
-            [],
-            [],
-            [],
-            "guest"
-        );
-        $this->assertEquals([$this->defaultUser()], $users);
-        $this->assertFalse($save);
-        $this->assertEmpty($errors);
-    }
-
-    public function testCanDeleteUser(): void
-    {
-        [$users, $save, $errors] = (new AdminProcessor())->processUsers(
-            $this->groups(),
-            "",
-            ["on"],
-            ["john"],
-            ["test"],
-            ["test"],
-            ["John Doe"],
-            ["john@example.com"],
-            ["guest"],
-            ["activated"],
-            "guest"
-        );
-        $this->assertEmpty($users);
-        $this->assertFalse($save);
         $this->assertEmpty($errors);
     }
 
     public function testGeneratesRandomPasswordOnEmptyPassword(): void
     {
-        [$users, $save, $errors] = (new AdminProcessor())->processUsers(
+        [$users, $errors] = (new AdminProcessor())->processUsers(
             $this->groups(),
-            "",
-            [""],
             ["john"],
             [""],
             [""],
@@ -94,16 +49,13 @@ class ProcessUsersTest extends TestCase
         $this->assertContainsOnlyInstancesOf(User::class, $users);
         $this->assertStringStartsWith('$', $users[0]->getPassword());
         $this->assertFalse(password_verify("", $users[0]->getPassword()));
-        $this->assertTrue($save);
         $this->assertEmpty($errors);
     }
 
     public function testReportsErrorOnEmptyUserName(): void
     {
-        [, , $errors] = (new AdminProcessor())->processUsers(
+        [, $errors] = (new AdminProcessor())->processUsers(
             $this->groups(),
-            "",
-            [""],
             [""],
             ["12345"],
             ["54321"],
@@ -118,10 +70,8 @@ class ProcessUsersTest extends TestCase
 
     public function testReportsErrorOnDuplicateUsername(): void
     {
-        [, , $errors] = (new AdminProcessor())->processUsers(
+        [, $errors] = (new AdminProcessor())->processUsers(
             $this->groups(),
-            "",
-            ["", ""],
             ["j", "j"],
             ["54321", "12345"],
             ["54321", "12345"],
@@ -136,10 +86,8 @@ class ProcessUsersTest extends TestCase
 
     public function testReportsErrorOnDuplicateEmail(): void
     {
-        [, , $errors] = (new AdminProcessor())->processUsers(
+        [, $errors] = (new AdminProcessor())->processUsers(
             $this->groups(),
-            "",
-            ["", ""],
             ["jane", "john"],
             ["54321", "12345"],
             ["54321", "12345"],
@@ -154,10 +102,8 @@ class ProcessUsersTest extends TestCase
 
     public function testReportsErrorOnNotExistingGroupName(): void
     {
-        [, , $errors] = (new AdminProcessor())->processUsers(
+        [, $errors] = (new AdminProcessor())->processUsers(
             $this->groups(),
-            "",
-            [""],
             ["john"],
             ["12345"],
             ["54321"],

@@ -17,7 +17,6 @@ class AdminProcessor
 {
     /**
      * @param list<UserGroup> $groups
-     * @param list<string> $delete
      * @param list<string> $usernames
      * @param list<string> $passwords
      * @param list<string> $oldPasswords
@@ -25,54 +24,42 @@ class AdminProcessor
      * @param list<string> $emails
      * @param list<string> $groupStrings
      * @param list<string> $statuses
-     * @return array{list<User>,bool,list<array{string}|list<array{string}>>}
+     * @return array{list<User>,list<array{string}|list<array{string}>>}
      */
     public function processUsers(
         array $groups,
-        string $add,
-        array $delete,
         array $usernames,
         array $passwords,
         array $oldPasswords,
         array $names,
         array $emails,
         array $groupStrings,
-        array $statuses,
-        string $defaultGroupName
+        array $statuses
     ): array {
         $groupNames = [];
         foreach ($groups as $entry) {
             $groupNames[] = $entry->getGroupname();
         }
-        $save = true;
         $errors = [];
         $users = [];
         foreach (array_keys($usernames) as $i) {
-            if (!isset($delete[$i]) || $delete[$i] == '') {
-                [$user, $userErrors] = $this->processUser(
-                    explode(",", $groupStrings[$i]),
-                    $usernames[$i],
-                    $passwords[$i],
-                    $oldPasswords[$i],
-                    $names[$i],
-                    $emails[$i],
-                    $statuses[$i],
-                    $users,
-                    $groupNames
-                );
-                if (!empty($userErrors)) {
-                    $errors[] = array_merge([["error_in_user", $usernames[$i]]], $userErrors);
-                }
-                $users[] = $user;
-            } else {
-                $save = false;
+            [$user, $userErrors] = $this->processUser(
+                explode(",", $groupStrings[$i]),
+                $usernames[$i],
+                $passwords[$i],
+                $oldPasswords[$i],
+                $names[$i],
+                $emails[$i],
+                $statuses[$i],
+                $users,
+                $groupNames
+            );
+            if (!empty($userErrors)) {
+                $errors[] = array_merge([["error_in_user", $usernames[$i]]], $userErrors);
             }
+            $users[] = $user;
         }
-        if ($add != '') {
-            $users[] = new User("NewUser", "", [$defaultGroupName], "Name Lastname", "user@domain.com", "activated");
-            $save = false;
-        }
-        return [$users, $save, $errors];
+        return [$users, $errors];
     }
 
     /**

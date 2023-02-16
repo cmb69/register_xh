@@ -89,8 +89,6 @@ class UserAdminController
             $errors[] = ['err_csv_missing', $this->dbService->dataFolder() . 'groups.csv'];
         }
 
-        $delete = $_POST['delete'] ?? [];
-        $add = $_POST['add'] ?? '';
         $username = $_POST['username'] ?? [];
         $password = $_POST['password'] ?? [];
         $oldpassword = $_POST['oldpassword'] ?? [];
@@ -100,24 +98,20 @@ class UserAdminController
         $status = $_POST['status'] ?? [];
 
         $processor = new AdminProcessor();
-        [$newusers, $save, $extraErrors] = $processor->processUsers(
+        [$newusers, $extraErrors] = $processor->processUsers(
             $groups,
-            $add,
-            $delete,
             $username,
             $password,
             $oldpassword,
             $name,
             $email,
             $groupString,
-            $status,
-            $this->config['group_default']
+            $status
         );
         $errors = array_merge($errors, $extraErrors);
 
         $o = "";
-        // In case that nothing got deleted or added, store back (save got pressed)
-        if ($save && empty($errors)) {
+        if (empty($errors)) {
             $lock = $this->dbService->lock(true);
             $saved = $this->dbService->writeUsers($newusers);
             $this->dbService->unlock($lock);
@@ -128,7 +122,7 @@ class UserAdminController
                 $filename = $this->dbService->dataFolder() . 'users.csv';
                 $o .= $this->view->message('success', 'csv_written', $filename);
             }
-        } elseif (!empty($errors)) {
+        } else {
             $o .= $this->renderErrorMessages($errors);
         }
 
