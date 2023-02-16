@@ -180,6 +180,26 @@ class UserAdminControllerTest extends TestCase
         Approvals::verifyHtml($response->output());
     }
 
+    public function testSaveUsersFailsToSave()
+    {
+        $_POST = [
+            "username" => ["cmb"],
+            "password" => ["pw"],
+            "oldpassword" => ["pw"],
+            "name" => ["Christoph Becker"],
+            "email" => ["cmb@example.com"],
+            "accessgroups" => ["users"],
+            "status" => ["activated"],
+        ];
+        $dbService = $this->createStub(DbService::class);
+        $dbService->expects($this->once())->method('writeUsers')->willReturn(false);
+        $dbService->method('hasGroupsFile')->willReturn(true);
+        $dbService->method('readGroups')->willReturn([new UserGroup("users", "")]);
+        $sut = $this->makeUserAdminController($dbService);
+        $response = $sut->saveUsersAction($this->request);
+        Approvals::verifyHtml($response->output());
+    }
+
     public function testSaveUsersSuccessfullySaves()
     {
         $_POST = [
@@ -199,6 +219,7 @@ class UserAdminControllerTest extends TestCase
         $response = $sut->saveUsersAction($this->request);
         Approvals::verifyHtml($response->output());
     }
+
     private function makeUserAdminController(DbService $dbService): UserAdminController
     {
         return new UserAdminController(

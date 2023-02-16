@@ -188,14 +188,11 @@ class UserAdminController
         // In case that nothing got deleted or added, store back (save got pressed)
         if (!$deleted && !$added && empty($errors)) {
             $lock = $this->dbService->lock(true);
-            if (!$this->dbService->writeUsers($newusers)) {
-                $errors[] = $this->lang['err_cannot_write_csv']
-                    . ' (' . $this->dbService->dataFolder() . 'users.csv' . ')';
-            }
+            $saved = $this->dbService->writeUsers($newusers);
             $this->dbService->unlock($lock);
-
-            if (!empty($errors)) {
-                $o .= $this->view->render('error', ['errors' => $errors]);
+            if (!$saved) {
+                $filename = $this->dbService->dataFolder() . 'users.csv';
+                $o .= $this->view->message("fail", "err_cannot_write_csv_adm", $filename);
             } else {
                 $filename = $this->dbService->dataFolder() . 'users.csv';
                 $o .= $this->view->message('success', 'csv_written', $filename);
