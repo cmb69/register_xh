@@ -59,6 +59,7 @@ $plugin_tx['register']['err_colon']="darf keinen Doppelpunkt enthalten.";
 $plugin_tx['register']['err_group_does_not_exist']="Gruppe existiert nicht.";
 $plugin_tx['register']['err_csv_missing']="Die CSV-Datei '%s' existiert nicht.";
 $plugin_tx['register']['err_cannot_write_csv']="Das Speichern der CSV-Datei ist fehlgeschlagen.";
+$plugin_tx['register']['err_cannot_write_csv_adm']="Das Speichern der CSV-Datei '%s' ist fehlgeschlagen!";
 $plugin_tx['register']['err_status_empty']="Der Status Ihres Benutzernamens ist nicht gesetzt.";
 $plugin_tx['register']['err_status_invalid']="Der von Ihnen angegebene Aktivierungcode ist ungültig.";
 $plugin_tx['register']['err_group_illegal']="Die Gruppennamen dürfen nur folgende Zeichen enthalten: A-Z, a-z, 0-9, '_', '-'.";

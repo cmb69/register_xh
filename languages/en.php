@@ -59,6 +59,7 @@ $plugin_tx['register']['err_colon']="must not contain a colon.";
 $plugin_tx['register']['err_group_does_not_exist']="Group does not exist.";
 $plugin_tx['register']['err_csv_missing']="The CSV file '%s' does not exist!";
 $plugin_tx['register']['err_cannot_write_csv']="Saving CSV file failed.";
+$plugin_tx['register']['err_cannot_write_csv_adm']="Saving CSV '%s' file failed!";
 $plugin_tx['register']['err_status_empty']="The status of your username is empty.";
 $plugin_tx['register']['err_status_invalid']="The entered validation code is invalid.";
 $plugin_tx['register']['err_group_illegal']="The group name must contain only following characters: A-Z, a-z, 0-9, '_', '-'.";

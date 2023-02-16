@@ -83,7 +83,7 @@ class GroupAdminController
         $newgroups = array();
         foreach (array_keys($groupname) as $j) {
             if (!preg_match("/^[A-Za-z0-9_-]+$/", $groupname[$j])) {
-                $errors[] = $this->lang['err_group_illegal'];
+                $errors[] = ['err_group_illegal'];
             }
 
             if (!isset($delete[$j]) || $delete[$j] == '') {
@@ -100,24 +100,28 @@ class GroupAdminController
         }
 
         if (!empty($errors)) {
-            return $this->view->render('error', ['errors' => $errors])
+            return $this->renderErrorMessages($errors)
                 . $this->renderGroupsForm($newgroups, $request->url());
         }
         if ($deleted || $added) {
             return $this->renderGroupsForm($newgroups, $request->url());
         }
-        // In case that nothing got deleted or added, store back (save got pressed)
-        if (!$this->dbService->writeGroups($newgroups)) {
-            $errors[] = $this->lang['err_cannot_write_csv']
-                . ' (' . $this->dbService->dataFolder() . 'groups.csv' . ')';
-        }
-        if (!empty($errors)) {
-            return $this->view->render('error', ['errors' => $errors])
+        $filename = $this->dbService->dataFolder() . 'groups.csv';
+        $saved = $this->dbService->writeGroups($newgroups);
+        if (!$saved) {
+            return $this->view->message("fail", 'err_cannot_write_csv_adm', $filename)
                 . $this->renderGroupsForm($newgroups, $request->url());
         }
-        $filename = $this->dbService->dataFolder() . 'groups.csv';
         return $this->view->message('success', 'csv_written', $filename)
             . $this->renderGroupsForm($newgroups, $request->url());
+    }
+
+    /** @param list<array{string}> $errors */
+    private function renderErrorMessages(array $errors): string
+    {
+        return implode("", array_map(function ($args) {
+            return $this->view->message("fail", ...$args);
+        }, $errors));
     }
 
     /** @param list<UserGroup> $groups */
