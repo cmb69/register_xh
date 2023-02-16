@@ -11,6 +11,7 @@ require_once "./classes/value/UserGroup.php";
 
 require_once "./classes/logic/AdminProcessor.php";
 require_once "./classes/logic/ValidationService.php";
+require_once "./classes/logic/Validator.php";
 
 require_once './classes/infra/DbService.php';
 require_once "./classes/infra/Logger.php";
