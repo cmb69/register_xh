@@ -15,7 +15,7 @@ use XH\CSRFProtection as CsrfProtector;
 use Register\Value\HtmlString;
 use Register\Value\User;
 use Register\Value\UserGroup;
-use Register\Logic\ValidationService;
+use Register\Logic\Validator;
 use Register\Infra\DbService;
 use Register\Infra\Request;
 use Register\Infra\Response;
@@ -108,7 +108,7 @@ class UserAdminController
         $deleted = false;
         $added   = false;
 
-        $validationService = new ValidationService($this->lang);
+        $validator = new Validator();
 
         $newusers = array();
         foreach (array_keys($username) as $j) {
@@ -119,12 +119,12 @@ class UserAdminController
                 if ($password[$j] == $oldpassword[$j]) {
                     $entryErrors = array_merge(
                         $entryErrors,
-                        $validationService->validateUser($name[$j], $username[$j], "dummy", "dummy", $email[$j])
+                        $validator->validateUser($name[$j], $username[$j], "dummy", "dummy", $email[$j])
                     );
                 } else {
                     $entryErrors = array_merge(
                         $entryErrors,
-                        $validationService->validateUser(
+                        $validator->validateUser(
                             $name[$j],
                             $username[$j],
                             $password[$j],
@@ -135,22 +135,20 @@ class UserAdminController
                 }
                 foreach ($newusers as $newuser) {
                     if ($newuser->getUsername() === $username[$j]) {
-                        $entryErrors[] = $this->lang['err_username_exists'];
+                        $entryErrors[] = ['err_username_exists'];
                     }
                     if ($newuser->getEmail() === $email[$j]) {
-                        $entryErrors[] = $this->lang['err_email_exists'];
+                        $entryErrors[] = ['err_email_exists'];
                     }
                 }
                 foreach ($userGroups as $groupName) {
                     if (!in_array($groupName, $groupIds)) {
-                        $entryErrors[] = sprintf($this->lang['err_group_does_not_exist'], $groupName);
+                        $entryErrors[] = [$this->lang['err_group_does_not_exist'], $groupName];
                     }
                 }
                 if (!empty($entryErrors)) {
-                    $errors[] = new HtmlString($this->view->render('user-error', [
-                        'username' => $username[$j],
-                        'errors' => $entryErrors,
-                    ]));
+                    $errors[] = new HtmlString($this->view->message("info", "error_in_user", $username[$j])
+                        . $this->renderErrorMessages($entryErrors));
                 }
                 if ($password[$j] == '') {
                     $password[$j] = base64_encode(random_bytes(16));
@@ -203,6 +201,14 @@ class UserAdminController
 
         $o .= $this->renderUsersForm($newusers, $request->url(), $response);
         return $response->body($o);
+    }
+
+    /** @param list<array{string}> $errors */
+    private function renderErrorMessages(array $errors): string
+    {
+        return implode("", array_map(function ($args) {
+            return $this->view->message("fail", ...$args);
+        }, $errors));
     }
 
     /** @param User[] $users */
