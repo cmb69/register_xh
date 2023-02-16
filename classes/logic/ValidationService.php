@@ -51,7 +51,7 @@ class ValidationService
         if ($name === "") {
             $errors[] = $this->lang['err_name'];
         } elseif (strpos($name, ":") !== false) {
-            $errors[] = $this->lang["name"] . ' ' . $this->lang['err_colon'];
+            $errors[] = sprintf($this->lang['err_colon'], $this->lang["name"]);
         }
         return $errors;
     }

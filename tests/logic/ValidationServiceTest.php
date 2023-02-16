@@ -66,7 +66,7 @@ class ValidationServiceTest extends TestCase
                 "a",
                 "b",
                 "c",
-                ["name err_colon", "err_username_illegal", "err_password2", "err_email_invalid"]
+                ["err_colon", "err_username_illegal", "err_password2", "err_email_invalid"]
             ],
         ];
     }
