@@ -147,7 +147,7 @@ class UserAdminController
                     }
                 }
                 if (!empty($entryErrors)) {
-                    $errors[] = new HtmlString($this->view->message("info", "error_in_user", $username[$j])
+                    $errors[] = new HtmlString($this->view->message("error", "error_in_user", $username[$j])
                         . $this->renderErrorMessages($entryErrors));
                 }
                 if ($password[$j] == '') {
