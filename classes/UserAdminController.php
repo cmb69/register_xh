@@ -86,7 +86,7 @@ class UserAdminController
             $groups = $this->dbService->readGroups();
         } else {
             $groups = [];
-            $errors[] = $this->lang['err_csv_missing'] . ' (' . $this->dbService->dataFolder() . 'groups.csv' . ')';
+            $errors[] = sprintf($this->lang['err_csv_missing'], $this->dbService->dataFolder() . 'groups.csv');
         }
 
         // put all available group Ids in an array for easier handling
