@@ -99,6 +99,20 @@ class EditUserTest extends TestCase
         Approvals::verifyHtml($response);
     }
 
+    public function testPasswordConfirmationDoesNotMatch(): void
+    {
+        $_SESSION = ["username" => "john"];
+        $_POST = [
+            "oldpassword" => "12345",
+            "password1" => "one",
+            "password2" => "two",
+        ];
+        $this->userRepository->method("findByUsername")->willReturn($this->users["john"]);
+        $this->csrfProtector->expects($this->once())->method("check");
+        $response = ($this->subject)($this->request);
+        Approvals::verifyHtml($response);
+    }
+
     public function testCorrectPassword(): void
     {
         $_SERVER["SERVER_NAME"] = "example.com";
