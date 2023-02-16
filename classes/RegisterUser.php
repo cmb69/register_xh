@@ -11,7 +11,7 @@
 namespace Register;
 
 use Register\Value\User;
-use Register\Logic\ValidationService;
+use Register\Logic\Validator;
 use Register\Infra\MailService;
 use Register\Infra\Request;
 use Register\Infra\UserRepository;
@@ -60,10 +60,10 @@ class RegisterUser
         $password2 = isset($_POST['password2']) && is_string($_POST["password2"]) ? trim($_POST['password2']) : '';
         $email     = isset($_POST['email']) && is_string($_POST["email"]) ? trim($_POST['email']) : '';
 
-        $validationService = new ValidationService($this->lang);
-        $errors = $validationService->validateUser($name, $username, $password1, $password2, $email);
+        $validator = new Validator();
+        $errors = $validator->validateUser($name, $username, $password1, $password2, $email);
         if ($errors) {
-            return $this->view->render('error', ['errors' => $errors])
+            return $this->renderErrorMessages($errors)
                 . $this->view->render('registerform', [
                     'actionUrl' => $request->url()->relative(),
                     'name' => $name,
@@ -127,5 +127,13 @@ class RegisterUser
             )
         );
         return $this->view->message('success', 'registered');
+    }
+
+    /** @param list<array{string}> $errors */
+    private function renderErrorMessages(array $errors): string
+    {
+        return implode("", array_map(function ($args) {
+            return $this->view->message("fail", ...$args);
+        }, $errors));
     }
 }
