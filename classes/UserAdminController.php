@@ -143,7 +143,7 @@ class UserAdminController
                 }
                 foreach ($userGroups as $groupName) {
                     if (!in_array($groupName, $groupIds)) {
-                        $entryErrors[] = $this->lang['err_group_does_not_exist'] . ' (' . $groupName . ')';
+                        $entryErrors[] = sprintf($this->lang['err_group_does_not_exist'], $groupName);
                     }
                 }
                 if (!empty($entryErrors)) {
