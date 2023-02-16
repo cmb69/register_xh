@@ -14,7 +14,6 @@ use PHPUnit\Framework\TestCase;
 use XH\CSRFProtection as CsrfProtector;
 
 use Register\Value\User;
-use Register\Logic\ValidationService;
 use Register\Infra\MailService;
 use Register\Infra\Request;
 use Register\Infra\Session;
@@ -57,7 +56,6 @@ class EditUserTest extends TestCase
         $lang = $plugin_tx['register'];
         $this->session = $this->createStub(Session::class);
         $this->csrfProtector = $this->createMock(CsrfProtector::class);
-        $validationService = $this->createStub(ValidationService::class);
         $this->userRepository = $this->createMock(UserRepository::class);
         $this->view = new View("./", $lang);
         $mailService = $this->createStub(MailService::class);
@@ -66,7 +64,6 @@ class EditUserTest extends TestCase
             $lang,
             $this->session,
             $this->csrfProtector,
-            $validationService,
             $this->userRepository,
             $this->view,
             $mailService

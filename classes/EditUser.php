@@ -31,9 +31,6 @@ class EditUser
     /** @var CsrfProtector */
     private $csrfProtector;
 
-    /** @var ValidationService */
-    private $validationService;
-
     /** @var UserRepository */
     private $userRepository;
 
@@ -52,7 +49,6 @@ class EditUser
         array $lang,
         Session $session,
         CsrfProtector $csrfProtector,
-        ValidationService $validationService,
         UserRepository $userRepository,
         View $view,
         MailService $mailService
@@ -61,7 +57,6 @@ class EditUser
         $this->lang = $lang;
         $session->start();
         $this->csrfProtector = $csrfProtector;
-        $this->validationService = $validationService;
         $this->userRepository = $userRepository;
         $this->view = $view;
         $this->mailService = $mailService;
@@ -115,7 +110,8 @@ class EditUser
             $name = $user->getName();
         }
 
-        $errors = $this->validationService->validateUser($name, $username, $password1, $password2, $email);
+        $validationService = new ValidationService($this->lang);
+        $errors = $validationService->validateUser($name, $username, $password1, $password2, $email);
         if ($errors) {
             $csrfTokenInput = $this->csrfProtector->tokenInput();
             $this->csrfProtector->store();

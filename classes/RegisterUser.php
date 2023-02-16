@@ -25,9 +25,6 @@ class RegisterUser
     /** @var array<string,string> */
     private $lang;
 
-    /** @var ValidationService */
-    private $validationService;
-
     /** @var View */
     private $view;
 
@@ -44,14 +41,12 @@ class RegisterUser
     public function __construct(
         array $config,
         array $lang,
-        ValidationService $validationService,
         View $view,
         UserRepository $userRepository,
         MailService $mailService
     ) {
         $this->config = $config;
         $this->lang = $lang;
-        $this->validationService = $validationService;
         $this->view = $view;
         $this->userRepository = $userRepository;
         $this->mailService = $mailService;
@@ -65,7 +60,8 @@ class RegisterUser
         $password2 = isset($_POST['password2']) && is_string($_POST["password2"]) ? trim($_POST['password2']) : '';
         $email     = isset($_POST['email']) && is_string($_POST["email"]) ? trim($_POST['email']) : '';
 
-        $errors = $this->validationService->validateUser($name, $username, $password1, $password2, $email);
+        $validationService = new ValidationService($this->lang);
+        $errors = $validationService->validateUser($name, $username, $password1, $password2, $email);
         if ($errors) {
             return $this->view->render('error', ['errors' => $errors])
                 . $this->view->render('registerform', [

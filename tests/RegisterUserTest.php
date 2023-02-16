@@ -14,7 +14,6 @@ use ApprovalTests\Approvals;
 use PHPUnit\Framework\TestCase;
 
 use Register\Value\User;
-use Register\Logic\ValidationService;
 use Register\Infra\MailService;
 use Register\Infra\Request;
 use Register\Infra\Url;
@@ -28,9 +27,6 @@ class RegisterUserTest extends TestCase
 
     /** @var array<string,User> */
     private $users;
-
-    /** @var ValidationService */
-    private $validationService;
 
     /** @var View */
     private $view;
@@ -51,14 +47,12 @@ class RegisterUserTest extends TestCase
         $conf = $plugin_cf['register'];
         $plugin_tx = XH_includeVar("./languages/en.php", 'plugin_tx');
         $lang = $plugin_tx['register'];
-        $this->validationService = $this->createStub(ValidationService::class);
         $this->view = new View("./", $lang);
         $this->userRepository = $this->createMock(UserRepository::class);
         $mailService = $this->createStub(MailService::class);
         $this->subject = new RegisterUser(
             $conf,
             $lang,
-            $this->validationService,
             $this->view,
             $this->userRepository,
             $mailService
@@ -69,13 +63,20 @@ class RegisterUserTest extends TestCase
 
     public function testValidationError(): void
     {
-        $this->validationService->method("validateUser")->willReturn(["error"]);
+        $_POST = ["username" => ""];
         $response = ($this->subject)($this->request);
         Approvals::verifyHtml($response);
     }
 
     public function testExistingUser(): void
     {
+        $_POST = [
+            "name" => "Jane Smith",
+            "username" => "jane",
+            "password1" => "test",
+            "password2" => "test",
+            "email" => "jane.smith@example.com",
+        ];
         $this->userRepository->method("findByUsername")->willReturn($this->users["jane"]);
         $response = ($this->subject)($this->request);
         Approvals::verifyHtml($response);
@@ -85,6 +86,13 @@ class RegisterUserTest extends TestCase
     {
         $_SERVER["REMOTE_ADDR"] = "example.com";
         $_SERVER['SERVER_NAME'] = "example.com";
+        $_POST = [
+            "name" => "John Smith",
+            "username" => "js",
+            "password1" => "test",
+            "password2" => "test",
+            "email" => "john@example.com",
+        ];
         $this->userRepository->method("findByEmail")->willReturn($this->users["john"]);
         $response = ($this->subject)($this->request);
         Approvals::verifyHtml($response);
@@ -94,6 +102,13 @@ class RegisterUserTest extends TestCase
     {
         $_SERVER["REMOTE_ADDR"] = "example.com";
         $_SERVER['SERVER_NAME'] = "example.com";
+        $_POST = [
+            "name" => "John Smith",
+            "username" => "js",
+            "password1" => "test",
+            "password2" => "test",
+            "email" => "js@example.com",
+        ];
         $this->userRepository->expects($this->once())->method("add")->willReturn(true);
         $response = ($this->subject)($this->request);
         Approvals::verifyHtml($response);
