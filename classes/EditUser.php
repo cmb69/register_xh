@@ -13,7 +13,7 @@ namespace Register;
 use XH\CSRFProtection as CsrfProtector;
 
 use Register\Value\HtmlString;
-use Register\Logic\ValidationService;
+use Register\Logic\Validator;
 use Register\Infra\MailService;
 use Register\Infra\Request;
 use Register\Infra\Session;
@@ -30,9 +30,6 @@ class EditUser
 
     /** @var CsrfProtector */
     private $csrfProtector;
-
-    /** @var ValidationService */
-    private $validationService;
 
     /** @var UserRepository */
     private $userRepository;
@@ -52,7 +49,6 @@ class EditUser
         array $lang,
         Session $session,
         CsrfProtector $csrfProtector,
-        ValidationService $validationService,
         UserRepository $userRepository,
         View $view,
         MailService $mailService
@@ -61,7 +57,6 @@ class EditUser
         $this->lang = $lang;
         $session->start();
         $this->csrfProtector = $csrfProtector;
-        $this->validationService = $validationService;
         $this->userRepository = $userRepository;
         $this->view = $view;
         $this->mailService = $mailService;
@@ -115,11 +110,12 @@ class EditUser
             $name = $user->getName();
         }
 
-        $errors = $this->validationService->validateUser($name, $username, $password1, $password2, $email);
+        $validator = new Validator();
+        $errors = $validator->validateUser($name, $username, $password1, $password2, $email);
         if ($errors) {
             $csrfTokenInput = $this->csrfProtector->tokenInput();
             $this->csrfProtector->store();
-            return $this->view->render('error', ['errors' => $errors])
+            return $this->renderErrorMessages($errors)
                 . $this->view->render('userprefs-form', [
                     'csrfTokenInput' => new HtmlString($csrfTokenInput),
                     'actionUrl' => $request->url()->relative(),
@@ -163,5 +159,13 @@ class EditUser
     private function trimmedPostString(string $param): string
     {
         return (isset($_POST[$param]) && is_string($_POST[$param])) ? trim($_POST[$param]) : "";
+    }
+
+    /** @param list<array{string}> $errors */
+    private function renderErrorMessages(array $errors): string
+    {
+        return implode("", array_map(function ($args) {
+            return $this->view->message("fail", ...$args);
+        }, $errors));
     }
 }

@@ -11,7 +11,6 @@ namespace Register;
 use XH\CSRFProtection as CsrfProtector;
 use XH\Pages;
 
-use Register\Logic\ValidationService;
 use Register\Infra\DbService;
 use Register\Infra\Logger;
 use Register\Infra\LoginManager;
@@ -89,7 +88,6 @@ class Dic
         return new RegisterUser(
             $plugin_cf["register"],
             $plugin_tx["register"],
-            self::makeValidationService(),
             self::makeView(),
             self::makeUserRepository(),
             self::makeMailService()
@@ -168,7 +166,6 @@ class Dic
             $plugin_tx["register"],
             new Session(),
             new CsrfProtector('register_csrf_token', false),
-            self::makeValidationService(),
             self::makeUserRepository(),
             self::makeView(),
             self::makeMailService()
@@ -225,13 +222,6 @@ class Dic
     public static function makeUserRepository(): UserRepository
     {
         return new UserRepository(self::makeDbService());
-    }
-
-    private static function makeValidationService(): ValidationService
-    {
-        global $plugin_tx;
-
-        return new ValidationService($plugin_tx["register"]);
     }
 
     private static function makeDbService(): DbService

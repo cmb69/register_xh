@@ -10,7 +10,7 @@ namespace Register\Logic;
 
 use PHPUnit\Framework\TestCase;
 
-class ValidationServiceTest extends TestCase
+class ValidatorTest extends TestCase
 {
     /**
      * @dataProvider validateUserData
@@ -24,22 +24,10 @@ class ValidationServiceTest extends TestCase
         string $email,
         array $expected
     ) {
-        $lang = [
-            "err_name" => "err_name",
-            "err_username" => "err_username",
-            "err_password" => "err_password",
-            "err_email" => "err_email",
-            "err_colon" => "err_colon",
-            "err_username_illegal" => "err_username_illegal",
-            "err_password2" => "err_password2",
-            "err_email_invalid" => "err_email_invalid",
-            "name" => "name",
-        ];
-        $validationService = new ValidationService($lang);
+        $validationService = new Validator();
         $actual = $validationService->validateUser($name, $username, $password1, $password2, $email);
         $this->assertEquals($expected, $actual);
     }
-
 
     public function validateUserData(): array
     {
@@ -58,7 +46,7 @@ class ValidationServiceTest extends TestCase
                 "",
                 "",
                 "",
-                ["err_name", "err_username", "err_password", "err_email"]
+                [["err_name"], ["err_username"], ["err_password"], ["err_email"]]
             ],
             [
                 ":",
@@ -66,7 +54,7 @@ class ValidationServiceTest extends TestCase
                 "a",
                 "b",
                 "c",
-                ["err_colon", "err_username_illegal", "err_password2", "err_email_invalid"]
+                [["err_colon"], ["err_username_illegal"], ["err_password2"], ["err_email_invalid"]]
             ],
         ];
     }

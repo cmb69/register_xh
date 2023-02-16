@@ -14,7 +14,6 @@ use PHPUnit\Framework\TestCase;
 use XH\CSRFProtection as CsrfProtector;
 
 use Register\Value\User;
-use Register\Logic\ValidationService;
 use Register\Infra\MailService;
 use Register\Infra\Request;
 use Register\Infra\Session;
@@ -57,7 +56,6 @@ class EditUserTest extends TestCase
         $lang = $plugin_tx['register'];
         $this->session = $this->createStub(Session::class);
         $this->csrfProtector = $this->createMock(CsrfProtector::class);
-        $validationService = $this->createStub(ValidationService::class);
         $this->userRepository = $this->createMock(UserRepository::class);
         $this->view = new View("./", $lang);
         $mailService = $this->createStub(MailService::class);
@@ -66,7 +64,6 @@ class EditUserTest extends TestCase
             $lang,
             $this->session,
             $this->csrfProtector,
-            $validationService,
             $this->userRepository,
             $this->view,
             $mailService
@@ -96,6 +93,20 @@ class EditUserTest extends TestCase
     {
         $_SESSION = ["username" => "john"];
         $_POST = ["oldpassword" => "54321"];
+        $this->userRepository->method("findByUsername")->willReturn($this->users["john"]);
+        $this->csrfProtector->expects($this->once())->method("check");
+        $response = ($this->subject)($this->request);
+        Approvals::verifyHtml($response);
+    }
+
+    public function testPasswordConfirmationDoesNotMatch(): void
+    {
+        $_SESSION = ["username" => "john"];
+        $_POST = [
+            "oldpassword" => "12345",
+            "password1" => "one",
+            "password2" => "two",
+        ];
         $this->userRepository->method("findByUsername")->willReturn($this->users["john"]);
         $this->csrfProtector->expects($this->once())->method("check");
         $response = ($this->subject)($this->request);

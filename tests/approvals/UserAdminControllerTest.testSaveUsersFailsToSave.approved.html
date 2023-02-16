@@ -1,7 +1,5 @@
 
-<p class="xh_info">Error for user 'cmb':</p>
-<p class="xh_fail">The chosen username exists already.</p>
-<p class="xh_fail">A user with the given email address exists already.</p>
+<p class="xh_fail">Saving CSV 'users.csv' file failed!</p>
 <h1>User Administration</h1>
 <div class="register_admin_main">
   <table>
@@ -59,24 +57,8 @@
         <td><input type="email" value="cmb@example.com" name="email[0]"></td>
         <td>
           <button onclick="register.changePassword(this.nextElementSibling); return false">Change Password...</button>
-          <input type="hidden" value="pw1" name="password[0]">
-          <input type="hidden" value="pw1" name="oldpassword[0]">
-        </td>
-      </tr>
-      <tr id="register_user_1">
-        <td><button title="Delete User" onclick="register.removeRow(this); return false">Delete</button></td>
-        <td><input type="text" value="Christoph Becker" name="name[1]"></td>
-        <td><input type="text" value="users" name="accessgroups[1]"></td>
-        <td><select name="status[1]"><option value="activated" selected="selected">activated</option><option value="locked">locked</option><option value="">deactivated</option></select></td>
-      </tr>
-      <tr class="register_second_row">
-        <td><button type="button" onclick="register.mailTo(this)" title="Email">Mail</i></button></td>
-        <td><input type="text" value="cmb" name="username[1]"></td>
-        <td><input type="email" value="cmb@example.com" name="email[1]"></td>
-        <td>
-          <button onclick="register.changePassword(this.nextElementSibling); return false">Change Password...</button>
-          <input type="hidden" value="pw2" name="password[1]">
-          <input type="hidden" value="pw2" name="oldpassword[1]">
+          <input type="hidden" value="pw" name="password[0]">
+          <input type="hidden" value="pw" name="oldpassword[0]">
         </td>
       </tr>
     </table>

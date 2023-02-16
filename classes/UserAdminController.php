@@ -15,7 +15,7 @@ use XH\CSRFProtection as CsrfProtector;
 use Register\Value\HtmlString;
 use Register\Value\User;
 use Register\Value\UserGroup;
-use Register\Logic\ValidationService;
+use Register\Logic\Validator;
 use Register\Infra\DbService;
 use Register\Infra\Request;
 use Register\Infra\Response;
@@ -86,7 +86,7 @@ class UserAdminController
             $groups = $this->dbService->readGroups();
         } else {
             $groups = [];
-            $errors[] = sprintf($this->lang['err_csv_missing'], $this->dbService->dataFolder() . 'groups.csv');
+            $errors[] = ['err_csv_missing', $this->dbService->dataFolder() . 'groups.csv'];
         }
 
         // put all available group Ids in an array for easier handling
@@ -108,7 +108,7 @@ class UserAdminController
         $deleted = false;
         $added   = false;
 
-        $validationService = new ValidationService($this->lang);
+        $validator = new Validator();
 
         $newusers = array();
         foreach (array_keys($username) as $j) {
@@ -119,12 +119,12 @@ class UserAdminController
                 if ($password[$j] == $oldpassword[$j]) {
                     $entryErrors = array_merge(
                         $entryErrors,
-                        $validationService->validateUser($name[$j], $username[$j], "dummy", "dummy", $email[$j])
+                        $validator->validateUser($name[$j], $username[$j], "dummy", "dummy", $email[$j])
                     );
                 } else {
                     $entryErrors = array_merge(
                         $entryErrors,
-                        $validationService->validateUser(
+                        $validator->validateUser(
                             $name[$j],
                             $username[$j],
                             $password[$j],
@@ -135,22 +135,22 @@ class UserAdminController
                 }
                 foreach ($newusers as $newuser) {
                     if ($newuser->getUsername() === $username[$j]) {
-                        $entryErrors[] = $this->lang['err_username_exists'];
+                        $entryErrors[] = ['err_username_exists'];
                     }
                     if ($newuser->getEmail() === $email[$j]) {
-                        $entryErrors[] = $this->lang['err_email_exists'];
+                        $entryErrors[] = ['err_email_exists'];
                     }
                 }
                 foreach ($userGroups as $groupName) {
                     if (!in_array($groupName, $groupIds)) {
-                        $entryErrors[] = $this->lang['err_group_does_not_exist'] . ' (' . $groupName . ')';
+                        $entryErrors[] = ['err_group_does_not_exist', $groupName];
                     }
                 }
                 if (!empty($entryErrors)) {
-                    $errors[] = new HtmlString($this->view->render('user-error', [
-                        'username' => $username[$j],
-                        'errors' => $entryErrors,
-                    ]));
+                    $errors[] = array_merge(
+                        [["error_in_user", $username[$j]]],
+                        $entryErrors
+                    );
                 }
                 if ($password[$j] == '') {
                     $password[$j] = base64_encode(random_bytes(16));
@@ -188,24 +188,39 @@ class UserAdminController
         // In case that nothing got deleted or added, store back (save got pressed)
         if (!$deleted && !$added && empty($errors)) {
             $lock = $this->dbService->lock(true);
-            if (!$this->dbService->writeUsers($newusers)) {
-                $errors[] = $this->lang['err_cannot_write_csv']
-                    . ' (' . $this->dbService->dataFolder() . 'users.csv' . ')';
-            }
+            $saved = $this->dbService->writeUsers($newusers);
             $this->dbService->unlock($lock);
-
-            if (!empty($errors)) {
-                $o .= $this->view->render('error', ['errors' => $errors]);
+            if (!$saved) {
+                $filename = $this->dbService->dataFolder() . 'users.csv';
+                $o .= $this->view->message("fail", "err_cannot_write_csv_adm", $filename);
             } else {
                 $filename = $this->dbService->dataFolder() . 'users.csv';
                 $o .= $this->view->message('success', 'csv_written', $filename);
             }
         } elseif (!empty($errors)) {
-            $o .= $this->view->render('error', ['errors' => $errors]);
+            $o .= $this->renderErrorMessages($errors);
         }
 
         $o .= $this->renderUsersForm($newusers, $request->url(), $response);
         return $response->body($o);
+    }
+
+    /** @param list<array{string}|list<array{string}>> $errors */
+    private function renderErrorMessages(array $errors): string
+    {
+        $o = "";
+        foreach ($errors as $error) {
+            if (is_string($error[0])) {
+                /** @var array{string} $error */
+                $o .= $this->view->message("fail", ...$error);
+            } else {
+                $o .= $this->view->message("info", ...$error[0]);
+                foreach (array_slice($error, 1) as $error) {
+                    $o .= $this->view->message("fail", ...$error);
+                }
+            }
+        }
+        return $o;
     }
 
     /** @param User[] $users */
