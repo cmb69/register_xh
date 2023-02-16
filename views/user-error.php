@@ -9,7 +9,7 @@ use Register\Infra\View;
  */
 ?>
 
-<div><?=$this->text('error_in_user')?>"<?=$this->esc($username)?>"</div>
+<div><?=$this->text('error_in_user', $username)?></div>
 <ul>
 <?php foreach ($errors as $error):?>
   <li><?=$this->esc($error)?></li>
