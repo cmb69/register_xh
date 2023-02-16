@@ -86,7 +86,7 @@ class UserAdminController
             $groups = $this->dbService->readGroups();
         } else {
             $groups = [];
-            $errors[] = sprintf($this->lang['err_csv_missing'], $this->dbService->dataFolder() . 'groups.csv');
+            $errors[] = ['err_csv_missing', $this->dbService->dataFolder() . 'groups.csv'];
         }
 
         // put all available group Ids in an array for easier handling
@@ -143,12 +143,15 @@ class UserAdminController
                 }
                 foreach ($userGroups as $groupName) {
                     if (!in_array($groupName, $groupIds)) {
-                        $entryErrors[] = [$this->lang['err_group_does_not_exist'], $groupName];
+                        $entryErrors[] = ['err_group_does_not_exist', $groupName];
                     }
                 }
                 if (!empty($entryErrors)) {
-                    $errors[] = new HtmlString($this->view->message("error", "error_in_user", $username[$j])
-                        . $this->renderErrorMessages($entryErrors));
+                    $errors = array_merge(
+                        $errors,
+                        [["error_in_user", $username[$j]]],
+                        $entryErrors
+                    );
                 }
                 if ($password[$j] == '') {
                     $password[$j] = base64_encode(random_bytes(16));
@@ -196,7 +199,7 @@ class UserAdminController
                 $o .= $this->view->message('success', 'csv_written', $filename);
             }
         } elseif (!empty($errors)) {
-            $o .= $this->view->render('error', ['errors' => $errors]);
+            $o .= $this->renderErrorMessages($errors);
         }
 
         $o .= $this->renderUsersForm($newusers, $request->url(), $response);
