@@ -23,7 +23,7 @@ use Register\Infra\View;
       <tr>
         <th><?=$this->text('groupname')?></th>
         <th><?=$this->text('login')?></th>
-        <th><button name="add[0]"><?=$this->text("label_add")?></button></th>
+        <th><button name="add"><?=$this->text("label_add")?></button></th>
       </tr>
 <?php foreach ($groups as $i => $entry):?>
       <tr>
