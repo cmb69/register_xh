@@ -147,8 +147,7 @@ class UserAdminController
                     }
                 }
                 if (!empty($entryErrors)) {
-                    $errors = array_merge(
-                        $errors,
+                    $errors[] = array_merge(
                         [["error_in_user", $username[$j]]],
                         $entryErrors
                     );
@@ -206,12 +205,22 @@ class UserAdminController
         return $response->body($o);
     }
 
-    /** @param list<array{string}> $errors */
+    /** @param list<array{string}|list<array{string}>> $errors */
     private function renderErrorMessages(array $errors): string
     {
-        return implode("", array_map(function ($args) {
-            return $this->view->message("fail", ...$args);
-        }, $errors));
+        $o = "";
+        foreach ($errors as $error) {
+            if (is_string($error[0])) {
+                /** @var array{string} $error */
+                $o .= $this->view->message("fail", ...$error);
+            } else {
+                $o .= $this->view->message("info", ...$error[0]);
+                foreach (array_slice($error, 1) as $error) {
+                    $o .= $this->view->message("fail", ...$error);
+                }
+            }
+        }
+        return $o;
     }
 
     /** @param User[] $users */
