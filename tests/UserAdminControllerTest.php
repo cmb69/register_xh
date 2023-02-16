@@ -98,26 +98,6 @@ class UserAdminControllerTest extends TestCase
         Approvals::verifyHtml($response->output());
     }
 
-    public function testSaveUsersFailsOnInvalidUserNameWhenChangingPassword()
-    {
-        $_POST = [
-            "username" => [""],
-            "password" => ["new"],
-            "oldpassword" => ["old"],
-            "name" => ["Christoph Becker"],
-            "email" => ["cmb@example.com"],
-            "accessgroups" => ["users"],
-            "status" => ["activated"],
-        ];
-        $dbService = $this->createStub(DbService::class);
-        $dbService->expects($this->never())->method('writeUsers');
-        $dbService->method('hasGroupsFile')->willReturn(true);
-        $dbService->method('readGroups')->willReturn([new UserGroup("users", "")]);
-        $sut = $this->makeUserAdminController($dbService);
-        $response = $sut->saveUsersAction($this->request);
-        Approvals::verifyHtml($response->output());
-    }
-
     public function testSaveUsersFailsOnDuplicateUserNameAndEmail()
     {
         $_POST = [

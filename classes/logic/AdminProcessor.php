@@ -101,7 +101,7 @@ class AdminProcessor
         if ($password === "") {
             $password = base64_encode(random_bytes(16));
         }
-        if (empty($userErrors) && $password !== $oldPassword) {
+        if ($password !== $oldPassword) {
             // TODO: handle password_hash() failure
             $password = (string) password_hash($password, PASSWORD_DEFAULT);
         }
