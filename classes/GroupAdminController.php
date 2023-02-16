@@ -15,6 +15,7 @@ use XH\Pages;
 
 use Register\Value\HtmlString;
 use Register\Value\UserGroup;
+use Register\Logic\AdminProcessor;
 use Register\Infra\DbService;
 use Register\Infra\Request;
 use Register\Infra\Url;

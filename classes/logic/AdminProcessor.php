@@ -8,12 +8,119 @@
  * This file is part of Register_XH.
  */
 
-namespace Register;
+namespace Register\Logic;
 
+use Register\Value\User;
 use Register\Value\UserGroup;
 
 class AdminProcessor
 {
+    /**
+     * @param list<UserGroup> $groups
+     * @param list<string> $delete
+     * @param list<string> $usernames
+     * @param list<string> $passwords
+     * @param list<string> $oldPasswords
+     * @param list<string> $names
+     * @param list<string> $emails
+     * @param list<string> $groupStrings
+     * @param list<string> $statuses
+     * @return array{list<User>,bool,list<array{string}|list<array{string}>>}
+     */
+    public function processUsers(
+        array $groups,
+        string $add,
+        array $delete,
+        array $usernames,
+        array $passwords,
+        array $oldPasswords,
+        array $names,
+        array $emails,
+        array $groupStrings,
+        array $statuses,
+        string $defaultGroupName
+    ): array {
+        $groupNames = [];
+        foreach ($groups as $entry) {
+            $groupNames[] = $entry->getGroupname();
+        }
+        $save = true;
+        $errors = [];
+        $users = [];
+        foreach (array_keys($usernames) as $i) {
+            if (!isset($delete[$i]) || $delete[$i] == '') {
+                [$user, $userErrors] = $this->processUser(
+                    explode(",", $groupStrings[$i]),
+                    $usernames[$i],
+                    $passwords[$i],
+                    $oldPasswords[$i],
+                    $names[$i],
+                    $emails[$i],
+                    $statuses[$i],
+                    $users,
+                    $groupNames
+                );
+                if (!empty($userErrors)) {
+                    $errors[] = array_merge([["error_in_user", $usernames[$i]]], $userErrors);
+                }
+                $users[] = $user;
+            } else {
+                $save = false;
+            }
+        }
+        if ($add != '') {
+            $users[] = new User("NewUser", "", [$defaultGroupName], "Name Lastname", "user@domain.com", "activated");
+            $save = false;
+        }
+        return [$users, $save, $errors];
+    }
+
+    /**
+     * @param list<string> $groups
+     * @param list<User> $users
+     * @param list<string> $groupNames
+     * @return array{User,list<array{string}>}
+     */
+    private function processUser(
+        array $groups,
+        string $username,
+        string $password,
+        string $oldPassword,
+        string $name,
+        string $email,
+        string $status,
+        array $users,
+        array $groupNames
+    ) {
+        $validator = new Validator();
+        if ($password === $oldPassword) {
+            $userErrors = $validator->validateUser($name, $username, "dummy", "dummy", $email);
+        } else {
+            $userErrors = $validator->validateUser($name, $username, $password, $password, $email);
+        }
+        foreach ($users as $user) {
+            if ($user->getUsername() === $username) {
+                $userErrors[] = ['err_username_exists'];
+            }
+            if ($user->getEmail() === $email) {
+                $userErrors[] = ['err_email_exists'];
+            }
+        }
+        foreach ($groups as $groupName) {
+            if (!in_array($groupName, $groupNames, true)) {
+                $userErrors[] = ['err_group_does_not_exist', $groupName];
+            }
+        }
+        if ($password === "") {
+            $password = base64_encode(random_bytes(16));
+        }
+        if (empty($userErrors) && $password !== $oldPassword) {
+            // TODO: handle password_hash() failure
+            $password = (string) password_hash($password, PASSWORD_DEFAULT);
+        }
+        return [new User($username, $password, $groups, $name, $email, $status), $userErrors];
+    }
+
     /**
      * @param list<string> $delete
      * @param list<string> $names

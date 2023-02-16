@@ -15,7 +15,7 @@ use XH\CSRFProtection as CsrfProtector;
 use Register\Value\HtmlString;
 use Register\Value\User;
 use Register\Value\UserGroup;
-use Register\Logic\Validator;
+use Register\Logic\AdminProcessor;
 use Register\Infra\DbService;
 use Register\Infra\Request;
 use Register\Infra\Response;
@@ -89,12 +89,6 @@ class UserAdminController
             $errors[] = ['err_csv_missing', $this->dbService->dataFolder() . 'groups.csv'];
         }
 
-        // put all available group Ids in an array for easier handling
-        $groupIds = array();
-        foreach ($groups as $entry) {
-            $groupIds[] = $entry->getGroupname();
-        }
-
         $delete = $_POST['delete'] ?? [];
         $add = $_POST['add'] ?? '';
         $username = $_POST['username'] ?? [];
@@ -105,88 +99,25 @@ class UserAdminController
         $groupString = $_POST['accessgroups'] ?? [];
         $status = $_POST['status'] ?? [];
 
-        $deleted = false;
-        $added   = false;
-
-        $validator = new Validator();
-
-        $newusers = array();
-        foreach (array_keys($username) as $j) {
-            if (!isset($delete[$j]) || $delete[$j] == '') {
-                $userGroups = explode(",", $groupString[$j]);
-                // Error Checking
-                $entryErrors = [];
-                if ($password[$j] == $oldpassword[$j]) {
-                    $entryErrors = array_merge(
-                        $entryErrors,
-                        $validator->validateUser($name[$j], $username[$j], "dummy", "dummy", $email[$j])
-                    );
-                } else {
-                    $entryErrors = array_merge(
-                        $entryErrors,
-                        $validator->validateUser(
-                            $name[$j],
-                            $username[$j],
-                            $password[$j],
-                            $password[$j],
-                            $email[$j]
-                        )
-                    );
-                }
-                foreach ($newusers as $newuser) {
-                    if ($newuser->getUsername() === $username[$j]) {
-                        $entryErrors[] = ['err_username_exists'];
-                    }
-                    if ($newuser->getEmail() === $email[$j]) {
-                        $entryErrors[] = ['err_email_exists'];
-                    }
-                }
-                foreach ($userGroups as $groupName) {
-                    if (!in_array($groupName, $groupIds)) {
-                        $entryErrors[] = ['err_group_does_not_exist', $groupName];
-                    }
-                }
-                if (!empty($entryErrors)) {
-                    $errors[] = array_merge(
-                        [["error_in_user", $username[$j]]],
-                        $entryErrors
-                    );
-                }
-                if ($password[$j] == '') {
-                    $password[$j] = base64_encode(random_bytes(16));
-                }
-                if (empty($entryErrors) && $password[$j] != $oldpassword[$j]) {
-                    $password[$j] = password_hash($password[$j], PASSWORD_DEFAULT);
-                }
-                $entry = new User(
-                    $username[$j],
-                    $password[$j],
-                    $userGroups,
-                    $name[$j],
-                    $email[$j],
-                    $status[$j]
-                );
-                $newusers[] = $entry;
-            } else {
-                $deleted = true;
-            }
-        }
-        if ($add != '') {
-            $entry = new User(
-                "NewUser",
-                "",
-                array($this->config['group_default']),
-                "Name Lastname",
-                "user@domain.com",
-                "activated"
-            );
-            $newusers[] = $entry;
-            $added = true;
-        }
+        $processor = new AdminProcessor();
+        [$newusers, $save, $extraErrors] = $processor->processUsers(
+            $groups,
+            $add,
+            $delete,
+            $username,
+            $password,
+            $oldpassword,
+            $name,
+            $email,
+            $groupString,
+            $status,
+            $this->config['group_default']
+        );
+        $errors = array_merge($errors, $extraErrors);
 
         $o = "";
         // In case that nothing got deleted or added, store back (save got pressed)
-        if (!$deleted && !$added && empty($errors)) {
+        if ($save && empty($errors)) {
             $lock = $this->dbService->lock(true);
             $saved = $this->dbService->writeUsers($newusers);
             $this->dbService->unlock($lock);

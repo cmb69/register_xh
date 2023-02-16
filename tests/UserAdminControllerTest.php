@@ -81,7 +81,7 @@ class UserAdminControllerTest extends TestCase
     public function testSaveUsersCanAddRecord()
     {
         $_POST = [
-            "add" => [""],
+            "add" => "on",
             "username" => ["cmb"],
             "password" => ["test"],
             "oldpassword" => ["test"],
