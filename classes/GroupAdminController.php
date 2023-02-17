@@ -28,7 +28,7 @@ class GroupAdminController
     private $pluginFolder;
 
     /** @var array<string,string> */
-    private $lang;
+    private $text;
 
     /** @var CsrfProtector */
     private $csrfProtector;
@@ -42,18 +42,18 @@ class GroupAdminController
     /** @var Pages */
     private $pages;
 
-    /** @param array<string,string> $lang */
+    /** @param array<string,string> $text */
     public function __construct(
         string $pluginFolder,
-        array $lang,
+        array $text,
         CsrfProtector $csrfProtector,
         DbService $dbService,
         Pages $pages
     ) {
         $this->pluginFolder = $pluginFolder;
-        $this->lang = $lang;
+        $this->text = $text;
         $this->csrfProtector = $csrfProtector;
-        $this->view = new View($this->pluginFolder, $this->lang);
+        $this->view = new View($this->pluginFolder, $this->text);
         $this->dbService = $dbService;
         $this->pages = $pages;
     }

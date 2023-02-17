@@ -23,10 +23,10 @@ use Register\Infra\UserRepository;
 class LoginController
 {
     /** @var array<string,string> */
-    private $config;
+    private $conf;
 
     /** @var array<string,string> */
-    private $lang;
+    private $text;
 
     /** @var UserRepository */
     private $userRepository;
@@ -47,12 +47,12 @@ class LoginController
     private $currentUser;
 
     /**
-     * @param array<string,string> $config
-     * @param array<string,string> $lang
+     * @param array<string,string> $conf
+     * @param array<string,string> $text
      */
     public function __construct(
-        array $config,
-        array $lang,
+        array $conf,
+        array $text,
         UserRepository $userRepository,
         UserGroupRepository $userGroupRepository,
         LoginManager $loginManager,
@@ -60,8 +60,8 @@ class LoginController
         Session $session,
         CurrentUser $currentUser
     ) {
-        $this->config = $config;
-        $this->lang = $lang;
+        $this->conf = $conf;
+        $this->text = $text;
         $this->userRepository = $userRepository;
         $this->userGroupRepository = $userGroupRepository;
         $this->loginManager = $loginManager;
@@ -72,7 +72,7 @@ class LoginController
 
     public function __invoke(Request $request): Response
     {
-        if ($this->config["remember_user"]
+        if ($this->conf["remember_user"]
             && isset($_COOKIE['register_username'], $_COOKIE['register_token']) && !$this->currentUser->get()) {
             return $this->loginAction($request);
         }
@@ -92,7 +92,7 @@ class LoginController
         $token = null;
 
         // set username and password in case cookies are set
-        if ($this->config['remember_user']
+        if ($this->conf['remember_user']
                 && isset($_COOKIE['register_username'], $_COOKIE['register_token'])) {
             $username     = $_COOKIE['register_username'];
             $token = $_COOKIE['register_token'];
@@ -101,7 +101,7 @@ class LoginController
         $entry = $this->userRepository->findByUsername($username);
         if ($this->loginManager->isUserAuthenticated($entry, $password, $token)) {
             assert($entry instanceof User);
-            $this->loginManager->login($entry, $this->config['remember_user'] && isset($_POST['remember']));
+            $this->loginManager->login($entry, $this->conf['remember_user'] && isset($_POST['remember']));
             $this->logger->logInfo('login', "$username logged in");
 
             // go to login page if exists or to default page otherwise
@@ -109,13 +109,13 @@ class LoginController
             if ($group && $group->getLoginpage()) {
                 $url = $request->url()->withEncodedPage($group->getLoginpage());
             } else {
-                $url = $request->url()->withPage($this->lang['loggedin']);
+                $url = $request->url()->withPage($this->text['loggedin']);
             }
             return (new Response)->redirect($url->absolute());
         } else {
             $this->loginManager->forget();
             $this->logger->logError('login', "$username wrong password");
-            return (new Response)->redirect($request->url()->withPage($this->lang['login_error'])->absolute());
+            return (new Response)->redirect($request->url()->withPage($this->text['login_error'])->absolute());
         }
     }
 
@@ -125,6 +125,6 @@ class LoginController
         $username = $_SESSION['username'] ?? '';
         $this->loginManager->logout();
         $this->logger->logInfo('logout', "$username logged out");
-        return (new Response)->redirect($request->url()->withPage($this->lang['loggedout'])->absolute());
+        return (new Response)->redirect($request->url()->withPage($this->text['loggedout'])->absolute());
     }
 }

@@ -53,7 +53,7 @@ class LoginControllerTest extends TestCase
         $plugin_cf = XH_includeVar("./config/config.php", 'plugin_cf');
         $this->conf = $plugin_cf['register'];
         $plugin_tx = XH_includeVar("./languages/en.php", 'plugin_tx');
-        $this->lang = $plugin_tx['register'];
+        $this->text = $plugin_tx['register'];
         $this->userRepository = $this->createStub(UserRepository::class);
         $this->userGroupRepository = $this->createStub(UserGroupRepository::class);
         $this->loginManager = $this->createStub(LoginManager::class);
@@ -70,7 +70,7 @@ class LoginControllerTest extends TestCase
         $this->loginManager->method('isUserAuthenticated')->willReturn(true);
         $sut = new LoginController(
             $this->conf,
-            $this->lang,
+            $this->text,
             $this->userRepository,
             $this->userGroupRepository,
             $this->loginManager,
@@ -87,7 +87,7 @@ class LoginControllerTest extends TestCase
     {
         $sut = new LoginController(
             $this->conf,
-            $this->lang,
+            $this->text,
             $this->userRepository,
             $this->userGroupRepository,
             $this->loginManager,
@@ -104,7 +104,7 @@ class LoginControllerTest extends TestCase
     {
         $sut = new LoginController(
             $this->conf,
-            $this->lang,
+            $this->text,
             $this->userRepository,
             $this->userGroupRepository,
             $this->loginManager,

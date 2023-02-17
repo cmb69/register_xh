@@ -26,7 +26,7 @@ class ShowLoginForm
     /**
      * @var array<string,string>
      */
-    private $lang;
+    private $text;
 
     /**
      * @var View
@@ -38,16 +38,16 @@ class ShowLoginForm
 
     /**
      * @param array<string,string> $conf
-     * @param array<string,string> $lang
+     * @param array<string,string> $text
      */
     public function __construct(
         array $conf,
-        array $lang,
+        array $text,
         View $view,
         CurrentUser $currentUser
     ) {
         $this->conf = $conf;
-        $this->lang = $lang;
+        $this->text = $text;
         $this->view = $view;
         $this->currentUser = $currentUser;
     }
@@ -63,7 +63,7 @@ class ShowLoginForm
 
     private function renderLoginForm(Request $request): string
     {
-        $forgotPasswordPage = $this->lang['forgot_password'];
+        $forgotPasswordPage = $this->text['forgot_password'];
         $data = [
             'actionUrl' => $request->url()->relative(),
             'hasForgotPasswordLink' => $this->conf['password_forgotten']
@@ -71,7 +71,7 @@ class ShowLoginForm
             'forgotPasswordUrl' => $request->url()->withPage($forgotPasswordPage)->relative(),
             'hasRememberMe' => $this->conf['remember_user'],
             'isRegisterAllowed' => $this->conf['allowed_register'],
-            'registerUrl' => $request->url()->withPage($this->lang['register'])->relative(),
+            'registerUrl' => $request->url()->withPage($this->text['register'])->relative(),
         ];
         return $this->view->render('loginform', $data);
     }
@@ -80,7 +80,7 @@ class ShowLoginForm
     {
         $user = $this->currentUser->get();
         assert($user instanceof User);
-        $userPrefPage = $this->lang['user_prefs'];
+        $userPrefPage = $this->text['user_prefs'];
         $data = [
             'fullName' => $user->getName(),
             'hasUserPrefs' => $user->isActivated() &&

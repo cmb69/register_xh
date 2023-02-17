@@ -22,7 +22,7 @@ class ShowPluginInfo
     private $pluginFolder;
 
     /** @var array<string,string> */
-    private $lang;
+    private $text;
 
     /** @var DbService */
     private $dbService;
@@ -35,17 +35,17 @@ class ShowPluginInfo
      */
     private $view;
 
-    /** @param array<string,string> $lang */
+    /** @param array<string,string> $text */
     public function __construct(
         string $pluginsFolder,
-        array $lang,
+        array $text,
         DbService $dbService,
         SystemChecker $systemChecker,
         View $view
     ) {
         $this->pluginsFolder = $pluginsFolder;
         $this->pluginFolder = $this->pluginsFolder . "register/";
-        $this->lang = $lang;
+        $this->text = $text;
         $this->dbService = $dbService;
         $this->systemChecker = $systemChecker;
         $this->view = $view;
@@ -83,8 +83,8 @@ class ShowPluginInfo
     private function checkPhpVersion($version)
     {
         $state = $this->systemChecker->checkVersion(PHP_VERSION, $version) ? 'success' : 'fail';
-        $label = sprintf($this->lang['syscheck_phpversion'], $version);
-        $stateLabel = $this->lang["syscheck_$state"];
+        $label = sprintf($this->text['syscheck_phpversion'], $version);
+        $stateLabel = $this->text["syscheck_$state"];
         return compact('state', 'label', 'stateLabel');
     }
 
@@ -96,8 +96,8 @@ class ShowPluginInfo
     private function checkExtension($extension, $isMandatory = true)
     {
         $state = $this->systemChecker->checkExtension($extension) ? 'success' : ($isMandatory ? 'fail' : 'warning');
-        $label = sprintf($this->lang['syscheck_extension'], $extension);
-        $stateLabel = $this->lang["syscheck_$state"];
+        $label = sprintf($this->text['syscheck_extension'], $extension);
+        $stateLabel = $this->text["syscheck_$state"];
         return compact('state', 'label', 'stateLabel');
     }
 
@@ -108,8 +108,8 @@ class ShowPluginInfo
     private function checkXhVersion($version)
     {
         $state = $this->systemChecker->checkVersion(CMSIMPLE_XH_VERSION, "CMSimple_XH $version") ? 'success' : 'fail';
-        $label = sprintf($this->lang['syscheck_xhversion'], $version);
-        $stateLabel = $this->lang["syscheck_$state"];
+        $label = sprintf($this->text['syscheck_xhversion'], $version);
+        $stateLabel = $this->text["syscheck_$state"];
         return compact('state', 'label', 'stateLabel');
     }
 
@@ -120,8 +120,8 @@ class ShowPluginInfo
     private function checkWritability($folder)
     {
         $state = $this->systemChecker->checkWritability($folder) ? 'success' : 'warning';
-        $label = sprintf($this->lang['syscheck_writable'], $folder);
-        $stateLabel = $this->lang["syscheck_$state"];
+        $label = sprintf($this->text['syscheck_writable'], $folder);
+        $stateLabel = $this->text["syscheck_$state"];
         return compact('state', 'label', 'stateLabel');
     }
 }

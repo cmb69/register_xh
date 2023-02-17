@@ -16,19 +16,19 @@ class View
     private $pluginFolder;
 
     /** @var array<string,string> */
-    private $lang;
+    private $text;
 
-    /** @param array<string,string> $lang */
-    public function __construct(string $pluginFolder, array $lang)
+    /** @param array<string,string> $text */
+    public function __construct(string $pluginFolder, array $text)
     {
         $this->pluginFolder = $pluginFolder;
-        $this->lang = $lang;
+        $this->text = $text;
     }
 
     /** @param scalar $args */
     public function text(string $key, ...$args): string
     {
-        return $this->esc(sprintf($this->lang[$key], ...$args));
+        return $this->esc(sprintf($this->text[$key], ...$args));
     }
 
     /** @param scalar $args */
@@ -39,7 +39,7 @@ class View
         } else {
             $key .= XH_numberSuffix($count);
         }
-        return $this->esc(sprintf($this->lang[$key], $count, ...$args));
+        return $this->esc(sprintf($this->text[$key], $count, ...$args));
     }
 
     /** @param scalar $args */

@@ -28,10 +28,10 @@ class UserAdminController
     private $pluginFolder;
 
     /** @var array<string,string> */
-    private $config;
+    private $conf;
 
     /** @var array<string,string> */
-    private $lang;
+    private $text;
 
     /** @var CsrfProtector */
     private $csrfProtector;
@@ -43,21 +43,21 @@ class UserAdminController
     private $dbService;
 
     /**
-     * @param array<string,string> $config
-     * @param array<string,string> $lang
+     * @param array<string,string> $conf
+     * @param array<string,string> $text
      */
     public function __construct(
         string $pluginFolder,
-        array $config,
-        array $lang,
+        array $conf,
+        array $text,
         CsrfProtector $csrfProtector,
         DbService $dbService
     ) {
         $this->pluginFolder = $pluginFolder;
-        $this->config = $config;
-        $this->lang = $lang;
+        $this->conf = $conf;
+        $this->text = $text;
         $this->csrfProtector = $csrfProtector;
-        $this->view = new View($this->pluginFolder, $this->lang);
+        $this->view = new View($this->pluginFolder, $this->text);
         $this->dbService = $dbService;
     }
 
@@ -165,7 +165,7 @@ class UserAdminController
 
         $data = [
             'csrfTokenInput' => new HtmlString($this->csrfProtector->tokenInput()),
-            'defaultGroup' => $this->config['group_default'],
+            'defaultGroup' => $this->conf['group_default'],
             'statusSelectActivated' => new HtmlString($this->statusSelectbox('activated')),
             'groups' => $this->findGroups(),
             'actionUrl' => $url->withPage("register")->withParams(["admin" => "users"])->relative(),
@@ -186,7 +186,7 @@ class UserAdminController
     {
         $extraKeys = ['name', 'username', 'password', 'accessgroups', 'status', 'email', 'prefsemailsubject'];
         $txts = [];
-        foreach ($this->lang as $key => $val) {
+        foreach ($this->text as $key => $val) {
             if (strpos($key, 'js_') === 0) {
                 $txts[substr($key, 3)] =  $val;
             } elseif (in_array($key, $extraKeys, true)) {
@@ -244,11 +244,11 @@ class UserAdminController
     private function statusSelectbox($value, $n = null)
     {
         $o = '<select name="status[' . $n . ']">';
-        $opts = array('activated' => $this->lang['status_activated'], 'locked' => $this->lang['status_locked']);
+        $opts = array('activated' => $this->text['status_activated'], 'locked' => $this->text['status_locked']);
         if (empty($value) || array_key_exists($value, $opts)) {
-            $opts[''] = $this->lang['status_deactivated'];
+            $opts[''] = $this->text['status_deactivated'];
         } else {
-            $opts[$value] = $this->lang['status_not_yet_activated'];
+            $opts[$value] = $this->text['status_not_yet_activated'];
         }
         foreach ($opts as $opt => $label) {
             $sel = $opt == $value ? ' selected="selected"' : '';

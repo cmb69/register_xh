@@ -25,10 +25,10 @@ class HandleUserRegistration
     private $currentUser;
 
     /** @var array<string,string> */
-    private $config;
+    private $conf;
 
     /** @var array<string,string> */
-    private $lang;
+    private $text;
 
     /** @var View */
     private $view;
@@ -40,20 +40,20 @@ class HandleUserRegistration
     private $mailService;
 
     /**
-     * @param array<string,string> $config
-     * @param array<string,string> $lang
+     * @param array<string,string> $conf
+     * @param array<string,string> $text
      */
     public function __construct(
         CurrentUser $currentUser,
-        array $config,
-        array $lang,
+        array $conf,
+        array $text,
         View $view,
         UserRepository $userRepository,
         MailService $mailService
     ) {
         $this->currentUser = $currentUser;
-        $this->config = $config;
-        $this->lang = $lang;
+        $this->conf = $conf;
+        $this->text = $text;
         $this->view = $view;
         $this->userRepository = $userRepository;
         $this->mailService = $mailService;
@@ -122,7 +122,7 @@ class HandleUserRegistration
             $newUser = new User(
                 $username,
                 (string) password_hash($password1, PASSWORD_DEFAULT),
-                array($this->config['group_default']),
+                array($this->conf['group_default']),
                 $name,
                 $email,
                 $status
@@ -134,33 +134,33 @@ class HandleUserRegistration
         }
 
         // prepare email content for registration activation
-        $content = $this->lang['emailtext1'] . "\n\n"
-            . ' ' . $this->lang['name'] . ": $name \n"
-            . ' ' . $this->lang['username'] . ": $username \n"
-            . ' ' . $this->lang['email'] . ": $email \n"
-            . ' ' . $this->lang['fromip'] . ": {$_SERVER['REMOTE_ADDR']} \n\n";
+        $content = $this->text['emailtext1'] . "\n\n"
+            . ' ' . $this->text['name'] . ": $name \n"
+            . ' ' . $this->text['username'] . ": $username \n"
+            . ' ' . $this->text['email'] . ": $email \n"
+            . ' ' . $this->text['fromip'] . ": {$_SERVER['REMOTE_ADDR']} \n\n";
         if (!$user) {
             $url = $request->url()->withParams([
                 "action" => "register_activate_user",
                 "username" => $username,
                 "nonce" => $status,
             ]);
-                $content .= $this->lang['emailtext2'] . "\n\n"
+                $content .= $this->text['emailtext2'] . "\n\n"
                 . '<' . $url->absolute() . '>';
         } else {
-            $url = $request->url()->withPage($this->lang['forgot_password']);
-            $content .= $this->lang['emailtext4'] . "\n\n"
+            $url = $request->url()->withPage($this->text['forgot_password']);
+            $content .= $this->text['emailtext4'] . "\n\n"
                 . '<' . $url->absolute() . '>';
         }
 
         // send activation email
         $this->mailService->sendMail(
             $email,
-            $this->lang['emailsubject'] . ' ' . $_SERVER['SERVER_NAME'],
+            $this->text['emailsubject'] . ' ' . $_SERVER['SERVER_NAME'],
             $content,
             array(
-                'From: ' . $this->config['senderemail'],
-                'Cc: '  . $this->config['senderemail']
+                'From: ' . $this->conf['senderemail'],
+                'Cc: '  . $this->conf['senderemail']
             )
         );
         return $response->body($this->view->message('success', 'registered'));
@@ -195,7 +195,7 @@ class HandleUserRegistration
         if ($nonce != $user->getStatus()) {
             return $this->view->message("fail", 'err_status_invalid');
         }
-        $user = $user->activate()->withAccessgroups([$this->config['group_activated']]);
+        $user = $user->activate()->withAccessgroups([$this->conf['group_activated']]);
         $this->userRepository->update($user);
         return $this->view->message('success', 'activated');
     }

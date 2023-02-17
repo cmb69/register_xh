@@ -25,10 +25,10 @@ class HandlePasswordForgotten
     private $currentUser;
 
     /** @var array<string,string> */
-    private $config;
+    private $conf;
 
     /** @var array<string,string> */
-    private $lang;
+    private $text;
 
     /** @var int */
     private $now;
@@ -43,21 +43,21 @@ class HandlePasswordForgotten
     private $mailService;
 
     /**
-     * @param array<string,string> $config
-     * @param array<string,string> $lang
+     * @param array<string,string> $conf
+     * @param array<string,string> $text
      */
     public function __construct(
         CurrentUser $currentUser,
-        array $config,
-        array $lang,
+        array $conf,
+        array $text,
         int $now,
         View $view,
         UserRepository $userRepository,
         MailService $mailService
     ) {
         $this->currentUser = $currentUser;
-        $this->config = $config;
-        $this->lang = $lang;
+        $this->conf = $conf;
+        $this->text = $text;
         $this->now = $now;
         $this->view = $view;
         $this->userRepository = $userRepository;
@@ -123,19 +123,19 @@ class HandlePasswordForgotten
                 "mac" => $mac,
             ]);
             // prepare email content for user data email
-            $content = $this->lang['emailtext1'] . "\n\n"
-                . ' ' . $this->lang['name'] . ": " . $user->getName() . "\n"
-                . ' ' . $this->lang['username'] . ": " . $user->getUsername() . "\n";
-            $content .= ' ' . $this->lang['email'] . ": " . $user->getEmail() . "\n";
-            $content .= "\n" . $this->lang['emailtext3'] ."\n\n"
+            $content = $this->text['emailtext1'] . "\n\n"
+                . ' ' . $this->text['name'] . ": " . $user->getName() . "\n"
+                . ' ' . $this->text['username'] . ": " . $user->getUsername() . "\n";
+            $content .= ' ' . $this->text['email'] . ": " . $user->getEmail() . "\n";
+            $content .= "\n" . $this->text['emailtext3'] ."\n\n"
                 . '<' . $url->absolute() . '>';
 
             // send reminder email
             $this->mailService->sendMail(
                 $email,
-                $this->lang['reminderemailsubject'] . ' ' . $_SERVER['SERVER_NAME'],
+                $this->text['reminderemailsubject'] . ' ' . $_SERVER['SERVER_NAME'],
                 $content,
-                array('From: ' . $this->config['senderemail'])
+                array('From: ' . $this->conf['senderemail'])
             );
         }
         $response->body($this->view->message('success', 'remindersent_reset'));
@@ -212,17 +212,17 @@ class HandlePasswordForgotten
         }
 
         // prepare email content for user data email
-        $content = $this->lang['emailtext1'] . "\n\n"
-            . ' ' . $this->lang['name'] . ": " . $user->getName() . "\n"
-            . ' ' . $this->lang['username'] . ": " . $user->getUsername() . "\n"
-            . ' ' . $this->lang['email'] . ": " . $user->getEmail() . "\n";
+        $content = $this->text['emailtext1'] . "\n\n"
+            . ' ' . $this->text['name'] . ": " . $user->getName() . "\n"
+            . ' ' . $this->text['username'] . ": " . $user->getUsername() . "\n"
+            . ' ' . $this->text['email'] . ": " . $user->getEmail() . "\n";
 
         // send reminder email
         $this->mailService->sendMail(
             $user->getEmail(),
-            $this->lang['reminderemailsubject'] . ' ' . $_SERVER['SERVER_NAME'],
+            $this->text['reminderemailsubject'] . ' ' . $_SERVER['SERVER_NAME'],
             $content,
-            array('From: ' . $this->config['senderemail'])
+            array('From: ' . $this->conf['senderemail'])
         );
         $response->body($this->view->message('success', 'remindersent'));
         return $response;

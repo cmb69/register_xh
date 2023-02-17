@@ -30,10 +30,10 @@ class HandleUserPreferences
     private $currentUser;
 
     /** @var array<string,string> */
-    private $config;
+    private $conf;
 
     /** @var array<string,string> */
-    private $lang;
+    private $text;
 
     /** @var CsrfProtector */
     private $csrfProtector;
@@ -54,13 +54,13 @@ class HandleUserPreferences
     private $logger;
 
     /**
-     * @param array<string,string> $config
-     * @param array<string,string> $lang
+     * @param array<string,string> $conf
+     * @param array<string,string> $text
      */
     public function __construct(
         CurrentUser $currentUser,
-        array $config,
-        array $lang,
+        array $conf,
+        array $text,
         Session $session,
         CsrfProtector $csrfProtector,
         UserRepository $userRepository,
@@ -70,8 +70,8 @@ class HandleUserPreferences
         Logger $logger
     ) {
         $this->currentUser = $currentUser;
-        $this->config = $config;
-        $this->lang = $lang;
+        $this->conf = $conf;
+        $this->text = $text;
         $session->start();
         $this->csrfProtector = $csrfProtector;
         $this->userRepository = $userRepository;
@@ -190,21 +190,21 @@ class HandleUserPreferences
         }
 
         // prepare email for user information about updates
-        $content = $this->lang['emailprefsupdated'] . "\n\n" .
-            ' ' . $this->lang['name'] . ': '.$name."\n" .
-            ' ' . $this->lang['username'] . ': '.$username."\n" .
-            //' ' . $this->lang['password'] . ': '.$password1."\n" .
-            ' ' . $this->lang['email'] . ': '.$email."\n" .
-            ' ' . $this->lang['fromip'] . ': '. $_SERVER['REMOTE_ADDR'] ."\n";
+        $content = $this->text['emailprefsupdated'] . "\n\n" .
+            ' ' . $this->text['name'] . ': '.$name."\n" .
+            ' ' . $this->text['username'] . ': '.$username."\n" .
+            //' ' . $this->text['password'] . ': '.$password1."\n" .
+            ' ' . $this->text['email'] . ': '.$email."\n" .
+            ' ' . $this->text['fromip'] . ': '. $_SERVER['REMOTE_ADDR'] ."\n";
 
         // send update email
         $this->mailService->sendMail(
             $email,
-            $this->lang['prefsemailsubject'] . ' ' . $_SERVER['SERVER_NAME'],
+            $this->text['prefsemailsubject'] . ' ' . $_SERVER['SERVER_NAME'],
             $content,
             array(
-                'From: ' . $this->config['senderemail'],
-                'Cc: '  . $oldemail . ', ' . $this->config['senderemail']
+                'From: ' . $this->conf['senderemail'],
+                'Cc: '  . $oldemail . ', ' . $this->conf['senderemail']
             )
         );
         return $this->view->message('success', 'prefsupdated');
