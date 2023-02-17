@@ -34,36 +34,20 @@ $pd_router->add_tab(
 if (XH_wantsPluginAdministration("register")) {
     $o .= print_plugin_admin("off");
     pluginmenu("ROW");
-    $temp = (new Request())->url()->withPage("register")->withParams([
-        "admin" => "plugin_main",
-        "action" => "editgroups",
-    ])->relative();
+    $temp = (new Request())->url()->withPage("register")->withParams(["admin" => "groups"])->relative();
     pluginmenu("TAB", XH_hsc($temp), "", XH_hsc($plugin_tx["register"]["mnu_group_admin"]));
-    $temp = (new Request())->url()->withPage("register")->withParams([
-        "admin" => "plugin_main",
-        "action" => "editusers",
-    ])->relative();
+    $temp = (new Request())->url()->withPage("register")->withParams(["admin" => "users"])->relative();
     pluginmenu("TAB", XH_hsc($temp), "", XH_hsc($plugin_tx["register"]["mnu_user_admin"]));
     $o .= pluginmenu("SHOW");
     switch ($admin) {
         case "":
             $o .= Dic::makeShowPluginInfo()();
             break;
-        case "plugin_main":
-            switch ($action) {
-                case "editusers":
-                    $o .= Dic::makeUserAdminController()->editUsersAction(new Request())->fire();
-                    break;
-                case "saveusers":
-                    $o .= Dic::makeUserAdminController()->saveUsersAction(new Request())->fire();
-                    break;
-                case "editgroups":
-                    $o .= Dic::makeGroupAdminController()->editGroupsAction(new Request());
-                    break;
-                case "savegroups":
-                    $o .= Dic::makeGroupAdminController()->saveGroupsAction(new Request());
-                    break;
-            }
+        case "groups":
+            $o .= Dic::makeGroupAdminController()(new Request);
+            break;
+        case "users":
+            $o .= Dic::makeUserAdminController()(new Request)->fire();
             break;
         default:
             $o .= plugin_admin_common();

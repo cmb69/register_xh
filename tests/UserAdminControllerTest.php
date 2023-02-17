@@ -37,7 +37,8 @@ class UserAdminControllerTest extends TestCase
         $dbService->method('hasGroupsFile')->willReturn(true);
         $dbService->method('readGroups')->willReturn([new UserGroup("users", ""), new UserGroup("guest", "")]);
         $sut = $this->makeUserAdminController($dbService);
-        $response = $sut->editUsersAction($this->request);
+        $this->request->method("httpMethod")->willReturn("get");
+        $response = $sut($this->request);
         Approvals::verifyHtml($response->output());
     }
 
@@ -49,7 +50,8 @@ class UserAdminControllerTest extends TestCase
         $dbService->method('hasGroupsFile')->willReturn(true);
         $dbService->method('readGroups')->willReturn([new UserGroup("users", "")]);
         $sut = $this->makeUserAdminController($dbService);
-        $response = $sut->editUsersAction($this->request);
+        $this->request->method("httpMethod")->willReturn("get");
+        $response = $sut($this->request);
         $expected = [
             "register_texts" => [
                 "name" => "Full Name",
@@ -74,7 +76,8 @@ class UserAdminControllerTest extends TestCase
         $dbService = $this->createStub(DbService::class);
         $dbService->method('hasUsersFile')->willReturn(false);
         $sut = $this->makeUserAdminController($dbService);
-        $response = $sut->editUsersAction($this->request);
+        $this->request->method("httpMethod")->willReturn("get");
+        $response = $sut($this->request);
         Approvals::verifyHtml($response->output());
     }
 
@@ -94,7 +97,8 @@ class UserAdminControllerTest extends TestCase
         $dbService->method('hasGroupsFile')->willReturn(true);
         $dbService->method('readGroups')->willReturn([new UserGroup("users", "")]);
         $sut = $this->makeUserAdminController($dbService);
-        $response = $sut->saveUsersAction($this->request);
+        $this->request->method("httpMethod")->willReturn("post");
+        $response = $sut($this->request);
         Approvals::verifyHtml($response->output());
     }
 
@@ -114,7 +118,8 @@ class UserAdminControllerTest extends TestCase
         $dbService->method('hasGroupsFile')->willReturn(true);
         $dbService->method('readGroups')->willReturn([new UserGroup("users", "")]);
         $sut = $this->makeUserAdminController($dbService);
-        $response = $sut->saveUsersAction($this->request);
+        $this->request->method("httpMethod")->willReturn("post");
+        $response = $sut($this->request);
         Approvals::verifyHtml($response->output());
     }
 
@@ -134,7 +139,8 @@ class UserAdminControllerTest extends TestCase
         $dbService->method('hasGroupsFile')->willReturn(true);
         $dbService->method('readGroups')->willReturn([new UserGroup("users", "")]);
         $sut = $this->makeUserAdminController($dbService);
-        $response = $sut->saveUsersAction($this->request);
+        $this->request->method("httpMethod")->willReturn("post");
+        $response = $sut($this->request);
         Approvals::verifyHtml($response->output());
     }
 
@@ -154,7 +160,8 @@ class UserAdminControllerTest extends TestCase
         $dbService->method('hasGroupsFile')->willReturn(true);
         $dbService->method('readGroups')->willReturn([new UserGroup("users", "")]);
         $sut = $this->makeUserAdminController($dbService);
-        $response = $sut->saveUsersAction($this->request);
+        $this->request->method("httpMethod")->willReturn("post");
+        $response = $sut($this->request);
         Approvals::verifyHtml($response->output());
     }
 

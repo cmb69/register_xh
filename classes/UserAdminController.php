@@ -61,7 +61,15 @@ class UserAdminController
         $this->dbService = $dbService;
     }
 
-    public function editUsersAction(Request $request): Response
+    public function __invoke(Request $request): Response
+    {
+        if ($request->httpMethod() === "post") {
+            return $this->saveUsers($request);
+        }
+        return $this->editUsers($request);
+    }
+
+    private function editUsers(Request $request): Response
     {
         $response = new Response();
         $fn = $this->dbService->dataFolder() . 'users.csv';
@@ -77,7 +85,7 @@ class UserAdminController
         return $response->body($o);
     }
 
-    public function saveUsersAction(Request $request): Response
+    private function saveUsers(Request $request): Response
     {
         $response = new Response();
         $this->csrfProtector->check();
@@ -160,7 +168,7 @@ class UserAdminController
             'defaultGroup' => $this->config['group_default'],
             'statusSelectActivated' => new HtmlString($this->statusSelectbox('activated')),
             'groups' => $this->findGroups(),
-            'actionUrl' => $url->withPage("register")->relative(),
+            'actionUrl' => $url->withPage("register")->withParams(["admin" => "users"])->relative(),
             'users' => $users,
         ];
         $groupStrings = $statusSelects = [];

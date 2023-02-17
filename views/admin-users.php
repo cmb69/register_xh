@@ -49,8 +49,6 @@ use Register\Infra\View;
     </select>
   </div>
   <form id="register_user_form" method="post" action="<?=$this->esc($actionUrl)?>">
-    <input type="hidden" value="saveusers" name="action">
-    <input type="hidden" value="plugin_main" name="admin">
     <?=$this->esc($csrfTokenInput)?>
     <table id="register_user_table">
       <tr>

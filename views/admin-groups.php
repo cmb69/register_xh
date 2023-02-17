@@ -15,9 +15,7 @@ use Register\Infra\View;
 
 <h1><?=$this->text('mnu_group_admin')?></h1>
 <div class="register_admin_main">
-  <form method="POST" action="<?=$this->esc($actionUrl)?>">
-    <input type="hidden" value="savegroups" name="action">
-    <input type="hidden" value="plugin_main" name="admin">
+  <form method="post" action="<?=$this->esc($actionUrl)?>">
     <?=$this->esc($csrfTokenInput)?>
     <table>
       <tr>

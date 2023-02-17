@@ -57,7 +57,15 @@ class GroupAdminController
         $this->pages = $pages;
     }
 
-    public function editGroupsAction(Request $request): string
+    public function __invoke(Request $request): string
+    {
+        if ($request->httpMethod() === "post") {
+            return $this->saveGroups($request);
+        }
+        return $this->editGroups($request);
+    }
+
+    private function editGroups(Request $request): string
     {
         $filename = $this->dbService->dataFolder() . 'groups.csv';
         if ($this->dbService->hasGroupsFile()) {
@@ -69,7 +77,7 @@ class GroupAdminController
         }
     }
 
-    public function saveGroupsAction(Request $request): string
+    private function saveGroups(Request $request): string
     {
         $this->csrfProtector->check();
 
@@ -111,7 +119,7 @@ class GroupAdminController
     {
         return $this->view->render('admin-groups', [
             'csrfTokenInput' => new HtmlString($this->csrfProtector->tokenInput()),
-            'actionUrl' => $url->withPage("register")->relative(),
+            'actionUrl' => $url->withPage("register")->withParams(["admin" => "groups"])->relative(),
             'groups' => $groups,
             'selects' => $this->selects($groups),
         ]);

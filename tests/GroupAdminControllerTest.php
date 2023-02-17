@@ -34,7 +34,8 @@ class GroupAdminControllerTest extends TestCase
         $dbService->method('hasGroupsFile')->willReturn(true);
         $dbService->method('readGroups')->willReturn([new UserGroup("users", "")]);
         $sut = $this->makeGroupAdminController($dbService);
-        $response = $sut->editGroupsAction($this->request);
+        $this->request->method("httpMethod")->willReturn("get");
+        $response = $sut($this->request);
         Approvals::verifyHtml($response);
     }
 
@@ -43,7 +44,8 @@ class GroupAdminControllerTest extends TestCase
         $dbService = $this->createStub(DbService::class);
         $dbService->method('hasGroupsFile')->willReturn(false);
         $sut = $this->makeGroupAdminController($dbService);
-        $response = $sut->editGroupsAction($this->request);
+        $this->request->method("httpMethod")->willReturn("get");
+        $response = $sut($this->request);
         Approvals::verifyHtml($response);
     }
 
@@ -57,7 +59,8 @@ class GroupAdminControllerTest extends TestCase
         $dbService = $this->createStub(DbService::class);
         $dbService->expects($this->never())->method('writeGroups');
         $sut = $this->makeGroupAdminController($dbService);
-        $response = $sut->saveGroupsAction($this->request);
+        $this->request->method("httpMethod")->willReturn("post");
+        $response = $sut($this->request);
         Approvals::verifyHtml($response);
     }
 
@@ -71,7 +74,8 @@ class GroupAdminControllerTest extends TestCase
         $dbService = $this->createStub(DbService::class);
         $dbService->expects($this->never())->method('writeGroups');
         $sut = $this->makeGroupAdminController($dbService);
-        $response = $sut->saveGroupsAction($this->request);
+        $this->request->method("httpMethod")->willReturn("post");
+        $response = $sut($this->request);
         Approvals::verifyHtml($response);
     }
 
@@ -84,7 +88,8 @@ class GroupAdminControllerTest extends TestCase
         $dbService = $this->createStub(DbService::class);
         $dbService->expects($this->never())->method('writeGroups');
         $sut = $this->makeGroupAdminController($dbService);
-        $response = $sut->saveGroupsAction($this->request);
+        $this->request->method("httpMethod")->willReturn("post");
+        $response = $sut($this->request);
         Approvals::verifyHtml($response);
     }
 
@@ -97,7 +102,8 @@ class GroupAdminControllerTest extends TestCase
         $dbService = $this->createStub(DbService::class);
         $dbService->expects($this->once())->method('writeGroups')->willReturn(true);
         $sut = $this->makeGroupAdminController($dbService);
-        $response = $sut->saveGroupsAction($this->request);
+        $this->request->method("httpMethod")->willReturn("post");
+        $response = $sut($this->request);
         Approvals::verifyHtml($response);
     }
 
@@ -110,7 +116,8 @@ class GroupAdminControllerTest extends TestCase
         $dbService = $this->createStub(DbService::class);
         $dbService->expects($this->once())->method('writeGroups')->willReturn(false);
         $sut = $this->makeGroupAdminController($dbService);
-        $response = $sut->saveGroupsAction($this->request);
+        $this->request->method("httpMethod")->willReturn("post");
+        $response = $sut($this->request);
         Approvals::verifyHtml($response);
     }
 
