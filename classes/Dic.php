@@ -105,7 +105,7 @@ class Dic
     {
         global $plugin_cf, $pd_router;
 
-        return new HandlePageProtection($plugin_cf, Dic::makeCurrentUser(), $pd_router, new Pages);
+        return new HandlePageProtection($plugin_cf["register"], Dic::makeCurrentUser(), $pd_router, new Pages);
     }
 
     public static function makeHandlePasswordForgotten(): HandlePasswordForgotten
