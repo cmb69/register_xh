@@ -59,7 +59,7 @@ class GroupAdminController
 
     public function __invoke(Request $request): string
     {
-        if ($request->httpMethod() === "post") {
+        if ($request->method() === "post") {
             return $this->saveGroups($request);
         }
         return $this->editGroups($request);

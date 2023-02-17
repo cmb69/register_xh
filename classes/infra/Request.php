@@ -10,7 +10,7 @@ namespace Register\Infra;
 
 class Request
 {
-    public function httpMethod(): string
+    public function method(): string
     {
         return strtolower($_SERVER["REQUEST_METHOD"]);
     }

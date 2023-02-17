@@ -26,7 +26,7 @@ class UserAdminControllerTest extends TestCase
     public function setUp(): void
     {
         $this->request = $this->createStub(Request::class);
-        $this->request->method("url")->willReturn(new Url("/", "Foo"));
+        $this->request->expects($this->any())->method("url")->willReturn(new Url("/", "Foo"));
     }
 
     public function testEditUsersActionRendersUsers()
@@ -37,7 +37,7 @@ class UserAdminControllerTest extends TestCase
         $dbService->method('hasGroupsFile')->willReturn(true);
         $dbService->method('readGroups')->willReturn([new UserGroup("users", ""), new UserGroup("guest", "")]);
         $sut = $this->makeUserAdminController($dbService);
-        $this->request->method("httpMethod")->willReturn("get");
+        $this->request->expects($this->any())->method("method")->willReturn("get");
         $response = $sut($this->request);
         Approvals::verifyHtml($response->output());
     }
@@ -50,7 +50,7 @@ class UserAdminControllerTest extends TestCase
         $dbService->method('hasGroupsFile')->willReturn(true);
         $dbService->method('readGroups')->willReturn([new UserGroup("users", "")]);
         $sut = $this->makeUserAdminController($dbService);
-        $this->request->method("httpMethod")->willReturn("get");
+        $this->request->expects($this->any())->method("method")->willReturn("get");
         $response = $sut($this->request);
         $expected = [
             "register_texts" => [
@@ -76,7 +76,7 @@ class UserAdminControllerTest extends TestCase
         $dbService = $this->createStub(DbService::class);
         $dbService->method('hasUsersFile')->willReturn(false);
         $sut = $this->makeUserAdminController($dbService);
-        $this->request->method("httpMethod")->willReturn("get");
+        $this->request->expects($this->any())->method("method")->willReturn("get");
         $response = $sut($this->request);
         Approvals::verifyHtml($response->output());
     }
@@ -97,7 +97,7 @@ class UserAdminControllerTest extends TestCase
         $dbService->method('hasGroupsFile')->willReturn(true);
         $dbService->method('readGroups')->willReturn([new UserGroup("users", "")]);
         $sut = $this->makeUserAdminController($dbService);
-        $this->request->method("httpMethod")->willReturn("post");
+        $this->request->expects($this->any())->method("method")->willReturn("post");
         $response = $sut($this->request);
         Approvals::verifyHtml($response->output());
     }
@@ -118,7 +118,7 @@ class UserAdminControllerTest extends TestCase
         $dbService->method('hasGroupsFile')->willReturn(true);
         $dbService->method('readGroups')->willReturn([new UserGroup("users", "")]);
         $sut = $this->makeUserAdminController($dbService);
-        $this->request->method("httpMethod")->willReturn("post");
+        $this->request->expects($this->any())->method("method")->willReturn("post");
         $response = $sut($this->request);
         Approvals::verifyHtml($response->output());
     }
@@ -139,7 +139,7 @@ class UserAdminControllerTest extends TestCase
         $dbService->method('hasGroupsFile')->willReturn(true);
         $dbService->method('readGroups')->willReturn([new UserGroup("users", "")]);
         $sut = $this->makeUserAdminController($dbService);
-        $this->request->method("httpMethod")->willReturn("post");
+        $this->request->expects($this->any())->method("method")->willReturn("post");
         $response = $sut($this->request);
         Approvals::verifyHtml($response->output());
     }
@@ -160,7 +160,7 @@ class UserAdminControllerTest extends TestCase
         $dbService->method('hasGroupsFile')->willReturn(true);
         $dbService->method('readGroups')->willReturn([new UserGroup("users", "")]);
         $sut = $this->makeUserAdminController($dbService);
-        $this->request->method("httpMethod")->willReturn("post");
+        $this->request->expects($this->any())->method("method")->willReturn("post");
         $response = $sut($this->request);
         Approvals::verifyHtml($response->output());
     }

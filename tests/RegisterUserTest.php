@@ -58,7 +58,7 @@ class RegisterUserTest extends TestCase
             $mailService
         );
         $this->request = $this->createStub(Request::class);
-        $this->request->method("url")->willReturn(new Url("", ""));
+        $this->request->expects($this->any())->method("url")->willReturn(new Url("", ""));
     }
 
     public function testValidationError(): void

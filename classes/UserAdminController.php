@@ -63,7 +63,7 @@ class UserAdminController
 
     public function __invoke(Request $request): Response
     {
-        if ($request->httpMethod() === "post") {
+        if ($request->method() === "post") {
             return $this->saveUsers($request);
         }
         return $this->editUsers($request);

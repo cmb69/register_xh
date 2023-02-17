@@ -41,7 +41,7 @@ class HandleSpecialPagesTest extends TestCase
         $this->sut = new HandleSpecialPages($headings, $conf, $this->lang, $view, $pages);
         $this->request = $this->createStub(Request::class);
         $this->url = $this->createStub(Url::class);
-        $this->request->method("url")->willReturn($this->url);
+        $this->request->expects($this->any())->method("url")->willReturn($this->url);
     }
 
     public function testRegistrationPage(): void

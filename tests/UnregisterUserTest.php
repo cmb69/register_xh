@@ -75,7 +75,7 @@ class UnregisterUserTest extends TestCase
             "/User-Preferences"
         );
         $this->request = $this->createStub(Request::class);
-        $this->request->method("url")->willReturn(new Url("/", "User-Preferences"));
+        $this->request->expects($this->any())->method("url")->willReturn(new Url("/", "User-Preferences"));
     }
 
     public function testNoUser(): void

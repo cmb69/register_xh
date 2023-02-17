@@ -23,7 +23,7 @@ class ShowPageDataTabTest extends TestCase
             new View("./", XH_includeVar("./languages/en.php", "plugin_tx")["register"])
         );
         $request = $this->createStub(Request::class);
-        $request->method("url")->willReturn(new Url("./", "SomePage"));
+        $request->expects($this->any())->method("url")->willReturn(new Url("./", "SomePage"));
         $response = $sut(["register_access" => "cmb"], $request);
         Approvals::verifyHtml($response);
     }

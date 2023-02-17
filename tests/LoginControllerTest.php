@@ -57,7 +57,7 @@ class LoginControllerTest extends TestCase
         $this->logger = $this->createStub(Logger::class);
         $this->session = $this->createStub(Session::class);
         $this->request = $this->createStub(Request::class);
-        $this->request->method("url")->willReturn(new Url("/", "irrelevant page"));
+        $this->request->expects($this->any())->method("url")->willReturn(new Url("/", "irrelevant page"));
     }
 
     public function testLoginActionSuccessRedirects(): void
