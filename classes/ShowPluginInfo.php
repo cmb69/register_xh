@@ -53,7 +53,7 @@ class ShowPluginInfo
     public function __invoke(): string
     {
         return $this->view->render('info', [
-            'version' => Plugin::VERSION,
+            'version' => REGISTER_VERSION,
             'checks' => $this->getChecks(),
         ]);
     }

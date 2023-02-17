@@ -11,6 +11,7 @@ namespace Register;
 use PHPUnit\Framework\TestCase;
 use Register\Infra\CurrentUser;
 use Register\Infra\Pages;
+use Register\Infra\Request;
 use Register\Value\User;
 use XH\PageDataRouter as PageData;
 
@@ -28,8 +29,12 @@ class HandlePageProtectionTest extends TestCase
     /** @var Pages&MockObject */
     private $pages;
 
+    /** @var Request */
+    private $request;
+
     public function setUp(): void
     {
+        $conf = XH_includeVar("./config/config.php", "plugin_cf")["register"];
         $this->currentUser = $this->createStub(CurrentUser::class);
         $this->pageData = $this->createStub(PageData::class);
         $this->pageData->method("find_all")->willReturn([
@@ -38,15 +43,16 @@ class HandlePageProtectionTest extends TestCase
             ["register_access" => "admin"],
         ]);
         $this->pages = $this->createStub(Pages::class);
-        $this->sut = new HandlePageProtection($this->currentUser, $this->pageData, $this->pages);
+        $this->sut = new HandlePageProtection($conf, $this->currentUser, $this->pageData, $this->pages);
+        $this->request = $this->createStub(Request::class);
     }
 
-    public function testIt(): void
+    public function testProtectsPages(): void
     {
         $this->currentUser->method("get")->willReturn(new User("cmb", "", ["guest"], "", "", ""));
         $this->pages->expects($this->any())->method("setContentOf")->withConsecutive(
             [2, "#CMSimple hide# {{{register_access('admin')}}}"],
         );
-        ($this->sut)();
+        ($this->sut)($this->request);
     }
 }

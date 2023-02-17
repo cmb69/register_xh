@@ -12,11 +12,15 @@ namespace Register;
 
 use Register\Infra\CurrentUser;
 use Register\Infra\Pages;
+use Register\Infra\Request;
 use Register\Infra\Response;
 use XH\PageDataRouter as PageData;
 
 class HandlePageProtection
 {
+    /** @var array<string,string> */
+    private $conf;
+
     /** @var CurrentUser */
     private $currentUser;
 
@@ -26,15 +30,20 @@ class HandlePageProtection
     /** @var Pages */
     private $pages;
 
-    public function __construct(CurrentUser $currentUser, PageData $pageData, Pages $pages)
+    /** @param array<string,string> $conf */
+    public function __construct(array $conf, CurrentUser $currentUser, PageData $pageData, Pages $pages)
     {
+        $this->conf = $conf;
         $this->currentUser = $currentUser;
         $this->pageData = $pageData;
         $this->pages = $pages;
     }
 
-    public function __invoke(): Response
+    public function __invoke(Request $request): Response
     {
+        if (($request->admin() && $request->edit()) || !$this->conf["hide_pages"]) {
+            return new Response();
+        }
         $user = $this->currentUser->get();
         $userGroups = $user ? $user->getAccessgroups() : [];
         foreach ($this->pageData->find_all() as $i => $pd) {

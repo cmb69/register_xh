@@ -48,6 +48,9 @@ class HandleSpecialPages
 
     public function __invoke(Request $request): Response
     {
+        if ($request->admin() && $request->edit()) {
+            return new Response();
+        }
         if ($request->url()->pageMatches($this->text["register"])) {
             return $this->registrationPageAction();
         } elseif ($request->url()->pageMatches($this->text["forgot_password"])) {

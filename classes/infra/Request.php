@@ -22,6 +22,18 @@ class Request
         return new Url($sn, $su);
     }
 
+    public function admin(): bool
+    {
+        return defined("XH_ADM") && XH_ADM;
+    }
+
+    public function edit(): bool
+    {
+        global $edit;
+
+        return (bool) $edit;
+    }
+
     public function function(): string
     {
         global $function;

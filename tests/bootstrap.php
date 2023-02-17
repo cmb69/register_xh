@@ -1,6 +1,13 @@
 <?php
 
+const CMSIMPLE_XH_VERSION = "CMSimple_XH 1.7.5";
+const CMSIMPLE_URL = "http://example.com/";
+const CMSIMPLE_ROOT = "/";
+const XH_URICHAR_SEPARATOR = "|";
+const REGISTER_VERSION = "2.0-dev";
+
 require_once './vendor/autoload.php';
+
 require_once '../../cmsimple/functions.php';
 require_once "../../cmsimple/classes/CSRFProtection.php";
 require_once "../../cmsimple/classes/PageDataRouter.php";
@@ -37,13 +44,7 @@ require_once "./classes/HandleSpecialPages.php";
 require_once "./classes/HandleUserPreferences.php";
 require_once "./classes/HandleUserRegistration.php";
 require_once "./classes/LoginController.php";
-require_once "./classes/Plugin.php";
 require_once "./classes/ShowLoginForm.php";
 require_once "./classes/ShowPageDataTab.php";
 require_once "./classes/ShowPluginInfo.php";
 require_once "./classes/UserAdminController.php";
-
-const CMSIMPLE_XH_VERSION = "CMSimple_XH 1.7.5";
-const CMSIMPLE_URL = "http://example.com/";
-const CMSIMPLE_ROOT = "/";
-const XH_URICHAR_SEPARATOR = "|";

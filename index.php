@@ -10,9 +10,19 @@
 
 use Register\Infra\Request;
 use Register\Dic;
-use Register\Plugin;
+use XH\PageDataRouter;
 
-Plugin::run();
+const REGISTER_VERSION = "2.0-dev";
+
+/**
+ * @var PageDataRouter $pd_router
+ * @var string $o
+ */
+
+$pd_router->add_interest("register_access");
+Dic::makeHandlePageProtection()(new Request)->fire();
+Dic::makeLoginController()(new Request)->fire();
+$o .= Dic::makeHandleSpecialPages()(new Request)->fire();
 
 /**
  * Create and handle register form
