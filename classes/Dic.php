@@ -150,38 +150,19 @@ class Dic
         );
     }
 
-    public static function makeShowUserPreferences(): ShowUserPreferences
-    {
-        return new ShowUserPreferences(
-            new Session(),
-            new CsrfProtector('register_csrf_token', false),
-            self::makeUserRepository(),
-            self::makeView()
-        );
-    }
-
-    public static function makeEditUser(): EditUser
+    public static function makeHandleUserPreferences(): HandleUserPreferences
     {
         global $plugin_cf, $plugin_tx;
 
-        return new EditUser(
+        return new HandleUserPreferences(
+            Dic::makeCurrentUser(),
             $plugin_cf["register"],
             $plugin_tx["register"],
             new Session(),
             new CsrfProtector('register_csrf_token', false),
             self::makeUserRepository(),
             self::makeView(),
-            self::makeMailService()
-        );
-    }
-
-    public static function makeUnregisterUser(): UnregisterUser
-    {
-        return new UnregisterUser(
-            new Session(),
-            new CsrfProtector('register_csrf_token', false),
-            self::makeUserRepository(),
-            self::makeView(),
+            self::makeMailService(),
             new LoginManager(time(), new Session()),
             new Logger()
         );

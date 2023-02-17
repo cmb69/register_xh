@@ -35,7 +35,7 @@ function registerForgotPassword(): string
  */
 function registerUserPrefs(): string
 {
-    return Plugin::handleUserPrefs();
+    return Dic::makeHandleUserPreferences()(new Request());
 }
 
 /*

@@ -10,10 +10,12 @@ namespace Register;
 
 use ApprovalTests\Approvals;
 use PHPUnit\Framework\TestCase;
-
 use XH\CSRFProtection as CsrfProtector;
 
 use Register\Value\User;
+use Register\Infra\CurrentUser;
+use Register\Infra\Logger;
+use Register\Infra\LoginManager;
 use Register\Infra\MailService;
 use Register\Infra\Request;
 use Register\Infra\Session;
@@ -23,11 +25,14 @@ use Register\Infra\View;
 
 class EditUserTest extends TestCase
 {
-    /** @var EditUser */
+    /** @var HandleUserPreferences */
     private $subject;
 
     /** @var array<string,User> */
     private $users;
+
+    /** @var CurrentUser&MockObject */
+    private $currentUser;
 
     /** @var Session */
     private $session;
@@ -50,6 +55,7 @@ class EditUserTest extends TestCase
             "john" => new User("john", "\$2y\$10\$f4ldVDiVXTkNrcPmBdbW7.g/.mw5GOEqBid650oN9hE56UC28aXSq", [], "John Doe", "john@example.com", "activated"),
             "jane" => new User("jane", "", [], "Jane Doe", "jane@example.com", "locked"),
         ];
+        $this->currentUser = $this->createStub(CurrentUser::class);
         $plugin_cf = XH_includeVar("./config/config.php", 'plugin_cf');
         $conf = $plugin_cf['register'];
         $plugin_tx = XH_includeVar("./languages/en.php", 'plugin_tx');
@@ -59,14 +65,19 @@ class EditUserTest extends TestCase
         $this->userRepository = $this->createMock(UserRepository::class);
         $this->view = new View("./", $lang);
         $mailService = $this->createStub(MailService::class);
-        $this->subject = new EditUser(
+        $loginManager = $this->createStub(LoginManager::class);
+        $logger = $this->createMock(Logger::class);
+        $this->subject = new HandleUserPreferences(
+            $this->currentUser,
             $conf,
             $lang,
             $this->session,
             $this->csrfProtector,
             $this->userRepository,
             $this->view,
-            $mailService
+            $mailService,
+            $loginManager,
+            $logger
         );
         $this->request = $this->createStub(Request::class);
         $this->request->expects($this->any())->method("url")->willReturn(new Url("/", "User-Preferences"));
@@ -75,7 +86,8 @@ class EditUserTest extends TestCase
     public function testNoUser(): void
     {
         $_SESSION['username'] = "cmb";
-        $this->csrfProtector->expects($this->once())->method("check");
+        $_POST = ["action" => "edit_user_prefs", "submit" => ""];
+        $this->currentUser->method("get")->willReturn(null);
         $response = ($this->subject)($this->request);
         Approvals::verifyHtml($response);
     }
@@ -83,6 +95,8 @@ class EditUserTest extends TestCase
     public function testIsLocked(): void
     {
         $_SESSION = ["username" => "jane"];
+        $_POST = ["action" => "edit_user_prefs", "submit" => ""];
+        $this->currentUser->method("get")->willReturn($this->users["jane"]);
         $this->userRepository->method("findByUsername")->willReturn($this->users["jane"]);
         $this->csrfProtector->expects($this->once())->method("check");
         $response = ($this->subject)($this->request);
@@ -92,7 +106,8 @@ class EditUserTest extends TestCase
     public function testWrongPassword(): void
     {
         $_SESSION = ["username" => "john"];
-        $_POST = ["oldpassword" => "54321"];
+        $_POST = ["action" => "edit_user_prefs", "submit" => "", "oldpassword" => "54321"];
+        $this->currentUser->method("get")->willReturn($this->users["john"]);
         $this->userRepository->method("findByUsername")->willReturn($this->users["john"]);
         $this->csrfProtector->expects($this->once())->method("check");
         $response = ($this->subject)($this->request);
@@ -103,10 +118,13 @@ class EditUserTest extends TestCase
     {
         $_SESSION = ["username" => "john"];
         $_POST = [
+            "action" => "edit_user_prefs",
+            "submit" => "",
             "oldpassword" => "12345",
             "password1" => "one",
             "password2" => "two",
         ];
+        $this->currentUser->method("get")->willReturn($this->users["john"]);
         $this->userRepository->method("findByUsername")->willReturn($this->users["john"]);
         $this->csrfProtector->expects($this->once())->method("check");
         $response = ($this->subject)($this->request);
@@ -118,7 +136,8 @@ class EditUserTest extends TestCase
         $_SERVER["SERVER_NAME"] = "example.com";
         $_SERVER["REMOTE_ADDR"] = "127.0.0.1";
         $_SESSION = ["username" => "john"];
-        $_POST = ["oldpassword" => "12345"];
+        $_POST = ["action" => "edit_user_prefs", "submit" => "", "oldpassword" => "12345"];
+        $this->currentUser->method("get")->willReturn($this->users["john"]);
         $this->userRepository->method("findByUsername")->willReturn($this->users["john"]);
         $this->csrfProtector->expects($this->once())->method("check");
         $this->userRepository->expects($this->once())->method("update")->willReturn(true);

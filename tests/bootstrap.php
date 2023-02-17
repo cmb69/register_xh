@@ -30,8 +30,8 @@ require_once "./classes/infra/View.php";
 require_once "./classes/ActivateUser.php";
 require_once "./classes/ChangePassword.php";
 require_once "./classes/Dic.php";
-require_once "./classes/EditUser.php";
 require_once "./classes/GroupAdminController.php";
+require_once "./classes/HandleUserPreferences.php";
 require_once "./classes/LoginController.php";
 require_once "./classes/PasswordForgotten.php";
 require_once "./classes/Plugin.php";
@@ -43,8 +43,6 @@ require_once "./classes/ShowPageDataTab.php";
 require_once "./classes/ShowPasswordForgottenForm.php";
 require_once "./classes/ShowPluginInfo.php";
 require_once "./classes/ShowRegistrationForm.php";
-require_once "./classes/ShowUserPreferences.php";
-require_once "./classes/UnregisterUser.php";
 require_once "./classes/UserAdminController.php";
 
 const CMSIMPLE_XH_VERSION = "CMSimple_XH 1.7.5";

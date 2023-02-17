@@ -10,18 +10,24 @@
 
 namespace Register;
 
+use Register\Infra\MailService;
 use XH\CSRFProtection as CsrfProtector;
 
 use Register\Value\HtmlString;
 use Register\Logic\Validator;
-use Register\Infra\MailService;
+use Register\Infra\CurrentUser;
+use Register\Infra\Logger;
+use Register\Infra\LoginManager;
 use Register\Infra\Request;
 use Register\Infra\Session;
 use Register\Infra\UserRepository;
 use Register\Infra\View;
 
-class EditUser
+class HandleUserPreferences
 {
+    /** @var CurrentUser */
+    private $currentUser;
+
     /** @var array<string,string> */
     private $config;
 
@@ -40,19 +46,29 @@ class EditUser
     /** @var MailService */
     private $mailService;
 
+    /** @var LoginManager */
+    private $loginManager;
+
+    /** @var Logger */
+    private $logger;
+
     /**
      * @param array<string,string> $config
      * @param array<string,string> $lang
      */
     public function __construct(
+        CurrentUser $currentUser,
         array $config,
         array $lang,
         Session $session,
         CsrfProtector $csrfProtector,
         UserRepository $userRepository,
         View $view,
-        MailService $mailService
+        MailService $mailService,
+        LoginManager $loginManager,
+        Logger $logger
     ) {
+        $this->currentUser = $currentUser;
         $this->config = $config;
         $this->lang = $lang;
         $session->start();
@@ -60,9 +76,46 @@ class EditUser
         $this->userRepository = $userRepository;
         $this->view = $view;
         $this->mailService = $mailService;
+        $this->loginManager = $loginManager;
+        $this->logger = $logger;
     }
 
     public function __invoke(Request $request): string
+    {
+        if (!$this->currentUser->get()) {
+            return $this->view->message("fail", "access_error_text");
+        }
+        if (isset($_POST['action']) && $_POST['action'] === 'edit_user_prefs' && isset($_POST['submit'])) {
+            return $this->saveUser($request);
+        }
+        if (isset($_POST['action']) && $_POST['action'] === 'edit_user_prefs' && isset($_POST['delete'])) {
+            return $this->unregisterUser($request);
+        }
+        return $this->showForm($request);
+    }
+
+    private function showForm(Request $request): string
+    {
+        $username = $_SESSION['username'] ?? '';
+
+        $user = $this->userRepository->findByUsername($username);
+        if ($user === null) {
+            return $this->view->message('fail', 'err_username_does_not_exist', $username);
+        } elseif ($user->isLocked()) {
+            return $this->view->message('fail', 'user_locked', $username);
+        } else {
+            $csrfTokenInput = $this->csrfProtector->tokenInput();
+            $this->csrfProtector->store();
+            return $this->view->render('userprefs-form', [
+                'csrfTokenInput' => new HtmlString($csrfTokenInput),
+                'actionUrl' => $request->url()->relative(),
+                'name' => $user->getName(),
+                'email' => $user->getEmail(),
+            ]);
+        }
+    }
+
+    private function saveUser(Request $request): string
     {
         $this->csrfProtector->check();
 
@@ -167,5 +220,50 @@ class EditUser
         return implode("", array_map(function ($args) {
             return $this->view->message("fail", ...$args);
         }, $errors));
+    }
+
+    private function unregisterUser(Request $request): string
+    {
+        $this->csrfProtector->check();
+    
+        // Get form data if available
+        $oldpassword = $_POST['oldpassword'] ?? '';
+        $name = $_POST['name'] ?? '';
+        $email = $_POST['email'] ?? '';
+
+        // set user name from session
+        $username = $_SESSION['username'] ?? "";
+
+        $entry = $this->userRepository->findByUsername($username);
+        if ($entry === null) {
+            return $this->view->message('fail', 'err_username_does_not_exist', $username);
+        }
+
+        // Test if user is locked
+        if ($entry->isLocked()) {
+            return $this->view->message('fail', 'user_locked', $username);
+        }
+
+        // Form Handling - Delete User ================================================
+        if (!password_verify($oldpassword, $entry->getPassword())) {
+            $csrfTokenInput = $this->csrfProtector->tokenInput();
+            $this->csrfProtector->store();
+            return $this->view->message("fail", 'err_old_password_wrong')
+                . $this->view->render('userprefs-form', [
+                    'csrfTokenInput' => new HtmlString($csrfTokenInput),
+                    'actionUrl' => $request->url()->relative(),
+                    'name' => $name,
+                    'email' => $email,
+                ]);
+        }
+
+        if (!$this->userRepository->delete($entry)) {
+            return $this->view->message("fail", 'err_cannot_write_csv');
+        }
+
+        $username = $_SESSION['username'] ?? '';
+        $this->loginManager->logout();
+        $this->logger->logInfo('logout', "$username deleted and logged out");
+        return $this->view->message('success', 'user_deleted', $username);
     }
 }

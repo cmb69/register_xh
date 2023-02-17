@@ -142,23 +142,4 @@ class Plugin
             return Dic::makeShowPasswordForgottenForm()(new Request());
         }
     }
-
-    public static function handleUserPrefs(): string
-    {
-        /**
-         * @var array<string,array<string,string>> $plugin_tx
-         */
-        global $plugin_tx;
-    
-        if (!Dic::makeCurrentUser()->get()) {
-            return XH_message('fail', $plugin_tx['register']['access_error_text']);
-        }
-        if (isset($_POST['action']) && $_POST['action'] === 'edit_user_prefs' && isset($_POST['submit'])) {
-            return Dic::makeEditUser()(new Request());
-        }
-        if (isset($_POST['action']) && $_POST['action'] === 'edit_user_prefs' && isset($_POST['delete'])) {
-            return Dic::makeUnregisterUser()(new Request());
-        }
-        return Dic::makeShowUserPreferences()(new Request());
-    }
 }
