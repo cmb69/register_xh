@@ -45,7 +45,7 @@ function registerForgotPassword(): string
  */
 function registerUserPrefs(): string
 {
-    return Dic::makeHandleUserPreferences()(new Request());
+    return Dic::makeHandleUserPreferences()(new Request())->fire();
 }
 
 /*
@@ -53,7 +53,7 @@ function registerUserPrefs(): string
  */
 function registerloginform(): string
 {
-    return Dic::makeShowLoginForm()(Dic::makeCurrentUser()->get(), new Request());
+    return Dic::makeShowLoginForm()(Dic::makeCurrentUser()->get(), new Request())->fire();
 }
 
 /**

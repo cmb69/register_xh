@@ -89,7 +89,7 @@ class EditUserTest extends TestCase
         $_POST = ["action" => "edit_user_prefs", "submit" => ""];
         $this->currentUser->method("get")->willReturn(null);
         $response = ($this->subject)($this->request);
-        Approvals::verifyHtml($response);
+        Approvals::verifyHtml($response->output());
     }
 
     public function testIsLocked(): void
@@ -100,7 +100,7 @@ class EditUserTest extends TestCase
         $this->userRepository->method("findByUsername")->willReturn($this->users["jane"]);
         $this->csrfProtector->expects($this->once())->method("check");
         $response = ($this->subject)($this->request);
-        Approvals::verifyHtml($response);
+        Approvals::verifyHtml($response->output());
     }
 
     public function testWrongPassword(): void
@@ -111,7 +111,7 @@ class EditUserTest extends TestCase
         $this->userRepository->method("findByUsername")->willReturn($this->users["john"]);
         $this->csrfProtector->expects($this->once())->method("check");
         $response = ($this->subject)($this->request);
-        Approvals::verifyHtml($response);
+        Approvals::verifyHtml($response->output());
     }
 
     public function testPasswordConfirmationDoesNotMatch(): void
@@ -128,7 +128,7 @@ class EditUserTest extends TestCase
         $this->userRepository->method("findByUsername")->willReturn($this->users["john"]);
         $this->csrfProtector->expects($this->once())->method("check");
         $response = ($this->subject)($this->request);
-        Approvals::verifyHtml($response);
+        Approvals::verifyHtml($response->output());
     }
 
     public function testCorrectPassword(): void
@@ -142,6 +142,6 @@ class EditUserTest extends TestCase
         $this->csrfProtector->expects($this->once())->method("check");
         $this->userRepository->expects($this->once())->method("update")->willReturn(true);
         $response = ($this->subject)($this->request);
-        Approvals::verifyHtml($response);
+        Approvals::verifyHtml($response->output());
     }
 }

@@ -19,6 +19,7 @@ use Register\Infra\CurrentUser;
 use Register\Infra\Logger;
 use Register\Infra\LoginManager;
 use Register\Infra\Request;
+use Register\Infra\Response;
 use Register\Infra\Session;
 use Register\Infra\UserRepository;
 use Register\Infra\View;
@@ -80,18 +81,18 @@ class HandleUserPreferences
         $this->logger = $logger;
     }
 
-    public function __invoke(Request $request): string
+    public function __invoke(Request $request): Response
     {
         if (!$this->currentUser->get()) {
-            return $this->view->message("fail", "access_error_text");
+            return (new Response)->body($this->view->message("fail", "access_error_text"));
         }
         if (isset($_POST['action']) && $_POST['action'] === 'edit_user_prefs' && isset($_POST['submit'])) {
-            return $this->saveUser($request);
+            return (new Response)->body($this->saveUser($request));
         }
         if (isset($_POST['action']) && $_POST['action'] === 'edit_user_prefs' && isset($_POST['delete'])) {
-            return $this->unregisterUser($request);
+            return (new Response)->body($this->unregisterUser($request));
         }
-        return $this->showForm($request);
+        return (new Response)->body($this->showForm($request));
     }
 
     private function showForm(Request $request): string

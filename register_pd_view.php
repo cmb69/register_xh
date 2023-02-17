@@ -14,5 +14,5 @@ if (!defined("CMSIMPLE_XH_VERSION")) {
 /** @param array<string,string> $pageData */
 function register_pd_view(array $pageData): string
 {
-    return Dic::makeShowPageDataTab()($pageData, new Request);
+    return Dic::makeShowPageDataTab()($pageData, new Request)->fire();
 }

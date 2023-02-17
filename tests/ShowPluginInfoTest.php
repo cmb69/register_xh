@@ -29,6 +29,6 @@ class ShowPluginInfoTest extends TestCase
 
         $response = $subject();
 
-        Approvals::verifyHtml($response);
+        Approvals::verifyHtml($response->output());
     }
 }

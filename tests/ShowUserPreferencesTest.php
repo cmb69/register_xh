@@ -88,7 +88,7 @@ class ShowUserPreferencesTest extends TestCase
         $_SESSION = ["username" => "cmb"];
         $this->currentUser->method("get")->willReturn(null);
         $response = ($this->subject)($this->request);
-        Approvals::verifyHtml($response);
+        Approvals::verifyHtml($response->output());
     }
 
     public function testUserIsLocked(): void
@@ -97,7 +97,7 @@ class ShowUserPreferencesTest extends TestCase
         $this->currentUser->method("get")->willReturn($this->users["jane"]);
         $this->userRepository->method("findByUsername")->willReturn($this->users["jane"]);
         $response = ($this->subject)($this->request);
-        Approvals::verifyHtml($response);
+        Approvals::verifyHtml($response->output());
     }
 
     public function testSuccess(): void
@@ -106,6 +106,6 @@ class ShowUserPreferencesTest extends TestCase
         $this->currentUser->method("get")->willReturn($this->users["john"]);
         $this->userRepository->method("findByUsername")->willReturn($this->users["john"]);
         $response = ($this->subject)($this->request);
-        Approvals::verifyHtml($response);
+        Approvals::verifyHtml($response->output());
     }
 }

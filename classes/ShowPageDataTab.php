@@ -7,6 +7,7 @@
 namespace Register;
 
 use Register\Infra\Request;
+use Register\Infra\Response;
 use Register\Infra\View;
 
 class ShowPageDataTab
@@ -28,13 +29,13 @@ class ShowPageDataTab
     }
 
     /** @param array<string,string> $pageData */
-    public function __invoke(array $pageData, Request $request): string
+    public function __invoke(array $pageData, Request $request): Response
     {
-        return $this->view->render("page_data", [
+        return (new Response)->body($this->view->render("page_data", [
             "action" => $request->url()->relative(),
             "iconFilename" => $this->coreStyleFolder . "help_icon.png",
             "iconAlt" => $this->helpText,
             "accessGroups" => $pageData["register_access"],
-        ]);
+        ]));
     }
 }

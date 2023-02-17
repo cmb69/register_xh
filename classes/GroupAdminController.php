@@ -18,6 +18,7 @@ use Register\Value\UserGroup;
 use Register\Logic\AdminProcessor;
 use Register\Infra\DbService;
 use Register\Infra\Request;
+use Register\Infra\Response;
 use Register\Infra\Url;
 use Register\Infra\View;
 
@@ -57,12 +58,12 @@ class GroupAdminController
         $this->pages = $pages;
     }
 
-    public function __invoke(Request $request): string
+    public function __invoke(Request $request): Response
     {
         if ($request->method() === "post") {
-            return $this->saveGroups($request);
+            return (new Response)->body($this->saveGroups($request));
         }
-        return $this->editGroups($request);
+        return (new Response)->body($this->editGroups($request));
     }
 
     private function editGroups(Request $request): string

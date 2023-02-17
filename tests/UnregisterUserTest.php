@@ -95,7 +95,7 @@ class UnregisterUserTest extends TestCase
         $_POST = ["action" => "edit_user_prefs", "delete" => ""];
         $this->currentUser->method("get")->willReturn(null);
         $response = ($this->subject)($this->request);
-        Approvals::verifyHtml($response);
+        Approvals::verifyHtml($response->output());
     }
 
     public function testIsLocked(): void
@@ -106,7 +106,7 @@ class UnregisterUserTest extends TestCase
         $this->userRepository->method("findByUsername")->willReturn($this->users["jane"]);
         $this->csrfProtector->expects($this->once())->method("check");
         $response = ($this->subject)($this->request);
-        Approvals::verifyHtml($response);
+        Approvals::verifyHtml($response->output());
     }
 
     public function testWrongPassword(): void
@@ -117,7 +117,7 @@ class UnregisterUserTest extends TestCase
         $this->userRepository->method("findByUsername")->willReturn($this->users["john"]);
         $this->csrfProtector->expects($this->once())->method("check");
         $response = ($this->subject)($this->request);
-        Approvals::verifyHtml($response);
+        Approvals::verifyHtml($response->output());
     }
 
     public function testCorrectPassword(): void
@@ -130,6 +130,6 @@ class UnregisterUserTest extends TestCase
         $this->csrfProtector->expects($this->once())->method("check");
         $this->loginManager->expects($this->once())->method("logout")->with();
         $response = ($this->subject)($this->request);
-        Approvals::verifyHtml($response);
+        Approvals::verifyHtml($response->output());
     }
 }

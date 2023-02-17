@@ -36,7 +36,7 @@ class GroupAdminControllerTest extends TestCase
         $sut = $this->makeGroupAdminController($dbService);
         $this->request->expects($this->any())->method("method")->willReturn("get");
         $response = $sut($this->request);
-        Approvals::verifyHtml($response);
+        Approvals::verifyHtml($response->output());
     }
 
     public function testEditGroupActionFailsIfNoGroupsFile()
@@ -46,7 +46,7 @@ class GroupAdminControllerTest extends TestCase
         $sut = $this->makeGroupAdminController($dbService);
         $this->request->expects($this->any())->method("method")->willReturn("get");
         $response = $sut($this->request);
-        Approvals::verifyHtml($response);
+        Approvals::verifyHtml($response->output());
     }
 
     public function testSaveGroupsCanAddRecord()
@@ -61,7 +61,7 @@ class GroupAdminControllerTest extends TestCase
         $sut = $this->makeGroupAdminController($dbService);
         $this->request->expects($this->any())->method("method")->willReturn("post");
         $response = $sut($this->request);
-        Approvals::verifyHtml($response);
+        Approvals::verifyHtml($response->output());
     }
 
     public function testSaveGroupsCanDeleteRecord()
@@ -76,7 +76,7 @@ class GroupAdminControllerTest extends TestCase
         $sut = $this->makeGroupAdminController($dbService);
         $this->request->expects($this->any())->method("method")->willReturn("post");
         $response = $sut($this->request);
-        Approvals::verifyHtml($response);
+        Approvals::verifyHtml($response->output());
     }
 
     public function testSaveGroupsFailsOnInvalidGroupName()
@@ -90,7 +90,7 @@ class GroupAdminControllerTest extends TestCase
         $sut = $this->makeGroupAdminController($dbService);
         $this->request->expects($this->any())->method("method")->willReturn("post");
         $response = $sut($this->request);
-        Approvals::verifyHtml($response);
+        Approvals::verifyHtml($response->output());
     }
 
     public function testSaveGroupsSuccessfullySaves()
@@ -104,7 +104,7 @@ class GroupAdminControllerTest extends TestCase
         $sut = $this->makeGroupAdminController($dbService);
         $this->request->expects($this->any())->method("method")->willReturn("post");
         $response = $sut($this->request);
-        Approvals::verifyHtml($response);
+        Approvals::verifyHtml($response->output());
     }
 
     public function testSaveGroupsFailsToSaves()
@@ -118,7 +118,7 @@ class GroupAdminControllerTest extends TestCase
         $sut = $this->makeGroupAdminController($dbService);
         $this->request->expects($this->any())->method("method")->willReturn("post");
         $response = $sut($this->request);
-        Approvals::verifyHtml($response);
+        Approvals::verifyHtml($response->output());
     }
 
     private function makeGroupAdminController(DbService $dbService): GroupAdminController

@@ -30,7 +30,7 @@ class ShowLoginFormTest extends TestCase
         $request->expects($this->any())->method("url")->willReturn(new Url("/", "Foo"));
         $response = $subject(null, $request);
 
-        Approvals::verifyHtml($response);
+        Approvals::verifyHtml($response->output());
     }
 
     public function testLoggedInForm()
@@ -44,6 +44,6 @@ class ShowLoginFormTest extends TestCase
         $request->expects($this->any())->method("url")->willReturn(new Url("/", "Foo"));
         $response = $subject($user, $request);
 
-        Approvals::verifyHtml($response);
+        Approvals::verifyHtml($response->output());
     }
 }

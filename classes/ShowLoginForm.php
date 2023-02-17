@@ -12,6 +12,7 @@ namespace Register;
 
 use Register\Value\User;
 use Register\Infra\Request;
+use Register\Infra\Response;
 use Register\Infra\View;
 
 class ShowLoginForm
@@ -45,12 +46,12 @@ class ShowLoginForm
         $this->view = $view;
     }
 
-    public function __invoke(?User $currentUser, Request $request): string
+    public function __invoke(?User $currentUser, Request $request): Response
     {
         if ($currentUser === null) {
-            return $this->renderLoginForm($request);
+            return (new Response)->body($this->renderLoginForm($request));
         } else {
-            return $this->renderLoggedInForm($currentUser, $request);
+            return (new Response)->body($this->renderLoggedInForm($currentUser, $request));
         }
     }
 
