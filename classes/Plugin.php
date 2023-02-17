@@ -40,11 +40,7 @@ class Plugin
         }
 
         if (!($edit && defined("XH_ADM") && XH_ADM) && $plugin_cf['register']['hide_pages']) {
-            if ($temp = Dic::makeCurrentUser()->get()) {
-                self::removeHiddenPages($temp->getAccessgroups());
-            } else {
-                self::removeHiddenPages([]);
-            }
+            Dic::makeHandlePageProtection();
         }
 
         if (!Dic::makeCurrentUser()->get() && $function === 'registerlogin') {
@@ -57,32 +53,6 @@ class Plugin
         }
         if (!(defined("XH_ADM") && XH_ADM && $edit)) {
             $o .= Dic::makeHandleSpecialPages()(new Request)->fire();
-        }
-    }
-
-    /**
-     * Remove access restricted pages
-     *
-     * Supported are multiple groups per page and multiple user groups.
-     *
-     * @param string[] $userGroups
-     * @return void
-     */
-    private static function removeHiddenPages(array $userGroups)
-    {
-        /**
-         * @var PageDataRouter $pd_router
-         * @var array<int,string> $c
-         */
-        global $pd_router, $c;
-
-        foreach ($pd_router->find_all() as $i => $pd) {
-            if (($arg = trim($pd["register_access"] ?? ""))) {
-                $groups = array_map('trim', explode(',', $arg));
-                if (count(array_intersect($groups, $userGroups)) == 0) {
-                    $c[$i]= "#CMSimple hide# {{{PLUGIN:register_access('$arg');}}}";
-                }
-            }
         }
     }
 }

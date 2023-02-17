@@ -12,12 +12,13 @@ use PHPUnit\Framework\TestCase;
 use Register\Infra\CurrentUser;
 use Register\Infra\UserRepository;
 use XH\CSRFProtection as CsrfProtector;
+use XH\PageDataRouter as PageData;
 
 class DicTest extends TestCase
 {
     public function setUp(): void
     {
-        global $pth, $h, $c, $_XH_csrfProtection, $cf, $tx, $plugin_cf, $plugin_tx, $sn, $sl, $su;
+        global $pth, $h, $c, $_XH_csrfProtection, $cf, $tx, $plugin_cf, $plugin_tx, $sn, $sl, $su, $pd_router;
 
         $pth = ["folder" => ["content" => "", "corestyle" => "", "plugins" => ""]];
         $h = [];
@@ -30,6 +31,7 @@ class DicTest extends TestCase
         $sn = "/";
         $sl = "en";
         $su = "";
+        $pd_router = $this->createStub(PageData::class);
     }
 
     public function testMakesLoginController(): void
@@ -60,6 +62,11 @@ class DicTest extends TestCase
     public function testMakesHandlePageAccess(): void
     {
         $this->assertInstanceOf(HandlePageAccess::class, Dic::makeHandlePageAccess());
+    }
+
+    public function testMakesHandlePageProtection(): void
+    {
+        $this->assertInstanceOf(HandlePageProtection::class, Dic::makeHandlePageProtection());
     }
 
     public function testMakesHandlePasswordForgotten(): void
