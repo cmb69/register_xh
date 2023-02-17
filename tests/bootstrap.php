@@ -29,6 +29,7 @@ require_once "./classes/infra/View.php";
 
 require_once "./classes/Dic.php";
 require_once "./classes/GroupAdminController.php";
+require_once "./classes/HandlePageAccess.php";
 require_once "./classes/HandlePasswordForgotten.php";
 require_once "./classes/HandleSpecialPages.php";
 require_once "./classes/HandleUserPreferences.php";

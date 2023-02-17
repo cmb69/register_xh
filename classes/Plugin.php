@@ -85,27 +85,4 @@ class Plugin
             }
         }
     }
-
-    public static function handlePageAccess(string $groupString): string
-    {
-        /**
-         * @var array<string,array<string,string>> $plugin_tx
-         * @var string $function
-         */
-        global $plugin_tx, $function;
-    
-        // remove spaces etc.
-        $groupString = (string) preg_replace("/[ \t\r\n]*/", '', $groupString);
-        $groupNames = explode(",", $groupString);
-    
-        $user = Dic::makeCurrentUser()->get();
-        if ($function !== 'search'
-                && (!$user || !count(array_intersect($groupNames, $user->getAccessgroups())))) {
-            // go to access error page
-            $pageTitle = uenc($plugin_tx['register']['access_error']);
-            header('Location: '.CMSIMPLE_URL.'?'. $pageTitle);
-            exit;
-        }
-        return '';
-    }
 }

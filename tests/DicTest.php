@@ -57,6 +57,11 @@ class DicTest extends TestCase
         $this->assertInstanceOf(HandleUserRegistration::class, Dic::makeHandleUserRegistration());
     }
 
+    public function testMakesHandlePageAccess(): void
+    {
+        $this->assertInstanceOf(HandlePageAccess::class, Dic::makeHandlePageAccess());
+    }
+
     public function testMakesHandlePasswordForgotten(): void
     {
         $this->assertInstanceOf(HandlePasswordForgotten::class, Dic::makeHandlePasswordForgotten());

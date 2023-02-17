@@ -21,4 +21,11 @@ class Request
 
         return new Url($sn, $su);
     }
+
+    public function function(): string
+    {
+        global $function;
+
+        return $function;
+    }
 }

@@ -58,10 +58,10 @@ function Register_loggedInForm(): string
 
 function register_access(string $groupString): string
 {
-    return Plugin::handlePageAccess($groupString);
+    return Dic::makeHandlePageAccess()($groupString, new Request)->fire();
 }
 
 function access(string $groupString): string
 {
-    return Plugin::handlePageAccess($groupString);
+    return Dic::makeHandlePageAccess()($groupString, new Request)->fire();
 }

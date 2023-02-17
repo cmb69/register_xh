@@ -93,6 +93,13 @@ class Dic
         );
     }
 
+    public static function makeHandlePageAccess(): HandlePageAccess
+    {
+        global $plugin_tx;
+
+        return new HandlePageAccess($plugin_tx["register"], Dic::makeCurrentUser());
+    }
+
     public static function makeHandlePasswordForgotten(): HandlePasswordForgotten
     {
         global $plugin_cf, $plugin_tx;
