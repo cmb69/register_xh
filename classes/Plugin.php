@@ -12,10 +12,7 @@ namespace Register;
 
 use XH\PageDataRouter;
 
-use Register\Value\User;
-use Register\Infra\LoginManager;
 use Register\Infra\Request;
-use Register\Infra\Session;
 
 class Plugin
 {
@@ -38,23 +35,23 @@ class Plugin
         $pd_router->add_interest("register_access");
 
         if ($plugin_cf['register']['remember_user']
-                && isset($_COOKIE['register_username'], $_COOKIE['register_token']) && !self::currentUser()) {
+                && isset($_COOKIE['register_username'], $_COOKIE['register_token']) && !Dic::makeCurrentUser()->get()) {
             $function = "registerlogin";
         }
 
         if (!($edit && defined("XH_ADM") && XH_ADM) && $plugin_cf['register']['hide_pages']) {
-            if ($temp = self::currentUser()) {
+            if ($temp = Dic::makeCurrentUser()->get()) {
                 self::removeHiddenPages($temp->getAccessgroups());
             } else {
                 self::removeHiddenPages([]);
             }
         }
 
-        if (!self::currentUser() && $function === 'registerlogin') {
+        if (!Dic::makeCurrentUser()->get() && $function === 'registerlogin') {
             $controller = Dic::makeLoginController();
             $controller->loginAction(new Request())->fire();
         }
-        if (self::currentUser() && $function === 'registerlogout') {
+        if (Dic::makeCurrentUser()->get() && $function === 'registerlogout') {
             $controller = Dic::makeLoginController();
             $controller->logoutAction(new Request())->fire();
         }
@@ -101,7 +98,7 @@ class Plugin
         $groupString = (string) preg_replace("/[ \t\r\n]*/", '', $groupString);
         $groupNames = explode(",", $groupString);
     
-        $user = self::currentUser();
+        $user = Dic::makeCurrentUser()->get();
         if ($function !== 'search'
                 && (!$user || !count(array_intersect($groupNames, $user->getAccessgroups())))) {
             // go to access error page
@@ -115,7 +112,7 @@ class Plugin
     public static function handleUserRegistration(): string
     {
         // In case user is logged in, no registration page is shown
-        if (self::currentUser()) {
+        if (Dic::makeCurrentUser()->get()) {
             header('Location: ' . CMSIMPLE_URL);
             exit;
         }
@@ -131,7 +128,7 @@ class Plugin
     public static function handleForgotPassword(): string
     {
         // In case user is logged in, no password forgotten page is shown
-        if (self::currentUser()) {
+        if (Dic::makeCurrentUser()->get()) {
             header('Location: ' . CMSIMPLE_URL);
             exit;
         }
@@ -153,7 +150,7 @@ class Plugin
          */
         global $plugin_tx;
     
-        if (!self::currentUser()) {
+        if (!Dic::makeCurrentUser()->get()) {
             return XH_message('fail', $plugin_tx['register']['access_error_text']);
         }
         if (isset($_POST['action']) && $_POST['action'] === 'edit_user_prefs' && isset($_POST['submit'])) {
@@ -167,42 +164,11 @@ class Plugin
 
     public static function handleLoginForm(): string
     {
-        return Dic::makeShowLoginForm()(self::currentUser(), new Request());
+        return Dic::makeShowLoginForm()(Dic::makeCurrentUser()->get(), new Request());
     }
 
     public static function handleloggedInForm(): string
     {
-        return self::currentUser() ? registerloginform() : "";
-    }
-
-    private static function currentUser(): ?User
-    {
-        /**
-         * @var array{folder:array<string,string>,file:array<string,string>} $pth
-         */
-        global $pth;
-        static $user = null;
-
-        $session = new Session();
-        if (!$user) {
-            // it would be nice if XH had an API to get the session name without starting a session
-            $sessionfile = $pth['folder']['cmsimple'] . '.sessionname';
-            if (is_file($sessionfile) && isset($_COOKIE[file_get_contents($sessionfile)])) {
-                $session->start();
-            }
-            if (isset($_SESSION['username'])) {
-                $userRepository = Dic::makeUserRepository();
-                $rec = $userRepository->findByUsername($_SESSION['username']);
-                if ($rec) {
-                    $user = $rec;
-                } else {
-                    (new LoginManager(time(), $session))->logout();
-                    $user = null;
-                }
-            } else {
-                $user = null;
-            }
-        }
-        return $user;
+        return Dic::makeCurrentUser()->get() ? registerloginform() : "";
     }
 }

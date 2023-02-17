@@ -11,6 +11,7 @@ namespace Register;
 use XH\CSRFProtection as CsrfProtector;
 use XH\Pages as XhPages;
 
+use Register\Infra\CurrentUser;
 use Register\Infra\DbService;
 use Register\Infra\Logger;
 use Register\Infra\LoginManager;
@@ -224,6 +225,11 @@ class Dic
     public static function makeUserRepository(): UserRepository
     {
         return new UserRepository(self::makeDbService());
+    }
+
+    public static function makeCurrentUser(): CurrentUser
+    {
+        return new CurrentUser(self::makeUserRepository());
     }
 
     private static function makeDbService(): DbService

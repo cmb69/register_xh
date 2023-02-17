@@ -9,6 +9,7 @@
 namespace Register;
 
 use PHPUnit\Framework\TestCase;
+use Register\Infra\CurrentUser;
 use Register\Infra\UserRepository;
 use XH\CSRFProtection as CsrfProtector;
 
@@ -104,5 +105,10 @@ class DicTest extends TestCase
     public function testMakesUserRepository(): void
     {
         $this->assertInstanceOf(UserRepository::class, Dic::makeUserRepository());
+    }
+
+    public function testMakesCurrentUser(): void
+    {
+        $this->assertInstanceOf(CurrentUser::class, Dic::makeCurrentUser());
     }
 }
