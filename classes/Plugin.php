@@ -31,8 +31,9 @@ class Plugin
          * @var string $function
          * @var array<string,array<string,string>> $plugin_cf
          * @var PageDataRouter $pd_router
+         * @var string $o
          */
-        global $edit, $function, $plugin_cf, $pd_router;
+        global $edit, $function, $plugin_cf, $pd_router, $o;
 
         $pd_router->add_interest("register_access");
 
@@ -58,7 +59,7 @@ class Plugin
             $controller->logoutAction(new Request())->fire();
         }
         if (!(defined("XH_ADM") && XH_ADM && $edit)) {
-            self::handleImplicitPages();
+            $o .= Dic::makeHandleSpecialPages()(new Request)->fire();
         }
     }
 
@@ -85,49 +86,6 @@ class Plugin
                     $c[$i]= "#CMSimple hide# {{{PLUGIN:register_access('$arg');}}}";
                 }
             }
-        }
-    }
-
-    /**
-     * @return void
-     */
-    private static function handleImplicitPages()
-    {
-        /**
-         * @var string $o
-         * @var string $su
-         * @var array<string,array<string,string>> $plugin_tx
-         */
-        global $o, $su, $plugin_tx;
-
-        switch ($su) {
-            case uenc($plugin_tx['register']['register']):
-                $method = 'registrationPageAction';
-                break;
-            case uenc($plugin_tx['register']['forgot_password']):
-                $method = 'passwordForgottenPageAction';
-                break;
-            case uenc($plugin_tx['register']['user_prefs']):
-                $method = 'userPrefsPageAction';
-                break;
-            case uenc($plugin_tx['register']['login_error']):
-                $method = 'loginErrorPageAction';
-                break;
-            case uenc($plugin_tx['register']['loggedout']):
-                $method = 'logoutPageAction';
-                break;
-            case uenc($plugin_tx['register']['loggedin']):
-                $method = 'loginPageAction';
-                break;
-            case uenc($plugin_tx['register']['access_error']):
-                $method = 'accessErrorPageAction';
-                break;
-            default:
-                $method = null;
-        }
-        if ($method !== null) {
-            $controller = Dic::makeHandleSpecialPages();
-            $o .= $controller->{$method}()->fire();
         }
     }
 
