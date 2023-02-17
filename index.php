@@ -19,7 +19,7 @@ Plugin::run();
  */
 function registerUser(): string
 {
-    return Plugin::handleUserRegistration();
+    return Dic::makeHandleUserRegistration()(new Request())->fire();
 }
 
 /**

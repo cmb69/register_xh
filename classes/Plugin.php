@@ -108,20 +108,4 @@ class Plugin
         }
         return '';
     }
-
-    public static function handleUserRegistration(): string
-    {
-        // In case user is logged in, no registration page is shown
-        if (Dic::makeCurrentUser()->get()) {
-            header('Location: ' . CMSIMPLE_URL);
-            exit;
-        }
-        if (isset($_POST['action']) && $_POST['action'] === 'register_user') {
-            return Dic::makeRegisterUser()(new Request());
-        }
-        if (isset($_GET['action']) && $_GET['action'] === 'register_activate_user') {
-            return Dic::makeActivateUser()();
-        }
-        return Dic::makeShowRegistrationForm()(new Request());
-    }
 }

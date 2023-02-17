@@ -52,19 +52,9 @@ class DicTest extends TestCase
         $this->assertInstanceOf(GroupAdminController::class, Dic::makeGroupAdminController());
     }
 
-    public function testMakesShowRegistrationForm(): void
+    public function testMakesHandleUserRegistration(): void
     {
-        $this->assertInstanceOf(ShowRegistrationForm::class, Dic::makeShowRegistrationForm());
-    }
-
-    public function testMakesRegisterUser(): void
-    {
-        $this->assertInstanceOf(RegisterUser::class, Dic::makeRegisterUser());
-    }
-
-    public function testMakesActivateUser(): void
-    {
-        $this->assertInstanceOf(ActivateUser::class, Dic::makeActivateUser());
+        $this->assertInstanceOf(HandleUserRegistration::class, Dic::makeHandleUserRegistration());
     }
 
     public function testMakesHandlePasswordForgotten(): void

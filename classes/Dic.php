@@ -79,32 +79,17 @@ class Dic
         );
     }
 
-    public static function makeShowRegistrationForm(): ShowRegistrationForm
-    {
-        return new ShowRegistrationForm(self::makeView());
-    }
-
-    public static function makeRegisterUser(): RegisterUser
+    public static function makeHandleUserRegistration(): HandleUserRegistration
     {
         global $plugin_cf, $plugin_tx;
 
-        return new RegisterUser(
+        return new HandleUserRegistration(
+            Dic::makeCurrentUser(),
             $plugin_cf["register"],
             $plugin_tx["register"],
             self::makeView(),
             self::makeUserRepository(),
             self::makeMailService()
-        );
-    }
-
-    public static function makeActivateUser(): ActivateUser
-    {
-        global $plugin_cf;
-
-        return new ActivateUser(
-            $plugin_cf["register"],
-            self::makeUserRepository(),
-            self::makeView()
         );
     }
 

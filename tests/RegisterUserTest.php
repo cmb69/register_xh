@@ -14,6 +14,7 @@ use ApprovalTests\Approvals;
 use PHPUnit\Framework\TestCase;
 
 use Register\Value\User;
+use Register\Infra\CurrentUser;
 use Register\Infra\MailService;
 use Register\Infra\Request;
 use Register\Infra\Url;
@@ -24,6 +25,9 @@ class RegisterUserTest extends TestCase
 {
     /** @var RegisterUser */
     private $subject;
+
+    /** @var CurrentUser&MockObject */
+    private $currentUser;
 
     /** @var array<string,User> */
     private $users;
@@ -39,6 +43,7 @@ class RegisterUserTest extends TestCase
 
     public function setUp(): void
     {
+        $this->currentUser = $this->createStub(CurrentUser::class);
         $this->users = [
             "john" => new User("john", "\$2y\$10\$f4ldVDiVXTkNrcPmBdbW7.g/.mw5GOEqBid650oN9hE56UC28aXSq", [], "John Doe", "john@example.com", ""),
             "jane" => new User("jane", "", [], "Jane Doe", "jane@example.com", "12345"),
@@ -50,7 +55,8 @@ class RegisterUserTest extends TestCase
         $this->view = new View("./", $lang);
         $this->userRepository = $this->createMock(UserRepository::class);
         $mailService = $this->createStub(MailService::class);
-        $this->subject = new RegisterUser(
+        $this->subject = new HandleUserRegistration(
+            $this->currentUser,
             $conf,
             $lang,
             $this->view,
@@ -63,14 +69,15 @@ class RegisterUserTest extends TestCase
 
     public function testValidationError(): void
     {
-        $_POST = ["username" => ""];
+        $_POST = ["action" => "register_user", "username" => ""];
         $response = ($this->subject)($this->request);
-        Approvals::verifyHtml($response);
+        Approvals::verifyHtml($response->output());
     }
 
     public function testExistingUser(): void
     {
         $_POST = [
+            "action" => "register_user",
             "name" => "Jane Smith",
             "username" => "jane",
             "password1" => "test",
@@ -79,7 +86,7 @@ class RegisterUserTest extends TestCase
         ];
         $this->userRepository->method("findByUsername")->willReturn($this->users["jane"]);
         $response = ($this->subject)($this->request);
-        Approvals::verifyHtml($response);
+        Approvals::verifyHtml($response->output());
     }
 
     public function testExistingEmail(): void
@@ -87,6 +94,7 @@ class RegisterUserTest extends TestCase
         $_SERVER["REMOTE_ADDR"] = "example.com";
         $_SERVER['SERVER_NAME'] = "example.com";
         $_POST = [
+            "action" => "register_user",
             "name" => "John Smith",
             "username" => "js",
             "password1" => "test",
@@ -95,7 +103,7 @@ class RegisterUserTest extends TestCase
         ];
         $this->userRepository->method("findByEmail")->willReturn($this->users["john"]);
         $response = ($this->subject)($this->request);
-        Approvals::verifyHtml($response);
+        Approvals::verifyHtml($response->output());
     }
 
     public function testSuccess(): void
@@ -103,6 +111,7 @@ class RegisterUserTest extends TestCase
         $_SERVER["REMOTE_ADDR"] = "example.com";
         $_SERVER['SERVER_NAME'] = "example.com";
         $_POST = [
+            "action" => "register_user",
             "name" => "John Smith",
             "username" => "js",
             "password1" => "test",
@@ -111,6 +120,6 @@ class RegisterUserTest extends TestCase
         ];
         $this->userRepository->expects($this->once())->method("add")->willReturn(true);
         $response = ($this->subject)($this->request);
-        Approvals::verifyHtml($response);
+        Approvals::verifyHtml($response->output());
     }
 }

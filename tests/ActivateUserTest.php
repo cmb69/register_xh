@@ -11,8 +11,10 @@ namespace Register;
 use ApprovalTests\Approvals;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
-
+use Register\Infra\CurrentUser;
 use Register\Value\User;
+use Register\Infra\MailService;
+use Register\Infra\Request;
 use Register\Infra\UserRepository;
 use Register\Infra\View;
 
@@ -21,14 +23,24 @@ class ActivateUserTest extends TestCase
     /** @var ActivateUser */
     private $subject;
 
+    /** @var CurrentUser&MockObject */
+    private $currentUser;
+
     /** @var array<string,User> */
     private $users;
 
     /** @var View&MockObject */
     private $view;
 
+    /** @var UserRepository&MockObject */
+    private $userRepository;
+
+    /** @var Request&MockObject */
+    private $request;
+
     public function setUp(): void
     {
+        $this->currentUser = $this->createStub(CurrentUser::class);
         $this->users = [
             "john" => new User("john", "\$2y\$10\$f4ldVDiVXTkNrcPmBdbW7.g/.mw5GOEqBid650oN9hE56UC28aXSq", [], "John Doe", "john@example.com", ""),
             "jane" => new User("jane", "", [], "Jane Doe", "jane@example.com", "12345"),
@@ -39,54 +51,63 @@ class ActivateUserTest extends TestCase
         $lang = $plugin_tx['register'];
         $this->view = new View("./", $lang);
         $this->userRepository = $this->createMock(UserRepository::class);
-        $this->subject = new ActivateUser(
+        $mailService = $this->createStub(MailService::class);
+        $this->subject = new HandleUserRegistration(
+            $this->currentUser,
             $conf,
-            $this->userRepository,
+            $lang,
             $this->view,
+            $this->userRepository,
+            $mailService
         );
+        $this->request = $this->createStub(Request::class);
     }
 
     public function testActivateUserActionNoUser(): void
     {
         $_GET = [
+            "action" => "register_activate_user",
             "username" => "john",
             "nonce" => "",
         ];
-        $response = ($this->subject)();
-        Approvals::verifyHtml($response);
+        $response = ($this->subject)($this->request);
+        Approvals::verifyHtml($response->output());
     }
 
     public function testActivateUserEmptyState(): void
     {
         $_GET = [
+            "action" => "register_activate_user",
             "username" => "john",
             "nonce" => "",
         ];
         $this->userRepository->method("findByUsername")->willReturn($this->users["john"]);
-        $response = ($this->subject)();
-        Approvals::verifyHtml($response);
+        $response = ($this->subject)($this->request);
+        Approvals::verifyHtml($response->output());
     }
 
     public function testActivateUserInvalidState(): void
     {
         $_GET = [
+            "action" => "register_activate_user",
             "username" => "jane",
             "nonce" => "",
         ];
         $this->userRepository->method("findByUsername")->willReturn($this->users["jane"]);
-        $response = ($this->subject)();
-        Approvals::verifyHtml($response);
+        $response = ($this->subject)($this->request);
+        Approvals::verifyHtml($response->output());
     }
 
     public function testActivateUserSuccess(): void
     {
         $_GET = [
+            "action" => "register_activate_user",
             "username" => "jane",
             "nonce" => "12345",
         ];
         $this->userRepository->method("findByUsername")->willReturn($this->users["jane"]);
         $this->userRepository->expects($this->once())->method("update");
-        $response = ($this->subject)();
-        Approvals::verifyHtml($response);
+        $response = ($this->subject)($this->request);
+        Approvals::verifyHtml($response->output());
     }
 }

@@ -27,19 +27,17 @@ require_once "./classes/infra/UserGroupRepository.php";
 require_once "./classes/infra/UserRepository.php";
 require_once "./classes/infra/View.php";
 
-require_once "./classes/ActivateUser.php";
 require_once "./classes/Dic.php";
 require_once "./classes/GroupAdminController.php";
 require_once "./classes/HandlePasswordForgotten.php";
 require_once "./classes/HandleSpecialPages.php";
 require_once "./classes/HandleUserPreferences.php";
+require_once "./classes/HandleUserRegistration.php";
 require_once "./classes/LoginController.php";
 require_once "./classes/Plugin.php";
-require_once "./classes/RegisterUser.php";
 require_once "./classes/ShowLoginForm.php";
 require_once "./classes/ShowPageDataTab.php";
 require_once "./classes/ShowPluginInfo.php";
-require_once "./classes/ShowRegistrationForm.php";
 require_once "./classes/UserAdminController.php";
 
 const CMSIMPLE_XH_VERSION = "CMSimple_XH 1.7.5";
