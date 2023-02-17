@@ -53,7 +53,7 @@ function registerUserPrefs(): string
  */
 function registerloginform(): string
 {
-    return Dic::makeShowLoginForm()(Dic::makeCurrentUser()->get(), new Request())->fire();
+    return Dic::makeShowLoginForm()(new Request())->fire();
 }
 
 /**

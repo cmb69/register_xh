@@ -10,6 +10,7 @@
 
 namespace Register;
 
+use Register\Infra\CurrentUser;
 use Register\Value\User;
 use Register\Infra\Request;
 use Register\Infra\Response;
@@ -32,6 +33,9 @@ class ShowLoginForm
      */
     private $view;
 
+    /** @var CurrentUser */
+    private $currentUser;
+
     /**
      * @param array<string,string> $conf
      * @param array<string,string> $lang
@@ -39,19 +43,21 @@ class ShowLoginForm
     public function __construct(
         array $conf,
         array $lang,
-        View $view
+        View $view,
+        CurrentUser $currentUser
     ) {
         $this->conf = $conf;
         $this->lang = $lang;
         $this->view = $view;
+        $this->currentUser = $currentUser;
     }
 
-    public function __invoke(?User $currentUser, Request $request): Response
+    public function __invoke(Request $request): Response
     {
-        if ($currentUser === null) {
+        if ($this->currentUser->get() === null) {
             return (new Response)->body($this->renderLoginForm($request));
         } else {
-            return (new Response)->body($this->renderLoggedInForm($currentUser, $request));
+            return (new Response)->body($this->renderLoggedInForm($request));
         }
     }
 
@@ -70,9 +76,9 @@ class ShowLoginForm
         return $this->view->render('loginform', $data);
     }
 
-    private function renderLoggedInForm(?User $currentUser, Request $request): string
+    private function renderLoggedInForm(Request $request): string
     {
-        $user = $currentUser;
+        $user = $this->currentUser->get();
         assert($user instanceof User);
         $userPrefPage = $this->lang['user_prefs'];
         $data = [

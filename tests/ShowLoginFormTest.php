@@ -10,7 +10,7 @@ namespace Register;
 
 use ApprovalTests\Approvals;
 use PHPUnit\Framework\TestCase;
-
+use Register\Infra\CurrentUser;
 use Register\Value\User;
 use Register\Infra\Request;
 use Register\Infra\Url;
@@ -24,11 +24,12 @@ class ShowLoginFormTest extends TestCase
         $conf = $plugin_cf['register'];
         $plugin_tx = XH_includeVar("./languages/en.php", 'plugin_tx');
         $lang = $plugin_tx['register'];
-        $subject = new ShowLoginForm($conf, $lang, new View("./", $lang));
+        $currentUser = $this->createStub(CurrentUser::class);
+        $subject = new ShowLoginForm($conf, $lang, new View("./", $lang), $currentUser);
 
         $request = $this->createStub(Request::class);
         $request->expects($this->any())->method("url")->willReturn(new Url("/", "Foo"));
-        $response = $subject(null, $request);
+        $response = $subject($request);
 
         Approvals::verifyHtml($response->output());
     }
@@ -38,11 +39,13 @@ class ShowLoginFormTest extends TestCase
         $plugin_tx = XH_includeVar("./languages/en.php", 'plugin_tx');
         $lang = $plugin_tx['register'];
         $user = new User("jane", "", [], "Jane Doe", "jane@example.com", "activated");
-        $subject = new ShowLoginForm([], $lang, new View("./", $lang));
+        $currentUser = $this->createStub(CurrentUser::class);
+        $currentUser->method("get")->willReturn($user);
+        $subject = new ShowLoginForm([], $lang, new View("./", $lang), $currentUser);
 
         $request = $this->createStub(Request::class);
         $request->expects($this->any())->method("url")->willReturn(new Url("/", "Foo"));
-        $response = $subject($user, $request);
+        $response = $subject($request);
 
         Approvals::verifyHtml($response->output());
     }

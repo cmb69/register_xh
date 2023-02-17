@@ -148,7 +148,8 @@ class Dic
         return new ShowLoginForm(
             $plugin_cf["register"],
             $plugin_tx["register"],
-            self::makeView()
+            self::makeView(),
+            Dic::makeCurrentUser()
         );
     }
 
