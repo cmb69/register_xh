@@ -27,7 +27,7 @@ function registerUser(): string
  */
 function registerForgotPassword(): string
 {
-    return Plugin::handleForgotPassword();
+    return Dic::makeHandlePasswordForgotten()(new Request())->fire();
 }
 
 /*

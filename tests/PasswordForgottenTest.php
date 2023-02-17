@@ -12,7 +12,7 @@ use XH_includeVar;
 
 use ApprovalTests\Approvals;
 use PHPUnit\Framework\TestCase;
-
+use Register\Infra\CurrentUser;
 use Register\Value\User;
 use Register\Infra\MailService;
 use Register\Infra\Request;
@@ -22,23 +22,27 @@ use Register\Infra\View;
 
 class PasswordForgottenTest extends TestCase
 {
-    /** @var PasswordForgotten */
+    /** @var HandlePasswordForgotten */
     private $subject;
 
-    /** @var View */
+    /** @var CurrentUser&MockObject */
+    private $currentUser;
+
+    /** @var View&MockObject */
     private $view;
 
-    /** @var UserRepository */
+    /** @var UserRepository&MockObject */
     private $userRepository;
 
-    /** @var MailService */
+    /** @var MailService&MockObject */
     private $mailService;
 
-    /** @var Request */
+    /** @var Request&MockObject */
     private $request;
 
     public function setUp(): void
     {
+        $this->currentUser = $this->createStub(CurrentUser::class);
         $plugin_cf = XH_includeVar("./config/config.php", 'plugin_cf');
         $conf = $plugin_cf['register'];
         $plugin_tx = XH_includeVar("./languages/en.php", 'plugin_tx');
@@ -46,7 +50,8 @@ class PasswordForgottenTest extends TestCase
         $this->view = new View("./", $lang);
         $this->userRepository = $this->createStub(UserRepository::class);
         $this->mailService = $this->createMock(MailService::class);
-        $this->subject = new PasswordForgotten(
+        $this->subject = new HandlePasswordForgotten(
+            $this->currentUser,
             $conf,
             $lang,
             1637449200,
@@ -60,33 +65,33 @@ class PasswordForgottenTest extends TestCase
 
     public function testEmptyEmail(): void
     {
-        $_POST["email"] = "";
+        $_POST = ["action" => "forgotten_password", "email" => ""];
         $response = ($this->subject)($this->request);
-        Approvals::verifyHtml($response);
+        Approvals::verifyHtml($response->output());
     }
 
     public function testInvalidEmail(): void
     {
-        $_POST["email"] = "invalid";
+        $_POST = ["action" => "forgotten_password", "email" => "invalid"];
         $response = ($this->subject)($this->request);
-        Approvals::verifyHtml($response);
+        Approvals::verifyHtml($response->output());
     }
 
     public function testUnknownEmail(): void
     {
+        $_POST = ["action" => "forgotten_password", "email" => "jane@example.com"];
         $this->userRepository->method("findByEmail")->willReturn(null);
-        $_POST["email"] = "jane@example.com";
         $response = ($this->subject)($this->request);
-        Approvals::verifyHtml($response);
+        Approvals::verifyHtml($response->output());
     }
 
     public function testKnownEmail(): void
     {
         $_SERVER["SERVER_NAME"] = "example.com";
+        $_POST = ["action" => "forgotten_password", "email" => "john@example.com"];
         $john = new User("john", "12345", [], "John Dow", "john@example.com", "");
         $this->userRepository->method("findByEmail")->willReturn($john);
-        $_POST["email"] = "john@example.com";
         $response = ($this->subject)($this->request);
-        Approvals::verifyHtml($response);
+        Approvals::verifyHtml($response->output());
     }
 }

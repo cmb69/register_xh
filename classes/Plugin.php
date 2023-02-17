@@ -124,22 +124,4 @@ class Plugin
         }
         return Dic::makeShowRegistrationForm()(new Request());
     }
-
-    public static function handleForgotPassword(): string
-    {
-        // In case user is logged in, no password forgotten page is shown
-        if (Dic::makeCurrentUser()->get()) {
-            header('Location: ' . CMSIMPLE_URL);
-            exit;
-        }
-        if (isset($_POST['action']) && $_POST['action'] === 'forgotten_password') {
-            return Dic::makePasswordForgotten()(new Request);
-        } elseif (isset($_GET['action']) && $_GET['action'] === 'registerResetPassword') {
-            return Dic::makeResetPassword()(new Request());
-        } elseif (isset($_GET['action']) && $_GET['action'] === 'register_change_password') {
-            return Dic::makeChangePassword()(new Request());
-        } else {
-            return Dic::makeShowPasswordForgottenForm()(new Request());
-        }
-    }
 }

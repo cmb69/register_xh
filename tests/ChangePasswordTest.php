@@ -13,7 +13,7 @@ use XH_includeVar;
 use ApprovalTests\Approvals;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
-
+use Register\Infra\CurrentUser;
 use Register\Value\User;
 use Register\Infra\MailService;
 use Register\Infra\Request;
@@ -26,20 +26,24 @@ class ChangePasswordTest extends TestCase
     /** @var ChangePassword */
     private $subject;
 
-    /** @var View */
+    /** @var CurrentUser&MockObject */
+    private $currentUser;
+
+    /** @var View&MockObject */
     private $view;
 
-    /** @var UserRepository */
+    /** @var UserRepository&MockObject */
     private $userRepository;
 
-    /** @var MailService */
+    /** @var MailService&MockObject */
     private $mailService;
 
-    /** @var Request */
+    /** @var Request&MockObject */
     private $request;
 
     public function setUp(): void
     {
+        $this->currentUser = $this->createStub(CurrentUser::class);
         $plugin_cf = XH_includeVar("./config/config.php", 'plugin_cf');
         $conf = $plugin_cf['register'];
         $plugin_tx = XH_includeVar("./languages/en.php", 'plugin_tx');
@@ -47,7 +51,8 @@ class ChangePasswordTest extends TestCase
         $this->view = new View("./", $lang);
         $this->userRepository = $this->createStub(UserRepository::class);
         $this->mailService = $this->createMock(MailService::class);
-        $this->subject = new ChangePassword(
+        $this->subject = new HandlePasswordForgotten(
+            $this->currentUser,
             $conf,
             $lang,
             1637449200,
@@ -61,15 +66,16 @@ class ChangePasswordTest extends TestCase
 
     public function testUnknownUsername(): void
     {
-        $_GET = ["username" => "colt"];
+        $_GET = ["action" => "register_change_password", "username" => "colt"];
         $this->userRepository->method("findByUsername")->willReturn(null);
         $response = ($this->subject)($this->request);
-        Approvals::verifyHtml($response);
+        Approvals::verifyHtml($response->output());
     }
 
     public function testWrongMac(): void
     {
         $_GET = [
+            "action" => "register_change_password",
             "username" => "john",
             "time" => 1637449800,
             "mac" => "54321",
@@ -77,12 +83,13 @@ class ChangePasswordTest extends TestCase
         $john = new User("john", "12345", [], "John Dow", "john@example.com", "");
         $this->userRepository->method("findByUsername")->willReturn($john);
         $response = ($this->subject)($this->request);
-        Approvals::verifyHtml($response);
+        Approvals::verifyHtml($response->output());
     }
 
     public function testSuccess(): void
     {
         $_GET = [
+            "action" => "register_change_password",
             "username" => "john",
             "time" => 1637449800,
             "mac" => "a19916c64ceb8942def3ed8b8a612e9d8a3e50b2",
@@ -96,6 +103,6 @@ class ChangePasswordTest extends TestCase
         $this->userRepository->method("findByUsername")->willReturn($john);
         $this->userRepository->method("update")->willReturn(true);
         $response = ($this->subject)($this->request);
-        Approvals::verifyHtml($response);
+        Approvals::verifyHtml($response->output());
     }
 }

@@ -67,24 +67,9 @@ class DicTest extends TestCase
         $this->assertInstanceOf(ActivateUser::class, Dic::makeActivateUser());
     }
 
-    public function testMakesShowPasswordForgottenForm(): void
+    public function testMakesHandlePasswordForgotten(): void
     {
-        $this->assertInstanceOf(ShowPasswordForgottenForm::class, Dic::makeShowPasswordForgottenForm());
-    }
-
-    public function testMakesPasswordForgotten(): void
-    {
-        $this->assertInstanceOf(passwordForgotten::class, Dic::makePasswordForgotten());
-    }
-
-    public function testMakesResetPassword(): void
-    {
-        $this->assertInstanceOf(ResetPassword::class, Dic::makeResetPassword());
-    }
-
-    public function testMakesChangePassword(): void
-    {
-        $this->assertInstanceOf(ChangePassword::class, Dic::makeChangePassword());
+        $this->assertInstanceOf(HandlePasswordForgotten::class, Dic::makeHandlePasswordForgotten());
     }
 
     public function testMakesShowLoginForm(): void
