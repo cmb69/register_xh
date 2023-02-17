@@ -23,9 +23,9 @@ class ShowLoginFormTest extends TestCase
         $plugin_cf = XH_includeVar("./config/config.php", 'plugin_cf');
         $conf = $plugin_cf['register'];
         $plugin_tx = XH_includeVar("./languages/en.php", 'plugin_tx');
-        $lang = $plugin_tx['register'];
+        $text = $plugin_tx['register'];
         $currentUser = $this->createStub(CurrentUser::class);
-        $subject = new ShowLoginForm($conf, $lang, new View("./", $lang), $currentUser);
+        $subject = new ShowLoginForm($conf, $text, new View("./", $text), $currentUser);
 
         $request = $this->createStub(Request::class);
         $request->expects($this->any())->method("url")->willReturn(new Url("/", "Foo"));
@@ -37,11 +37,11 @@ class ShowLoginFormTest extends TestCase
     public function testLoggedInForm()
     {
         $plugin_tx = XH_includeVar("./languages/en.php", 'plugin_tx');
-        $lang = $plugin_tx['register'];
+        $text = $plugin_tx['register'];
         $user = new User("jane", "", [], "Jane Doe", "jane@example.com", "activated");
         $currentUser = $this->createStub(CurrentUser::class);
         $currentUser->method("get")->willReturn($user);
-        $subject = new ShowLoginForm([], $lang, new View("./", $lang), $currentUser);
+        $subject = new ShowLoginForm([], $text, new View("./", $text), $currentUser);
 
         $request = $this->createStub(Request::class);
         $request->expects($this->any())->method("url")->willReturn(new Url("/", "Foo"));

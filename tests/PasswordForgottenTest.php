@@ -46,14 +46,14 @@ class PasswordForgottenTest extends TestCase
         $plugin_cf = XH_includeVar("./config/config.php", 'plugin_cf');
         $conf = $plugin_cf['register'];
         $plugin_tx = XH_includeVar("./languages/en.php", 'plugin_tx');
-        $lang = $plugin_tx['register'];
-        $this->view = new View("./", $lang);
+        $text = $plugin_tx['register'];
+        $this->view = new View("./", $text);
         $this->userRepository = $this->createStub(UserRepository::class);
         $this->mailService = $this->createMock(MailService::class);
         $this->subject = new HandlePasswordForgotten(
             $this->currentUser,
             $conf,
-            $lang,
+            $text,
             1637449200,
             $this->view,
             $this->userRepository,

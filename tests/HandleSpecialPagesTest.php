@@ -22,7 +22,7 @@ class HandleSpecialPagesTest extends TestCase
     private $sut;
 
     /** @var array<string,string> */
-    private $lang;
+    private $text;
 
     /** @var Request&MockObject */
     private $request;
@@ -32,13 +32,15 @@ class HandleSpecialPagesTest extends TestCase
 
     public function setUp(): void
     {
-        $headings = ["One", "Two", "Three"];
         $conf = XH_includeVar("./config/config.php", "plugin_cf")["register"];
         $this->text = XH_includeVar("./languages/en.php", "plugin_tx")["register"];
         $view = new View("./", $this->text);
         $pages = $this->createStub(Pages::class);
+        $pages->method("has")->willReturnCallback(function (string $heading) {
+            return in_array($heading, ["One", "Two", "Three"], true);
+        });
         $pages->method("evaluate")->willReturnArgument(0);
-        $this->sut = new HandleSpecialPages($headings, $conf, $this->text, $view, $pages);
+        $this->sut = new HandleSpecialPages($conf, $this->text, $view, $pages);
         $this->request = $this->createStub(Request::class);
         $this->url = $this->createStub(Url::class);
         $this->request->expects($this->any())->method("url")->willReturn($this->url);

@@ -45,14 +45,14 @@ class ResetPasswordTest extends TestCase
         $plugin_cf = XH_includeVar("./config/config.php", 'plugin_cf');
         $conf = $plugin_cf['register'];
         $plugin_tx = XH_includeVar("./languages/en.php", 'plugin_tx');
-        $lang = $plugin_tx['register'];
-        $this->view = new View("./", $lang);
+        $text = $plugin_tx['register'];
+        $this->view = new View("./", $text);
         $this->userRepository = $this->createStub(UserRepository::class);
         $this->mailService = $this->createMock(MailService::class);
         $this->subject = new HandlePasswordForgotten(
             $this->currentUser,
             $conf,
-            $lang,
+            $text,
             1637449200,
             $this->view,
             $this->userRepository,
@@ -73,7 +73,7 @@ class ResetPasswordTest extends TestCase
     public function testWrongMac(): void
     {
         $_GET = [
-            "action" => "registerResetPassword", 
+            "action" => "registerResetPassword",
             "username" => "john",
             "time" => 1637449800,
             "mac" => "54321",
@@ -87,7 +87,7 @@ class ResetPasswordTest extends TestCase
     public function testSuccess(): void
     {
         $_GET = [
-            "action" => "registerResetPassword", 
+            "action" => "registerResetPassword",
             "username" => "john",
             "time" => 1637449800,
             "mac" => "a19916c64ceb8942def3ed8b8a612e9d8a3e50b2",

@@ -102,6 +102,8 @@ $plugin_tx['register']['js_confirmLeave']="Unsaved changes will be lost!";
 $plugin_tx['register']['js_newPassword']="New Password (may contain only alphanumeric characters and underscores):";
 $plugin_tx['register']['js_tooManyUsers']="There are too many users!";
 
+$plugin_tx['register']['alt_help']="Question mark";
+
 $plugin_tx['register']['syscheck_extension']="the PHP extension '%s' is loaded";
 $plugin_tx['register']['syscheck_fail']="failure";
 $plugin_tx['register']['syscheck_message']="Checking that %1\$s … %2\$s";

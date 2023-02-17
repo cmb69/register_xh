@@ -11,10 +11,9 @@ namespace Register;
 use ApprovalTests\Approvals;
 use PHPUnit\Framework\TestCase;
 use XH\CSRFProtection as CsrfProtector;
-use XH\Pages;
-
 use Register\Value\UserGroup;
 use Register\Infra\DbService;
+use Register\Infra\Pages;
 use Register\Infra\Request;
 use Register\Infra\Url;
 
@@ -151,7 +150,7 @@ class GroupAdminControllerTest extends TestCase
     private function makePages(): Pages
     {
         $pages = $this->createStub(Pages::class);
-        $pages->method('getCount')->willReturn(2);
+        $pages->method('count')->willReturn(2);
         $pages->method('url')->willReturnMap([[0, "foo"], [1, "bar"]]);
         $pages->method('level')->willReturnMap([[0, 1], [1, 2]]);
         $pages->method('heading')->willReturnMap([[0, "Foo"], [1, "Bar"]]);

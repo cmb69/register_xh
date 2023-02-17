@@ -17,10 +17,11 @@ class ShowPageDataTabTest extends TestCase
 {
     public function testRendersPageDataTab(): void
     {
+        $text = XH_includeVar("./languages/en.php", "plugin_tx")["register"];
         $sut = new ShowPageDataTab(
             "../../assets/css/",
-            "Help",
-            new View("./", XH_includeVar("./languages/en.php", "plugin_tx")["register"])
+            $text,
+            new View("./", $text)
         );
         $request = $this->createStub(Request::class);
         $request->expects($this->any())->method("url")->willReturn(new Url("./", "SomePage"));

@@ -17,9 +17,6 @@ use Register\Infra\View;
 
 class HandleSpecialPages
 {
-    /** @var string[] */
-    private $headings;
-
     /** @var array<string,string> */
     private $conf;
 
@@ -33,13 +30,11 @@ class HandleSpecialPages
     private $pages;
 
     /**
-     * @param string[] $headings
      * @param array<string,string> $conf
      * @param array<string,string> $text
      */
-    public function __construct(array $headings, array $conf, array $text, View $view, Pages $pages)
+    public function __construct(array $conf, array $text, View $view, Pages $pages)
     {
-        $this->headings = $headings;
         $this->conf = $conf;
         $this->text = $text;
         $this->view = $view;
@@ -73,7 +68,7 @@ class HandleSpecialPages
     private function registrationPageAction(): Response
     {
         $response = new Response();
-        if ($this->conf['allowed_register'] && !in_array($this->text['register'], $this->headings)) {
+        if ($this->conf['allowed_register'] && !$this->pages->has($this->text['register'])) {
             $response->setTitle($this->text['register']);
             $response->body(
                 $this->renderPageView(
@@ -89,7 +84,7 @@ class HandleSpecialPages
     private function passwordForgottenPageAction(): Response
     {
         $response = new Response();
-        if (!in_array($this->text['forgot_password'], $this->headings)) {
+        if (!$this->pages->has($this->text['forgot_password'])) {
             $response->setTitle($this->text['forgot_password']);
             $response->body(
                 $this->renderPageView(
@@ -105,7 +100,7 @@ class HandleSpecialPages
     private function userPrefsPageAction(): Response
     {
         $response = new Response();
-        if (!in_array($this->text['user_prefs'], $this->headings)) {
+        if (!$this->pages->has($this->text['user_prefs'])) {
             $response->setTitle($this->text['user_prefs']);
             $response->body(
                 $this->renderPageView(
@@ -122,7 +117,7 @@ class HandleSpecialPages
     {
         $response = new Response();
         $response->forbid();
-        if (!in_array($this->text['login_error'], $this->headings)) {
+        if (!$this->pages->has($this->text['login_error'])) {
             $response->setTitle($this->text['login_error']);
             $response->body(
                 $this->renderPageView(
@@ -137,7 +132,7 @@ class HandleSpecialPages
     private function logoutPageAction(): Response
     {
         $response = new Response();
-        if (!in_array($this->text['loggedout'], $this->headings)) {
+        if (!$this->pages->has($this->text['loggedout'])) {
             $response->setTitle($this->text['loggedout']);
             $response->body(
                 $this->renderPageView(
@@ -152,7 +147,7 @@ class HandleSpecialPages
     private function loginPageAction(): Response
     {
         $response = new Response();
-        if (!in_array($this->text['loggedin'], $this->headings)) {
+        if (!$this->pages->has($this->text['loggedin'])) {
             $response->setTitle($this->text['loggedin']);
             $response->body(
                 $this->renderPageView(
@@ -168,7 +163,7 @@ class HandleSpecialPages
     {
         $response = new Response();
         $response->forbid();
-        if (!in_array($this->text['access_error'], $this->headings)) {
+        if (!$this->pages->has($this->text['access_error'])) {
             $response->setTitle($this->text['access_error']);
             $response->body(
                 $this->renderPageView(

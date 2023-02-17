@@ -9,7 +9,6 @@
 namespace Register;
 
 use XH\CSRFProtection as CsrfProtector;
-use XH\Pages as XhPages;
 
 use Register\Infra\CurrentUser;
 use Register\Infra\DbService;
@@ -43,10 +42,9 @@ class Dic
 
     public static function makeHandleSpecialPages(): HandleSpecialPages
     {
-        global $h, $plugin_cf, $plugin_tx;
+        global $plugin_cf, $plugin_tx;
 
         return new HandleSpecialPages(
-            $h,
             $plugin_cf['register'],
             $plugin_tx['register'],
             self::makeView(),
@@ -76,7 +74,7 @@ class Dic
             $plugin_tx["register"],
             $_XH_csrfProtection,
             self::makeDbService(),
-            new XhPages()
+            new Pages()
         );
     }
 
@@ -155,11 +153,11 @@ class Dic
 
     public static function makeShowPageDataTab(): ShowPageDataTab
     {
-        global $pth, $tx;
+        global $pth, $plugin_tx;
 
         return new ShowPageDataTab(
             $pth['folder']['corestyle'],
-            $tx['editmenu']['help'],
+            $plugin_tx["register"],
             self::makeView()
         );
     }
@@ -189,12 +187,12 @@ class Dic
 
     private static function makeDbService(): DbService
     {
-        global $pth, $cf, $plugin_cf, $sl;
+        global $pth, $plugin_cf;
         static $instance;
 
         if (!isset($instance)) {
             $folder = $pth["folder"]["content"];
-            if ($sl !== $cf["language"]["default"]) {
+            if ($pth["folder"]["base"] === "../") {
                 $folder = dirname($folder) . "/";
             }
             $folder .= "register/";

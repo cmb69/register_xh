@@ -102,6 +102,8 @@ $plugin_tx['register']['js_confirmLeave']="Ungespeicherte Änderungen gehen verl
 $plugin_tx['register']['js_newPassword']="Neues Kennwort (darf nur alphanumerische Zeichen und Unterstriche enthalten):";
 $plugin_tx['register']['js_tooManyUsers']="Es gibt zu viele Benutzer!";
 
+$plugin_tx['register']['alt_help']="Fragezeichen";
+
 $plugin_tx['register']['syscheck_extension']="die PHP-Erweiterung '%s' geladen ist";
 $plugin_tx['register']['syscheck_fail']="Fehler";
 $plugin_tx['register']['syscheck_message']="Prüfe, dass %1\$s … %2\$s";

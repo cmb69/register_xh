@@ -40,22 +40,23 @@ class ActivateUserTest extends TestCase
 
     public function setUp(): void
     {
+        $hash = "\$2y\$10\$f4ldVDiVXTkNrcPmBdbW7.g/.mw5GOEqBid650oN9hE56UC28aXSq";
         $this->currentUser = $this->createStub(CurrentUser::class);
         $this->users = [
-            "john" => new User("john", "\$2y\$10\$f4ldVDiVXTkNrcPmBdbW7.g/.mw5GOEqBid650oN9hE56UC28aXSq", [], "John Doe", "john@example.com", ""),
+            "john" => new User("john", $hash, [], "John Doe", "john@example.com", ""),
             "jane" => new User("jane", "", [], "Jane Doe", "jane@example.com", "12345"),
         ];
         $plugin_cf = XH_includeVar("./config/config.php", 'plugin_cf');
         $conf = $plugin_cf['register'];
         $plugin_tx = XH_includeVar("./languages/en.php", 'plugin_tx');
-        $lang = $plugin_tx['register'];
-        $this->view = new View("./", $lang);
+        $text = $plugin_tx['register'];
+        $this->view = new View("./", $text);
         $this->userRepository = $this->createMock(UserRepository::class);
         $mailService = $this->createStub(MailService::class);
         $this->subject = new HandleUserRegistration(
             $this->currentUser,
             $conf,
-            $lang,
+            $text,
             $this->view,
             $this->userRepository,
             $mailService

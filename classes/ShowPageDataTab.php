@@ -15,16 +15,17 @@ class ShowPageDataTab
     /** @var string */
     private $coreStyleFolder;
 
-    /** @var string */
-    private $helpText;
+    /** @var array<string,string> */
+    private $text;
 
     /** @var View */
     private $view;
 
-    public function __construct(string $coreStyleFolder, string $helpText, View $view)
+    /** @param array<string,string> $text */
+    public function __construct(string $coreStyleFolder, array $text, View $view)
     {
         $this->coreStyleFolder = $coreStyleFolder;
-        $this->helpText = $helpText;
+        $this->text = $text;
         $this->view = $view;
     }
 
@@ -34,7 +35,7 @@ class ShowPageDataTab
         return (new Response)->body($this->view->render("page_data", [
             "action" => $request->url()->relative(),
             "iconFilename" => $this->coreStyleFolder . "help_icon.png",
-            "iconAlt" => $this->helpText,
+            "iconAlt" => $this->text["alt_help"],
             "accessGroups" => $pageData["register_access"],
         ]));
     }

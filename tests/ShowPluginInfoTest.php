@@ -19,13 +19,13 @@ class ShowPluginInfoTest extends TestCase
     public function testRendersPluginInfo()
     {
         $plugin_tx = XH_includeVar("./languages/en.php", 'plugin_tx');
-        $lang = $plugin_tx['register'];
+        $text = $plugin_tx['register'];
         $dbService = $this->createStub(DbService::class);
         $systemChecker = $this->createStub(SystemChecker::class);
         $systemChecker->method('checkVersion')->willReturn(true);
         $systemChecker->method('checkExtension')->willReturn(true);
         $systemChecker->method('checkWritability')->willReturn(true);
-        $subject = new ShowPluginInfo("", $lang, $dbService, $systemChecker, new View("./", $lang));
+        $subject = new ShowPluginInfo("", $text, $dbService, $systemChecker, new View("./", $text));
 
         $response = $subject();
 

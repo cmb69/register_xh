@@ -10,17 +10,16 @@
 
 namespace Register;
 
-use XH\CSRFProtection as CsrfProtector;
-use XH\Pages;
-
 use Register\Value\HtmlString;
 use Register\Value\UserGroup;
 use Register\Logic\AdminProcessor;
 use Register\Infra\DbService;
+use Register\Infra\Pages;
 use Register\Infra\Request;
 use Register\Infra\Response;
 use Register\Infra\Url;
 use Register\Infra\View;
+use XH\CSRFProtection as CsrfProtector;
 
 class GroupAdminController
 {
@@ -143,7 +142,7 @@ class GroupAdminController
     private function options(string $loginpage): array
     {
         $res = [];
-        for ($i = 0; $i < $this->pages->getCount(); $i++) {
+        for ($i = 0; $i < $this->pages->count(); $i++) {
             $res[] = [
                 "selected" => $this->pages->url($i) === $loginpage ? "selected" : "",
                 "indent" => str_repeat("\xC2\xA0", 3 * ($this->pages->level($i) - 1)),

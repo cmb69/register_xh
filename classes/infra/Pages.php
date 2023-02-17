@@ -10,6 +10,41 @@ namespace Register\Infra;
 
 class Pages
 {
+    public function count(): int
+    {
+        global $cl;
+
+        return $cl;
+    }
+
+    public function has(string $heading): bool
+    {
+        global $h;
+
+        return in_array($heading, $h, true);
+    }
+
+    public function heading(int $pageNum): string
+    {
+        global $h;
+
+        return $h[$pageNum];
+    }
+
+    public function url(int $pageNum): string
+    {
+        global $u;
+
+        return $u[$pageNum];
+    }
+
+    public function level(int $pageNum): int
+    {
+        global $l;
+
+        return $l[$pageNum];
+    }
+
     public function evaluate(string $content): string
     {
         return evaluate_plugincall($content);

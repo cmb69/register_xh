@@ -51,26 +51,27 @@ class EditUserTest extends TestCase
 
     public function setUp(): void
     {
+        $hash = "\$2y\$10\$f4ldVDiVXTkNrcPmBdbW7.g/.mw5GOEqBid650oN9hE56UC28aXSq";
         $this->users = [
-            "john" => new User("john", "\$2y\$10\$f4ldVDiVXTkNrcPmBdbW7.g/.mw5GOEqBid650oN9hE56UC28aXSq", [], "John Doe", "john@example.com", "activated"),
+            "john" => new User("john", $hash, [], "John Doe", "john@example.com", "activated"),
             "jane" => new User("jane", "", [], "Jane Doe", "jane@example.com", "locked"),
         ];
         $this->currentUser = $this->createStub(CurrentUser::class);
         $plugin_cf = XH_includeVar("./config/config.php", 'plugin_cf');
         $conf = $plugin_cf['register'];
         $plugin_tx = XH_includeVar("./languages/en.php", 'plugin_tx');
-        $lang = $plugin_tx['register'];
+        $text = $plugin_tx['register'];
         $this->session = $this->createStub(Session::class);
         $this->csrfProtector = $this->createMock(CsrfProtector::class);
         $this->userRepository = $this->createMock(UserRepository::class);
-        $this->view = new View("./", $lang);
+        $this->view = new View("./", $text);
         $mailService = $this->createStub(MailService::class);
         $loginManager = $this->createStub(LoginManager::class);
         $logger = $this->createMock(Logger::class);
         $this->subject = new HandleUserPreferences(
             $this->currentUser,
             $conf,
-            $lang,
+            $text,
             $this->session,
             $this->csrfProtector,
             $this->userRepository,

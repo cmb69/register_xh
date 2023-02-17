@@ -25,7 +25,7 @@ class LoginControllerTest extends TestCase
     private $conf;
 
     /** @var array<string,string> */
-    private $lang;
+    private $text;
 
     /** @var UserRepository&MockObject */
     private $userRepository;
