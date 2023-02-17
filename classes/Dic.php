@@ -9,12 +9,13 @@
 namespace Register;
 
 use XH\CSRFProtection as CsrfProtector;
-use XH\Pages;
+use XH\Pages as XhPages;
 
 use Register\Infra\DbService;
 use Register\Infra\Logger;
 use Register\Infra\LoginManager;
 use Register\Infra\MailService;
+use Register\Infra\Pages;
 use Register\Infra\Session;
 use Register\Infra\SystemChecker;
 use Register\Infra\UserGroupRepository;
@@ -38,15 +39,16 @@ class Dic
         );
     }
 
-    public static function makeSpecialPageController(): SpecialPageController
+    public static function makeHandleSpecialPages(): HandleSpecialPages
     {
         global $h, $plugin_cf, $plugin_tx;
 
-        return new SpecialPageController(
+        return new HandleSpecialPages(
             $h,
             $plugin_cf['register'],
             $plugin_tx['register'],
-            self::makeView()
+            self::makeView(),
+            new Pages
         );
     }
 
@@ -72,7 +74,7 @@ class Dic
             $plugin_tx["register"],
             $_XH_csrfProtection,
             self::makeDbService(),
-            new Pages()
+            new XhPages()
         );
     }
 

@@ -86,6 +86,11 @@ class Response
         return $this->title;
     }
 
+    public function forbidden(): bool
+    {
+        return $this->forbidden;
+    }
+
     public function location(): ?string
     {
         return $this->location;

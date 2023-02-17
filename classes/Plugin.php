@@ -126,7 +126,7 @@ class Plugin
                 $method = null;
         }
         if ($method !== null) {
-            $controller = Dic::makeSpecialPageController();
+            $controller = Dic::makeHandleSpecialPages();
             $o .= $controller->{$method}()->fire();
         }
     }

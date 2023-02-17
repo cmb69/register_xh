@@ -10,11 +10,11 @@
 
 namespace Register;
 
-use Register\Value\HtmlString;
+use Register\Infra\Pages;
 use Register\Infra\Response;
 use Register\Infra\View;
 
-class SpecialPageController
+class HandleSpecialPages
 {
     /** @var string[] */
     private $headings;
@@ -28,17 +28,21 @@ class SpecialPageController
     /** @var View */
     private $view;
 
+    /** @var Pages */
+    private $pages;
+
     /**
      * @param string[] $headings
      * @param array<string,string> $conf
      * @param array<string,string> $text
      */
-    public function __construct(array $headings, array $conf, array $text, View $view)
+    public function __construct(array $headings, array $conf, array $text, View $view, Pages $pages)
     {
         $this->headings = $headings;
         $this->conf = $conf;
         $this->text = $text;
         $this->view = $view;
+        $this->pages = $pages;
     }
 
     public function registrationPageAction(): Response
@@ -50,7 +54,7 @@ class SpecialPageController
                 $this->renderPageView(
                     $this->text['register'],
                     $this->text['register_form1'],
-                    Plugin::handleUserRegistration()
+                    "registerUser()"
                 )
             );
         }
@@ -66,7 +70,7 @@ class SpecialPageController
                 $this->renderPageView(
                     $this->text['forgot_password'],
                     $this->text['reminderexplanation'],
-                    Plugin::handleForgotPassword()
+                    "registerForgotPassword()"
                 )
             );
         }
@@ -82,7 +86,7 @@ class SpecialPageController
                 $this->renderPageView(
                     $this->text['user_prefs'],
                     $this->text['changeexplanation'],
-                    Plugin::handleUserPrefs()
+                    "registerUserPrefs()"
                 )
             );
         }
@@ -154,14 +158,13 @@ class SpecialPageController
     /**
      * @param string $title
      * @param string $intro
-     * @param string $more
      */
-    private function renderPageView($title, $intro, $more = ''): string
+    private function renderPageView($title, $intro, string $pluginCall = ""): string
     {
-        return $this->view->render('page', [
+        return $this->pages->evaluate($this->view->render('page', [
             'title' => $title,
             'intro' => $intro,
-            'more' => new HtmlString($more),
-        ]);
+            "plugin_call" => $pluginCall
+        ]));
     }
 }
