@@ -26,6 +26,15 @@ if (!defined("CMSIMPLE_XH_VERSION")) {
  * @var array<string,array<string,string>> $plugin_tx
  */
 
+$temp = [
+    "users_url" => (new Request)->url()->withPage("register")->withParams(["admin" => "users"])->relative(),
+    "groups_url" => (new Request)->url()->withPage("register")->withParams(["admin" => "groups"])->relative(),
+];
+
+XH_registerPluginMenuItem("register", $plugin_tx["register"]["mnu_user_admin"], $temp["users_url"]);
+XH_registerPluginMenuItem("register", $plugin_tx["register"]["mnu_group_admin"], $temp["groups_url"]);
+XH_registerStandardPluginMenuItems(false);
+
 $pd_router->add_tab(
     $plugin_tx["register"]["label_access"],
     $pth['folder']['plugins'] . "/register/register_pd_view.php"
@@ -34,10 +43,8 @@ $pd_router->add_tab(
 if (XH_wantsPluginAdministration("register")) {
     $o .= print_plugin_admin("off");
     pluginmenu("ROW");
-    $temp = (new Request())->url()->withPage("register")->withParams(["admin" => "groups"])->relative();
-    pluginmenu("TAB", XH_hsc($temp), "", XH_hsc($plugin_tx["register"]["mnu_group_admin"]));
-    $temp = (new Request())->url()->withPage("register")->withParams(["admin" => "users"])->relative();
-    pluginmenu("TAB", XH_hsc($temp), "", XH_hsc($plugin_tx["register"]["mnu_user_admin"]));
+    pluginmenu("TAB", XH_hsc($temp["users_url"]), "", XH_hsc($plugin_tx["register"]["mnu_user_admin"]));
+    pluginmenu("TAB", XH_hsc($temp["groups_url"]), "", XH_hsc($plugin_tx["register"]["mnu_group_admin"]));
     $o .= pluginmenu("SHOW");
     switch ($admin) {
         case "":
@@ -53,3 +60,5 @@ if (XH_wantsPluginAdministration("register")) {
             $o .= plugin_admin_common();
     }
 }
+
+$temp = null;
