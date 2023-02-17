@@ -161,14 +161,4 @@ class Plugin
         }
         return Dic::makeShowUserPreferences()(new Request());
     }
-
-    public static function handleLoginForm(): string
-    {
-        return Dic::makeShowLoginForm()(Dic::makeCurrentUser()->get(), new Request());
-    }
-
-    public static function handleloggedInForm(): string
-    {
-        return Dic::makeCurrentUser()->get() ? registerloginform() : "";
-    }
 }

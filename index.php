@@ -8,6 +8,8 @@
  * Copyright (c) 2012-2021 Christoph M. Becker
  */
 
+use Register\Infra\Request;
+use Register\Dic;
 use Register\Plugin;
 
 Plugin::run();
@@ -41,7 +43,7 @@ function registerUserPrefs(): string
  */
 function registerloginform(): string
 {
-    return Plugin::handleLoginForm();
+    return Dic::makeShowLoginForm()(Dic::makeCurrentUser()->get(), new Request());
 }
 
 /**
@@ -51,7 +53,7 @@ function registerloginform(): string
  */
 function Register_loggedInForm(): string
 {
-    return Plugin::handleloggedInForm();
+    return Dic::makeCurrentUser()->get() ? registerloginform() : "";
 }
 
 function register_access(string $groupString): string
