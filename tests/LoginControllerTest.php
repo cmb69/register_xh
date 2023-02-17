@@ -9,7 +9,7 @@
 namespace Register;
 
 use PHPUnit\Framework\TestCase;
-
+use Register\Infra\CurrentUser;
 use Register\Value\User;
 use Register\Infra\Logger;
 use Register\Infra\LoginManager;
@@ -45,6 +45,9 @@ class LoginControllerTest extends TestCase
     /** @var Request&MockObject */
     private $request;
 
+    /** @var CurrentUser&MockObject */
+    private $currentUser;
+
     public function setUp(): void
     {
         $plugin_cf = XH_includeVar("./config/config.php", 'plugin_cf');
@@ -56,6 +59,7 @@ class LoginControllerTest extends TestCase
         $this->loginManager = $this->createStub(LoginManager::class);
         $this->logger = $this->createStub(Logger::class);
         $this->session = $this->createStub(Session::class);
+        $this->currentUser = $this->createStub(CurrentUser::class);
         $this->request = $this->createStub(Request::class);
         $this->request->expects($this->any())->method("url")->willReturn(new Url("/", "irrelevant page"));
     }
@@ -71,9 +75,11 @@ class LoginControllerTest extends TestCase
             $this->userGroupRepository,
             $this->loginManager,
             $this->logger,
-            $this->session
+            $this->session,
+            $this->currentUser
         );
-        $response = $sut->loginAction($this->request);
+        $this->request->expects($this->any())->method("function")->willReturn("registerlogin");
+        $response = $sut($this->request);
         $this->assertEquals("http://example.com/?Logged-in", $response->location());
     }
 
@@ -86,9 +92,11 @@ class LoginControllerTest extends TestCase
             $this->userGroupRepository,
             $this->loginManager,
             $this->logger,
-            $this->session
+            $this->session,
+            $this->currentUser
         );
-        $response = $sut->loginAction($this->request);
+        $this->request->expects($this->any())->method("function")->willReturn("registerlogin");
+        $response = $sut($this->request);
         $this->assertEquals("http://example.com/?Login-Error", $response->location());
     }
 
@@ -101,9 +109,12 @@ class LoginControllerTest extends TestCase
             $this->userGroupRepository,
             $this->loginManager,
             $this->logger,
-            $this->session
+            $this->session,
+            $this->currentUser
         );
-        $response = $sut->logoutAction($this->request);
+        $this->currentUser->method("get")->willReturn($this->jane());
+        $this->request->expects($this->any())->method("function")->willReturn("registerlogout");
+        $response = $sut($this->request);
         $this->assertEquals("http://example.com/?Logged-out", $response->location());
     }
 

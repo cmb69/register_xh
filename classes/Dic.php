@@ -36,7 +36,8 @@ class Dic
             new UserGroupRepository(self::makeDbService()),
             new LoginManager(time(), new Session()),
             new Logger(),
-            new Session()
+            new Session(),
+            self::makeCurrentUser()
         );
     }
 

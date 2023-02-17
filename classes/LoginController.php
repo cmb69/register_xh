@@ -10,6 +10,7 @@
 
 namespace Register;
 
+use Register\Infra\CurrentUser;
 use Register\Value\User;
 use Register\Infra\Logger;
 use Register\Infra\LoginManager;
@@ -21,38 +22,29 @@ use Register\Infra\UserRepository;
 
 class LoginController
 {
-    /**
-     * @var array<string,string>
-     */
+    /** @var array<string,string> */
     private $config;
 
-    /**
-     * @var array<string,string>
-     */
+    /** @var array<string,string> */
     private $lang;
 
-    /**
-     * @var UserRepository
-     */
+    /** @var UserRepository */
     private $userRepository;
 
-    /**
-     * @var UserGroupRepository
-     */
+    /** @var UserGroupRepository */
     private $userGroupRepository;
 
-    /**
-     * @var LoginManager
-     */
+    /** @var LoginManager */
     private $loginManager;
 
-    /**
-     * @var Logger
-     */
+    /** @var Logger */
     private $logger;
 
     /** @var Session */
     private $session;
+
+    /** @var CurrentUser */
+    private $currentUser;
 
     /**
      * @param array<string,string> $config
@@ -65,7 +57,8 @@ class LoginController
         UserGroupRepository $userGroupRepository,
         LoginManager $loginManager,
         Logger $logger,
-        Session $session
+        Session $session,
+        CurrentUser $currentUser
     ) {
         $this->config = $config;
         $this->lang = $lang;
@@ -74,9 +67,25 @@ class LoginController
         $this->loginManager = $loginManager;
         $this->logger = $logger;
         $this->session = $session;
+        $this->currentUser = $currentUser;
     }
 
-    public function loginAction(Request $request): Response
+    public function __invoke(Request $request): Response
+    {
+        if ($this->config["remember_user"]
+            && isset($_COOKIE['register_username'], $_COOKIE['register_token']) && !$this->currentUser->get()) {
+            return $this->loginAction($request);
+        }
+        if (!$this->currentUser->get() && $request->function() === "registerlogin") {
+            return $this->loginAction($request);
+        }
+        if ($this->currentUser->get() && $request->function() === "registerlogout") {
+            return $this->logoutAction($request);
+        }
+        return new Response();
+    }
+
+    private function loginAction(Request $request): Response
     {
         $username = $_POST['username'] ?? '';
         $password = $_POST['password'] ?? '';
@@ -110,7 +119,7 @@ class LoginController
         }
     }
 
-    public function logoutAction(Request $request): Response
+    private function logoutAction(Request $request): Response
     {
         $this->session->start();
         $username = $_SESSION['username'] ?? '';
