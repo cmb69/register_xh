@@ -25,11 +25,15 @@ class LoginManager
     /** @var UserRepository */
     private $userRepository;
 
-    public function __construct(int $now, Session $session, UserRepository $userRepository)
+    /** @var Password */
+    private $password;
+
+    public function __construct(int $now, Session $session, UserRepository $userRepository, Password $password)
     {
         $this->now = $now;
         $this->session = $session;
         $this->userRepository = $userRepository;
+        $this->password = $password;
     }
 
     /**
@@ -90,11 +94,11 @@ class LoginManager
         if ($token !== null) {
             return hash_equals($this->calculateMac($user->getUsername(), $user->secret()), $token);
         }
-        if (!password_verify($password, $user->getPassword())) {
+        if (!$this->password->verify($password, $user->getPassword())) {
             return false;
         }
-        if (password_needs_rehash($user->getPassword(), PASSWORD_DEFAULT)) {
-            $this->userRepository->update($user->withNewPassword($password));
+        if ($this->password->needsRehash($user->getPassword())) {
+            $this->userRepository->update($user->withPassword($this->password->hash($password)));
         }
         return true;
     }

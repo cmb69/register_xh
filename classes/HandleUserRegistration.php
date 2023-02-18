@@ -14,6 +14,7 @@ use Register\Infra\CurrentUser;
 use Register\Value\User;
 use Register\Logic\Validator;
 use Register\Infra\Mailer;
+use Register\Infra\Password;
 use Register\Infra\Random;
 use Register\Infra\Request;
 use Register\Infra\Response;
@@ -43,6 +44,9 @@ class HandleUserRegistration
     /** @var Mailer */
     private $mailer;
 
+    /** @var Password */
+    private $password;
+
     /**
      * @param array<string,string> $conf
      * @param array<string,string> $text
@@ -54,7 +58,8 @@ class HandleUserRegistration
         Random $random,
         View $view,
         UserRepository $userRepository,
-        Mailer $mailer
+        Mailer $mailer,
+        Password $password
     ) {
         $this->currentUser = $currentUser;
         $this->conf = $conf;
@@ -63,6 +68,7 @@ class HandleUserRegistration
         $this->view = $view;
         $this->userRepository = $userRepository;
         $this->mailer = $mailer;
+        $this->password = $password;
     }
 
     public function __invoke(Request $request): Response
@@ -127,7 +133,7 @@ class HandleUserRegistration
         if (!$user) {
             $newUser = new User(
                 $username,
-                (string) password_hash($password1, PASSWORD_DEFAULT),
+                $this->password->hash($password1),
                 array($this->conf['group_default']),
                 $name,
                 $email,

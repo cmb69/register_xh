@@ -20,7 +20,7 @@ class DbServiceTest extends TestCase
     protected function setUp(): void
     {
         $this->root = vfsStream::setup("root");
-        $this->subject = new DbService(vfsStream::url("root/register/"), "guest");
+        $this->subject = new DbService(vfsStream::url("root/register/"), "guest", $this->createStub(Random::class));
     }
 
     public function testUsersAndGroupsFileAreCreatedAutomatically(): void

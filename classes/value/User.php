@@ -135,11 +135,4 @@ class User
         $that->status = "activated";
         return $that;
     }
-
-    public function withNewPassword(string $password): self
-    {
-        $that = clone $this;
-        $that->password = (string) password_hash($password, PASSWORD_DEFAULT);
-        return $that;
-    }
 }

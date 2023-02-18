@@ -18,6 +18,7 @@ use Register\Logic\Validator;
 use Register\Infra\CurrentUser;
 use Register\Infra\Logger;
 use Register\Infra\LoginManager;
+use Register\Infra\Password;
 use Register\Infra\Request;
 use Register\Infra\Response;
 use Register\Infra\Session;
@@ -50,6 +51,9 @@ class HandleUserPreferences
     /** @var Logger */
     private $logger;
 
+    /** @var Password */
+    private $password;
+
     /**
      * @param array<string,string> $conf
      */
@@ -62,7 +66,8 @@ class HandleUserPreferences
         View $view,
         Mailer $mailer,
         LoginManager $loginManager,
-        Logger $logger
+        Logger $logger,
+        Password $password
     ) {
         $this->currentUser = $currentUser;
         $this->conf = $conf;
@@ -73,6 +78,7 @@ class HandleUserPreferences
         $this->mailer = $mailer;
         $this->loginManager = $loginManager;
         $this->logger = $logger;
+        $this->password = $password;
     }
 
     public function __invoke(Request $request): Response
@@ -135,7 +141,7 @@ class HandleUserPreferences
         }
 
         // check that old password got entered correctly
-        if (!password_verify($oldpassword, $user->getPassword())) {
+        if (!$this->password->verify($oldpassword, $user->getPassword())) {
             $csrfTokenInput = $this->csrfProtector->tokenInput();
             $this->csrfProtector->store();
             return $this->view->message("fail", 'err_old_password_wrong')
@@ -175,7 +181,7 @@ class HandleUserPreferences
         $oldemail = $user->getEmail();
 
         // read user entry, update it and write it back to CSV file
-        $user = $user->withPassword((string) password_hash($password1, PASSWORD_DEFAULT))
+        $user = $user->withPassword($this->password->hash($password1))
             ->withEmail($email)
             ->withName($name);
 
@@ -229,7 +235,7 @@ class HandleUserPreferences
         }
 
         // Form Handling - Delete User ================================================
-        if (!password_verify($oldpassword, $entry->getPassword())) {
+        if (!$this->password->verify($oldpassword, $entry->getPassword())) {
             $csrfTokenInput = $this->csrfProtector->tokenInput();
             $this->csrfProtector->store();
             return $this->view->message("fail", 'err_old_password_wrong')

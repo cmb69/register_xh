@@ -14,6 +14,7 @@ use ApprovalTests\Approvals;
 use PHPUnit\Framework\TestCase;
 use Register\Infra\CurrentUser;
 use Register\Infra\Mailer;
+use Register\Infra\Password;
 use Register\Infra\Random;
 use Register\Infra\Request;
 use Register\Infra\Url;
@@ -46,6 +47,7 @@ class ShowRegistrationFormTest extends TestCase
         $this->view = new View("./", $text);
         $this->userRepository = $this->createMock(UserRepository::class);
         $mailer = $this->createStub(Mailer::class);
+        $password = $this->createStub(Password::class);
         $this->subject = new HandleUserRegistration(
             $this->currentUser,
             $conf,
@@ -53,7 +55,8 @@ class ShowRegistrationFormTest extends TestCase
             $random,
             $this->view,
             $this->userRepository,
-            $mailer
+            $mailer,
+            $password
         );
     }
 

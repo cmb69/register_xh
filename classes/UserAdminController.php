@@ -17,6 +17,8 @@ use Register\Value\User;
 use Register\Value\UserGroup;
 use Register\Logic\AdminProcessor;
 use Register\Infra\DbService;
+use Register\Infra\Password;
+use Register\Infra\Random;
 use Register\Infra\Request;
 use Register\Infra\Response;
 use Register\Infra\View;
@@ -38,6 +40,12 @@ class UserAdminController
     /** @var View */
     private $view;
 
+    /** @var Random */
+    private $random;
+
+    /** @var Password */
+    private $password;
+
     /**
      * @param array<string,string> $conf
      * @param array<string,string> $text
@@ -47,13 +55,17 @@ class UserAdminController
         array $text,
         CsrfProtector $csrfProtector,
         DbService $dbService,
-        View $view
+        View $view,
+        Random $random,
+        Password $password
     ) {
         $this->conf = $conf;
         $this->text = $text;
         $this->csrfProtector = $csrfProtector;
         $this->dbService = $dbService;
         $this->view = $view;
+        $this->random = $random;
+        $this->password = $password;
     }
 
     public function __invoke(Request $request): Response
@@ -102,7 +114,7 @@ class UserAdminController
         $secrets = $_POST["secrets"] ?? [];
 
         $secrets = array_map(function ($secret) {
-            return $secret ?: base64_encode(random_bytes(15));
+            return $secret ?: base64_encode($this->random->bytes(15));
         }, $secrets);
 
         $processor = new AdminProcessor();
@@ -117,6 +129,18 @@ class UserAdminController
             $status,
             $secrets
         );
+
+        $newusers = array_map(function ($user) {
+            $password = $pristine = $user->getPassword();
+            if ($password === "!") {
+                $password = "!" . base64_encode($this->random->bytes(16));
+            }
+            if ($password[0] === "!") {
+                $password = $this->password->hash(substr($password, 1));
+            }
+            return $password === $pristine ? $user : $user->withPassword($password);
+        }, $newusers);
+
         $errors = array_merge($errors, $extraErrors);
 
         $o = "";

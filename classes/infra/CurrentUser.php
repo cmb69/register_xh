@@ -17,9 +17,13 @@ class CurrentUser
     /** @var UserRepository */
     private $userRepository;
 
-    public function __construct(UserRepository $userRepository)
+    /** @var Password */
+    private $password;
+
+    public function __construct(UserRepository $userRepository, Password $password)
     {
         $this->userRepository = $userRepository;
+        $this->password = $password;
     }
 
     public function get(): ?User
@@ -42,7 +46,7 @@ class CurrentUser
                 if ($rec) {
                     $user = $rec;
                 } else {
-                    (new LoginManager(time(), $session, $this->userRepository))->logout();
+                    (new LoginManager(time(), $session, $this->userRepository, $this->password))->logout();
                     $user = null;
                 }
             } else {

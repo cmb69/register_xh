@@ -16,6 +16,7 @@ use PHPUnit\Framework\TestCase;
 use Register\Value\User;
 use Register\Infra\CurrentUser;
 use Register\Infra\FakeMailer;
+use Register\Infra\Password;
 use Register\Infra\Random;
 use Register\Infra\Request;
 use Register\Infra\Url;
@@ -62,6 +63,7 @@ class RegisterUserTest extends TestCase
         $this->view = new View("./", $text);
         $this->userRepository = $this->createMock(UserRepository::class);
         $this->mailer = new FakeMailer(false, $text);
+        $password = $this->createStub(Password::class);
         $this->subject = new HandleUserRegistration(
             $this->currentUser,
             $conf,
@@ -69,7 +71,8 @@ class RegisterUserTest extends TestCase
             $random,
             $this->view,
             $this->userRepository,
-            $this->mailer
+            $this->mailer,
+            $password
         );
         $this->request = $this->createStub(Request::class);
         $this->request->expects($this->any())->method("url")->willReturn(new Url("/", ""));

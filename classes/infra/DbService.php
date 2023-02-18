@@ -21,13 +21,17 @@ class DbService
     /** @var string */
     private $defaultGroupName;
 
+    /** @var Random */
+    private $random;
+
     /** @var bool */
     private $initialized = false;
 
-    public function __construct(string $dirname, string $defaultGroupName)
+    public function __construct(string $dirname, string $defaultGroupName, Random $random)
     {
         $this->dirname = $dirname;
         $this->defaultGroupName = $defaultGroupName;
+        $this->random = $random;
     }
 
     public function dataFolder(): string
@@ -196,7 +200,7 @@ class DbService
             if (count($fields) === 7) {
                 $secret = $fields[6];
             } else {
-                $secret = base64_encode(random_bytes(15));
+                $secret = base64_encode($this->random->bytes(15));
             }
             return new User(
                 $username,

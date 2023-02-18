@@ -26,6 +26,7 @@ require_once "./classes/infra/Logger.php";
 require_once "./classes/infra/LoginManager.php";
 require_once "./classes/infra/Mailer.php";
 require_once "./classes/infra/Pages.php";
+require_once "./classes/infra/Password.php";
 require_once "./classes/infra/Random.php";
 require_once "./classes/infra/Request.php";
 require_once "./classes/infra/Response.php";

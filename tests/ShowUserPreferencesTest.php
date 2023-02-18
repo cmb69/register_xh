@@ -18,6 +18,7 @@ use Register\Infra\CurrentUser;
 use Register\Infra\Logger;
 use Register\Infra\LoginManager;
 use Register\Infra\Mailer;
+use Register\Infra\Password;
 use Register\Infra\Request;
 use Register\Infra\Session;
 use Register\Infra\Url;
@@ -68,6 +69,7 @@ class ShowUserPreferencesTest extends TestCase
         $mailer = $this->createStub(Mailer::class);
         $logger = $this->createStub(Logger::class);
         $loginManager = $this->createStub(LoginManager::class);
+        $password = $this->createStub(Password::class);
         $this->subject = new HandleUserPreferences(
             $this->currentUser,
             $conf,
@@ -77,7 +79,8 @@ class ShowUserPreferencesTest extends TestCase
             $this->view,
             $mailer,
             $loginManager,
-            $logger
+            $logger,
+            $password
         );
         $this->request = $this->createStub(Request::class);
         $this->request->expects($this->any())->method("url")->willReturn(new Url("/", "User-Preferences"));

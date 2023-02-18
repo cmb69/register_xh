@@ -103,11 +103,9 @@ class AdminProcessor
             }
         }
         if ($password === "") {
-            $password = base64_encode(random_bytes(16));
-        }
-        if ($password !== $oldPassword) {
-            // TODO: handle password_hash() failure
-            $password = (string) password_hash($password, PASSWORD_DEFAULT);
+            $password = "!";
+        } elseif ($password !== $oldPassword) {
+            $password = "!" . $password;
         }
         return [new User($username, $password, $groups, $name, $email, $status, $secret), $userErrors];
     }

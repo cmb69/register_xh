@@ -33,49 +33,6 @@ class ProcessUsersTest extends TestCase
         $this->assertEmpty($errors);
     }
 
-    public function testGeneratesRandomPasswordOnEmptyPassword(): void
-    {
-        [$users, $errors] = (new AdminProcessor())->processUsers(
-            $this->groups(),
-            ["john"],
-            [""],
-            [""],
-            ["John Doe"],
-            ["john@example.com"],
-            ["guest"],
-            ["activated"],
-            ["secret"],
-            "guest"
-        );
-        $this->assertCount(1, $users);
-        $this->assertContainsOnlyInstancesOf(User::class, $users);
-        $this->assertStringStartsWith('$', $users[0]->getPassword());
-        $this->assertFalse(password_verify("", $users[0]->getPassword()));
-        $this->assertEmpty($errors);
-    }
-
-    /** @see <https://github.com/cmb69/register_xh/issues/65> */
-    public function testHashesPasswordEvenOnFailure(): void
-    {
-        [$users, $errors] = (new AdminProcessor())->processUsers(
-            $this->groups(),
-            ["john"],
-            [""],
-            [""],
-            ["John:Doe"],
-            ["john@example.com"],
-            ["guest"],
-            ["activated"],
-            ["secret"],
-            "guest"
-        );
-        $this->assertCount(1, $users);
-        $this->assertContainsOnlyInstancesOf(User::class, $users);
-        $this->assertStringStartsWith('$', $users[0]->getPassword());
-        $this->assertFalse(password_verify("", $users[0]->getPassword()));
-        $this->assertCount(1, $errors);
-    }
-
     public function testReportsErrorOnEmptyUserName(): void
     {
         [, $errors] = (new AdminProcessor())->processUsers(

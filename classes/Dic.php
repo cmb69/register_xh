@@ -16,6 +16,7 @@ use Register\Infra\Logger;
 use Register\Infra\LoginManager;
 use Register\Infra\Mailer;
 use Register\Infra\Pages;
+use Register\Infra\Password;
 use Register\Infra\Random;
 use Register\Infra\Request;
 use Register\Infra\Session;
@@ -60,7 +61,7 @@ class Dic
             $plugin_tx["register"],
             self::makeUserRepository(),
             new UserGroupRepository(self::makeDbService()),
-            new LoginManager(time(), new Session(), self::makeUserRepository()),
+            new LoginManager(time(), new Session(), self::makeUserRepository(), new Password),
             new Logger(),
             new Session(),
             self::makeCurrentUser()
@@ -88,7 +89,9 @@ class Dic
             $plugin_tx["register"],
             $_XH_csrfProtection,
             self::makeDbService(),
-            self::makeView()
+            self::makeView(),
+            new Random,
+            new Password
         );
     }
 
@@ -115,7 +118,8 @@ class Dic
             new Random,
             self::makeView(),
             self::makeUserRepository(),
-            self::makeMailer()
+            self::makeMailer(),
+            new Password
         );
     }
 
@@ -158,8 +162,9 @@ class Dic
             self::makeUserRepository(),
             self::makeView(),
             self::makeMailer(),
-            new LoginManager(time(), new Session(), self::makeUserRepository()),
-            new Logger()
+            new LoginManager(time(), new Session(), self::makeUserRepository(), new Password),
+            new Logger(),
+            new Password
         );
     }
 
@@ -201,7 +206,7 @@ class Dic
 
     private static function makeCurrentUser(): CurrentUser
     {
-        return new CurrentUser(self::makeUserRepository());
+        return new CurrentUser(self::makeUserRepository(), new Password);
     }
 
     private static function makeDbService(): DbService
@@ -215,7 +220,7 @@ class Dic
                 $folder = dirname($folder) . "/";
             }
             $folder .= "register/";
-            $instance = new DbService($folder, $plugin_cf['register']['group_default']);
+            $instance = new DbService($folder, $plugin_cf['register']['group_default'], new Random);
         }
         return $instance;
     }

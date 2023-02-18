@@ -17,6 +17,7 @@ use Register\Infra\CurrentUser;
 use Register\Infra\FakeMailer;
 use Register\Infra\Logger;
 use Register\Infra\LoginManager;
+use Register\Infra\Password;
 use Register\Infra\Request;
 use Register\Infra\Session;
 use Register\Infra\Url;
@@ -52,6 +53,9 @@ class EditUserTest extends TestCase
     /** @var Request */
     private $request;
 
+    /** @var Password&MockObject */
+    private $password;
+
     public function setUp(): void
     {
         $hash = "\$2y\$10\$f4ldVDiVXTkNrcPmBdbW7.g/.mw5GOEqBid650oN9hE56UC28aXSq";
@@ -71,6 +75,7 @@ class EditUserTest extends TestCase
         $this->mailer = new FakeMailer(false, $text);
         $loginManager = $this->createStub(LoginManager::class);
         $logger = $this->createMock(Logger::class);
+        $this->password = $this->createStub(Password::class);
         $this->subject = new HandleUserPreferences(
             $this->currentUser,
             $conf,
@@ -80,7 +85,8 @@ class EditUserTest extends TestCase
             $this->view,
             $this->mailer,
             $loginManager,
-            $logger
+            $logger,
+            $this->password
         );
         $this->request = $this->createStub(Request::class);
         $this->request->expects($this->any())->method("url")->willReturn(new Url("/", "User-Preferences"));
@@ -113,6 +119,7 @@ class EditUserTest extends TestCase
         $this->currentUser->method("get")->willReturn($this->users["john"]);
         $this->userRepository->method("findByUsername")->willReturn($this->users["john"]);
         $this->csrfProtector->expects($this->once())->method("check");
+        $this->password->method("verify")->willReturn(false);
         $response = ($this->subject)($this->request);
         Approvals::verifyHtml($response->output());
     }
@@ -130,6 +137,7 @@ class EditUserTest extends TestCase
         $this->currentUser->method("get")->willReturn($this->users["john"]);
         $this->userRepository->method("findByUsername")->willReturn($this->users["john"]);
         $this->csrfProtector->expects($this->once())->method("check");
+        $this->password->method("verify")->willReturn(true);
         $response = ($this->subject)($this->request);
         Approvals::verifyHtml($response->output());
     }
@@ -144,6 +152,7 @@ class EditUserTest extends TestCase
         $this->userRepository->method("findByUsername")->willReturn($this->users["john"]);
         $this->csrfProtector->expects($this->once())->method("check");
         $this->userRepository->expects($this->once())->method("update")->willReturn(true);
+        $this->password->method("verify")->willReturn(true);
         $response = ($this->subject)($this->request);
         Approvals::verifyHtml($response->output());
     }
@@ -158,6 +167,7 @@ class EditUserTest extends TestCase
         $this->userRepository->method("findByUsername")->willReturn($this->users["john"]);
         $this->csrfProtector->expects($this->once())->method("check");
         $this->userRepository->expects($this->once())->method("update")->willReturn(true);
+        $this->password->method("verify")->willReturn(true);
         ($this->subject)($this->request);
         $this->assertEquals("john@example.com", $this->mailer->to());
         $this->assertEquals("Account data changed for example.com", $this->mailer->subject());

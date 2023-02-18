@@ -15,6 +15,8 @@ use XH\CSRFProtection as CsrfProtector;
 use Register\Value\User;
 use Register\Value\UserGroup;
 use Register\Infra\DbService;
+use Register\Infra\Password;
+use Register\Infra\Random;
 use Register\Infra\Request;
 use Register\Infra\Url;
 use Register\Infra\View;
@@ -171,14 +173,67 @@ class UserAdminControllerTest extends TestCase
         Approvals::verifyHtml($response->output());
     }
 
+    public function testGeneratesRandomPasswordForNewUsers()
+    {
+        $_POST = [
+            "username" => ["cmb"],
+            "password" => [""],
+            "oldpassword" => [""],
+            "name" => ["Christoph Becker"],
+            "email" => ["cmb@example.com"],
+            "accessgroups" => ["users"],
+            "status" => ["activated"],
+            "secrets" => ["secret"],
+        ];
+        $dbService = $this->createStub(DbService::class);
+        $dbService->expects($this->once())->method('writeUsers')->willReturn(true);
+        $dbService->method('hasGroupsFile')->willReturn(true);
+        $dbService->method('readGroups')->willReturn([new UserGroup("users", "")]);
+        $sut = $this->makeUserAdminController($dbService);
+        $this->request->expects($this->any())->method("method")->willReturn("post");
+        $response = $sut($this->request);
+        Approvals::verifyHtml($response->output());
+    }
+
+    /** @see <https://github.com/cmb69/register_xh/issues/65> */
+    public function testHashesChangedPasswordEvenOnFailure()
+    {
+        $_POST = [
+            "username" => [""],
+            "password" => ["test"],
+            "oldpassword" => ["\$2y\$10\$XABLZkU6kZKAJczIuTEJTesI5TF065Uta8LKFeFTxcYaXK72V3cyC"],
+            "name" => ["Christoph Becker"],
+            "email" => ["cmb@example.com"],
+            "accessgroups" => ["users"],
+            "status" => ["activated"],
+            "secrets" => ["secret"],
+        ];
+        $dbService = $this->createStub(DbService::class);
+        $dbService->expects($this->never())->method('writeUsers');
+        $dbService->method('hasGroupsFile')->willReturn(true);
+        $dbService->method('readGroups')->willReturn([new UserGroup("users", "")]);
+        $sut = $this->makeUserAdminController($dbService);
+        $this->request->expects($this->any())->method("method")->willReturn("post");
+        $response = $sut($this->request);
+        Approvals::verifyHtml($response->output());
+    }
+
     private function makeUserAdminController(DbService $dbService): UserAdminController
     {
+        $random = $this->createStub(Random::class);
+        $random->method("bytes")->willReturnCallback(function ($length) {
+            return substr("0123456789ABCDEF", 0, $length);
+        });
+        $password = $this->createStub(Password::class);
+        $password->method("hash")->willReturn('$2y$10$XABLZkU6kZKAJczIuTEJTesI5TF065Uta8LKFeFTxcYaXK72V3cyC');
         return new UserAdminController(
             $this->makeConf(),
             $this->makeLang(),
             $this->makeCsrfProtector(false),
             $dbService,
-            new View("./", self::makeLang())
+            new View("./", self::makeLang()),
+            $random,
+            $password
         );
     }
 

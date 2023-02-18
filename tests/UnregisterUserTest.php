@@ -18,6 +18,7 @@ use Register\Infra\CurrentUser;
 use Register\Infra\Logger;
 use Register\Infra\LoginManager;
 use Register\Infra\Mailer;
+use Register\Infra\Password;
 use Register\Infra\Request;
 use Register\Infra\Session;
 use Register\Infra\Url;
@@ -56,6 +57,9 @@ class UnregisterUserTest extends TestCase
     /** @var Request */
     private $request;
 
+    /** @var Password */
+    private $password;
+
     public function setUp(): void
     {
         $hash = "\$2y\$10\$f4ldVDiVXTkNrcPmBdbW7.g/.mw5GOEqBid650oN9hE56UC28aXSq";
@@ -74,6 +78,7 @@ class UnregisterUserTest extends TestCase
         $mailer = $this->createStub(Mailer::class);
         $this->loginManager = $this->createStub(LoginManager::class);
         $this->logger = $this->createMock(Logger::class);
+        $this->password = $this->createStub(Password::class);
         $this->subject = new HandleUserPreferences(
             $this->currentUser,
             $conf,
@@ -84,7 +89,7 @@ class UnregisterUserTest extends TestCase
             $mailer,
             $this->loginManager,
             $this->logger,
-            "/User-Preferences"
+            $this->password
         );
         $this->request = $this->createStub(Request::class);
         $this->request->expects($this->any())->method("url")->willReturn(new Url("/", "User-Preferences"));
@@ -116,6 +121,7 @@ class UnregisterUserTest extends TestCase
         $this->currentUser->method("get")->willReturn($this->users["john"]);
         $this->userRepository->method("findByUsername")->willReturn($this->users["john"]);
         $this->csrfProtector->expects($this->once())->method("check");
+        $this->password->method("verify")->willReturn(false);
         $response = ($this->subject)($this->request);
         Approvals::verifyHtml($response->output());
     }
@@ -129,6 +135,7 @@ class UnregisterUserTest extends TestCase
         $this->userRepository->expects($this->once())->method("delete")->willReturn(true);
         $this->csrfProtector->expects($this->once())->method("check");
         $this->loginManager->expects($this->once())->method("logout")->with();
+        $this->password->method("verify")->willReturn(true);
         $response = ($this->subject)($this->request);
         Approvals::verifyHtml($response->output());
     }
