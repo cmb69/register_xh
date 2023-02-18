@@ -17,7 +17,7 @@ use Register\Value\User;
 use Register\Infra\CurrentUser;
 use Register\Infra\Logger;
 use Register\Infra\LoginManager;
-use Register\Infra\MailService;
+use Register\Infra\Mailer;
 use Register\Infra\Request;
 use Register\Infra\Session;
 use Register\Infra\Url;
@@ -65,18 +65,17 @@ class ShowUserPreferencesTest extends TestCase
         $this->csrfProtector = $this->createMock(CsrfProtector::class);
         $this->userRepository = $this->createMock(UserRepository::class);
         $this->view = new View("./", $lang);
-        $mailService = $this->createStub(MailService::class);
+        $mailer = $this->createStub(Mailer::class);
         $logger = $this->createStub(Logger::class);
         $loginManager = $this->createStub(LoginManager::class);
         $this->subject = new HandleUserPreferences(
             $this->currentUser,
             $conf,
-            $lang,
             $this->session,
             $this->csrfProtector,
             $this->userRepository,
             $this->view,
-            $mailService,
+            $mailer,
             $loginManager,
             $logger
         );

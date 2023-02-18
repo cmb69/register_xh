@@ -13,7 +13,8 @@ use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Register\Infra\CurrentUser;
 use Register\Value\User;
-use Register\Infra\MailService;
+use Register\Infra\Mailer;
+use Register\Infra\Random;
 use Register\Infra\Request;
 use Register\Infra\UserRepository;
 use Register\Infra\View;
@@ -50,16 +51,19 @@ class ActivateUserTest extends TestCase
         $conf = $plugin_cf['register'];
         $plugin_tx = XH_includeVar("./languages/en.php", 'plugin_tx');
         $text = $plugin_tx['register'];
+        $random = $this->createStub(Random::class);
+        $random->method("bytes")->willReturn("0123456789ABCDEF");
         $this->view = new View("./", $text);
         $this->userRepository = $this->createMock(UserRepository::class);
-        $mailService = $this->createStub(MailService::class);
+        $mailer = $this->createStub(Mailer::class);
         $this->subject = new HandleUserRegistration(
             $this->currentUser,
             $conf,
             $text,
+            $random,
             $this->view,
             $this->userRepository,
-            $mailService
+            $mailer
         );
         $this->request = $this->createStub(Request::class);
     }

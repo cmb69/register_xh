@@ -11,7 +11,7 @@
 namespace Register;
 
 use Register\Infra\CurrentUser;
-use Register\Infra\MailService;
+use Register\Infra\Mailer;
 use Register\Infra\Request;
 use Register\Infra\Response;
 use Register\Infra\UserRepository;
@@ -27,9 +27,6 @@ class HandlePasswordForgotten
     /** @var array<string,string> */
     private $conf;
 
-    /** @var array<string,string> */
-    private $text;
-
     /** @var int */
     private $now;
 
@@ -39,29 +36,24 @@ class HandlePasswordForgotten
     /** @var UserRepository */
     private $userRepository;
 
-    /** @var MailService */
-    private $mailService;
+    /** @var Mailer */
+    private $mailer;
 
-    /**
-     * @param array<string,string> $conf
-     * @param array<string,string> $text
-     */
+    /** @param array<string,string> $conf */
     public function __construct(
         CurrentUser $currentUser,
         array $conf,
-        array $text,
         int $now,
         View $view,
         UserRepository $userRepository,
-        MailService $mailService
+        Mailer $mailer
     ) {
         $this->currentUser = $currentUser;
         $this->conf = $conf;
-        $this->text = $text;
         $this->now = $now;
         $this->view = $view;
         $this->userRepository = $userRepository;
-        $this->mailService = $mailService;
+        $this->mailer = $mailer;
     }
 
     public function __invoke(Request $request): Response
@@ -122,20 +114,11 @@ class HandlePasswordForgotten
                 "time" => (string) $this->now,
                 "mac" => $mac,
             ]);
-            // prepare email content for user data email
-            $content = $this->text['emailtext1'] . "\n\n"
-                . ' ' . $this->text['name'] . ": " . $user->getName() . "\n"
-                . ' ' . $this->text['username'] . ": " . $user->getUsername() . "\n";
-            $content .= ' ' . $this->text['email'] . ": " . $user->getEmail() . "\n";
-            $content .= "\n" . $this->text['emailtext3'] ."\n\n"
-                . '<' . $url->absolute() . '>';
-
-            // send reminder email
-            $this->mailService->sendMail(
-                $email,
-                $this->text['reminderemailsubject'] . ' ' . $_SERVER['SERVER_NAME'],
-                $content,
-                array('From: ' . $this->conf['senderemail'])
+            $this->mailer->notifyPasswordForgotten(
+                $user,
+                $this->conf['senderemail'],
+                $url->absolute(),
+                $_SERVER["SERVER_NAME"]
             );
         }
         $response->body($this->view->message('success', 'remindersent_reset'));
@@ -211,19 +194,7 @@ class HandlePasswordForgotten
             return $response;
         }
 
-        // prepare email content for user data email
-        $content = $this->text['emailtext1'] . "\n\n"
-            . ' ' . $this->text['name'] . ": " . $user->getName() . "\n"
-            . ' ' . $this->text['username'] . ": " . $user->getUsername() . "\n"
-            . ' ' . $this->text['email'] . ": " . $user->getEmail() . "\n";
-
-        // send reminder email
-        $this->mailService->sendMail(
-            $user->getEmail(),
-            $this->text['reminderemailsubject'] . ' ' . $_SERVER['SERVER_NAME'],
-            $content,
-            array('From: ' . $this->conf['senderemail'])
-        );
+        $this->mailer->notifyPasswordReset($user, $this->conf['senderemail'], $_SERVER["SERVER_NAME"]);
         $response->body($this->view->message('success', 'remindersent'));
         return $response;
     }

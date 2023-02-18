@@ -1,0 +1,10 @@
+A user account with your email has been registered with following information:
+
+ Full Name: John Smith
+ Username: js
+ Email: js@example.com
+ From IP-Address: example.com
+
+Please click the following link to activate your new user account:
+
+<http://example.com/?&action=register_activate_user&username=js&nonce=30313233343536373839414243444546>

@@ -14,8 +14,8 @@ use ApprovalTests\Approvals;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Register\Infra\CurrentUser;
+use Register\Infra\FakeMailer;
 use Register\Value\User;
-use Register\Infra\MailService;
 use Register\Infra\Request;
 use Register\Infra\Url;
 use Register\Infra\UserRepository;
@@ -35,8 +35,8 @@ class ChangePasswordTest extends TestCase
     /** @var UserRepository&MockObject */
     private $userRepository;
 
-    /** @var MailService&MockObject */
-    private $mailService;
+    /** @var FakeMailer */
+    private $mailer;
 
     /** @var Request&MockObject */
     private $request;
@@ -50,15 +50,14 @@ class ChangePasswordTest extends TestCase
         $text = $plugin_tx['register'];
         $this->view = new View("./", $text);
         $this->userRepository = $this->createStub(UserRepository::class);
-        $this->mailService = $this->createMock(MailService::class);
+        $this->mailer = new FakeMailer(false, $text);
         $this->subject = new HandlePasswordForgotten(
             $this->currentUser,
             $conf,
-            $text,
             1637449200,
             $this->view,
             $this->userRepository,
-            $this->mailService
+            $this->mailer
         );
         $this->request = $this->createStub(Request::class);
         $this->request->expects($this->any())->method("url")->willReturn(new Url("", ""));
@@ -104,5 +103,28 @@ class ChangePasswordTest extends TestCase
         $this->userRepository->method("update")->willReturn(true);
         $response = ($this->subject)($this->request);
         Approvals::verifyHtml($response->output());
+    }
+
+    public function testSendsMailOnSuccess(): void
+    {
+        $_GET = [
+            "action" => "register_change_password",
+            "username" => "john",
+            "time" => 1637449800,
+            "mac" => "a19916c64ceb8942def3ed8b8a612e9d8a3e50b2",
+        ];
+        $_POST = [
+            "password1" => "admin",
+            "password2" => "admin",
+        ];
+        $_SERVER['SERVER_NAME'] = "example.com";
+        $john = new User("john", "12345", [], "John Dow", "john@example.com", "");
+        $this->userRepository->method("findByUsername")->willReturn($john);
+        $this->userRepository->method("update")->willReturn(true);
+        ($this->subject)($this->request);
+        $this->assertEquals("john@example.com", $this->mailer->to());
+        $this->assertEquals("Account data for example.com", $this->mailer->subject());
+        Approvals::verifyHtml($this->mailer->message());
+        $this->assertEquals(["From: postmaster@example.com"], $this->mailer->headers());
     }
 }

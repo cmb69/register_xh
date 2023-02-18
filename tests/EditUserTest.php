@@ -14,9 +14,9 @@ use XH\CSRFProtection as CsrfProtector;
 
 use Register\Value\User;
 use Register\Infra\CurrentUser;
+use Register\Infra\FakeMailer;
 use Register\Infra\Logger;
 use Register\Infra\LoginManager;
-use Register\Infra\MailService;
 use Register\Infra\Request;
 use Register\Infra\Session;
 use Register\Infra\Url;
@@ -46,6 +46,9 @@ class EditUserTest extends TestCase
     /** @var View */
     private $view;
 
+    /** @var FakeMailer */
+    private $mailer;
+
     /** @var Request */
     private $request;
 
@@ -65,18 +68,17 @@ class EditUserTest extends TestCase
         $this->csrfProtector = $this->createMock(CsrfProtector::class);
         $this->userRepository = $this->createMock(UserRepository::class);
         $this->view = new View("./", $text);
-        $mailService = $this->createStub(MailService::class);
+        $this->mailer = new FakeMailer(false, $text);
         $loginManager = $this->createStub(LoginManager::class);
         $logger = $this->createMock(Logger::class);
         $this->subject = new HandleUserPreferences(
             $this->currentUser,
             $conf,
-            $text,
             $this->session,
             $this->csrfProtector,
             $this->userRepository,
             $this->view,
-            $mailService,
+            $this->mailer,
             $loginManager,
             $logger
         );
@@ -144,5 +146,25 @@ class EditUserTest extends TestCase
         $this->userRepository->expects($this->once())->method("update")->willReturn(true);
         $response = ($this->subject)($this->request);
         Approvals::verifyHtml($response->output());
+    }
+
+    public function testSendsEmailOnSuccess(): void
+    {
+        $_SERVER["SERVER_NAME"] = "example.com";
+        $_SERVER["REMOTE_ADDR"] = "127.0.0.1";
+        $_SESSION = ["username" => "john"];
+        $_POST = ["action" => "edit_user_prefs", "submit" => "", "oldpassword" => "12345"];
+        $this->currentUser->method("get")->willReturn($this->users["john"]);
+        $this->userRepository->method("findByUsername")->willReturn($this->users["john"]);
+        $this->csrfProtector->expects($this->once())->method("check");
+        $this->userRepository->expects($this->once())->method("update")->willReturn(true);
+        ($this->subject)($this->request);
+        $this->assertEquals("john@example.com", $this->mailer->to());
+        $this->assertEquals("Account data changed for example.com", $this->mailer->subject());
+        Approvals::verifyHtml($this->mailer->message());
+        $this->assertEquals(
+            ["From: postmaster@example.com", "Cc: john@example.com, postmaster@example.com"],
+            $this->mailer->headers()
+        );
     }
 }

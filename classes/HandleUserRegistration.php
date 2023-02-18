@@ -13,7 +13,8 @@ namespace Register;
 use Register\Infra\CurrentUser;
 use Register\Value\User;
 use Register\Logic\Validator;
-use Register\Infra\MailService;
+use Register\Infra\Mailer;
+use Register\Infra\Random;
 use Register\Infra\Request;
 use Register\Infra\Response;
 use Register\Infra\UserRepository;
@@ -30,14 +31,17 @@ class HandleUserRegistration
     /** @var array<string,string> */
     private $text;
 
+    /** @var Random */
+    private $random;
+
     /** @var View */
     private $view;
 
     /** @var UserRepository */
     private $userRepository;
 
-    /** @var MailService */
-    private $mailService;
+    /** @var Mailer */
+    private $mailer;
 
     /**
      * @param array<string,string> $conf
@@ -47,16 +51,18 @@ class HandleUserRegistration
         CurrentUser $currentUser,
         array $conf,
         array $text,
+        Random $random,
         View $view,
         UserRepository $userRepository,
-        MailService $mailService
+        Mailer $mailer
     ) {
         $this->currentUser = $currentUser;
         $this->conf = $conf;
         $this->text = $text;
+        $this->random = $random;
         $this->view = $view;
         $this->userRepository = $userRepository;
-        $this->mailService = $mailService;
+        $this->mailer = $mailer;
     }
 
     public function __invoke(Request $request): Response
@@ -117,7 +123,7 @@ class HandleUserRegistration
         $user = $this->userRepository->findByEmail($email);
 
         // generate a nonce for the user activation
-        $status = bin2hex(random_bytes(16));
+        $status = bin2hex($this->random->bytes(16));
         if (!$user) {
             $newUser = new User(
                 $username,
@@ -134,34 +140,24 @@ class HandleUserRegistration
         }
 
         // prepare email content for registration activation
-        $content = $this->text['emailtext1'] . "\n\n"
-            . ' ' . $this->text['name'] . ": $name \n"
-            . ' ' . $this->text['username'] . ": $username \n"
-            . ' ' . $this->text['email'] . ": $email \n"
-            . ' ' . $this->text['fromip'] . ": {$_SERVER['REMOTE_ADDR']} \n\n";
         if (!$user) {
+            $key = "emailtext2";
             $url = $request->url()->withParams([
                 "action" => "register_activate_user",
                 "username" => $username,
                 "nonce" => $status,
             ]);
-                $content .= $this->text['emailtext2'] . "\n\n"
-                . '<' . $url->absolute() . '>';
         } else {
+            $key = "emailtext4";
             $url = $request->url()->withPage($this->text['forgot_password']);
-            $content .= $this->text['emailtext4'] . "\n\n"
-                . '<' . $url->absolute() . '>';
         }
-
-        // send activation email
-        $this->mailService->sendMail(
-            $email,
-            $this->text['emailsubject'] . ' ' . $_SERVER['SERVER_NAME'],
-            $content,
-            array(
-                'From: ' . $this->conf['senderemail'],
-                'Cc: '  . $this->conf['senderemail']
-            )
+        $this->mailer->notifyActivation(
+            new User($username, "", [], $name, $email, ""),
+            $this->conf['senderemail'],
+            $url->absolute(),
+            $key,
+            $_SERVER["SERVER_NAME"],
+            $_SERVER["REMOTE_ADDR"]
         );
         return $response->body($this->view->message('success', 'registered'));
     }

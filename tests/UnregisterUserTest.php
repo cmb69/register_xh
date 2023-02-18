@@ -17,7 +17,7 @@ use Register\Value\User;
 use Register\Infra\CurrentUser;
 use Register\Infra\Logger;
 use Register\Infra\LoginManager;
-use Register\Infra\MailService;
+use Register\Infra\Mailer;
 use Register\Infra\Request;
 use Register\Infra\Session;
 use Register\Infra\Url;
@@ -71,18 +71,17 @@ class UnregisterUserTest extends TestCase
         $this->csrfProtector = $this->createMock(CsrfProtector::class);
         $this->userRepository = $this->createMock(UserRepository::class);
         $this->view = new View("./", $text);
-        $mailService = $this->createStub(MailService::class);
+        $mailer = $this->createStub(Mailer::class);
         $this->loginManager = $this->createStub(LoginManager::class);
         $this->logger = $this->createMock(Logger::class);
         $this->subject = new HandleUserPreferences(
             $this->currentUser,
             $conf,
-            $text,
             $this->session,
             $this->csrfProtector,
             $this->userRepository,
             $this->view,
-            $mailService,
+            $mailer,
             $this->loginManager,
             $this->logger,
             "/User-Preferences"

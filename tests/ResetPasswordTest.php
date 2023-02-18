@@ -16,7 +16,7 @@ use PHPUnit\Framework\TestCase;
 
 use Register\Infra\CurrentUser;
 use Register\Value\User;
-use Register\Infra\MailService;
+use Register\Infra\Mailer;
 use Register\Infra\Request;
 use Register\Infra\Url;
 use Register\Infra\UserRepository;
@@ -48,15 +48,14 @@ class ResetPasswordTest extends TestCase
         $text = $plugin_tx['register'];
         $this->view = new View("./", $text);
         $this->userRepository = $this->createStub(UserRepository::class);
-        $this->mailService = $this->createMock(MailService::class);
+        $this->mailer = $this->createMock(Mailer::class);
         $this->subject = new HandlePasswordForgotten(
             $this->currentUser,
             $conf,
-            $text,
             1637449200,
             $this->view,
             $this->userRepository,
-            $this->mailService
+            $this->mailer
         );
         $this->request = $this->createStub(Request::class);
         $this->request->expects($this->any())->method("url")->willReturn(new Url("", ""));

@@ -14,8 +14,9 @@ use Register\Infra\CurrentUser;
 use Register\Infra\DbService;
 use Register\Infra\Logger;
 use Register\Infra\LoginManager;
-use Register\Infra\MailService;
+use Register\Infra\Mailer;
 use Register\Infra\Pages;
+use Register\Infra\Random;
 use Register\Infra\Session;
 use Register\Infra\SystemChecker;
 use Register\Infra\UserGroupRepository;
@@ -86,9 +87,10 @@ class Dic
             Dic::makeCurrentUser(),
             $plugin_cf["register"],
             $plugin_tx["register"],
+            new Random,
             self::makeView(),
             self::makeUserRepository(),
-            self::makeMailService()
+            self::makeMailer()
         );
     }
 
@@ -108,32 +110,30 @@ class Dic
 
     public static function makeHandlePasswordForgotten(): HandlePasswordForgotten
     {
-        global $plugin_cf, $plugin_tx;
+        global $plugin_cf;
 
         return new HandlePasswordForgotten(
             Dic::makeCurrentUser(),
             $plugin_cf["register"],
-            $plugin_tx["register"],
             time(),
             self::makeView(),
             self::makeUserRepository(),
-            self::makeMailService()
+            self::makeMailer()
         );
     }
 
     public static function makeHandleUserPreferences(): HandleUserPreferences
     {
-        global $plugin_cf, $plugin_tx;
+        global $plugin_cf;
 
         return new HandleUserPreferences(
             Dic::makeCurrentUser(),
             $plugin_cf["register"],
-            $plugin_tx["register"],
             new Session(),
             new CsrfProtector('register_csrf_token', false),
             self::makeUserRepository(),
             self::makeView(),
-            self::makeMailService(),
+            self::makeMailer(),
             new LoginManager(time(), new Session()),
             new Logger()
         );
@@ -201,11 +201,11 @@ class Dic
         return $instance;
     }
 
-    private static function makeMailService(): MailService
+    private static function makeMailer(): Mailer
     {
-        global $plugin_cf;
+        global $plugin_cf, $plugin_tx;
 
-        return new MailService($plugin_cf["register"]["fix_mail_headers"]);
+        return new Mailer($plugin_cf["register"]["fix_mail_headers"], $plugin_tx["register"]);
     }
 
     private static function makeView(): View

@@ -10,7 +10,7 @@
 
 namespace Register;
 
-use Register\Infra\MailService;
+use Register\Infra\Mailer;
 use XH\CSRFProtection as CsrfProtector;
 
 use Register\Value\HtmlString;
@@ -32,9 +32,6 @@ class HandleUserPreferences
     /** @var array<string,string> */
     private $conf;
 
-    /** @var array<string,string> */
-    private $text;
-
     /** @var CsrfProtector */
     private $csrfProtector;
 
@@ -44,8 +41,8 @@ class HandleUserPreferences
     /** @var View */
     private $view;
 
-    /** @var MailService */
-    private $mailService;
+    /** @var Mailer */
+    private $mailer;
 
     /** @var LoginManager */
     private $loginManager;
@@ -55,28 +52,25 @@ class HandleUserPreferences
 
     /**
      * @param array<string,string> $conf
-     * @param array<string,string> $text
      */
     public function __construct(
         CurrentUser $currentUser,
         array $conf,
-        array $text,
         Session $session,
         CsrfProtector $csrfProtector,
         UserRepository $userRepository,
         View $view,
-        MailService $mailService,
+        Mailer $mailer,
         LoginManager $loginManager,
         Logger $logger
     ) {
         $this->currentUser = $currentUser;
         $this->conf = $conf;
-        $this->text = $text;
         $session->start();
         $this->csrfProtector = $csrfProtector;
         $this->userRepository = $userRepository;
         $this->view = $view;
-        $this->mailService = $mailService;
+        $this->mailer = $mailer;
         $this->loginManager = $loginManager;
         $this->logger = $logger;
     }
@@ -189,23 +183,12 @@ class HandleUserPreferences
             return $this->view->message("fail", 'err_cannot_write_csv');
         }
 
-        // prepare email for user information about updates
-        $content = $this->text['emailprefsupdated'] . "\n\n" .
-            ' ' . $this->text['name'] . ': '.$name."\n" .
-            ' ' . $this->text['username'] . ': '.$username."\n" .
-            //' ' . $this->text['password'] . ': '.$password1."\n" .
-            ' ' . $this->text['email'] . ': '.$email."\n" .
-            ' ' . $this->text['fromip'] . ': '. $_SERVER['REMOTE_ADDR'] ."\n";
-
-        // send update email
-        $this->mailService->sendMail(
-            $email,
-            $this->text['prefsemailsubject'] . ' ' . $_SERVER['SERVER_NAME'],
-            $content,
-            array(
-                'From: ' . $this->conf['senderemail'],
-                'Cc: '  . $oldemail . ', ' . $this->conf['senderemail']
-            )
+        $this->mailer->notifyUpdate(
+            $user,
+            $oldemail,
+            $this->conf['senderemail'],
+            $_SERVER["SERVER_NAME"],
+            $_SERVER["REMOTE_ADDR"]
         );
         return $this->view->message('success', 'prefsupdated');
     }

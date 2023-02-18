@@ -24,8 +24,9 @@ require_once "./classes/infra/CurrentUser.php";
 require_once './classes/infra/DbService.php';
 require_once "./classes/infra/Logger.php";
 require_once "./classes/infra/LoginManager.php";
-require_once "./classes/infra/MailService.php";
+require_once "./classes/infra/Mailer.php";
 require_once "./classes/infra/Pages.php";
+require_once "./classes/infra/Random.php";
 require_once "./classes/infra/Request.php";
 require_once "./classes/infra/Response.php";
 require_once "./classes/infra/Session.php";
@@ -48,3 +49,5 @@ require_once "./classes/ShowLoginForm.php";
 require_once "./classes/ShowPageDataTab.php";
 require_once "./classes/ShowPluginInfo.php";
 require_once "./classes/UserAdminController.php";
+
+require_once "./tests/infra/FakeMailer.php";
