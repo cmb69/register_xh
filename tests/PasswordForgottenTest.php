@@ -89,7 +89,7 @@ class PasswordForgottenTest extends TestCase
     {
         $_SERVER["SERVER_NAME"] = "example.com";
         $_POST = ["action" => "forgotten_password", "email" => "john@example.com"];
-        $john = new User("john", "12345", [], "John Dow", "john@example.com", "");
+        $john = new User("john", "12345", [], "John Dow", "john@example.com", "", "secret");
         $this->userRepository->method("findByEmail")->willReturn($john);
         $response = ($this->subject)($this->request);
         Approvals::verifyHtml($response->output());
@@ -99,7 +99,7 @@ class PasswordForgottenTest extends TestCase
     {
         $_SERVER["SERVER_NAME"] = "example.com";
         $_POST = ["action" => "forgotten_password", "email" => "john@example.com"];
-        $john = new User("john", "12345", [], "John Dow", "john@example.com", "");
+        $john = new User("john", "12345", [], "John Dow", "john@example.com", "", "secret");
         $this->userRepository->method("findByEmail")->willReturn($john);
         ($this->subject)($this->request);
         $this->assertEquals("john@example.com", $this->mailer->to());

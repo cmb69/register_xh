@@ -67,7 +67,7 @@ class UserAdminControllerTest extends TestCase
                 "newPassword" => "New Password (may contain only alphanumeric characters and underscores):",
                 "tooManyUsers" => "There are too many users!",
             ],
-            "register_max_number_of_users" => 142,
+            "register_max_number_of_users" => 124,
         ];
         $this->assertEquals($expected, $response->meta());
         $this->assertEquals("./plugins/register/admin.min.js", $response->script());
@@ -93,6 +93,7 @@ class UserAdminControllerTest extends TestCase
             "email" => ["cmb@example.com"],
             "accessgroups" => ["users"],
             "status" => ["activated"],
+            "secrets" => ["secret"],
         ];
         $dbService = $this->createStub(DbService::class);
         $dbService->expects($this->never())->method('writeUsers');
@@ -114,6 +115,7 @@ class UserAdminControllerTest extends TestCase
             "email" => ["cmb@example.com", "cmb@example.com"],
             "accessgroups" => ["users", "users"],
             "status" => ["activated", "activated"],
+            "secrets" => ["secret", "secret"],
         ];
         $dbService = $this->createStub(DbService::class);
         $dbService->expects($this->never())->method('writeUsers');
@@ -135,6 +137,7 @@ class UserAdminControllerTest extends TestCase
             "email" => ["cmb@example.com"],
             "accessgroups" => ["users"],
             "status" => ["activated"],
+            "secrets" => ["secret"],
         ];
         $dbService = $this->createStub(DbService::class);
         $dbService->expects($this->once())->method('writeUsers')->willReturn(false);
@@ -156,6 +159,7 @@ class UserAdminControllerTest extends TestCase
             "email" => ["cmb@example.com"],
             "accessgroups" => ["users"],
             "status" => ["activated"],
+            "secrets" => ["secret"],
         ];
         $dbService = $this->createStub(DbService::class);
         $dbService->expects($this->once())->method('writeUsers')->willReturn(true);
@@ -209,7 +213,8 @@ class UserAdminControllerTest extends TestCase
             ["guest"],
             "John Doe",
             "john@example.com",
-            "activated"
+            "activated",
+            "secret",
         );
     }
 
@@ -221,7 +226,8 @@ class UserAdminControllerTest extends TestCase
             ["admin"],
             "Jane Doe",
             "jane@example.com",
-            "activated"
+            "activated",
+            "secret",
         );
     }
 }

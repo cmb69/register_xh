@@ -34,6 +34,7 @@ use Register\Infra\View;
         <button onclick="register.changePassword(this.nextElementSibling); return false"><?=$this->text('change_password')?></button>
         <input type="hidden" value="" name="password[]">
         <input type="hidden" value="" name="oldpassword[]">
+        <input type="hidden" value="" name="secrets[]">
       </td>
     </tr>
   </table>
@@ -78,6 +79,7 @@ use Register\Infra\View;
           <button onclick="register.changePassword(this.nextElementSibling); return false"><?=$this->text('change_password')?></button>
           <input type="hidden" value="<?=$this->esc($entry->getPassword())?>" name="password[<?=$this->esc($i)?>]">
           <input type="hidden" value="<?=$this->esc($entry->getPassword())?>" name="oldpassword[<?=$this->esc($i)?>]">
+          <input type="hidden" value="<?=$this->esc($entry->secret())?>" name="secrets[<?=$this->esc($i)?>]">
         </td>
       </tr>
 <?php endforeach?>

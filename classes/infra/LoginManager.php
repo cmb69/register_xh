@@ -22,10 +22,14 @@ class LoginManager
     /** @var Session $session */
     private $session;
 
-    public function __construct(int $now, Session $session)
+    /** @var UserRepository */
+    private $userRepository;
+
+    public function __construct(int $now, Session $session, UserRepository $userRepository)
     {
         $this->now = $now;
         $this->session = $session;
+        $this->userRepository = $userRepository;
     }
 
     /**
@@ -42,7 +46,7 @@ class LoginManager
             );
             setcookie(
                 'register_token',
-                $this->calculateMac($user->getUsername(), $user->getPassword()),
+                $this->calculateMac($user->getUsername(), $user->secret()),
                 $this->now + self::REMEMBER_PERIOD,
                 CMSIMPLE_ROOT
             );
@@ -77,15 +81,27 @@ class LoginManager
 
     public function isUserAuthenticated(?User $user, string $password, ?string $token): bool
     {
-        return $user
-            && ($user->isActivated() || $user->isLocked())
-            && (!isset($token) || hash_equals($this->calculateMac($user->getUsername(), $user->getPassword()), $token))
-            && (isset($token) || (password_verify($password, $user->getPassword())));
+        if (!$user) {
+            return false;
+        }
+        if (!$user->isActivated() && !$user->isLocked()) {
+            return false;
+        }
+        if ($token !== null) {
+            return hash_equals($this->calculateMac($user->getUsername(), $user->secret()), $token);
+        }
+        if (!password_verify($password, $user->getPassword())) {
+            return false;
+        }
+        if (password_needs_rehash($user->getPassword(), PASSWORD_DEFAULT)) {
+            $this->userRepository->update($user->withNewPassword($password));
+        }
+        return true;
     }
 
     private function calculateMac(string $username, string $secret): string
     {
-        $mac = hash_hmac("sha1", "{$username}", $secret, true);
+        $mac = hash_hmac("sha1", $username, $secret, true);
         return rtrim(strtr(base64_encode($mac), "+/", "-_"), "=");
     }
 }

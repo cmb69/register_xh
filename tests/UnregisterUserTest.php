@@ -60,8 +60,8 @@ class UnregisterUserTest extends TestCase
     {
         $hash = "\$2y\$10\$f4ldVDiVXTkNrcPmBdbW7.g/.mw5GOEqBid650oN9hE56UC28aXSq";
         $this->users = [
-            "john" => new User("john", $hash, [], "John Doe", "john@example.com", "activated"),
-            "jane" => new User("jane", "", [], "Jane Doe", "jane@example.com", "locked"),
+            "john" => new User("john", $hash, [], "John Doe", "john@example.com", "activated", "secret"),
+            "jane" => new User("jane", "", [], "Jane Doe", "jane@example.com", "locked", "secret"),
         ];
         $this->currentUser = $this->createStub(CurrentUser::class);
         $conf = XH_includeVar("./config/config.php", "plugin_cf")["register"];

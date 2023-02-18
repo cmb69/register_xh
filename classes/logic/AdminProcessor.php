@@ -24,6 +24,7 @@ class AdminProcessor
      * @param list<string> $emails
      * @param list<string> $groupStrings
      * @param list<string> $statuses
+     * @param list<string> $secrets
      * @return array{list<User>,list<array{string}|list<array{string}>>}
      */
     public function processUsers(
@@ -34,7 +35,8 @@ class AdminProcessor
         array $names,
         array $emails,
         array $groupStrings,
-        array $statuses
+        array $statuses,
+        array $secrets
     ): array {
         $groupNames = [];
         foreach ($groups as $entry) {
@@ -51,6 +53,7 @@ class AdminProcessor
                 $names[$i],
                 $emails[$i],
                 $statuses[$i],
+                $secrets[$i],
                 $users,
                 $groupNames
             );
@@ -76,6 +79,7 @@ class AdminProcessor
         string $name,
         string $email,
         string $status,
+        string $secret,
         array $users,
         array $groupNames
     ) {
@@ -105,7 +109,7 @@ class AdminProcessor
             // TODO: handle password_hash() failure
             $password = (string) password_hash($password, PASSWORD_DEFAULT);
         }
-        return [new User($username, $password, $groups, $name, $email, $status), $userErrors];
+        return [new User($username, $password, $groups, $name, $email, $status, $secret), $userErrors];
     }
 
     /**

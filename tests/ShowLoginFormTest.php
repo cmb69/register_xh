@@ -38,7 +38,7 @@ class ShowLoginFormTest extends TestCase
     {
         $plugin_tx = XH_includeVar("./languages/en.php", 'plugin_tx');
         $text = $plugin_tx['register'];
-        $user = new User("jane", "", [], "Jane Doe", "jane@example.com", "activated");
+        $user = new User("jane", "", [], "Jane Doe", "jane@example.com", "activated", "secret");
         $currentUser = $this->createStub(CurrentUser::class);
         $currentUser->method("get")->willReturn($user);
         $subject = new ShowLoginForm([], $text, new View("./", $text), $currentUser);

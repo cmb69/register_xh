@@ -77,7 +77,7 @@ class ResetPasswordTest extends TestCase
             "time" => 1637449800,
             "mac" => "54321",
         ];
-        $john = new User("john", "12345", [], "John Dow", "john@example.com", "");
+        $john = new User("john", "12345", [], "John Dow", "john@example.com", "", "secret");
         $this->userRepository->method("findByUsername")->willReturn($john);
         $response = ($this->subject)($this->request);
         Approvals::verifyHtml($response->output());
@@ -89,9 +89,9 @@ class ResetPasswordTest extends TestCase
             "action" => "registerResetPassword",
             "username" => "john",
             "time" => 1637449800,
-            "mac" => "a19916c64ceb8942def3ed8b8a612e9d8a3e50b2",
+            "mac" => "3pjbpRHFI9OO3gUHV42CHT3IHL8",
         ];
-        $john = new User("john", "12345", [], "John Dow", "john@example.com", "");
+        $john = new User("john", "12345", [], "John Dow", "john@example.com", "", "secret");
         $this->userRepository->method("findByUsername")->willReturn($john);
         $response = ($this->subject)($this->request);
         Approvals::verifyHtml($response->output());
@@ -103,9 +103,9 @@ class ResetPasswordTest extends TestCase
             "action" => "registerResetPassword",
             "username" => "john",
             "time" => 1637445599,
-            "mac" => "4d284e93d5842b9b54b656f2d7a52e8aa326c262",
+            "mac" => "TLIb1A2yKWBs_ZGmC0l0V4w6bS8",
         ];
-        $john = new User("john", "12345", [], "John Dow", "john@example.com", "");
+        $john = new User("john", "12345", [], "John Dow", "john@example.com", "", "secret");
         $this->userRepository->method("findByUsername")->willReturn($john);
         $response = ($this->subject)($this->request);
         Approvals::verifyHtml($response->output());

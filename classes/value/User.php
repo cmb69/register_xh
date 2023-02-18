@@ -10,35 +10,26 @@ namespace Register\Value;
 
 class User
 {
-    /**
-     * @var string
-     */
+    /** @var string */
     private $username;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     private $password;
     
-    /**
-     * @var string[]
-     */
+    /** @var list<string> */
     private $accessgroups;
     
-    /**
-     * @var string
-     */
+    /** @var string */
     private $name;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     private $email;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     private $status;
+
+    /** @var string */
+    private $secret;
 
     /**
      * @param string[] $accessgroups
@@ -49,7 +40,8 @@ class User
         array $accessgroups,
         string $name,
         string $email,
-        string $status
+        string $status,
+        string $secret
     ) {
         $this->username = $username;
         $this->password = $password;
@@ -57,6 +49,7 @@ class User
         $this->name = $name;
         $this->email = $email;
         $this->status = $status;
+        $this->secret = $secret;
     }
 
     public function getUsername(): string
@@ -100,6 +93,11 @@ class User
     public function isLocked(): bool
     {
         return $this->status === "locked";
+    }
+
+    public function secret(): string
+    {
+        return $this->secret;
     }
 
     public function withPassword(string $password): self

@@ -44,7 +44,7 @@ class HandlePageProtectionTest extends TestCase
 
     public function testProtectsPages(): void
     {
-        $this->currentUser->method("get")->willReturn(new User("cmb", "", ["guest"], "", "", ""));
+        $this->currentUser->method("get")->willReturn(new User("cmb", "", ["guest"], "", "", "", ""));
         $this->pages->expects($this->any())->method("setContentOf")->withConsecutive(
             [2, "#CMSimple hide# {{{register_access('admin')}}}"],
         );

@@ -64,7 +64,8 @@ class DbServiceTest extends TestCase
                 ['admin', 'guest'],
                 'Christoph M. Becker',
                 'cmbecker69@gmx.de',
-                'activated'
+                'activated',
+                "secret"
             )
         );
         $this->subject->writeUsers($expected);

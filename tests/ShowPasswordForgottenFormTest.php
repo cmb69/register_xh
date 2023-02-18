@@ -60,7 +60,7 @@ class ShowPasswordForgottenFormTest extends TestCase
 
     public function testLoggedInUserIsRedirected(): void
     {
-        $this->currentUser->method("get")->willReturn(new User("", "", [], "", "", ""));
+        $this->currentUser->method("get")->willReturn(new User("", "", [], "", "", "", "secret"));
         $response = ($this->subject)($this->request);
         $this->assertEquals("http://example.com/", $response->location());
     }

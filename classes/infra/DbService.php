@@ -189,17 +189,23 @@ class DbService
     /** @return ?User */
     private function readUserLine(string $line)
     {
-        list($username,$password,$accessgroups,$name,$email,$status) = explode(':', rtrim($line));
-        // line must not start with '//' and all fields must be set
+        $fields = explode(':', rtrim($line));
+        [$username,$password,$accessgroups,$name,$email,$status] = $fields;
         if ($username != "" && $password != "" && $accessgroups != ""
                 && $name != "" && $email != ""/* && $status != ""*/) {
+            if (count($fields) === 7) {
+                $secret = $fields[6];
+            } else {
+                $secret = base64_encode(random_bytes(15));
+            }
             return new User(
                 $username,
                 $password,
                 explode(',', $accessgroups),
                 $name,
                 $email,
-                $status
+                $status,
+                $secret
             );
         }
         return null;
@@ -227,9 +233,9 @@ class DbService
         }
 
         // write comment line to file
-        $line = '// Register Plugin user Definitions'."\n"
-            . '// Line Format:'."\n"
-            . '// login:password:accessgroup1,accessgroup2,...:fullname:email:status'."\n";
+        $line = "// Register Plugin user Definitions\n"
+            . "// Line Format:\n"
+            . "// login:password:accessgroup1,accessgroup2,...:fullname:email:status:secret\n";
         if (!fwrite($fp, $line)) {
             fclose($fp);
             return false;
@@ -242,7 +248,8 @@ class DbService
             $fullname = $entry->getName();
             $email = $entry->getEmail();
             $status = $entry->getStatus();
-            $line = "$username:$password:$accessgroups:$fullname:$email:$status"."\n";
+            $secret = $entry->secret();
+            $line = "$username:$password:$accessgroups:$fullname:$email:$status:$secret\n";
             if (!fwrite($fp, $line)) {
                 fclose($fp);
                 return false;

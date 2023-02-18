@@ -42,14 +42,14 @@ class HandlePageAccessTest extends TestCase
 
     public function testUserCanAccessProtectedPage(): void
     {
-        $this->currentUser->method("get")->willReturn(new User("jane", "", ["admin"], "", "", ""));
+        $this->currentUser->method("get")->willReturn(new User("jane", "", ["admin"], "", "", "", ""));
         $response = ($this->sut)($this->request, "admin");
         $this->assertNull($response->location());
     }
 
     public function testUserCannotAccessProtectedPage(): void
     {
-        $this->currentUser->method("get")->willReturn(new User("john", "", ["guest"], "", "", ""));
+        $this->currentUser->method("get")->willReturn(new User("john", "", ["guest"], "", "", "", ""));
         $response = ($this->sut)($this->request, "admin");
         $this->assertEquals("http://example.com/?Access-Restricted", $response->location());
     }

@@ -60,7 +60,7 @@ class Dic
             $plugin_tx["register"],
             self::makeUserRepository(),
             new UserGroupRepository(self::makeDbService()),
-            new LoginManager(time(), new Session()),
+            new LoginManager(time(), new Session(), self::makeUserRepository()),
             new Logger(),
             new Session(),
             self::makeCurrentUser()
@@ -158,7 +158,7 @@ class Dic
             self::makeUserRepository(),
             self::makeView(),
             self::makeMailer(),
-            new LoginManager(time(), new Session()),
+            new LoginManager(time(), new Session(), self::makeUserRepository()),
             new Logger()
         );
     }

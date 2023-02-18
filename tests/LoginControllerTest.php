@@ -126,7 +126,8 @@ class LoginControllerTest extends TestCase
             ["admin"],
             "Jane Doe",
             "jane@example.com",
-            "activated"
+            "activated",
+            "secret"
         );
     }
 }

@@ -101,7 +101,8 @@ class UserRepositoryTest extends TestCase
             ["guest"],
             "John Doe",
             "john@example.com",
-            "activated"
+            "activated",
+            "secret"
         );
     }
 
@@ -113,7 +114,8 @@ class UserRepositoryTest extends TestCase
             ["admin"],
             "Jane Doe",
             "jane@example.com",
-            "activated"
+            "activated",
+            "secret"
         );
     }
 }

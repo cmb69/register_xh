@@ -26,6 +26,7 @@ class ProcessUsersTest extends TestCase
             ["jane@example.com", "john@example.com"],
             ["admin", "guest"],
             ["activated", "activated"],
+            ["secret", "secret"],
             "guest"
         );
         $this->assertEquals([$this->jane(), $this->john()], $users);
@@ -43,6 +44,7 @@ class ProcessUsersTest extends TestCase
             ["john@example.com"],
             ["guest"],
             ["activated"],
+            ["secret"],
             "guest"
         );
         $this->assertCount(1, $users);
@@ -64,6 +66,7 @@ class ProcessUsersTest extends TestCase
             ["john@example.com"],
             ["guest"],
             ["activated"],
+            ["secret"],
             "guest"
         );
         $this->assertCount(1, $users);
@@ -84,6 +87,7 @@ class ProcessUsersTest extends TestCase
             ["john@example.com"],
             ["guest"],
             ["activated"],
+            ["secret"],
             "guest"
         );
         $this->assertEquals([[["error_in_user", ""], ["err_username"]]], $errors);
@@ -100,6 +104,7 @@ class ProcessUsersTest extends TestCase
             ["jane@example.com", "john@example.com"],
             ["admin", "guest"],
             ["activated", "activated"],
+            ["secret", "secret"],
             "guest"
         );
         $this->assertEquals([[["error_in_user", "j"], ["err_username_exists"]]], $errors);
@@ -116,6 +121,7 @@ class ProcessUsersTest extends TestCase
             ["j@example.com", "j@example.com"],
             ["admin", "guest"],
             ["activated", "activated"],
+            ["secret", "secret"],
             "guest"
         );
         $this->assertEquals([[["error_in_user", "john"], ["err_email_exists"]]], $errors);
@@ -132,6 +138,7 @@ class ProcessUsersTest extends TestCase
             ["john@example.com"],
             ["nogroup"],
             ["activated"],
+            ["secret"],
             "guest"
         );
         $this->assertEquals([[["error_in_user", "john"], ["err_group_does_not_exist", "nogroup"]]], $errors);
@@ -148,16 +155,16 @@ class ProcessUsersTest extends TestCase
 
     private function defaultUser(): User
     {
-        return new User("NewUser", "", ["guest"], "Name Lastname", "user@domain.com", "activated");
+        return new User("NewUser", "", ["guest"], "Name Lastname", "user@domain.com", "activated", "secret");
     }
 
     private function john(): User
     {
-        return new User("john", "12345", ["guest"], "John Doe", "john@example.com", "activated");
+        return new User("john", "12345", ["guest"], "John Doe", "john@example.com", "activated", "secret");
     }
 
     private function jane(): User
     {
-        return new User("jane", "54321", ["admin"], "Jane Doe", "jane@example.com", "activated");
+        return new User("jane", "54321", ["admin"], "Jane Doe", "jane@example.com", "activated", "secret");
     }
 }

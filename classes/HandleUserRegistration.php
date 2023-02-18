@@ -131,7 +131,8 @@ class HandleUserRegistration
                 array($this->conf['group_default']),
                 $name,
                 $email,
-                $status
+                $status,
+                base64_encode($this->random->bytes(15))
             );
 
             if (!$this->userRepository->add($newUser)) {
@@ -152,7 +153,7 @@ class HandleUserRegistration
             $url = $request->url()->withPage($this->text['forgot_password']);
         }
         $this->mailer->notifyActivation(
-            new User($username, "", [], $name, $email, ""),
+            new User($username, "", [], $name, $email, "", ""),
             $this->conf['senderemail'],
             $url->absolute(),
             $key,
@@ -185,10 +186,10 @@ class HandleUserRegistration
         if ($user === null) {
             return $this->view->message("fail", 'err_username_notfound', $username);
         }
-        if ($user->getStatus() == "") {
+        if ($user->getStatus() === "") {
             return $this->view->message("fail", 'err_status_empty');
         }
-        if ($nonce != $user->getStatus()) {
+        if (!hash_equals($user->getStatus(), $nonce)) {
             return $this->view->message("fail", 'err_status_invalid');
         }
         $user = $user->activate()->withAccessgroups([$this->conf['group_activated']]);

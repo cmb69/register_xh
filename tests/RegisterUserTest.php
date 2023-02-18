@@ -50,8 +50,8 @@ class RegisterUserTest extends TestCase
         $hash = "\$2y\$10\$f4ldVDiVXTkNrcPmBdbW7.g/.mw5GOEqBid650oN9hE56UC28aXSq";
         $this->currentUser = $this->createStub(CurrentUser::class);
         $this->users = [
-            "john" => new User("john", $hash, [], "John Doe", "john@example.com", ""),
-            "jane" => new User("jane", "", [], "Jane Doe", "jane@example.com", "12345"),
+            "john" => new User("john", $hash, [], "John Doe", "john@example.com", "", "secret"),
+            "jane" => new User("jane", "", [], "Jane Doe", "jane@example.com", "12345", "secret"),
         ];
         $plugin_cf = XH_includeVar("./config/config.php", 'plugin_cf');
         $conf = $plugin_cf['register'];

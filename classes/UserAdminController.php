@@ -99,6 +99,11 @@ class UserAdminController
         $email = $_POST['email'] ?? [];
         $groupString = $_POST['accessgroups'] ?? [];
         $status = $_POST['status'] ?? [];
+        $secrets = $_POST["secrets"] ?? [];
+
+        $secrets = array_map(function ($secret) {
+            return $secret ?: base64_encode(random_bytes(15));
+        }, $secrets);
 
         $processor = new AdminProcessor();
         [$newusers, $extraErrors] = $processor->processUsers(
@@ -109,7 +114,8 @@ class UserAdminController
             $name,
             $email,
             $groupString,
-            $status
+            $status,
+            $secrets
         );
         $errors = array_merge($errors, $extraErrors);
 
@@ -156,7 +162,7 @@ class UserAdminController
     {
         $response->addScript($request->pluginsFolder() . "register/admin.min.js");
         $response->addMeta("register_texts", $this->texts());
-        $response->addMeta("register_max_number_of_users", $this->calcMaxRecords(7, 4));
+        $response->addMeta("register_max_number_of_users", $this->calcMaxRecords(8, 4));
 
         $data = [
             'csrfTokenInput' => new HtmlString($this->csrfProtector->tokenInput()),

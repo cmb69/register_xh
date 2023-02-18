@@ -186,7 +186,7 @@ not work as expected.
 Depending on the PHP ini settings `max_input_vars`,
 `suhosin.post.max_vars` and `suhosin.request.max_vars`
 there is a limit on the maximum number of users that can be administrated in
-the plugin back-end. In a default configuration of PHP at most 142
+the plugin back-end. In a default configuration of PHP at most 124
 users are allowed. The plugin checks this limit, and does not permit more
 users to be added. If this limit is exceeded, you have to administrate the
 users in `users.csv` manually.

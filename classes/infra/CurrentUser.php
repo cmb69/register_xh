@@ -42,7 +42,7 @@ class CurrentUser
                 if ($rec) {
                     $user = $rec;
                 } else {
-                    (new LoginManager(time(), $session))->logout();
+                    (new LoginManager(time(), $session, $this->userRepository))->logout();
                     $user = null;
                 }
             } else {

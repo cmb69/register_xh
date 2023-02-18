@@ -199,7 +199,7 @@ In Abhängigkeit der PHP ini Einstellungen `max_input_vars`,
 `suhosin.post.max_vars` und `suhosin.request.max_vars`
 gibt es eine Obergrenze für die Höchstanzahl von Benutzern, die im
 Plugin-Back-End verwaltet werden können. In der Standardkonfiguration von PHP
-sind höchstens 142 Benutzer erlaubt. Das Plugin überprüft diese
+sind höchstens 124 Benutzer erlaubt. Das Plugin überprüft diese
 Grenze, und verhindert das Hinzufügen weiterer Benutzer. Wenn die Obergrenze
 überschritten wurde, müssen Sie die Benutzer manuell in
 `user.csv` verwalten.

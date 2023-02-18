@@ -19,6 +19,7 @@
         <button onclick="register.changePassword(this.nextElementSibling); return false">Change Password...</button>
         <input type="hidden" value="" name="password[]">
         <input type="hidden" value="" name="oldpassword[]">
+        <input type="hidden" value="" name="secrets[]">
       </td>
     </tr>
   </table>
@@ -59,6 +60,7 @@
           <button onclick="register.changePassword(this.nextElementSibling); return false">Change Password...</button>
           <input type="hidden" value="pw1" name="password[0]">
           <input type="hidden" value="pw1" name="oldpassword[0]">
+          <input type="hidden" value="secret" name="secrets[0]">
         </td>
       </tr>
       <tr id="register_user_1">
@@ -75,6 +77,7 @@
           <button onclick="register.changePassword(this.nextElementSibling); return false">Change Password...</button>
           <input type="hidden" value="pw2" name="password[1]">
           <input type="hidden" value="pw2" name="oldpassword[1]">
+          <input type="hidden" value="secret" name="secrets[1]">
         </td>
       </tr>
     </table>
