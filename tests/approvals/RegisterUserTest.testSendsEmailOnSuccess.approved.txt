@@ -7,4 +7,4 @@ A user account with your email has been registered with following information:
 
 Please click the following link to activate your new user account:
 
-<http://example.com/?&action=register_activate_user&username=js&nonce=30313233343536373839414243444546>
+<http://example.com/?&action=register_activate_user&username=js&nonce=MDEyMzQ1Njc4OUFCQ0RFRkdI>

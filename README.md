@@ -203,7 +203,7 @@ Register_XH is freeware.
 
 Copyright © 2007 [Carsten Heinelt](http://cmsimple.heinelt.eu/)  
 Copyright © 2010-2012 [Gert Ebersbach](https://www.ge-webdesign.de/)  
-Copyright © 2012-2021 Christoph M. Becker
+Copyright © 2012-2023 Christoph M. Becker
 
 Slovak translation © 2012 Dr. Martin Sereday  
 Czech translation © 2012 Josef Němec  

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Copyright (c) 2021 Christoph M. Becker
+ * Copyright (c) 2021-2023 Christoph M. Becker
  *
  * This file is part of Register_XH.
  */
@@ -10,6 +10,9 @@ namespace Register\Logic;
 
 class Validator
 {
+    private const EMAIL_PATTERN = '/^[a-zA-Z0-9.!#$%&\'*+\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?'
+        . '(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/';
+
     /**
      * @return list<array{string}>
      */
@@ -79,7 +82,7 @@ class Validator
         $errors = [];
         if ($email === "") {
             $errors[] = ['err_email'];
-        } elseif (!preg_match("/^[^\s()<>@,;:\"\/\[\]?=]+@\w[\w-]*(\.\w[\w-]*)*\.[a-z]{2,}$/i", $email)) {
+        } elseif (!preg_match(self::EMAIL_PATTERN, $email)) {
             $errors[] = ['err_email_invalid'];
         }
         return $errors;

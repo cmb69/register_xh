@@ -12,7 +12,7 @@ use Register\Infra\View;
 ?>
 
 <div class="regi_loggedin_loggedinarea">
-  <div class="regi_loggedin_user"><?=$this->text('loggedin_welcometext')?> <?=$this->esc($fullName)?>!</div>
+  <div class="regi_loggedin_user"><?=$this->text('loggedin_welcometext', $fullName)?></div>
   <div class="regi_loggedin_loggedin"><?=$this->text('loggedin')?></div>
   <div class="regi_loggedin_settings">
 <?php if ($hasUserPrefs):?>

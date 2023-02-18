@@ -3,7 +3,7 @@
 /**
  * Copyright (c) 2007 Carsten Heinelt (http://cmsimple.heinelt.eu)
  * Copyright (c) 2010-2012 Gert Ebersbach (http://www.ge-webdesign.de/cmsimpleplugins/)
- * Copyright (c) 2012-2021 Christoph M. Becker
+ * Copyright (c) 2012-2023 Christoph M. Becker
  *
  * This file is part of Register_XH.
  */
@@ -45,7 +45,7 @@ class Mailer
 MAIL;
         return $this->sendMail(
             $user->getEmail(),
-            $this->text['prefsemailsubject'] . ' ' . $serverName,
+            sprintf($this->text['prefsemailsubject'], $serverName),
             $content,
             ["From: $from", "Cc: $oldemail, $from"]
         );
@@ -66,7 +66,7 @@ MAIL;
 MAIL;
         return $this->sendMail(
             $user->getEmail(),
-            $this->text['reminderemailsubject'] . ' ' . $serverName,
+            sprintf($this->text['reminderemailsubject'], $serverName),
             $content,
             ["From: $from"]
         );
@@ -84,7 +84,7 @@ MAIL;
 MAIL;
         return $this->sendMail(
             $user->getEmail(),
-            $this->text['reminderemailsubject'] . ' ' . $serverName,
+            sprintf($this->text['reminderemailsubject'], $serverName),
             $content,
             ["From: $from"]
         );
@@ -112,7 +112,7 @@ MAIL;
 MAIL;
         return $this->sendMail(
             $user->getEmail(),
-            $this->text['emailsubject'] . ' ' . $serverName,
+            sprintf($this->text['emailsubject'], $serverName),
             $content,
             ["From: $from", "Cc: $from"]
         );
@@ -124,6 +124,6 @@ MAIL;
         $headers[] = 'MIME-Version: 1.0';
         $headers[] = 'Content-type: text/plain; charset=UTF-8';
         $sep = $this->fixMailHeaders ? "\n" : "\r\n";
-        return mail($to, '=?UTF-8?B?'.base64_encode($subject).'?=', $message, implode($sep, $headers));
+        return mail($to, '=?UTF-8?Q?'.quoted_printable_encode($subject).'?=', $message, implode($sep, $headers));
     }
 }

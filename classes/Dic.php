@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Copyright (c) 2012-2021 Christoph M. Becker
+ * Copyright (c) 2012-2023 Christoph M. Becker
  *
  * This file is part of Register_XH.
  */

@@ -3,7 +3,7 @@
 /**
  * Copyright (c) 2007 Carsten Heinelt (http://cmsimple.heinelt.eu)
  * Copyright (c) 2010-2012 Gert Ebersbach (http://www.ge-webdesign.de/cmsimpleplugins/)
- * Copyright (c) 2012-2021 Christoph M. Becker
+ * Copyright (c) 2012-2023 Christoph M. Becker
  *
  * This file is part of Register_XH.
  */
@@ -133,7 +133,7 @@ class UserAdminController
         $newusers = array_map(function ($user) {
             $password = $pristine = $user->getPassword();
             if ($password === "!") {
-                $password = "!" . base64_encode($this->random->bytes(16));
+                $password = "!" . base64_encode($this->random->bytes(15));
             }
             if ($password[0] === "!") {
                 $password = $this->password->hash(substr($password, 1));

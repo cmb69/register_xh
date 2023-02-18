@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Copyright (c) 2021 Christoph M. Becker
+ * Copyright (c) 2021-2023 Christoph M. Becker
  *
  * This file is part of Register_XH.
  */
@@ -59,7 +59,7 @@ class RegisterUserTest extends TestCase
         $plugin_tx = XH_includeVar("./languages/en.php", 'plugin_tx');
         $text = $plugin_tx['register'];
         $random = $this->createStub(Random::class);
-        $random->method("bytes")->willReturn("0123456789ABCDEF");
+        $random->method("bytes")->willReturn("0123456789ABCDEFGH");
         $this->view = new View("./", $text);
         $this->userRepository = $this->createMock(UserRepository::class);
         $this->mailer = new FakeMailer(false, $text);
