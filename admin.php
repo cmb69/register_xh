@@ -48,13 +48,13 @@ if (XH_wantsPluginAdministration("register")) {
     $o .= pluginmenu("SHOW");
     switch ($admin) {
         case "":
-            $o .= Dic::makeShowPluginInfo()()->fire();
+            $o .= Dic::showPluginInfo();
             break;
         case "groups":
-            $o .= Dic::makeGroupAdminController()(new Request)->fire();
+            $o .= Dic::groupAdminController();
             break;
         case "users":
-            $o .= Dic::makeUserAdminController()(new Request)->fire();
+            $o .= Dic::userAdminController();
             break;
         default:
             $o .= plugin_admin_common();

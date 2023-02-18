@@ -29,7 +29,7 @@ class HandlePageAccess
         $this->currentUser = $currentUser;
     }
 
-    public function __invoke(string $groupString, Request $request): Response
+    public function __invoke(Request $request, string $groupString): Response
     {
         $response = new Response;
         // remove spaces etc.

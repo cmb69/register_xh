@@ -52,9 +52,12 @@ class ShowLoginForm
         $this->currentUser = $currentUser;
     }
 
-    public function __invoke(Request $request): Response
+    public function __invoke(Request $request, bool $loggedInOnly = false): Response
     {
         if ($this->currentUser->get() === null) {
+            if ($loggedInOnly) {
+                return new Response;
+            }
             return (new Response)->body($this->renderLoginForm($request));
         } else {
             return (new Response)->body($this->renderLoggedInForm($request));

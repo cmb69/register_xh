@@ -8,7 +8,6 @@
  * Copyright (c) 2012-2021 Christoph M. Becker
  */
 
-use Register\Infra\Request;
 use Register\Dic;
 use XH\PageDataRouter;
 
@@ -20,16 +19,16 @@ const REGISTER_VERSION = "2.0-dev";
  */
 
 $pd_router->add_interest("register_access");
-Dic::makeHandlePageProtection()(new Request)->fire();
-Dic::makeLoginController()(new Request)->fire();
-$o .= Dic::makeHandleSpecialPages()(new Request)->fire();
+Dic::handlePageProtection();
+Dic::loginController();
+$o .= Dic::handleSpecialPages();
 
 /**
  * Create and handle register form
  */
 function registerUser(): string
 {
-    return Dic::makeHandleUserRegistration()(new Request())->fire();
+    return Dic::handleUserRegistration();
 }
 
 /**
@@ -37,7 +36,7 @@ function registerUser(): string
  */
 function registerForgotPassword(): string
 {
-    return Dic::makeHandlePasswordForgotten()(new Request())->fire();
+    return Dic::handlePasswordForgotten();
 }
 
 /*
@@ -45,7 +44,7 @@ function registerForgotPassword(): string
  */
 function registerUserPrefs(): string
 {
-    return Dic::makeHandleUserPreferences()(new Request())->fire();
+    return Dic::handleUserPreferences();
 }
 
 /*
@@ -53,7 +52,7 @@ function registerUserPrefs(): string
  */
 function registerloginform(): string
 {
-    return Dic::makeShowLoginForm()(new Request())->fire();
+    return Dic::showLoginForm();
 }
 
 /**
@@ -63,15 +62,15 @@ function registerloginform(): string
  */
 function Register_loggedInForm(): string
 {
-    return Dic::makeCurrentUser()->get() ? registerloginform() : "";
+    return Dic::showLoginForm(true);
 }
 
 function register_access(string $groupString): string
 {
-    return Dic::makeHandlePageAccess()($groupString, new Request)->fire();
+    return Dic::handlePageAccess($groupString);
 }
 
 function access(string $groupString): string
 {
-    return Dic::makeHandlePageAccess()($groupString, new Request)->fire();
+    return Dic::handlePageAccess($groupString);
 }

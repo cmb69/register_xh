@@ -30,7 +30,7 @@ class ShowPageDataTab
     }
 
     /** @param array<string,string> $pageData */
-    public function __invoke(array $pageData, Request $request): Response
+    public function __invoke(Request $request, array $pageData): Response
     {
         return (new Response)->body($this->view->render("page_data", [
             "action" => $request->url()->relative(),

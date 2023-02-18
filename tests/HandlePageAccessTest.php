@@ -36,28 +36,28 @@ class HandlePageAccessTest extends TestCase
 
     public function testVisitorCannotAccessProtectedPage(): void
     {
-        $response = ($this->sut)("admin", $this->request);
+        $response = ($this->sut)($this->request, "admin");
         $this->assertEquals("http://example.com/?Access-Restricted", $response->location());
     }
 
     public function testUserCanAccessProtectedPage(): void
     {
         $this->currentUser->method("get")->willReturn(new User("jane", "", ["admin"], "", "", ""));
-        $response = ($this->sut)("admin", $this->request);
+        $response = ($this->sut)($this->request, "admin");
         $this->assertNull($response->location());
     }
 
     public function testUserCannotAccessProtectedPage(): void
     {
         $this->currentUser->method("get")->willReturn(new User("john", "", ["guest"], "", "", ""));
-        $response = ($this->sut)("admin", $this->request);
+        $response = ($this->sut)($this->request, "admin");
         $this->assertEquals("http://example.com/?Access-Restricted", $response->location());
     }
 
     public function testDoesNotRedirectWhileSearching(): void
     {
         $this->request->expects($this->any())->method("function")->willReturn("search");
-        $response = ($this->sut)("admin", $this->request);
+        $response = ($this->sut)($this->request, "admin");
         $this->assertNull($response->location());
     }
 }

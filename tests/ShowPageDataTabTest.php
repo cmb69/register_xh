@@ -25,7 +25,7 @@ class ShowPageDataTabTest extends TestCase
         );
         $request = $this->createStub(Request::class);
         $request->expects($this->any())->method("url")->willReturn(new Url("./", "SomePage"));
-        $response = $sut(["register_access" => "cmb"], $request);
+        $response = $sut($request, ["register_access" => "cmb"]);
         Approvals::verifyHtml($response->output());
     }
 }
