@@ -13,7 +13,6 @@ use Register\Infra\CurrentUser;
 use Register\Infra\Pages;
 use Register\Infra\Request;
 use Register\Value\User;
-use XH\PageDataRouter as PageData;
 
 class HandlePageProtectionTest extends TestCase
 {
@@ -22,9 +21,6 @@ class HandlePageProtectionTest extends TestCase
 
     /** @var CurrentUser&MockObject */
     private $currentUser;
-
-    /** @var PageData&MockObject */
-    private $pageData;
 
     /** @var Pages&MockObject */
     private $pages;
@@ -36,14 +32,13 @@ class HandlePageProtectionTest extends TestCase
     {
         $conf = XH_includeVar("./config/config.php", "plugin_cf")["register"];
         $this->currentUser = $this->createStub(CurrentUser::class);
-        $this->pageData = $this->createStub(PageData::class);
-        $this->pageData->method("find_all")->willReturn([
+        $this->pages = $this->createStub(Pages::class);
+        $this->pages->method("data")->willReturn([
             ["register_access" => ""],
             ["register_access" => "guest"],
             ["register_access" => "admin"],
         ]);
-        $this->pages = $this->createStub(Pages::class);
-        $this->sut = new HandlePageProtection($conf, $this->currentUser, $this->pageData, $this->pages);
+        $this->sut = new HandlePageProtection($conf, $this->currentUser, $this->pages);
         $this->request = $this->createStub(Request::class);
     }
 

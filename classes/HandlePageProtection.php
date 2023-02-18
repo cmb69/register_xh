@@ -14,7 +14,6 @@ use Register\Infra\CurrentUser;
 use Register\Infra\Pages;
 use Register\Infra\Request;
 use Register\Infra\Response;
-use XH\PageDataRouter as PageData;
 
 class HandlePageProtection
 {
@@ -24,18 +23,14 @@ class HandlePageProtection
     /** @var CurrentUser */
     private $currentUser;
 
-    /** @var PageData */
-    private $pageData;
-
     /** @var Pages */
     private $pages;
 
     /** @param array<string,string> $conf */
-    public function __construct(array $conf, CurrentUser $currentUser, PageData $pageData, Pages $pages)
+    public function __construct(array $conf, CurrentUser $currentUser, Pages $pages)
     {
         $this->conf = $conf;
         $this->currentUser = $currentUser;
-        $this->pageData = $pageData;
         $this->pages = $pages;
     }
 
@@ -46,7 +41,7 @@ class HandlePageProtection
         }
         $user = $this->currentUser->get();
         $userGroups = $user ? $user->getAccessgroups() : [];
-        foreach ($this->pageData->find_all() as $i => $pd) {
+        foreach ($this->pages->data() as $i => $pd) {
             if (($arg = trim($pd["register_access"] ?? ""))) {
                 $groups = array_map('trim', explode(',', $arg));
                 if (count(array_intersect($groups, $userGroups)) == 0) {

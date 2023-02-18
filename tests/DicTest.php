@@ -9,22 +9,18 @@
 namespace Register;
 
 use PHPUnit\Framework\TestCase;
-use Register\Infra\CurrentUser;
-use Register\Infra\UserRepository;
 use XH\CSRFProtection as CsrfProtector;
-use XH\PageDataRouter as PageData;
 
 class DicTest extends TestCase
 {
     public function setUp(): void
     {
-        global $pth, $_XH_csrfProtection, $plugin_cf, $plugin_tx, $pd_router;
+        global $pth, $_XH_csrfProtection, $plugin_cf, $plugin_tx;
 
         $pth = ["folder" => ["base" => "", "content" => "", "corestyle" => "", "plugins" => ""]];
         $_XH_csrfProtection = $this->createStub(CsrfProtector::class);
         $plugin_cf = XH_includeVar("./config/config.php", "plugin_cf");
         $plugin_tx = XH_includeVar("./languages/en.php", "plugin_tx");
-        $pd_router = $this->createStub(PageData::class);
     }
 
     public function testMakesLoginController(): void

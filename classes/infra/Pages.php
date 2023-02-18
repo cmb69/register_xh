@@ -45,6 +45,14 @@ class Pages
         return $l[$pageNum];
     }
 
+    /** @return array<int,array<string,string>> */
+    public function data(): array
+    {
+        global $pd_router;
+
+        return $pd_router->find_all();
+    }
+
     public function evaluate(string $content): string
     {
         return evaluate_plugincall($content);
