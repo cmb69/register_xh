@@ -72,5 +72,10 @@ function register_access(string $groupString): string
 
 function access(string $groupString): string
 {
+    trigger_error(
+        "access() is deprecated; use register_access() instead,"
+        . " or better define the access groups via the page data tab.",
+        E_USER_DEPRECATED
+    );
     return Dic::handlePageAccess($groupString);
 }
