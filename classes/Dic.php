@@ -88,18 +88,18 @@ class Dic
             $plugin_cf["register"],
             $plugin_tx["register"],
             $_XH_csrfProtection,
-            self::makeDbService()
+            self::makeDbService(),
+            self::makeView()
         );
     }
 
     public static function makeGroupAdminController(): GroupAdminController
     {
-        global $pth, $plugin_tx, $_XH_csrfProtection;
+        global $_XH_csrfProtection;
 
         return new GroupAdminController(
-            "{$pth['folder']['plugins']}register/",
-            $plugin_tx["register"],
             $_XH_csrfProtection,
+            self::makeView(),
             self::makeDbService(),
             new Pages()
         );

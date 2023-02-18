@@ -17,6 +17,7 @@ use Register\Value\UserGroup;
 use Register\Infra\DbService;
 use Register\Infra\Request;
 use Register\Infra\Url;
+use Register\Infra\View;
 
 class UserAdminControllerTest extends TestCase
 {
@@ -173,7 +174,7 @@ class UserAdminControllerTest extends TestCase
             $this->makeLang(),
             $this->makeCsrfProtector(false),
             $dbService,
-            "/"
+            new View("./", self::makeLang())
         );
     }
 

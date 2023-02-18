@@ -23,12 +23,6 @@ use XH\CSRFProtection as CsrfProtector;
 
 class GroupAdminController
 {
-    /** @var string */
-    private $pluginFolder;
-
-    /** @var array<string,string> */
-    private $text;
-
     /** @var CsrfProtector */
     private $csrfProtector;
 
@@ -41,18 +35,14 @@ class GroupAdminController
     /** @var Pages */
     private $pages;
 
-    /** @param array<string,string> $text */
     public function __construct(
-        string $pluginFolder,
-        array $text,
         CsrfProtector $csrfProtector,
+        View $view,
         DbService $dbService,
         Pages $pages
     ) {
-        $this->pluginFolder = $pluginFolder;
-        $this->text = $text;
         $this->csrfProtector = $csrfProtector;
-        $this->view = new View($this->pluginFolder, $this->text);
+        $this->view = $view;
         $this->dbService = $dbService;
         $this->pages = $pages;
     }

@@ -36,11 +36,11 @@ class UserAdminController
     /** @var CsrfProtector */
     private $csrfProtector;
 
-    /** @var View */
-    private $view;
-
     /** @var DbService */
     private $dbService;
+
+    /** @var View */
+    private $view;
 
     /**
      * @param array<string,string> $conf
@@ -51,14 +51,15 @@ class UserAdminController
         array $conf,
         array $text,
         CsrfProtector $csrfProtector,
-        DbService $dbService
+        DbService $dbService,
+        View $view
     ) {
         $this->pluginFolder = $pluginFolder;
         $this->conf = $conf;
         $this->text = $text;
         $this->csrfProtector = $csrfProtector;
-        $this->view = new View($this->pluginFolder, $this->text);
         $this->dbService = $dbService;
+        $this->view = $view;
     }
 
     public function __invoke(Request $request): Response

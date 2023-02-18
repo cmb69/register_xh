@@ -16,6 +16,7 @@ use Register\Infra\DbService;
 use Register\Infra\Pages;
 use Register\Infra\Request;
 use Register\Infra\Url;
+use Register\Infra\View;
 
 class GroupAdminControllerTest extends TestCase
 {
@@ -123,9 +124,8 @@ class GroupAdminControllerTest extends TestCase
     private function makeGroupAdminController(DbService $dbService): GroupAdminController
     {
         return new GroupAdminController(
-            "./",
-            $this->makeLang(),
             $this->makeCsrfProtector(false),
+            new View("./", $this->makeLang()),
             $dbService,
             $this->makePages()
         );
