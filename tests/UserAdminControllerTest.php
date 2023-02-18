@@ -52,6 +52,7 @@ class UserAdminControllerTest extends TestCase
         $dbService->method('readGroups')->willReturn([new UserGroup("users", "")]);
         $sut = $this->makeUserAdminController($dbService);
         $this->request->expects($this->any())->method("method")->willReturn("get");
+        $this->request->expects($this->any())->method("pluginsFolder")->willReturn("./plugins/");
         $response = $sut($this->request);
         $expected = [
             "register_texts" => [
@@ -69,7 +70,7 @@ class UserAdminControllerTest extends TestCase
             "register_max_number_of_users" => 142,
         ];
         $this->assertEquals($expected, $response->meta());
-        $this->assertEquals("./admin.min.js", $response->script());
+        $this->assertEquals("./plugins/register/admin.min.js", $response->script());
     }
 
     public function testEditUsersActionFailsIfNoUsersFile()
@@ -169,7 +170,6 @@ class UserAdminControllerTest extends TestCase
     private function makeUserAdminController(DbService $dbService): UserAdminController
     {
         return new UserAdminController(
-            "./",
             $this->makeConf(),
             $this->makeLang(),
             $this->makeCsrfProtector(false),

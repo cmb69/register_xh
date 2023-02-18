@@ -9,18 +9,13 @@
 namespace Register;
 
 use Register\Infra\DbService;
+use Register\Infra\Request;
 use Register\Infra\Response;
 use Register\Infra\SystemChecker;
 use Register\Infra\View;
 
 class ShowPluginInfo
 {
-    /** @var string */
-    private $pluginsFolder;
-
-    /** @var string */
-    private $pluginFolder;
-
     /** @var array<string,string> */
     private $text;
 
@@ -30,48 +25,43 @@ class ShowPluginInfo
     /** @var SystemChecker */
     private $systemChecker;
 
-    /**
-     * @var View
-     */
+    /** @var View */
     private $view;
 
     /** @param array<string,string> $text */
     public function __construct(
-        string $pluginsFolder,
         array $text,
         DbService $dbService,
         SystemChecker $systemChecker,
         View $view
     ) {
-        $this->pluginsFolder = $pluginsFolder;
-        $this->pluginFolder = $this->pluginsFolder . "register/";
         $this->text = $text;
         $this->dbService = $dbService;
         $this->systemChecker = $systemChecker;
         $this->view = $view;
     }
 
-    public function __invoke(): Response
+    public function __invoke(Request $request): Response
     {
         return (new Response)->body($this->view->render('info', [
             'version' => REGISTER_VERSION,
-            'checks' => $this->getChecks(),
+            'checks' => $this->getChecks($request->pluginsFolder() . "register/"),
         ]));
     }
 
     /**
      * @return array<int,array{state:string,label:string,stateLabel:string}>
      */
-    public function getChecks()
+    public function getChecks(string $pluginFolder)
     {
         return array(
             $this->checkPhpVersion('7.1.0'),
             $this->checkExtension('hash'),
             $this->checkExtension('session'),
             $this->checkXhVersion('1.7.0'),
-            $this->checkWritability($this->pluginFolder . "css/"),
-            $this->checkWritability($this->pluginFolder . "config/"),
-            $this->checkWritability($this->pluginFolder . "languages/"),
+            $this->checkWritability($pluginFolder . "css/"),
+            $this->checkWritability($pluginFolder . "config/"),
+            $this->checkWritability($pluginFolder . "languages/"),
             $this->checkWritability($this->dbService->dataFolder())
         );
     }

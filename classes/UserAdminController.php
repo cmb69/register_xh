@@ -19,14 +19,10 @@ use Register\Logic\AdminProcessor;
 use Register\Infra\DbService;
 use Register\Infra\Request;
 use Register\Infra\Response;
-use Register\Infra\Url;
 use Register\Infra\View;
 
 class UserAdminController
 {
-    /** @var string */
-    private $pluginFolder;
-
     /** @var array<string,string> */
     private $conf;
 
@@ -47,14 +43,12 @@ class UserAdminController
      * @param array<string,string> $text
      */
     public function __construct(
-        string $pluginFolder,
         array $conf,
         array $text,
         CsrfProtector $csrfProtector,
         DbService $dbService,
         View $view
     ) {
-        $this->pluginFolder = $pluginFolder;
         $this->conf = $conf;
         $this->text = $text;
         $this->csrfProtector = $csrfProtector;
@@ -78,7 +72,7 @@ class UserAdminController
             $lock = $this->dbService->lock(false);
             $users  = $this->dbService->readUsers();
             $this->dbService->unlock($lock);
-            $o = $this->renderUsersForm($users, $request->url(), $response)
+            $o = $this->renderUsersForm($users, $request, $response)
                 . $this->view->messagep('info', count($users), 'entries_in_csv', $fn);
         } else {
             $o = $this->view->message('fail', 'err_csv_missing', $fn);
@@ -135,7 +129,7 @@ class UserAdminController
             $o .= $this->renderErrorMessages($errors);
         }
 
-        $o .= $this->renderUsersForm($newusers, $request->url(), $response);
+        $o .= $this->renderUsersForm($newusers, $request, $response);
         return $response->body($o);
     }
 
@@ -158,9 +152,9 @@ class UserAdminController
     }
 
     /** @param User[] $users */
-    private function renderUsersForm(array $users, Url $url, Response $response): string
+    private function renderUsersForm(array $users, Request $request, Response $response): string
     {
-        $response->addScript($this->pluginFolder . "admin.min.js");
+        $response->addScript($request->pluginsFolder() . "register/admin.min.js");
         $response->addMeta("register_texts", $this->texts());
         $response->addMeta("register_max_number_of_users", $this->calcMaxRecords(7, 4));
 
@@ -169,7 +163,7 @@ class UserAdminController
             'defaultGroup' => $this->conf['group_default'],
             'statusSelectActivated' => new HtmlString($this->statusSelectbox('activated')),
             'groups' => $this->findGroups(),
-            'actionUrl' => $url->withPage("register")->withParams(["admin" => "users"])->relative(),
+            'actionUrl' => $request->url()->withPage("register")->withParams(["admin" => "users"])->relative(),
             'users' => $users,
         ];
         $groupStrings = $statusSelects = [];

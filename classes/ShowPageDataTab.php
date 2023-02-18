@@ -12,9 +12,6 @@ use Register\Infra\View;
 
 class ShowPageDataTab
 {
-    /** @var string */
-    private $coreStyleFolder;
-
     /** @var array<string,string> */
     private $text;
 
@@ -22,9 +19,8 @@ class ShowPageDataTab
     private $view;
 
     /** @param array<string,string> $text */
-    public function __construct(string $coreStyleFolder, array $text, View $view)
+    public function __construct(array $text, View $view)
     {
-        $this->coreStyleFolder = $coreStyleFolder;
         $this->text = $text;
         $this->view = $view;
     }
@@ -34,7 +30,7 @@ class ShowPageDataTab
     {
         return (new Response)->body($this->view->render("page_data", [
             "action" => $request->url()->relative(),
-            "iconFilename" => $this->coreStyleFolder . "help_icon.png",
+            "iconFilename" => $request->coreStyleFolder() . "help_icon.png",
             "iconAlt" => $this->text["alt_help"],
             "accessGroups" => $pageData["register_access"],
         ]));

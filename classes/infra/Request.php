@@ -22,6 +22,20 @@ class Request
         return new Url($sn, $su);
     }
 
+    public function coreStyleFolder(): string
+    {
+        global $pth;
+
+        return $pth["folder"]["corestyle"];
+    }
+
+    public function pluginsFolder(): string
+    {
+        global $pth;
+
+        return $pth["folder"]["plugins"];
+    }
+
     public function admin(): bool
     {
         return defined("XH_ADM") && XH_ADM;

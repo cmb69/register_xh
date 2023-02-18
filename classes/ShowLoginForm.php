@@ -18,19 +18,13 @@ use Register\Infra\View;
 
 class ShowLoginForm
 {
-    /**
-     * @var array<string,string>
-     */
+    /** @var array<string,string> */
     private $conf;
 
-    /**
-     * @var array<string,string>
-     */
+    /** @var array<string,string> */
     private $text;
 
-    /**
-     * @var View
-     */
+    /** @var View */
     private $view;
 
     /** @var CurrentUser */

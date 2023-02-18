@@ -81,10 +81,9 @@ class Dic
 
     public static function makeUserAdminController(): UserAdminController
     {
-        global $pth, $plugin_cf, $plugin_tx, $_XH_csrfProtection;
+        global $plugin_cf, $plugin_tx, $_XH_csrfProtection;
 
         return new UserAdminController(
-            "{$pth['folder']['plugins']}register/",
             $plugin_cf["register"],
             $plugin_tx["register"],
             $_XH_csrfProtection,
@@ -178,21 +177,16 @@ class Dic
 
     public static function makeShowPageDataTab(): ShowPageDataTab
     {
-        global $pth, $plugin_tx;
+        global $plugin_tx;
 
-        return new ShowPageDataTab(
-            $pth['folder']['corestyle'],
-            $plugin_tx["register"],
-            self::makeView()
-        );
+        return new ShowPageDataTab($plugin_tx["register"], self::makeView());
     }
 
     public static function makeShowPluginInfo(): ShowPluginInfo
     {
-        global $pth, $plugin_tx;
+        global $plugin_tx;
 
         return new ShowPluginInfo(
-            $pth['folder']['plugins'],
             $plugin_tx['register'],
             self::makeDbService(),
             new SystemChecker(),
