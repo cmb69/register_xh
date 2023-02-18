@@ -49,13 +49,13 @@ class ShowPasswordForgottenFormTest extends TestCase
         $this->subject = new HandlePasswordForgotten(
             $this->currentUser,
             $conf,
-            1637449200,
             $this->view,
             $this->userRepository,
             $this->mailer
         );
         $this->request = $this->createStub(Request::class);
         $this->request->expects($this->any())->method("url")->willReturn(new Url("", ""));
+        $this->request->expects($this->any())->method("time")->willReturn(1637449200);
     }
 
     public function testLoggedInUserIsRedirected(): void

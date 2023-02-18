@@ -52,13 +52,13 @@ class ResetPasswordTest extends TestCase
         $this->subject = new HandlePasswordForgotten(
             $this->currentUser,
             $conf,
-            1637449200,
             $this->view,
             $this->userRepository,
             $this->mailer
         );
         $this->request = $this->createStub(Request::class);
         $this->request->expects($this->any())->method("url")->willReturn(new Url("", ""));
+        $this->request->expects($this->any())->method("time")->willReturn(1637449200);
     }
 
     public function testUnknownUsername(): void
@@ -90,6 +90,20 @@ class ResetPasswordTest extends TestCase
             "username" => "john",
             "time" => 1637449800,
             "mac" => "a19916c64ceb8942def3ed8b8a612e9d8a3e50b2",
+        ];
+        $john = new User("john", "12345", [], "John Dow", "john@example.com", "");
+        $this->userRepository->method("findByUsername")->willReturn($john);
+        $response = ($this->subject)($this->request);
+        Approvals::verifyHtml($response->output());
+    }
+
+    public function testReportsExpiration(): void
+    {
+        $_GET = [
+            "action" => "registerResetPassword",
+            "username" => "john",
+            "time" => 1637445599,
+            "mac" => "4d284e93d5842b9b54b656f2d7a52e8aa326c262",
         ];
         $john = new User("john", "12345", [], "John Dow", "john@example.com", "");
         $this->userRepository->method("findByUsername")->willReturn($john);

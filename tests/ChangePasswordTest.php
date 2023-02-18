@@ -54,13 +54,13 @@ class ChangePasswordTest extends TestCase
         $this->subject = new HandlePasswordForgotten(
             $this->currentUser,
             $conf,
-            1637449200,
             $this->view,
             $this->userRepository,
             $this->mailer
         );
         $this->request = $this->createStub(Request::class);
         $this->request->expects($this->any())->method("url")->willReturn(new Url("", ""));
+        $this->request->expects($this->any())->method("time")->willReturn(1637449200);
     }
 
     public function testUnknownUsername(): void
@@ -126,5 +126,25 @@ class ChangePasswordTest extends TestCase
         $this->assertEquals("Account data for example.com", $this->mailer->subject());
         Approvals::verifyHtml($this->mailer->message());
         $this->assertEquals(["From: postmaster@example.com"], $this->mailer->headers());
+    }
+
+    public function testReportsExpiration(): void
+    {
+        $_GET = [
+            "action" => "register_change_password",
+            "username" => "john",
+            "time" => 1637445599,
+            "mac" => "4d284e93d5842b9b54b656f2d7a52e8aa326c262",
+        ];
+        $_POST = [
+            "password1" => "admin",
+            "password2" => "admin",
+        ];
+        $_SERVER['SERVER_NAME'] = "example.com";
+        $john = new User("john", "12345", [], "John Dow", "john@example.com", "");
+        $this->userRepository->method("findByUsername")->willReturn($john);
+        $this->userRepository->method("update")->willReturn(true);
+        $response = ($this->subject)($this->request);
+        Approvals::verifyHtml($response->output());
     }
 }

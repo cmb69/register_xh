@@ -40,4 +40,9 @@ class Request
 
         return $function;
     }
+
+    public function time(): int
+    {
+        return time();
+    }
 }

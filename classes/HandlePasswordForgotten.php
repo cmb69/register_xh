@@ -27,9 +27,6 @@ class HandlePasswordForgotten
     /** @var array<string,string> */
     private $conf;
 
-    /** @var int */
-    private $now;
-
     /** @var View */
     private $view;
 
@@ -43,14 +40,12 @@ class HandlePasswordForgotten
     public function __construct(
         CurrentUser $currentUser,
         array $conf,
-        int $now,
         View $view,
         UserRepository $userRepository,
         Mailer $mailer
     ) {
         $this->currentUser = $currentUser;
         $this->conf = $conf;
-        $this->now = $now;
         $this->view = $view;
         $this->userRepository = $userRepository;
         $this->mailer = $mailer;
@@ -107,11 +102,11 @@ class HandlePasswordForgotten
 
         $user = $this->userRepository->findByEmail($email);
         if ($user) {
-            $mac = hash_hmac("sha1", $user->getUsername() . $this->now, $user->getPassword());
+            $mac = hash_hmac("sha1", $user->getUsername() . $request->time(), $user->getPassword());
             $url = $request->url()->withParams([
                 "action" => "registerResetPassword",
                 "username" => $user->getUsername(),
-                "time" => (string) $this->now,
+                "time" => (string) $request->time(),
                 "mac" => $mac,
             ]);
             $this->mailer->notifyPasswordForgotten(
@@ -137,7 +132,7 @@ class HandlePasswordForgotten
             $response->body($this->view->message("fail", 'err_status_invalid'));
             return $response;
         }
-        if ($this->now > $time + self::TTL) {
+        if ($request->time() > $time + self::TTL) {
             $response->body($this->view->message("fail", "forgotten_expired"));
             return $response;
         }
@@ -168,7 +163,7 @@ class HandlePasswordForgotten
             $response->body($this->view->message("fail", 'err_status_invalid'));
             return $response;
         }
-        if ($this->now > $time + self::TTL) {
+        if ($request->time() > $time + self::TTL) {
             $response->body($this->view->message("fail", "forgotten_expired"));
             return $response;
         }

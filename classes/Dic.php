@@ -115,7 +115,6 @@ class Dic
         return new HandlePasswordForgotten(
             Dic::makeCurrentUser(),
             $plugin_cf["register"],
-            time(),
             self::makeView(),
             self::makeUserRepository(),
             self::makeMailer()
