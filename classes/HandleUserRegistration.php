@@ -20,6 +20,7 @@ use Register\Infra\Request;
 use Register\Infra\Response;
 use Register\Infra\UserRepository;
 use Register\Infra\View;
+use Register\Logic\Util;
 
 class HandleUserRegistration
 {
@@ -129,7 +130,7 @@ class HandleUserRegistration
         $user = $this->userRepository->findByEmail($email);
 
         // generate a nonce for the user activation
-        $status = strtr(base64_encode($this->random->bytes(18)), "+/", "-_");
+        $status = Util::base64url($this->random->bytes(18));
         if (!$user) {
             $newUser = new User(
                 $username,

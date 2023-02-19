@@ -17,11 +17,9 @@ use Register\Value\HtmlString;
 use Register\Logic\Validator;
 use Register\Infra\CurrentUser;
 use Register\Infra\Logger;
-use Register\Infra\LoginManager;
 use Register\Infra\Password;
 use Register\Infra\Request;
 use Register\Infra\Response;
-use Register\Infra\Session;
 use Register\Infra\UserRepository;
 use Register\Infra\View;
 
@@ -45,9 +43,6 @@ class HandleUserPreferences
     /** @var Mailer */
     private $mailer;
 
-    /** @var LoginManager */
-    private $loginManager;
-
     /** @var Logger */
     private $logger;
 
@@ -60,23 +55,19 @@ class HandleUserPreferences
     public function __construct(
         CurrentUser $currentUser,
         array $conf,
-        Session $session,
         CsrfProtector $csrfProtector,
         UserRepository $userRepository,
         View $view,
         Mailer $mailer,
-        LoginManager $loginManager,
         Logger $logger,
         Password $password
     ) {
         $this->currentUser = $currentUser;
         $this->conf = $conf;
-        $session->start();
         $this->csrfProtector = $csrfProtector;
         $this->userRepository = $userRepository;
         $this->view = $view;
         $this->mailer = $mailer;
-        $this->loginManager = $loginManager;
         $this->logger = $logger;
         $this->password = $password;
     }
@@ -97,13 +88,10 @@ class HandleUserPreferences
 
     private function showForm(Request $request): string
     {
-        $username = $_SESSION['username'] ?? '';
-
-        $user = $this->userRepository->findByUsername($username);
-        if ($user === null) {
-            return $this->view->message('fail', 'err_username_does_not_exist', $username);
-        } elseif ($user->isLocked()) {
-            return $this->view->message('fail', 'user_locked', $username);
+        $user = $this->currentUser->get();
+        assert($user !== null);
+        if ($user->isLocked()) {
+            return $this->view->message('fail', 'user_locked', $user->getUsername());
         } else {
             $csrfTokenInput = $this->csrfProtector->tokenInput();
             $this->csrfProtector->store();
@@ -127,17 +115,12 @@ class HandleUserPreferences
         $password2 = $this->trimmedPostString("password2");
         $email = $this->trimmedPostString("email");
 
-        // set user name from session
-        $username = $_SESSION['username'];
-
-        $user = $this->userRepository->findByUsername($username);
-        if ($user === null) {
-            return $this->view->message('fail', 'err_username_does_not_exist', $username);
-        }
+        $user = $this->currentUser->get();
+        assert($user !== null);
 
         // Test if user is locked
         if ($user->isLocked()) {
-            return $this->view->message('fail', 'user_locked', $username);
+            return $this->view->message('fail', 'user_locked', $user->getUsername());
         }
 
         // check that old password got entered correctly
@@ -165,7 +148,7 @@ class HandleUserPreferences
         }
 
         $validator = new Validator();
-        $errors = $validator->validateUser($name, $username, $password1, $password2, $email);
+        $errors = $validator->validateUser($name, $user->getUsername(), $password1, $password2, $email);
         if ($errors) {
             $csrfTokenInput = $this->csrfProtector->tokenInput();
             $this->csrfProtector->store();
@@ -221,21 +204,16 @@ class HandleUserPreferences
         $name = $_POST['name'] ?? '';
         $email = $_POST['email'] ?? '';
 
-        // set user name from session
-        $username = $_SESSION['username'] ?? "";
-
-        $entry = $this->userRepository->findByUsername($username);
-        if ($entry === null) {
-            return $this->view->message('fail', 'err_username_does_not_exist', $username);
-        }
+        $user = $this->currentUser->get();
+        assert($user !== null);
 
         // Test if user is locked
-        if ($entry->isLocked()) {
-            return $this->view->message('fail', 'user_locked', $username);
+        if ($user->isLocked()) {
+            return $this->view->message('fail', 'user_locked', $user->getUsername());
         }
 
         // Form Handling - Delete User ================================================
-        if (!$this->password->verify($oldpassword, $entry->getPassword())) {
+        if (!$this->password->verify($oldpassword, $user->getPassword())) {
             $csrfTokenInput = $this->csrfProtector->tokenInput();
             $this->csrfProtector->store();
             return $this->view->message("fail", 'err_old_password_wrong')
@@ -247,13 +225,12 @@ class HandleUserPreferences
                 ]);
         }
 
-        if (!$this->userRepository->delete($entry)) {
+        if (!$this->userRepository->delete($user)) {
             return $this->view->message("fail", 'err_cannot_write_csv');
         }
 
-        $username = $_SESSION['username'] ?? '';
-        $this->loginManager->logout();
-        $this->logger->logInfo('logout', "$username deleted and logged out");
-        return $this->view->message('success', 'user_deleted', $username);
+        $this->currentUser->logout();
+        $this->logger->logInfo('logout', "{$user->getUsername()} deleted and logged out");
+        return $this->view->message('success', 'user_deleted', $user->getUsername());
     }
 }

@@ -47,7 +47,6 @@ $plugin_tx['register']['err_name']="Bitte geben Sie Ihren Vornamen und Nachnamen
 $plugin_tx['register']['err_username']="Bitte wählen Sie einen Benutzernamen.";
 $plugin_tx['register']['err_username_illegal']="Der Benutzername darf nur folgende Zeichen enthalten: A-Z, a-z, 0-9, _";
 $plugin_tx['register']['err_username_exists']="Der von Ihnen gewählte Benutzernamen existiert bereits.";
-$plugin_tx['register']['err_username_does_not_exist']="Der Benutzername '%s' existiert nicht!";
 $plugin_tx['register']['err_username_notfound']="Der Benutzername '%s' konnte nicht gefunden werden!";
 $plugin_tx['register']['err_password']="Bitte wählen sie ein Kennwort.";
 $plugin_tx['register']['err_password2']="Die eingegebenen Kennwörter stimmen nicht überein.";

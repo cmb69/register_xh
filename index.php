@@ -19,8 +19,8 @@ const REGISTER_VERSION = "2.0-dev";
  */
 
 $pd_router->add_interest("register_access");
-Dic::handlePageProtection();
 Dic::loginController();
+Dic::handlePageProtection();
 $o .= Dic::handleSpecialPages();
 
 /**

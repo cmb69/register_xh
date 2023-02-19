@@ -59,4 +59,9 @@ class Request
     {
         return time();
     }
+
+    public function cookie(string $name): ?string
+    {
+        return $_COOKIE[$name] ?? null;
+    }
 }

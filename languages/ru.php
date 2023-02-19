@@ -50,7 +50,6 @@ $plugin_tx['register']['err_name']="Введите, пожалуйста, имя
 $plugin_tx['register']['err_username']="Пожалуйста, укажите пользователя.";
 $plugin_tx['register']['err_username_illegal']="Имя пользователя должно содержать только символы: A-Z, a-z, 0-9, _, -";
 $plugin_tx['register']['err_username_exists']="Пользователь с указанным именем уже существует.";
-// $plugin_tx['register']['err_username_does_not_exist']="Пользователь с указанным именем не зарегистрирован.";
 // $plugin_tx['register']['err_username_notfound']="Пользователь не найден: ";
 $plugin_tx['register']['err_password']="Пожалуйста, выберите пароль.";
 $plugin_tx['register']['err_password2']="Пароли не совпадают.";

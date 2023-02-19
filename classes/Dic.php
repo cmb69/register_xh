@@ -13,7 +13,6 @@ use XH\CSRFProtection as CsrfProtector;
 use Register\Infra\CurrentUser;
 use Register\Infra\DbService;
 use Register\Infra\Logger;
-use Register\Infra\LoginManager;
 use Register\Infra\Mailer;
 use Register\Infra\Pages;
 use Register\Infra\Password;
@@ -61,10 +60,9 @@ class Dic
             $plugin_tx["register"],
             self::makeUserRepository(),
             new UserGroupRepository(self::makeDbService()),
-            new LoginManager(time(), new Session(), self::makeUserRepository(), new Password),
             new Logger(),
-            new Session(),
-            self::makeCurrentUser()
+            self::makeCurrentUser(),
+            new Password()
         );
     }
 
@@ -157,12 +155,10 @@ class Dic
         return new HandleUserPreferences(
             Dic::makeCurrentUser(),
             $plugin_cf["register"],
-            new Session(),
             new CsrfProtector('register_csrf_token', false),
             self::makeUserRepository(),
             self::makeView(),
             self::makeMailer(),
-            new LoginManager(time(), new Session(), self::makeUserRepository(), new Password),
             new Logger(),
             new Password
         );
@@ -206,7 +202,14 @@ class Dic
 
     private static function makeCurrentUser(): CurrentUser
     {
-        return new CurrentUser(self::makeUserRepository(), new Password);
+        global $pth;
+
+        static $instance = null;
+
+        if ($instance === null) {
+            $instance = new CurrentUser($pth["folder"]["cmsimple"] . ".sessionname", self::makeUserRepository());
+        }
+        return $instance;
     }
 
     private static function makeDbService(): DbService

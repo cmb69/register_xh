@@ -37,7 +37,6 @@ $plugin_tx['register']['err_name']="Uveďte meno a priezvisko.";
 $plugin_tx['register']['err_username']="Zvoľte si prihlasovacie meno.";
 $plugin_tx['register']['err_username_illegal']="Užívateľské meno môže obsahovať iba znaky: A-Z, a-z, 0-9, _";
 $plugin_tx['register']['err_username_exists']="Toto užívateľské meno sa už používa.";
-// $plugin_tx['register']['err_username_does_not_exist']="Uvedené užívateľské meno neexistuje.";
 // $plugin_tx['register']['err_username_notfound']="Uvedené užívateľské meno sa nenašlo: ";
 $plugin_tx['register']['err_password']="Zvoľte prístupové heslo.";
 $plugin_tx['register']['err_password2']="Uvedené heslá sa nezhodujú.";

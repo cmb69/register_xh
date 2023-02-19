@@ -17,7 +17,7 @@ class DicTest extends TestCase
     {
         global $pth, $_XH_csrfProtection, $plugin_cf, $plugin_tx;
 
-        $pth = ["folder" => ["base" => "", "content" => "", "plugins" => ""]];
+        $pth = ["folder" => ["base" => "", "cmsimple" => "", "content" => "", "plugins" => ""]];
         $_XH_csrfProtection = $this->createStub(CsrfProtector::class);
         $plugin_cf = XH_includeVar("./config/config.php", "plugin_cf");
         $plugin_tx = XH_includeVar("./languages/en.php", "plugin_tx");

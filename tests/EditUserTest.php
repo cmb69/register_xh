@@ -16,10 +16,8 @@ use Register\Value\User;
 use Register\Infra\CurrentUser;
 use Register\Infra\FakeMailer;
 use Register\Infra\Logger;
-use Register\Infra\LoginManager;
 use Register\Infra\Password;
 use Register\Infra\Request;
-use Register\Infra\Session;
 use Register\Infra\Url;
 use Register\Infra\UserRepository;
 use Register\Infra\View;
@@ -34,9 +32,6 @@ class EditUserTest extends TestCase
 
     /** @var CurrentUser&MockObject */
     private $currentUser;
-
-    /** @var Session */
-    private $session;
 
     /** @var CsrfProtector */
     private $csrfProtector;
@@ -68,23 +63,19 @@ class EditUserTest extends TestCase
         $conf = $plugin_cf['register'];
         $plugin_tx = XH_includeVar("./languages/en.php", 'plugin_tx');
         $text = $plugin_tx['register'];
-        $this->session = $this->createStub(Session::class);
         $this->csrfProtector = $this->createMock(CsrfProtector::class);
         $this->userRepository = $this->createMock(UserRepository::class);
         $this->view = new View("./", $text);
         $this->mailer = new FakeMailer(false, $text);
-        $loginManager = $this->createStub(LoginManager::class);
         $logger = $this->createMock(Logger::class);
         $this->password = $this->createStub(Password::class);
         $this->subject = new HandleUserPreferences(
             $this->currentUser,
             $conf,
-            $this->session,
             $this->csrfProtector,
             $this->userRepository,
             $this->view,
             $this->mailer,
-            $loginManager,
             $logger,
             $this->password
         );
@@ -94,7 +85,6 @@ class EditUserTest extends TestCase
 
     public function testNoUser(): void
     {
-        $_SESSION['username'] = "cmb";
         $_POST = ["action" => "edit_user_prefs", "submit" => ""];
         $this->currentUser->method("get")->willReturn(null);
         $response = ($this->subject)($this->request);
@@ -103,7 +93,6 @@ class EditUserTest extends TestCase
 
     public function testIsLocked(): void
     {
-        $_SESSION = ["username" => "jane"];
         $_POST = ["action" => "edit_user_prefs", "submit" => ""];
         $this->currentUser->method("get")->willReturn($this->users["jane"]);
         $this->userRepository->method("findByUsername")->willReturn($this->users["jane"]);
@@ -114,7 +103,6 @@ class EditUserTest extends TestCase
 
     public function testWrongPassword(): void
     {
-        $_SESSION = ["username" => "john"];
         $_POST = ["action" => "edit_user_prefs", "submit" => "", "oldpassword" => "54321"];
         $this->currentUser->method("get")->willReturn($this->users["john"]);
         $this->userRepository->method("findByUsername")->willReturn($this->users["john"]);
@@ -126,7 +114,6 @@ class EditUserTest extends TestCase
 
     public function testPasswordConfirmationDoesNotMatch(): void
     {
-        $_SESSION = ["username" => "john"];
         $_POST = [
             "action" => "edit_user_prefs",
             "submit" => "",
@@ -146,7 +133,6 @@ class EditUserTest extends TestCase
     {
         $_SERVER["SERVER_NAME"] = "example.com";
         $_SERVER["REMOTE_ADDR"] = "127.0.0.1";
-        $_SESSION = ["username" => "john"];
         $_POST = ["action" => "edit_user_prefs", "submit" => "", "oldpassword" => "12345"];
         $this->currentUser->method("get")->willReturn($this->users["john"]);
         $this->userRepository->method("findByUsername")->willReturn($this->users["john"]);
@@ -161,7 +147,6 @@ class EditUserTest extends TestCase
     {
         $_SERVER["SERVER_NAME"] = "example.com";
         $_SERVER["REMOTE_ADDR"] = "127.0.0.1";
-        $_SESSION = ["username" => "john"];
         $_POST = ["action" => "edit_user_prefs", "submit" => "", "oldpassword" => "12345"];
         $this->currentUser->method("get")->willReturn($this->users["john"]);
         $this->userRepository->method("findByUsername")->willReturn($this->users["john"]);

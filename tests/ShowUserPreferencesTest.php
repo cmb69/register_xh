@@ -16,11 +16,9 @@ use XH\CSRFProtection as CsrfProtector;
 use Register\Value\User;
 use Register\Infra\CurrentUser;
 use Register\Infra\Logger;
-use Register\Infra\LoginManager;
 use Register\Infra\Mailer;
 use Register\Infra\Password;
 use Register\Infra\Request;
-use Register\Infra\Session;
 use Register\Infra\Url;
 use Register\Infra\UserRepository;
 use Register\Infra\View;
@@ -35,9 +33,6 @@ class ShowUserPreferencesTest extends TestCase
 
     /** @var CurrentUser */
     private $currentUser;
-
-    /** @var Session */
-    private $session;
 
     /** @var CsrfProtector */
     private $csrfProtector;
@@ -62,23 +57,19 @@ class ShowUserPreferencesTest extends TestCase
         $conf = XH_includeVar("./config/config.php", "plugin_cf")["register"];
         $plugin_tx = XH_includeVar("./languages/en.php", 'plugin_tx');
         $lang = $plugin_tx['register'];
-        $this->session = $this->createStub(Session::class);
         $this->csrfProtector = $this->createMock(CsrfProtector::class);
         $this->userRepository = $this->createMock(UserRepository::class);
         $this->view = new View("./", $lang);
         $mailer = $this->createStub(Mailer::class);
         $logger = $this->createStub(Logger::class);
-        $loginManager = $this->createStub(LoginManager::class);
         $password = $this->createStub(Password::class);
         $this->subject = new HandleUserPreferences(
             $this->currentUser,
             $conf,
-            $this->session,
             $this->csrfProtector,
             $this->userRepository,
             $this->view,
             $mailer,
-            $loginManager,
             $logger,
             $password
         );
@@ -88,7 +79,6 @@ class ShowUserPreferencesTest extends TestCase
 
     public function testNoUser(): void
     {
-        $_SESSION = ["username" => "cmb"];
         $this->currentUser->method("get")->willReturn(null);
         $response = ($this->subject)($this->request);
         Approvals::verifyHtml($response->output());
@@ -96,7 +86,6 @@ class ShowUserPreferencesTest extends TestCase
 
     public function testUserIsLocked(): void
     {
-        $_SESSION = ["username" => "jane"];
         $this->currentUser->method("get")->willReturn($this->users["jane"]);
         $this->userRepository->method("findByUsername")->willReturn($this->users["jane"]);
         $response = ($this->subject)($this->request);
@@ -105,7 +94,6 @@ class ShowUserPreferencesTest extends TestCase
 
     public function testSuccess(): void
     {
-        $_SESSION = ["username" => "john"];
         $this->currentUser->method("get")->willReturn($this->users["john"]);
         $this->userRepository->method("findByUsername")->willReturn($this->users["john"]);
         $response = ($this->subject)($this->request);

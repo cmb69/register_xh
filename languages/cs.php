@@ -37,7 +37,6 @@ $plugin_tx['register']['err_name']="Uveďte jméno a příjmení.";
 $plugin_tx['register']['err_username']="Zvolte si přihlašovací jméno.";
 $plugin_tx['register']['err_username_illegal']="Uživatelské jméno může obsahovat pouze znaky: A-Z, a-z, 0-9, _";
 $plugin_tx['register']['err_username_exists']="Toto uživatelské jméno jjiž existuje.";
-// $plugin_tx['register']['err_username_does_not_exist']="Uvedené uživatelské jméno neexistuje.";
 // $plugin_tx['register']['err_username_notfound']="Uvedené uživatelské jméno se nenašlo: ";
 $plugin_tx['register']['err_password']="Zvolte přístupové heslo.";
 $plugin_tx['register']['err_password2']="Uvedená hesla se neshodují.";

@@ -34,7 +34,7 @@ use Register\Infra\View;
     </div>
 <?php if ($hasRememberMe):?>
     <div class="regi_remember">
-      <input type="checkbox" name="remember" class="regi_remember"><?=$this->text('remember')?>
+      <label><input type="checkbox" name="remember" class="regi_remember"><?=$this->text('remember')?></label>
     </div>
 <?php endif?>
 <?php if ($isRegisterAllowed):?>

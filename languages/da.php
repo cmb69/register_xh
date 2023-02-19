@@ -44,7 +44,6 @@ $plugin_tx['register']['err_name']="Indtast venligst fornavn og efternavn.";
 $plugin_tx['register']['err_username']="Vælg venligst et brugernavn.";
 $plugin_tx['register']['err_username_illegal']="The username must contain only following characters: A-Z, a-z, 0-9, _";
 $plugin_tx['register']['err_username_exists']="Det valgte brugernavn findes allerede.";
-// $plugin_tx['register']['err_username_does_not_exist']="Det valgte brugernaven findes ikke.";
 // $plugin_tx['register']['err_username_notfound']="Brugernavnet findes ikke: ";
 $plugin_tx['register']['err_password']="Vælg venligst et kodeord.";
 $plugin_tx['register']['err_password2']="De to indtastede kodeors er ikke ens.";

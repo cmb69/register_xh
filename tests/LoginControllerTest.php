@@ -12,9 +12,8 @@ use PHPUnit\Framework\TestCase;
 use Register\Infra\CurrentUser;
 use Register\Value\User;
 use Register\Infra\Logger;
-use Register\Infra\LoginManager;
+use Register\Infra\Password;
 use Register\Infra\Request;
-use Register\Infra\Session;
 use Register\Infra\Url;
 use Register\Infra\UserGroupRepository;
 use Register\Infra\UserRepository;
@@ -33,14 +32,8 @@ class LoginControllerTest extends TestCase
     /** @var UserGroupRepository&MockObject */
     private $userGroupRepository;
 
-    /** @var LoginManager&MockObject */
-    private $loginManager;
-
     /** @var Logger&MockObject */
     private $logger;
-
-    /** @var Session&MockObject */
-    private $session;
 
     /** @var Request&MockObject */
     private $request;
@@ -56,9 +49,7 @@ class LoginControllerTest extends TestCase
         $this->text = $plugin_tx['register'];
         $this->userRepository = $this->createStub(UserRepository::class);
         $this->userGroupRepository = $this->createStub(UserGroupRepository::class);
-        $this->loginManager = $this->createStub(LoginManager::class);
         $this->logger = $this->createStub(Logger::class);
-        $this->session = $this->createStub(Session::class);
         $this->currentUser = $this->createStub(CurrentUser::class);
         $this->request = $this->createStub(Request::class);
         $this->request->expects($this->any())->method("url")->willReturn(new Url("/", "irrelevant page"));
@@ -67,16 +58,16 @@ class LoginControllerTest extends TestCase
     public function testLoginActionSuccessRedirects(): void
     {
         $this->userRepository->method('findByUsername')->willReturn($this->jane());
-        $this->loginManager->method('isUserAuthenticated')->willReturn(true);
+        $password = $this->createStub(Password::class);
+        $password->method("verify")->willReturn(true);
         $sut = new LoginController(
             $this->conf,
             $this->text,
             $this->userRepository,
             $this->userGroupRepository,
-            $this->loginManager,
             $this->logger,
-            $this->session,
-            $this->currentUser
+            $this->currentUser,
+            $password
         );
         $this->request->expects($this->any())->method("function")->willReturn("registerlogin");
         $response = $sut($this->request);
@@ -90,10 +81,9 @@ class LoginControllerTest extends TestCase
             $this->text,
             $this->userRepository,
             $this->userGroupRepository,
-            $this->loginManager,
             $this->logger,
-            $this->session,
-            $this->currentUser
+            $this->currentUser,
+            $this->createStub(Password::class)
         );
         $this->request->expects($this->any())->method("function")->willReturn("registerlogin");
         $response = $sut($this->request);
@@ -107,10 +97,9 @@ class LoginControllerTest extends TestCase
             $this->text,
             $this->userRepository,
             $this->userGroupRepository,
-            $this->loginManager,
             $this->logger,
-            $this->session,
-            $this->currentUser
+            $this->currentUser,
+            $this->createStub(Password::class)
         );
         $this->currentUser->method("get")->willReturn($this->jane());
         $this->request->expects($this->any())->method("function")->willReturn("registerlogout");

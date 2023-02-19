@@ -14,45 +14,97 @@ use Register\Value\User;
 
 class CurrentUser
 {
+    /** @var bool */
+    private $initialized = false;
+
+    /** @var bool */
+    private $invalid = false;
+
+    /** @var User|null */
+    private $user = null;
+
+    /** @var string */
+    private $sessionFilename;
+
     /** @var UserRepository */
     private $userRepository;
 
-    /** @var Password */
-    private $password;
-
-    public function __construct(UserRepository $userRepository, Password $password)
+    public function __construct(string $sessionFilename, UserRepository $userRepository)
     {
+        $this->sessionFilename = $sessionFilename;
         $this->userRepository = $userRepository;
-        $this->password = $password;
+    }
+
+    public function invalid(): bool
+    {
+        $this->initialize();
+        return $this->invalid;
     }
 
     public function get(): ?User
     {
-        /**
-         * @var array{folder:array<string,string>,file:array<string,string>} $pth
-         */
-        global $pth;
-        static $user = null;
+        $this->initialize();
+        return $this->user;
+    }
 
-        $session = new Session();
-        if (!$user) {
-            // it would be nice if XH had an API to get the session name without starting a session
-            $sessionfile = $pth['folder']['cmsimple'] . '.sessionname';
-            if (is_file($sessionfile) && isset($_COOKIE[file_get_contents($sessionfile)])) {
-                $session->start();
-            }
-            if (isset($_SESSION['username'])) {
-                $rec = $this->userRepository->findByUsername($_SESSION['username']);
-                if ($rec) {
-                    $user = $rec;
-                } else {
-                    (new LoginManager(time(), $session, $this->userRepository, $this->password))->logout();
-                    $user = null;
-                }
-            } else {
-                $user = null;
-            }
+    /** @return void */
+    public function login(User $user)
+    {
+        $this->initialized = true;
+        $this->invalid = false;
+        $this->user = $user;
+        $this->startSession();
+        $this->regenerateSessionId();
+        $_SESSION["username"] = $user->getUsername();
+    }
+
+    /** @return void */
+    public function logout()
+    {
+        $this->initialize();
+        $this->startSession();
+        $this->regenerateSessionId();
+        unset($_SESSION["username"]);
+        $this->invalid = false;
+        $this->user = null;
+    }
+
+    /** @return void */
+    private function initialize()
+    {
+        if ($this->initialized) {
+            return;
         }
-        return $user;
+        $this->startSessionOnCookie();
+        if (!($_SESSION["username"] ?? null)) {
+            return;
+        }
+        $user = $this->userRepository->findByUsername($_SESSION["username"]);
+        if (!$user) {
+            $this->invalid = true;
+            return;
+        }
+        $this->user = $user;
+    }
+
+    /** @return void */
+    private function startSessionOnCookie()
+    {
+        // it would be nice if XH had an API to get the session name without starting a session
+        if (is_file($this->sessionFilename) && isset($_COOKIE[file_get_contents($this->sessionFilename)])) {
+            $this->startSession();
+        }
+    }
+
+    /** @return void */
+    protected function startSession()
+    {
+        XH_startSession();
+    }
+
+    /** @return void */
+    protected function regenerateSessionId()
+    {
+        session_regenerate_id(true);
     }
 }

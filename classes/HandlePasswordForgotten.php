@@ -16,6 +16,7 @@ use Register\Infra\Request;
 use Register\Infra\Response;
 use Register\Infra\UserRepository;
 use Register\Infra\View;
+use Register\Logic\Util;
 
 class HandlePasswordForgotten
 {
@@ -102,7 +103,7 @@ class HandlePasswordForgotten
 
         $user = $this->userRepository->findByEmail($email);
         if ($user) {
-            $mac = $this->calculateMac($user->getUsername(), $request->time(), $user->secret());
+            $mac = Util::hmac($user->getUsername() .  $request->time(), $user->secret());
             $url = $request->url()->withParams([
                 "action" => "registerResetPassword",
                 "username" => $user->getUsername(),
@@ -128,7 +129,7 @@ class HandlePasswordForgotten
         $mac = $_GET["mac"] ?? "";
 
         $user = $this->userRepository->findByUsername($username);
-        if (!$user || !hash_equals($this->calculateMac($username, $time, $user->secret()), $mac)) {
+        if (!$user || !hash_equals(Util::hmac($username . $time, $user->secret()), $mac)) {
             $response->body($this->view->message("fail", 'err_status_invalid'));
             return $response;
         }
@@ -159,7 +160,7 @@ class HandlePasswordForgotten
         $mac = $_GET["mac"] ?? "";
 
         $user = $this->userRepository->findByUsername($username);
-        if (!$user || !hash_equals($this->calculateMac($username, $time, $user->secret()), $mac)) {
+        if (!$user || !hash_equals(Util::hmac($username . $time, $user->secret()), $mac)) {
             $response->body($this->view->message("fail", 'err_status_invalid'));
             return $response;
         }
@@ -192,11 +193,5 @@ class HandlePasswordForgotten
         $this->mailer->notifyPasswordReset($user, $this->conf['senderemail'], $_SERVER["SERVER_NAME"]);
         $response->body($this->view->message('success', 'remindersent'));
         return $response;
-    }
-
-    private function calculateMac(string $username, int $time, string $secret): string
-    {
-        $mac = hash_hmac("sha1", $username . $time, $secret, true);
-        return rtrim(strtr(base64_encode($mac), "+/", "-_"), "=");
     }
 }

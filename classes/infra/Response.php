@@ -22,6 +22,9 @@ class Response
     /** @var string|null */
     private $title = null;
 
+    /** @var list<array{string,string,int}> */
+    private $cookies = [];
+
     /** @var bool */
     private $forbidden = false;
 
@@ -50,6 +53,12 @@ class Response
     public function setTitle(string $title): self
     {
         $this->title = $title;
+        return $this;
+    }
+
+    public function withCookie(string $name, string $value, int $expires): self
+    {
+        $this->cookies[] = [$name, $value, $expires];
         return $this;
     }
 
@@ -86,6 +95,12 @@ class Response
         return $this->title;
     }
 
+    /** @return list<array{string,string,int}> */
+    public function cookies(): array
+    {
+        return $this->cookies;
+    }
+
     public function forbidden(): bool
     {
         return $this->forbidden;
@@ -106,6 +121,9 @@ class Response
                 ob_end_clean();
             }
             header('Location: ' . $this->location);
+            foreach ($this->cookies as [$name, $value, $expires]) {
+                setcookie($name, $value, $expires, CMSIMPLE_ROOT);
+            }
             echo $this->output;
             exit;
         }
@@ -123,6 +141,9 @@ class Response
         }
         if ($this->title !== null) {
             $title = XH_hsc($this->title);
+        }
+        foreach ($this->cookies as [$name, $value, $expires]) {
+            setcookie($name, $value, $expires, CMSIMPLE_ROOT);
         }
         return $this->output;
     }
