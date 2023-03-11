@@ -31,7 +31,7 @@ class HandlePageAccessTest extends TestCase
         $this->currentUser = $this->createStub(CurrentUser::class);
         $this->sut = new HandlePageAccess($text, $this->currentUser);
         $this->request = $this->createStub(Request::class);
-        $this->request->expects($this->any())->method("url")->willReturn(new Url("/", "Foo"));
+        $this->request->method("url")->willReturn(new Url("/", "Foo"));
     }
 
     public function testVisitorCannotAccessProtectedPage(): void
@@ -56,7 +56,7 @@ class HandlePageAccessTest extends TestCase
 
     public function testDoesNotRedirectWhileSearching(): void
     {
-        $this->request->expects($this->any())->method("function")->willReturn("search");
+        $this->request->method("function")->willReturn("search");
         $response = ($this->sut)($this->request, "admin");
         $this->assertNull($response->location());
     }

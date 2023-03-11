@@ -49,10 +49,12 @@ class GroupAdminController
 
     public function __invoke(Request $request): Response
     {
-        if ($request->method() === "post") {
-            return (new Response)->body($this->saveGroups($request));
+        switch ($request->groupAdminAction()) {
+            default:
+                return (new Response)->body($this->editGroups($request));
+            case "do_update":
+                return (new Response)->body($this->saveGroups($request));
         }
-        return (new Response)->body($this->editGroups($request));
     }
 
     private function editGroups(Request $request): string
@@ -71,13 +73,8 @@ class GroupAdminController
     {
         $this->csrfProtector->check();
 
-        $delete = $_POST['delete'] ?? [];
-        $add = $_POST['add'] ?? '';
-        $groupname = $_POST['groupname'] ?? [];
-        $groupLoginPages = $_POST['grouploginpage'] ?? [];
-
         $processor = new AdminProcessor();
-        [$newgroups, $save, $errors] = $processor->processGroups($add, $delete, $groupname, $groupLoginPages);
+        [$newgroups, $save, $errors] = $processor->processGroups(...$request->groupAdminSubmission());
 
         if (!empty($errors)) {
             return $this->renderErrorMessages($errors)

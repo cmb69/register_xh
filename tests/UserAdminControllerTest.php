@@ -29,7 +29,7 @@ class UserAdminControllerTest extends TestCase
     public function setUp(): void
     {
         $this->request = $this->createStub(Request::class);
-        $this->request->expects($this->any())->method("url")->willReturn(new Url("/", "Foo"));
+        $this->request->method("url")->willReturn(new Url("/", "Foo"));
     }
 
     public function testEditUsersActionRendersUsers()
@@ -40,7 +40,7 @@ class UserAdminControllerTest extends TestCase
         $dbService->method('hasGroupsFile')->willReturn(true);
         $dbService->method('readGroups')->willReturn([new UserGroup("users", ""), new UserGroup("guest", "")]);
         $sut = $this->makeUserAdminController($dbService);
-        $this->request->expects($this->any())->method("method")->willReturn("get");
+        $this->request->method("userAdminAction")->willReturn("update");
         $response = $sut($this->request);
         Approvals::verifyHtml($response->output());
     }
@@ -53,8 +53,8 @@ class UserAdminControllerTest extends TestCase
         $dbService->method('hasGroupsFile')->willReturn(true);
         $dbService->method('readGroups')->willReturn([new UserGroup("users", "")]);
         $sut = $this->makeUserAdminController($dbService);
-        $this->request->expects($this->any())->method("method")->willReturn("get");
-        $this->request->expects($this->any())->method("pluginsFolder")->willReturn("./plugins/");
+        $this->request->method("userAdminAction")->willReturn("update");
+        $this->request->method("pluginsFolder")->willReturn("./plugins/");
         $response = $sut($this->request);
         $expected = [
             "register_texts" => [
@@ -80,117 +80,117 @@ class UserAdminControllerTest extends TestCase
         $dbService = $this->createStub(DbService::class);
         $dbService->method('hasUsersFile')->willReturn(false);
         $sut = $this->makeUserAdminController($dbService);
-        $this->request->expects($this->any())->method("method")->willReturn("get");
+        $this->request->method("userAdminAction")->willReturn("update");
         $response = $sut($this->request);
         Approvals::verifyHtml($response->output());
     }
 
     public function testSaveUsersFailsOnInvalidUserName()
     {
-        $_POST = [
-            "username" => [""],
-            "password" => ["test"],
-            "oldpassword" => ["test"],
-            "name" => ["Christoph Becker"],
-            "email" => ["cmb@example.com"],
-            "accessgroups" => ["users"],
-            "status" => ["activated"],
-            "secrets" => ["secret"],
-        ];
         $dbService = $this->createStub(DbService::class);
         $dbService->expects($this->never())->method('writeUsers');
         $dbService->method('hasGroupsFile')->willReturn(true);
         $dbService->method('readGroups')->willReturn([new UserGroup("users", "")]);
         $sut = $this->makeUserAdminController($dbService);
-        $this->request->expects($this->any())->method("method")->willReturn("post");
+        $this->request->method("userAdminAction")->willReturn("do_update");
+        $this->request->method("userAdminSubmission")->willReturn([
+            [""],
+            ["test"],
+            ["test"],
+            ["Christoph Becker"],
+            ["cmb@example.com"],
+            ["users"],
+            ["activated"],
+            ["secret"],
+        ]);
         $response = $sut($this->request);
         Approvals::verifyHtml($response->output());
     }
 
     public function testSaveUsersFailsOnDuplicateUserNameAndEmail()
     {
-        $_POST = [
-            "username" => ["cmb", "cmb"],
-            "password" => ["pw1", "pw2"],
-            "oldpassword" => ["pw1", "pw2"],
-            "name" => ["Christoph Becker", "Christoph Becker"],
-            "email" => ["cmb@example.com", "cmb@example.com"],
-            "accessgroups" => ["users", "users"],
-            "status" => ["activated", "activated"],
-            "secrets" => ["secret", "secret"],
-        ];
         $dbService = $this->createStub(DbService::class);
         $dbService->expects($this->never())->method('writeUsers');
         $dbService->method('hasGroupsFile')->willReturn(true);
         $dbService->method('readGroups')->willReturn([new UserGroup("users", "")]);
         $sut = $this->makeUserAdminController($dbService);
-        $this->request->expects($this->any())->method("method")->willReturn("post");
+        $this->request->method("userAdminAction")->willReturn("do_update");
+        $this->request->method("userAdminSubmission")->willReturn([
+            ["cmb", "cmb"],
+            ["pw1", "pw2"],
+            ["pw1", "pw2"],
+            ["Christoph Becker", "Christoph Becker"],
+            ["cmb@example.com", "cmb@example.com"],
+            ["users", "users"],
+            ["activated", "activated"],
+            ["secret", "secret"],
+        ]);
         $response = $sut($this->request);
         Approvals::verifyHtml($response->output());
     }
 
     public function testSaveUsersFailsToSave()
     {
-        $_POST = [
-            "username" => ["cmb"],
-            "password" => ["pw"],
-            "oldpassword" => ["pw"],
-            "name" => ["Christoph Becker"],
-            "email" => ["cmb@example.com"],
-            "accessgroups" => ["users"],
-            "status" => ["activated"],
-            "secrets" => ["secret"],
-        ];
         $dbService = $this->createStub(DbService::class);
         $dbService->expects($this->once())->method('writeUsers')->willReturn(false);
         $dbService->method('hasGroupsFile')->willReturn(true);
         $dbService->method('readGroups')->willReturn([new UserGroup("users", "")]);
         $sut = $this->makeUserAdminController($dbService);
-        $this->request->expects($this->any())->method("method")->willReturn("post");
+        $this->request->method("userAdminAction")->willReturn("do_update");
+        $this->request->method("userAdminSubmission")->willReturn([
+            ["cmb"],
+            ["pw"],
+            ["pw"],
+            ["Christoph Becker"],
+            ["cmb@example.com"],
+            ["users"],
+            ["activated"],
+            ["secret"],
+        ]);
         $response = $sut($this->request);
         Approvals::verifyHtml($response->output());
     }
 
     public function testSaveUsersSuccessfullySaves()
     {
-        $_POST = [
-            "username" => ["cmb"],
-            "password" => ["pw"],
-            "oldpassword" => ["pw"],
-            "name" => ["Christoph Becker"],
-            "email" => ["cmb@example.com"],
-            "accessgroups" => ["users"],
-            "status" => ["activated"],
-            "secrets" => ["secret"],
-        ];
         $dbService = $this->createStub(DbService::class);
         $dbService->expects($this->once())->method('writeUsers')->willReturn(true);
         $dbService->method('hasGroupsFile')->willReturn(true);
         $dbService->method('readGroups')->willReturn([new UserGroup("users", "")]);
         $sut = $this->makeUserAdminController($dbService);
-        $this->request->expects($this->any())->method("method")->willReturn("post");
+        $this->request->method("userAdminAction")->willReturn("do_update");
+        $this->request->method("userAdminSubmission")->willReturn([
+            ["cmb"],
+            ["pw"],
+            ["pw"],
+            ["Christoph Becker"],
+            ["cmb@example.com"],
+            ["users"],
+            ["activated"],
+            ["secret"],
+        ]);
         $response = $sut($this->request);
         Approvals::verifyHtml($response->output());
     }
 
     public function testGeneratesRandomPasswordForNewUsers()
     {
-        $_POST = [
-            "username" => ["cmb"],
-            "password" => [""],
-            "oldpassword" => [""],
-            "name" => ["Christoph Becker"],
-            "email" => ["cmb@example.com"],
-            "accessgroups" => ["users"],
-            "status" => ["activated"],
-            "secrets" => ["secret"],
-        ];
         $dbService = $this->createStub(DbService::class);
         $dbService->expects($this->once())->method('writeUsers')->willReturn(true);
         $dbService->method('hasGroupsFile')->willReturn(true);
         $dbService->method('readGroups')->willReturn([new UserGroup("users", "")]);
         $sut = $this->makeUserAdminController($dbService);
-        $this->request->expects($this->any())->method("method")->willReturn("post");
+        $this->request->method("userAdminAction")->willReturn("do_update");
+        $this->request->method("userAdminSubmission")->willReturn([
+            ["cmb"],
+            [""],
+            [""],
+            ["Christoph Becker"],
+            ["cmb@example.com"],
+            ["users"],
+            ["activated"],
+            ["secret"],
+        ]);
         $response = $sut($this->request);
         Approvals::verifyHtml($response->output());
     }
@@ -198,22 +198,22 @@ class UserAdminControllerTest extends TestCase
     /** @see <https://github.com/cmb69/register_xh/issues/65> */
     public function testHashesChangedPasswordEvenOnFailure()
     {
-        $_POST = [
-            "username" => [""],
-            "password" => ["test"],
-            "oldpassword" => ["\$2y\$10\$XABLZkU6kZKAJczIuTEJTesI5TF065Uta8LKFeFTxcYaXK72V3cyC"],
-            "name" => ["Christoph Becker"],
-            "email" => ["cmb@example.com"],
-            "accessgroups" => ["users"],
-            "status" => ["activated"],
-            "secrets" => ["secret"],
-        ];
         $dbService = $this->createStub(DbService::class);
         $dbService->expects($this->never())->method('writeUsers');
         $dbService->method('hasGroupsFile')->willReturn(true);
         $dbService->method('readGroups')->willReturn([new UserGroup("users", "")]);
         $sut = $this->makeUserAdminController($dbService);
-        $this->request->expects($this->any())->method("method")->willReturn("post");
+        $this->request->method("userAdminAction")->willReturn("do_update");
+        $this->request->method("userAdminSubmission")->willReturn([
+            [""],
+            ["test"],
+            ["\$2y\$10\$XABLZkU6kZKAJczIuTEJTesI5TF065Uta8LKFeFTxcYaXK72V3cyC"],
+            ["Christoph Becker"],
+            ["cmb@example.com"],
+            ["users"],
+            ["activated"],
+            ["secret"],
+        ]);
         $response = $sut($this->request);
         Approvals::verifyHtml($response->output());
     }

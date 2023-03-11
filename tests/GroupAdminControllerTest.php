@@ -26,7 +26,7 @@ class GroupAdminControllerTest extends TestCase
     public function setUp(): void
     {
         $this->request = $this->createStub(Request::class);
-        $this->request->expects($this->any())->method("url")->willReturn(new Url("/", "Page"));
+        $this->request->method("url")->willReturn(new Url("/", "Page"));
     }
     public function testEditGroupActionRendersGroups()
     {
@@ -34,7 +34,7 @@ class GroupAdminControllerTest extends TestCase
         $dbService->method('hasGroupsFile')->willReturn(true);
         $dbService->method('readGroups')->willReturn([new UserGroup("users", "")]);
         $sut = $this->makeGroupAdminController($dbService);
-        $this->request->expects($this->any())->method("method")->willReturn("get");
+        $this->request->method("groupAdminAction")->willReturn("update");
         $response = $sut($this->request);
         Approvals::verifyHtml($response->output());
     }
@@ -44,79 +44,72 @@ class GroupAdminControllerTest extends TestCase
         $dbService = $this->createStub(DbService::class);
         $dbService->method('hasGroupsFile')->willReturn(false);
         $sut = $this->makeGroupAdminController($dbService);
-        $this->request->expects($this->any())->method("method")->willReturn("get");
+        $this->request->method("groupAdminAction")->willReturn("update");
         $response = $sut($this->request);
         Approvals::verifyHtml($response->output());
     }
 
     public function testSaveGroupsCanAddRecord()
     {
-        $_POST = [
-            "add" => "on",
-            "groupname" => ["guest"],
-            "grouploginpage" => [""],
-        ];
         $dbService = $this->createStub(DbService::class);
         $dbService->expects($this->never())->method('writeGroups');
         $sut = $this->makeGroupAdminController($dbService);
-        $this->request->expects($this->any())->method("method")->willReturn("post");
+        $this->request->method("groupAdminAction")->willReturn("do_update");
+        $this->request->method("groupAdminSubmission")->willReturn([
+            "on", [""], ["guest"], [""]
+        ]);
         $response = $sut($this->request);
         Approvals::verifyHtml($response->output());
     }
 
     public function testSaveGroupsCanDeleteRecord()
     {
-        $_POST = [
-            "delete" => [0 => "1"],
-            "groupname" => ["to_be_deleted", "guest"],
-            "grouploginpage" => ["", "Start"],
-        ];
         $dbService = $this->createStub(DbService::class);
         $dbService->expects($this->never())->method('writeGroups');
         $sut = $this->makeGroupAdminController($dbService);
-        $this->request->expects($this->any())->method("method")->willReturn("post");
+        $this->request->method("groupAdminAction")->willReturn("do_update");
+        $this->request->method("groupAdminSubmission")->willReturn([
+            "", ["1", ""], ["to_be_deleted", "guest"], ["", "Start"]
+        ]);
         $response = $sut($this->request);
         Approvals::verifyHtml($response->output());
     }
 
     public function testSaveGroupsFailsOnInvalidGroupName()
     {
-        $_POST = [
-            "groupname" => ["illegal name", "guest"],
-            "grouploginpage" => ["", "Start"],
-        ];
         $dbService = $this->createStub(DbService::class);
         $dbService->expects($this->never())->method('writeGroups');
         $sut = $this->makeGroupAdminController($dbService);
-        $this->request->expects($this->any())->method("method")->willReturn("post");
+        $this->request->method("groupAdminAction")->willReturn("do_update");
+        $this->request->method("groupAdminSubmission")->willReturn([
+            "", ["", ""], ["illegal name", "guest"], ["", "Start"]
+        ]);
         $response = $sut($this->request);
         Approvals::verifyHtml($response->output());
     }
 
     public function testSaveGroupsSuccessfullySaves()
     {
-        $_POST = [
-            "groupname" => ["admin", "guest"],
-            "grouploginpage" => ["", "Start"],
-        ];
         $dbService = $this->createStub(DbService::class);
         $dbService->expects($this->once())->method('writeGroups')->willReturn(true);
         $sut = $this->makeGroupAdminController($dbService);
-        $this->request->expects($this->any())->method("method")->willReturn("post");
+        $this->request->method("groupAdminAction")->willReturn("do_update");
+        $this->request->method("groupAdminSubmission")->willReturn([
+            "", ["", ""], ["admin", "guest"], ["", "Start"]
+        ]);
         $response = $sut($this->request);
         Approvals::verifyHtml($response->output());
     }
 
     public function testSaveGroupsFailsToSaves()
     {
-        $_POST = [
-            "groupname" => ["admin", "guest"],
-            "grouploginpage" => ["", "Start"],
-        ];
         $dbService = $this->createStub(DbService::class);
         $dbService->expects($this->once())->method('writeGroups')->willReturn(false);
         $sut = $this->makeGroupAdminController($dbService);
-        $this->request->expects($this->any())->method("method")->willReturn("post");
+        $this->request->method("groupAdminAction")->willReturn("do_update");
+        $this->request->method("groupAdminSubmission")->willReturn([
+            "", ["", ""], ["admin", "guest"], ["", "Start"]
+        ]);
         $response = $sut($this->request);
         Approvals::verifyHtml($response->output());
     }

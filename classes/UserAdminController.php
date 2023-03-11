@@ -70,10 +70,12 @@ class UserAdminController
 
     public function __invoke(Request $request): Response
     {
-        if ($request->method() === "post") {
-            return $this->saveUsers($request);
+        switch ($request->userAdminAction()) {
+            default:
+                return $this->editUsers($request);
+            case "do_update":
+                return $this->saveUsers($request);
         }
-        return $this->editUsers($request);
     }
 
     private function editUsers(Request $request): Response
@@ -104,30 +106,15 @@ class UserAdminController
             $errors[] = ['err_csv_missing', $this->dbService->dataFolder() . 'groups.csv'];
         }
 
-        $username = $_POST['username'] ?? [];
-        $password = $_POST['password'] ?? [];
-        $oldpassword = $_POST['oldpassword'] ?? [];
-        $name = $_POST['name'] ?? [];
-        $email = $_POST['email'] ?? [];
-        $groupString = $_POST['accessgroups'] ?? [];
-        $status = $_POST['status'] ?? [];
-        $secrets = $_POST["secrets"] ?? [];
-
-        $secrets = array_map(function ($secret) {
+        $submission = $request->userAdminSubmission();
+        $submission[7] = array_map(function ($secret) {
             return $secret ?: base64_encode($this->random->bytes(15));
-        }, $secrets);
+        }, $submission[7]);
 
         $processor = new AdminProcessor();
         [$newusers, $extraErrors] = $processor->processUsers(
             $groups,
-            $username,
-            $password,
-            $oldpassword,
-            $name,
-            $email,
-            $groupString,
-            $status,
-            $secrets
+            ...$submission
         );
 
         $newusers = array_map(function ($user) {

@@ -43,7 +43,7 @@ class HandleSpecialPages
 
     public function __invoke(Request $request): Response
     {
-        if ($request->admin() && $request->edit()) {
+        if ($request->editMode()) {
             return new Response();
         }
         if ($request->url()->pageMatches($this->text["register"])) {

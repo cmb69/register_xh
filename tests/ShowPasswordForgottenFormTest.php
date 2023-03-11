@@ -54,8 +54,8 @@ class ShowPasswordForgottenFormTest extends TestCase
             $this->mailer
         );
         $this->request = $this->createStub(Request::class);
-        $this->request->expects($this->any())->method("url")->willReturn(new Url("/", ""));
-        $this->request->expects($this->any())->method("time")->willReturn(1637449200);
+        $this->request->method("url")->willReturn(new Url("/", ""));
+        $this->request->method("time")->willReturn(1637449200);
     }
 
     public function testLoggedInUserIsRedirected(): void

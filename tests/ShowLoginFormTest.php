@@ -28,7 +28,7 @@ class ShowLoginFormTest extends TestCase
         $subject = new ShowLoginForm($conf, $text, new View("./", $text), $currentUser);
 
         $request = $this->createStub(Request::class);
-        $request->expects($this->any())->method("url")->willReturn(new Url("/", "Foo"));
+        $request->method("url")->willReturn(new Url("/", "Foo"));
         $response = $subject($request);
 
         Approvals::verifyHtml($response->output());
@@ -44,7 +44,7 @@ class ShowLoginFormTest extends TestCase
         $subject = new ShowLoginForm([], $text, new View("./", $text), $currentUser);
 
         $request = $this->createStub(Request::class);
-        $request->expects($this->any())->method("url")->willReturn(new Url("/", "Foo"));
+        $request->method("url")->willReturn(new Url("/", "Foo"));
         $response = $subject($request);
 
         Approvals::verifyHtml($response->output());

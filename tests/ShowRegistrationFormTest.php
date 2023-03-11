@@ -63,7 +63,7 @@ class ShowRegistrationFormTest extends TestCase
     public function testShowsRegistrationForm(): void
     {
         $request = $this->createStub(Request::class);
-        $request->expects($this->any())->method("url")->willReturn(new Url("/", ""));
+        $request->method("url")->willReturn(new Url("/", ""));
         $response = ($this->subject)($request);
         Approvals::verifyHtml($response->output());
     }

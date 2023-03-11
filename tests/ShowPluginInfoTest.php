@@ -28,7 +28,7 @@ class ShowPluginInfoTest extends TestCase
         $systemChecker->method('checkWritability')->willReturn(true);
         $subject = new ShowPluginInfo($text, $dbService, $systemChecker, new View("./", $text));
         $request = $this->createStub(Request::class);
-        $request->expects($this->any())->method("pluginsFolder")->willReturn("");
+        $request->method("pluginsFolder")->willReturn("");
         $response = $subject($request);
 
         Approvals::verifyHtml($response->output());

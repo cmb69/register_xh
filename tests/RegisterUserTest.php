@@ -75,7 +75,7 @@ class RegisterUserTest extends TestCase
             $password
         );
         $this->request = $this->createStub(Request::class);
-        $this->request->expects($this->any())->method("url")->willReturn(new Url("/", ""));
+        $this->request->method("url")->willReturn(new Url("/", ""));
     }
 
     public function testValidationError(): void

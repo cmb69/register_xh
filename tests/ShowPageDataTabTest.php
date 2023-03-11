@@ -20,8 +20,8 @@ class ShowPageDataTabTest extends TestCase
         $text = XH_includeVar("./languages/en.php", "plugin_tx")["register"];
         $sut = new ShowPageDataTab($text, new View("./", $text));
         $request = $this->createStub(Request::class);
-        $request->expects($this->any())->method("url")->willReturn(new Url("/", "SomePage"));
-        $request->expects($this->any())->method("coreStyleFolder")->willReturn("../../assets/css/");
+        $request->method("url")->willReturn(new Url("/", "SomePage"));
+        $request->method("coreStyleFolder")->willReturn("../../assets/css/");
         $response = $sut($request, ["register_access" => "cmb"]);
         Approvals::verifyHtml($response->output());
     }

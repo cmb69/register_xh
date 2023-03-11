@@ -36,7 +36,7 @@ class HandlePageProtection
 
     public function __invoke(Request $request): Response
     {
-        if (($request->admin() && $request->edit()) || !$this->conf["hide_pages"]) {
+        if ($request->editMode() || !$this->conf["hide_pages"]) {
             return new Response();
         }
         $user = $this->currentUser->get();
