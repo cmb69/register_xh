@@ -8,56 +8,54 @@
 
 namespace Register\Infra;
 
-use Register\Value\Html;
-
 class View
 {
     /** @var string */
-    private $pluginFolder;
+    private $templateFolder;
 
     /** @var array<string,string> */
     private $text;
 
     /** @param array<string,string> $text */
-    public function __construct(string $pluginFolder, array $text)
+    public function __construct(string $templateFolder, array $text)
     {
-        $this->pluginFolder = $pluginFolder;
+        $this->templateFolder = $templateFolder;
         $this->text = $text;
     }
 
     /** @param scalar $args */
     public function text(string $key, ...$args): string
     {
-        return $this->esc(sprintf($this->text[$key], ...$args));
+        return sprintf($this->esc($this->text[$key]), ...$args);
     }
 
     /** @param scalar $args */
     public function plural(string $key, int $count, ...$args): string
     {
-        if ($count == 0) {
-            $key .= '_0';
-        } else {
-            $key .= XH_numberSuffix($count);
-        }
-        return $this->esc(sprintf($this->text[$key], $count, ...$args));
+        return sprintf($this->esc($this->text[$this->pluralKey($key, $count)]), $count, ...$args);
     }
 
     /** @param scalar $args */
     public function message(string $type, string $key, ...$args): string
     {
-        return "\n<p class=\"xh_$type\">" . $this->text($key, ...$args) . "</p>";
+        return XH_message($type, $this->text[$key], ...$args) . "\n";
     }
 
     /** @param scalar $args */
     public function messagep(string $type, int $count, string $key, ...$args): string
     {
-        return "\n<p class=\"xh_$type\">" . $this->plural($key, $count, ...$args) . "</p>";
+        return XH_message($type, $this->text[$this->pluralKey($key, $count)], $count, ...$args) . "\n";
+    }
+
+    private function pluralKey(string $key, int $count): string
+    {
+        return $count === 0 ? "{$key}_0" : $key . XH_numberSuffix($count);
     }
 
     /** @param array<string,mixed> $_data */
     public function render(string $_template, array $_data): string
     {
-        $_template = "{$this->pluginFolder}views/{$_template}.php";
+        $_template = $this->templateFolder . $_template . ".php";
         array_walk($_data, function (&$value) {
             if (is_string($value)) {
                 $value = $this->esc($value);

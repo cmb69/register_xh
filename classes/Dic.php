@@ -223,6 +223,6 @@ class Dic
     {
         global $pth, $plugin_tx;
 
-        return new View("{$pth['folder']['plugins']}register/", $plugin_tx['register']);
+        return new View("{$pth['folder']['plugins']}register/views/", $plugin_tx['register']);
     }
 }

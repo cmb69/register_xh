@@ -34,7 +34,7 @@ class HandleSpecialPagesTest extends TestCase
     {
         $conf = XH_includeVar("./config/config.php", "plugin_cf")["register"];
         $this->text = XH_includeVar("./languages/en.php", "plugin_tx")["register"];
-        $view = new View("./", $this->text);
+        $view = new View("./views/", $this->text);
         $pages = $this->createStub(Pages::class);
         $pages->method("has")->willReturnCallback(function (string $heading) {
             return in_array($heading, ["One", "Two", "Three"], true);

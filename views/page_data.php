@@ -2,6 +2,8 @@
 
 use Register\Infra\View;
 
+if (!defined("CMSIMPLE_XH_VERSION")) {header("HTTP/1.1 403 Forbidden"); exit;}
+
 /**
  * @var View $this
  * @var string $action
@@ -10,7 +12,7 @@ use Register\Infra\View;
  * @var string $accessGroups
  */
 ?>
-
+<!-- register page data tab -->
 <form action="<?=$action?>" method="post" id="register">
   <p>
     <div class="pl_tooltip">

@@ -231,7 +231,7 @@ class UserAdminControllerTest extends TestCase
             $this->makeLang(),
             $this->makeCsrfProtector(false),
             $dbService,
-            new View("./", self::makeLang()),
+            new View("./views/", self::makeLang()),
             $random,
             $password
         );

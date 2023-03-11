@@ -2,6 +2,8 @@
 
 use Register\Infra\View;
 
+if (!defined("CMSIMPLE_XH_VERSION")) {header("HTTP/1.1 403 Forbidden"); exit;}
+
 /**
  * @var View $this
  * @var string $actionUrl
@@ -11,7 +13,7 @@ use Register\Infra\View;
  * @var string $saveLabel
  */
 ?>
-
+<!-- register group administration -->
 <h1><?=$this->text('mnu_group_admin')?></h1>
 <div class="register_admin_main">
   <form method="post" action="<?=$actionUrl?>">
@@ -22,21 +24,21 @@ use Register\Infra\View;
         <th><?=$this->text('login')?></th>
         <th><button name="add" value="add"><?=$this->text("label_add")?></button></th>
       </tr>
-<?php foreach ($groups as $i => $group):?>
+<?foreach ($groups as $i => $group):?>
       <tr>
         <td><input type="text" size="10" value="<?=$group?>" name="groupname[<?=($i)?>]"></td>
         <td>
           <select name="grouploginpage[<?=$i?>]">
             <option value=""><?=$this->text("label_none")?></option>
-<?php   foreach ($selects[$i] as $options):?>
+<?  foreach ($selects[$i] as $options):?>
             <option value="<?=$options["url"]?>" <?=$options["selected"]?>><?=$options["indent"]?><?=$options["heading"]?></option>
-<?php   endforeach?>
+<?  endforeach?>
           </select>
         </td>
         <td><button name="delete[<?=$i?>]" value="1"><?=$this->text("label_delete")?></i></td>
       </tr>
-<?php endforeach?>
+<?endforeach?>
     </table>
-    <input class="submit" type="submit" value="<?=$this->text('label_save')?>" name="send">
+    <button class="submit" value="save" name="send"><?=$this->text('label_save')?></button>
   </form>
 </div>

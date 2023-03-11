@@ -118,7 +118,7 @@ class GroupAdminControllerTest extends TestCase
     {
         return new GroupAdminController(
             $this->makeCsrfProtector(false),
-            new View("./", $this->makeLang()),
+            new View("./views/", $this->makeLang()),
             $dbService,
             $this->makePages()
         );

@@ -2,6 +2,8 @@
 
 use Register\Infra\View;
 
+if (!defined("CMSIMPLE_XH_VERSION")) {header("HTTP/1.1 403 Forbidden"); exit;}
+
 /**
  * @var View $this
  * @var string $actionUrl
@@ -12,7 +14,7 @@ use Register\Infra\View;
  * @var string $email
  */
 ?>
-
+<!-- register registration form -->
 <form method="post" action="<?=$actionUrl?>" target="_self">
   <div class="regi_register">
     <table>
@@ -40,7 +42,7 @@ use Register\Infra\View;
         <td colspan="2"><input class="text" name="email" type="email" size="35" value="<?=$email?>"></td>
       </tr>
       <tr>
-        <td colspan="3"><input class="submit" type="submit" value="<?=$this->text('register')?>"></td>
+        <td colspan="3"><button class="submit" value="register"><?=$this->text('register')?></button></td>
       </tr>
     </table>
     <p><?=$this->text('register_form2')?></p>

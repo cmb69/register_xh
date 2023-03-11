@@ -88,7 +88,7 @@ class HandleUserPreferences
         } else {
             $csrfTokenInput = $this->csrfProtector->tokenInput();
             $this->csrfProtector->store();
-            return $this->view->render('userprefs-form', [
+            return $this->view->render('userprefs_form', [
                 'csrfTokenInput' => Html::from($csrfTokenInput),
                 'actionUrl' => $request->url()->relative(),
                 'name' => $user->getName(),
@@ -121,7 +121,7 @@ class HandleUserPreferences
             $csrfTokenInput = $this->csrfProtector->tokenInput();
             $this->csrfProtector->store();
             return $this->view->message("fail", 'err_old_password_wrong')
-                . $this->view->render('userprefs-form', [
+                . $this->view->render('userprefs_form', [
                     'csrfTokenInput' => Html::from($csrfTokenInput),
                     'actionUrl' => $request->url()->relative(),
                     'name' => $name,
@@ -146,7 +146,7 @@ class HandleUserPreferences
             $csrfTokenInput = $this->csrfProtector->tokenInput();
             $this->csrfProtector->store();
             return $this->renderErrorMessages($errors)
-                . $this->view->render('userprefs-form', [
+                . $this->view->render('userprefs_form', [
                     'csrfTokenInput' => Html::from($csrfTokenInput),
                     'actionUrl' => $request->url()->relative(),
                     'name' => $name,
@@ -210,7 +210,7 @@ class HandleUserPreferences
             $csrfTokenInput = $this->csrfProtector->tokenInput();
             $this->csrfProtector->store();
             return $this->view->message("fail", 'err_old_password_wrong')
-                . $this->view->render('userprefs-form', [
+                . $this->view->render('userprefs_form', [
                     'csrfTokenInput' => Html::from($csrfTokenInput),
                     'actionUrl' => $request->url()->relative(),
                     'name' => $name,

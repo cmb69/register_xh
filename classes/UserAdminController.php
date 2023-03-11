@@ -190,7 +190,7 @@ class UserAdminController
         }
         $data['groupStrings'] = $groupStrings;
         $data['statusSelects'] = $statusSelects;
-        return $this->view->render('admin-users', $data);
+        return $this->view->render('admin_users', $data);
     }
 
     /**

@@ -38,7 +38,7 @@ class ResetPasswordTest extends TestCase
         $conf = $plugin_cf['register'];
         $plugin_tx = XH_includeVar("./languages/en.php", 'plugin_tx');
         $text = $plugin_tx['register'];
-        $this->view = new View("./", $text);
+        $this->view = new View("./views/", $text);
         $this->userRepository = $this->createStub(UserRepository::class);
         $this->mailer = $this->createMock(Mailer::class);
         $this->subject = new HandlePasswordForgotten(

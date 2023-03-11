@@ -2,6 +2,8 @@
 
 use Register\Infra\View;
 
+if (!defined("CMSIMPLE_XH_VERSION")) {header("HTTP/1.1 403 Forbidden"); exit;}
+
 /**
  * @var View $this
  * @var string $title
@@ -9,9 +11,9 @@ use Register\Infra\View;
  * @var string $plugin_call
  */
 ?>
-
+<!-- register dynamic page -->
 <h1><?=$title?></h1>
 <p><?=$intro?></p>
-<?php if (!empty($plugin_call)):?>
+<?if (!empty($plugin_call)):?>
 <div>{{{<?=$plugin_call?>}}}</div>
-<?php endif?>
+<?endif?>

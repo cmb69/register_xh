@@ -104,7 +104,7 @@ class GroupAdminController
     /** @param list<UserGroup> $groups */
     private function renderGroupsForm(array $groups, Url $url): string
     {
-        return $this->view->render('admin-groups', [
+        return $this->view->render('admin_groups', [
             'csrfTokenInput' => Html::from($this->csrfProtector->tokenInput()),
             'actionUrl' => $url->withPage("register")->withParams(["admin" => "groups"])->relative(),
             'groups' => $this->groupNames($groups),

@@ -53,7 +53,7 @@ class ShowUserPreferencesTest extends TestCase
         $this->csrfProtector = $this->createMock(CsrfProtector::class);
         $this->csrfProtector->method("tokenInput")->willReturn("");
         $this->userRepository = $this->createMock(UserRepository::class);
-        $this->view = new View("./", $lang);
+        $this->view = new View("./views/", $lang);
         $mailer = $this->createStub(Mailer::class);
         $logger = $this->createStub(Logger::class);
         $password = $this->createStub(Password::class);

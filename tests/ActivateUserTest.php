@@ -49,7 +49,7 @@ class ActivateUserTest extends TestCase
         $text = $plugin_tx['register'];
         $random = $this->createStub(Random::class);
         $random->method("bytes")->willReturn("0123456789ABCDEF");
-        $this->view = new View("./", $text);
+        $this->view = new View("./views/", $text);
         $this->userRepository = $this->createMock(UserRepository::class);
         $mailer = $this->createStub(Mailer::class);
         $password = $this->createStub(Password::class);

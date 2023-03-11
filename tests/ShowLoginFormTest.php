@@ -25,7 +25,7 @@ class ShowLoginFormTest extends TestCase
         $plugin_tx = XH_includeVar("./languages/en.php", 'plugin_tx');
         $text = $plugin_tx['register'];
         $userRepository = $this->createStub(UserRepository::class);
-        $subject = new ShowLoginForm($conf, $text, $userRepository, new View("./", $text));
+        $subject = new ShowLoginForm($conf, $text, $userRepository, new View("./views/", $text));
 
         $request = $this->createStub(Request::class);
         $request->method("url")->willReturn(new Url("/", "Foo"));
@@ -41,7 +41,7 @@ class ShowLoginFormTest extends TestCase
         $user = new User("jane", "", [], "Jane Doe", "jane@example.com", "activated", "secret");
         $userRepository = $this->createStub(UserRepository::class);
         $userRepository->method("findByUsername")->willReturn($user);
-        $subject = new ShowLoginForm([], $text, $userRepository, new View("./", $text));
+        $subject = new ShowLoginForm([], $text, $userRepository, new View("./views/", $text));
 
         $request = $this->createStub(Request::class);
         $request->method("url")->willReturn(new Url("/", "Foo"));

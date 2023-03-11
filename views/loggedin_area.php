@@ -2,6 +2,8 @@
 
 use Register\Infra\View;
 
+if (!defined("CMSIMPLE_XH_VERSION")) {header("HTTP/1.1 403 Forbidden"); exit;}
+
 /**
  * @var View $this
  * @var string $fullName
@@ -10,16 +12,16 @@ use Register\Infra\View;
  * @var string $logoutUrl
  */
 ?>
-
+<!-- register logged in area -->
 <div class="regi_loggedin_loggedinarea">
   <div class="regi_loggedin_user"><?=$this->text('loggedin_welcometext', $fullName)?></div>
   <div class="regi_loggedin_loggedin"><?=$this->text('loggedin')?></div>
   <div class="regi_loggedin_settings">
-<?php if ($hasUserPrefs):?>
+<?if ($hasUserPrefs):?>
     <a href="<?=$userPrefUrl?>" title="<?=$this->text('user_prefs')?>">
       <?=$this->text('user_prefs')?>
     </a>
-<?php endif?>
+<?endif?>
   </div>
   <div class="regi_loggedin_logout">
     <a href="<?=$logoutUrl?>" title="<?=$this->text('logout')?>">

@@ -2,6 +2,8 @@
 
 use Register\Infra\View;
 
+if (!defined("CMSIMPLE_XH_VERSION")) {header("HTTP/1.1 403 Forbidden"); exit;}
+
 /**
  * @var View $this
  * @var string $defaultGroup
@@ -14,7 +16,7 @@ use Register\Infra\View;
  * @var array<int,string> $statusSelects
  */
 ?>
-
+<!-- register user administration -->
 <h1><?=$this->text('mnu_user_admin')?></h1>
 <div class="register_admin_main">
   <table>
@@ -42,9 +44,9 @@ use Register\Infra\View;
     <label for="register_toggle_details"><?=$this->text('details')?></label>
     <select id="register_group_selectbox" title="<?=$this->text('filter_group')?>">
       <option value=""><?=$this->text('all')?></option>
-<?php foreach ($groups as $group):?>
+<?foreach ($groups as $group):?>
       <option value="<?=$group?>"><?=$group?></option>
-<?php endforeach?>
+<?endforeach?>
     </select>
   </div>
   <form id="register_user_form" method="post" action="<?=$actionUrl?>">
@@ -62,7 +64,7 @@ use Register\Infra\View;
         <th class="register_sort" onclick="register.sort(this, 'email')" style="cursor: pointer"><?=$this->text('email')?></th>
         <th><?=$this->text('password')?></th>
       </tr>
-<?php foreach ($users as $i => $user):?>
+<?foreach ($users as $i => $user):?>
       <tr id="register_user_<?=$i?>">
         <td><button title="<?=$this->text('user_delete')?>" onclick="register.removeRow(this); return false"><?=$this->text("label_delete")?></button></td>
         <td><input type="text" value="<?=$user['name']?>" name="name[<?=$i?>]"></td>
@@ -80,9 +82,9 @@ use Register\Infra\View;
           <input type="hidden" value="<?=$user['secret']?>" name="secrets[<?=$i?>]">
         </td>
       </tr>
-<?php endforeach?>
+<?endforeach?>
     </table>
-    <input class="submit" type="submit" value="<?=$this->text('label_save')?>" name="send">
+    <button class="submit" value="save" name="send"><?=$this->text('label_save')?></button>
   </form>
 </div>
 <script type="text/javascript">register.init()</script>

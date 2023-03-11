@@ -18,7 +18,7 @@ class ShowPageDataTabTest extends TestCase
     public function testRendersPageDataTab(): void
     {
         $text = XH_includeVar("./languages/en.php", "plugin_tx")["register"];
-        $sut = new ShowPageDataTab($text, new View("./", $text));
+        $sut = new ShowPageDataTab($text, new View("./views/", $text));
         $request = $this->createStub(Request::class);
         $request->method("url")->willReturn(new Url("/", "SomePage"));
         $request->method("coreStyleFolder")->willReturn("../../assets/css/");

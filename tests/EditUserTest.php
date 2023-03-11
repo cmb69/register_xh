@@ -60,7 +60,7 @@ class EditUserTest extends TestCase
         $this->csrfProtector = $this->createMock(CsrfProtector::class);
         $this->csrfProtector->method("tokenInput")->willReturn("");
         $this->userRepository = $this->createMock(UserRepository::class);
-        $this->view = new View("./", $text);
+        $this->view = new View("./views/", $text);
         $this->mailer = new FakeMailer(false, $text);
         $logger = $this->createMock(Logger::class);
         $this->password = $this->createStub(Password::class);

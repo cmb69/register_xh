@@ -2,6 +2,8 @@
 
 use Register\Infra\View;
 
+if (!defined("CMSIMPLE_XH_VERSION")) {header("HTTP/1.1 403 Forbidden"); exit;}
+
 /**
  * @var View $this
  * @var string $actionUrl
@@ -10,7 +12,7 @@ use Register\Infra\View;
  * @var string $email
  */
 ?>
-
+<!-- register user preferences -->
 <div class="regi_settings">
   <form method="post" action="<?=$actionUrl?>" target="_self">
     <input type="hidden" name="action" value="edit_user_prefs">
@@ -38,8 +40,8 @@ use Register\Infra\View;
       </tr>
       <tr>
         <td colspan="2">
-          <input class="submit" name="submit" type="submit" value="<?=$this->text('change')?>">
-          <input class="submit" name="delete" type="submit" value="<?=$this->text('user_delete')?>">
+          <button class="submit" name="submit" value="change"><?=$this->text('change')?></button>
+          <button class="submit" name="delete" value="delete"><?=$this->text('user_delete')?></button>
         </td>
       </tr>
     </table>

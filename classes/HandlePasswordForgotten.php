@@ -66,7 +66,7 @@ class HandlePasswordForgotten
     {
         $response = new Response;
         $email = $_POST['email'] ?? '';
-        $response->body($this->view->render('forgotten-form', [
+        $response->body($this->view->render('forgotten_form', [
             'actionUrl' => $request->url()->relative(),
             'email' => $email,
         ]));
@@ -80,7 +80,7 @@ class HandlePasswordForgotten
 
         if ($email == '') {
             $response->body($this->view->message("fail", 'err_email')
-                . $this->view->render('forgotten-form', [
+                . $this->view->render('forgotten_form', [
                     'actionUrl' => $request->url()->relative(),
                     'email' => $email,
                 ]));
@@ -88,7 +88,7 @@ class HandlePasswordForgotten
         }
         if (!preg_match("/^[^\s()<>@,;:\"\/\[\]?=]+@\w[\w-]*(\.\w[\w-]*)*\.[a-z]{2,}$/i", $email)) {
             $response->body($this->view->message("fail", 'err_email_invalid')
-                . $this->view->render('forgotten-form', [
+                . $this->view->render('forgotten_form', [
                     'actionUrl' => $request->url()->relative(),
                     'email' => $email,
                 ]));

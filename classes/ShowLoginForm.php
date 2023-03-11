@@ -85,6 +85,6 @@ class ShowLoginForm
             'userPrefUrl' => $request->url()->withPage($userPrefPage)->relative(),
             'logoutUrl' => $request->url()->withPage("")->withParams(["function" => "registerlogout"])->relative(),
         ];
-        return $this->view->render('loggedin-area', $data);
+        return $this->view->render('loggedin_area', $data);
     }
 }
