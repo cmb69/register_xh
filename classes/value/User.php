@@ -10,6 +10,19 @@ namespace Register\Value;
 
 class User
 {
+    /** @param list<string> $fields */
+    public static function fromArray(array $fields): ?self
+    {
+        if ($fields[0] === "" || $fields[1] === "" || $fields[2] === "" || $fields[3] === ""
+            || $fields[4] === "" || $fields[6] === ""
+        ) {
+            return null;
+        }
+        $fields[2] = explode(",", $fields[2]);
+        assert(is_string($fields[5]));
+        return new self($fields[0], $fields[1], $fields[2], $fields[3], $fields[4], $fields[5], $fields[6]);
+    }
+
     /** @var string */
     private $username;
 

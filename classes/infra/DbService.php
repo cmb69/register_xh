@@ -87,180 +87,116 @@ class DbService
         }
     }
 
-    /** @return UserGroup[] */
+    /** @return list<UserGroup> */
     public function readGroups(): array
     {
-        $filename = $this->dataFolder() . "groups.csv";
-        $groupArray = array();
-        if (is_file($filename)) {
-            $fp = fopen($filename, "r");
-            if ($fp) {
-                while (!feof($fp)) {
-                    $line = rtrim((string) fgets($fp, 4096));
-                    if ($entry = $this->readGroupLine($line)) {
-                        $groupArray[] = $entry;
-                    }
-                }
-                fclose($fp);
-            }
-        }
-        return $groupArray;
+        return $this->read($this->dataFolder() . "groups.csv", function (string $line) {
+            $fields = explode('|', rtrim($line), 2);
+            $fields = array_pad($fields, 2, "");
+            return UserGroup::fromArray($fields);
+        });
     }
 
-    /** @return ?UserGroup */
-    private function readGroupLine(string $line)
-    {
-        if (!empty($line) && strpos($line, '//') !== 0) {
-            $parts = explode('|', $line, 2);
-            $groupname = $parts[0];
-            $loginpage = $parts[1] ?? '';
-            // line must not start with '//' and all fields must be set
-            if (strpos($groupname, "//") === false && $groupname != "") {
-                return new UserGroup($groupname, $loginpage);
-            }
-        }
-        return null;
-    }
-
-    /** @param UserGroup[] $array */
-    public function writeGroups(array $array): bool
-    {
-        $filename = $this->dataFolder() . "groups.csv";
-        // remove old backup
-        if (is_file($filename . ".bak")) {
-            unlink($filename . ".bak");
-        }
-        // create new backup
-        $permissions = false;
-        if (is_file($filename)) {
-            $permissions = fileperms($filename) & 0777;
-            rename($filename, $filename . ".bak");
-        }
-
-        $fp = fopen($filename, "w");
-        if ($fp === false) {
-            return false;
-        }
-
-        // write comment line to file
-        $line = '// Register Plugin Group Definitions'."\n" . '// Line Format:'."\n" . '// groupname|loginpage'."\n";
-        if (!fwrite($fp, $line)) {
-            fclose($fp);
-            return false;
-        }
-
-        foreach ($array as $entry) {
-            $groupname = $entry->getGroupname();
-            $loginpage = $entry->getLoginpage();
-            $line = "$groupname|$loginpage\n";
-            if (!fwrite($fp, $line)) {
-                fclose($fp);
-                return false;
-            }
-        }
-        fclose($fp);
-
-        // change permissions of new file to same as backup file
-        if ($permissions !== false) {
-            chmod($filename, $permissions);
-        }
-        return true;
-    }
-
-    /** @return User[] */
+    /** @return list<User> */
     public function readUsers()
     {
-        $filename = $this->dataFolder() . "users.csv";
-        $userArray = array();
+        return $this->read($this->dataFolder() . "users.csv", function (string $line) {
+            $fields = explode(':', rtrim($line));
+            $fields = array_pad($fields, 6, "");
+            if (count($fields) < 7) {
+                $fields[] = base64_encode($this->random->bytes(15));
+            }
+            return User::fromArray($fields);
+        });
+    }
 
-        if (is_file($filename)) {
-            $fp = fopen($filename, "r");
-            if ($fp) {
-                while (!feof($fp)) {
-                    $line = fgets($fp, 4096);
-                    if ($line && strpos($line, '//') === false) {
-                        if ($entry = $this->readUserLine($line)) {
-                            $userArray[] = $entry;
-                        }
-                    }
+    /**
+     * @template T
+     * @param callable(string):(T|null) $readLine
+     * @return list<T>
+     */
+    private function read(string $filename, $readLine): array
+    {
+        $result = array();
+        if (is_file($filename) && ($stream = fopen($filename, "r"))) {
+            while (($line = fgets($stream)) !== false) {
+                if ($line === "" || !strncmp($line, "//", strlen("//"))) {
+                    continue;
                 }
-                fclose($fp);
+                if (($entry = $readLine($line)) !== null) {
+                    $result[] = $entry;
+                }
             }
+            fclose($stream);
         }
-        return $userArray;
+        return $result;
     }
 
-    /** @return ?User */
-    private function readUserLine(string $line)
+    /** @param list<UserGroup> $groups */
+    public function writeGroups(array $groups): bool
     {
-        $fields = explode(':', rtrim($line));
-        [$username,$password,$accessgroups,$name,$email,$status] = $fields;
-        if ($username != "" && $password != "" && $accessgroups != ""
-                && $name != "" && $email != ""/* && $status != ""*/) {
-            if (count($fields) === 7) {
-                $secret = $fields[6];
-            } else {
-                $secret = base64_encode($this->random->bytes(15));
-            }
-            return new User(
-                $username,
-                $password,
-                explode(',', $accessgroups),
-                $name,
-                $email,
-                $status,
-                $secret
-            );
-        }
-        return null;
+        $filename = $this->dataFolder() . "groups.csv";
+        $header = "// Register Plugin Group Definitions\n// Line Format:\n// groupname|loginpage\n";
+        return $this->write($groups, $filename, $header, function ($stream, UserGroup $group) {
+            $groupname = $group->getGroupname();
+            $loginpage = $group->getLoginpage();
+            $line = "$groupname|$loginpage\n";
+            return (bool) fwrite($stream, $line);
+        });
     }
 
-    /** @param User[] $array */
-    public function writeUsers(array $array): bool
+    /** @param list<User> $users */
+    public function writeUsers(array $users): bool
     {
         $filename = $this->dataFolder() . "users.csv";
+        $header = "// Register Plugin user Definitions\n// Line Format:\n"
+            . "// login:password:accessgroup1,accessgroup2,...:fullname:email:status:secret\n";
+        return $this->write($users, $filename, $header, function ($stream, User $user) {
+            $username = $user->getUsername();
+            $password = $user->getPassword();
+            $accessgroups = implode(',', $user->getAccessgroups());
+            $fullname = $user->getName();
+            $email = $user->getEmail();
+            $status = $user->getStatus();
+            $secret = $user->secret();
+            $line = "$username:$password:$accessgroups:$fullname:$email:$status:$secret\n";
+            return (bool) fwrite($stream, $line);
+        });
+    }
+
+    /**
+     * @template T
+     * @param list<T> $entries
+     * @param string $header
+     * @param callable(resource,T): bool $writeLine
+     */
+    public function write(array $entries, string $filename, $header, $writeLine): bool
+    {
         // remove old backup
         if (is_file($filename . ".bak")) {
             unlink($filename . ".bak");
         }
-
         // create new backup
         $permissions = false;
         if (is_file($filename)) {
             $permissions = fileperms($filename) & 0777;
             rename($filename, $filename . ".bak");
         }
-
-        $fp = fopen($filename, "w");
-        if ($fp === false) {
+        $stream = fopen($filename, "w");
+        if ($stream === false) {
             return false;
         }
-
-        // write comment line to file
-        $line = "// Register Plugin user Definitions\n"
-            . "// Line Format:\n"
-            . "// login:password:accessgroup1,accessgroup2,...:fullname:email:status:secret\n";
-        if (!fwrite($fp, $line)) {
-            fclose($fp);
+        if (!fwrite($stream, $header)) {
+            fclose($stream);
             return false;
         }
-
-        foreach ($array as $entry) {
-            $username = $entry->getUsername();
-            $password = $entry->getPassword();
-            $accessgroups = implode(',', $entry->getAccessgroups());
-            $fullname = $entry->getName();
-            $email = $entry->getEmail();
-            $status = $entry->getStatus();
-            $secret = $entry->secret();
-            $line = "$username:$password:$accessgroups:$fullname:$email:$status:$secret\n";
-            if (!fwrite($fp, $line)) {
-                fclose($fp);
+        foreach ($entries as $entry) {
+            if (!$writeLine($stream, $entry)) {
+                fclose($stream);
                 return false;
             }
         }
-        fclose($fp);
-
+        fclose($stream);
         // change permissions of new file to same as backup file
         if ($permissions !== false) {
             chmod($filename, $permissions);

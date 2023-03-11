@@ -10,6 +10,15 @@ namespace Register\Value;
 
 class UserGroup
 {
+    /** @param list<string> $fields */
+    public static function fromArray(array $fields): ?self
+    {
+        if ($fields[0] === "") {
+            return null;
+        }
+        return new self(...$fields);
+    }
+
     /** @var string */
     private $groupname;
 

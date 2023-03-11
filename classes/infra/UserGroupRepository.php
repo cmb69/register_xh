@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Copyright (c) 2021-2023-2023-2023-2023-2023-2023 Christoph M. Becker
+ * Copyright (c) 2021-2023 Christoph M. Becker
  *
  * This file is part of Register_XH.
  */
@@ -27,11 +27,8 @@ class UserGroupRepository
         $lock = $this->dbService->lock(false);
         $groups = $this->dbService->readGroups();
         $this->dbService->unlock($lock);
-        foreach ($groups as $group) {
-            if ($group->getGroupname() == $groupname) {
-                return $group;
-            }
-        }
-        return null;
+        return array_reduce($groups, function (?UserGroup $carry, UserGroup $group) use ($groupname) {
+            return $group->getGroupname() === $groupname ? $group : $carry;
+        });
     }
 }

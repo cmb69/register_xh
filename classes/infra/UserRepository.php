@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Copyright (c) 2021-2023-2023-2023 Christoph M. Becker
+ * Copyright (c) 2021-2023 Christoph M. Becker
  *
  * This file is part of Register_XH.
  */
@@ -27,7 +27,9 @@ class UserRepository
         $lock = $this->dbService->lock(false);
         $users = $this->dbService->readUsers();
         $this->dbService->unlock($lock);
-        return $this->searchUserArray($users, 'username', $username);
+        return array_reduce($users, function (?User $carry, User $user) use ($username) {
+            return $user->getUsername() === $username ? $user : $carry;
+        });
     }
 
     public function findByEmail(string $email): ?User
@@ -35,83 +37,45 @@ class UserRepository
         $lock = $this->dbService->lock(false);
         $users = $this->dbService->readUsers();
         $this->dbService->unlock($lock);
-        return $this->searchUserArray($users, 'email', $email);
-    }
-
-    /**
-     * @param User[] $users
-     * @param mixed $value
-     */
-    private function searchUserArray(array $users, string $key, $value): ?User
-    {
-        foreach ($users as $user) {
-            if ($user->{"get$key"}() == $value) {
-                return $user;
-            }
-        }
-        return null;
+        return array_reduce($users, function (?User $carry, User $user) use ($email) {
+            return $user->getEmail() === $email ? $user : $carry;
+        });
     }
 
     public function add(User $user): bool
     {
-        $lock = $this->dbService->lock(true);
-        $users = $this->dbService->readUsers();
-        $users[] = $user;
-        $result = $this->dbService->writeUsers($users);
-        $this->dbService->unlock($lock);
-        return $result;
+        return $this->modify($user, function (array $users, User $user) {
+            $users[] = $user;
+            return $users;
+        });
     }
 
     public function update(User $user): bool
     {
-        $lock = $this->dbService->lock(true);
-        $users = $this->dbService->readUsers();
-        $userArray = $this->replaceUser($users, $user);
-        $result = $this->dbService->writeUsers($userArray);
-        $this->dbService->unlock($lock);
-        return $result;
-    }
-
-    /**
-     * @param array<int,User> $users
-     * @return array<int,User>
-     */
-    private function replaceUser(array $users, User $newuser): array
-    {
-        $newusers = array();
-        $username = $newuser->getUsername();
-        foreach ($users as $user) {
-            if ($user->getUsername() == $username) {
-                $newusers[] = $newuser;
-            } else {
-                $newusers[] = $user;
-            }
-        }
-        return $newusers;
+        return $this->modify($user, function (array $users, User $newuser) {
+            return array_map(function (User $user) use ($newuser) {
+                return $user->getUsername() === $newuser->getUsername() ? $newuser : $user;
+            }, $users);
+        });
     }
 
     public function delete(User $user): bool
     {
+        return $this->modify($user, function (array $users, User $olduser) {
+            return array_values(array_filter($users, function (User $user) use ($olduser) {
+                return $user->getUsername() !== $olduser->getUsername();
+            }));
+        });
+    }
+
+    /** @param callable(list<User>,User):list<User> $modify */
+    private function modify(User $user, $modify): bool
+    {
         $lock = $this->dbService->lock(true);
         $users = $this->dbService->readUsers();
-        $userArray = $this->deleteUser($users, $user->getUsername());
+        $userArray = $modify($users, $user);
         $result = $this->dbService->writeUsers($userArray);
         $this->dbService->unlock($lock);
         return $result;
-    }
-
-    /**
-     * @param array<int,User> $users
-     * @return array<int,User>
-     */
-    private function deleteUser(array $users, string $username): array
-    {
-        $newarray = array();
-        foreach ($users as $user) {
-            if ($user->getUsername() != $username) {
-                $newarray[] = $user;
-            }
-        }
-        return $newarray;
     }
 }
