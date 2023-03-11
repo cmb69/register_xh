@@ -8,7 +8,7 @@
 
 namespace Register\Infra;
 
-use Register\Value\HtmlString;
+use Register\Value\Html;
 
 class View
 {
@@ -58,24 +58,20 @@ class View
     public function render(string $_template, array $_data): string
     {
         $_template = "{$this->pluginFolder}views/{$_template}.php";
+        array_walk($_data, function (&$value) {
+            if (is_string($value)) {
+                $value = $this->esc($value);
+            }
+        });
         extract($_data);
         ob_start();
         include $_template;
         return (string) ob_get_clean();
     }
 
-    /** @param scalar|HtmlString $value */
+    /** @param scalar $value */
     public function esc($value): string
     {
-        if ($value instanceof HtmlString) {
-            return (string) $value;
-        }
         return XH_hsc((string) $value);
-    }
-
-    /** @param scalar $value */
-    public function raw($value): string
-    {
-        return (string) $value;
     }
 }

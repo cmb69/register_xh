@@ -18,7 +18,7 @@ use Register\Infra\Response;
 use Register\Infra\UserRepository;
 use Register\Infra\View;
 use Register\Logic\Validator;
-use Register\Value\HtmlString;
+use Register\Value\Html;
 use XH\CSRFProtection as CsrfProtector;
 
 class HandleUserPreferences
@@ -89,7 +89,7 @@ class HandleUserPreferences
             $csrfTokenInput = $this->csrfProtector->tokenInput();
             $this->csrfProtector->store();
             return $this->view->render('userprefs-form', [
-                'csrfTokenInput' => new HtmlString($csrfTokenInput),
+                'csrfTokenInput' => Html::from($csrfTokenInput),
                 'actionUrl' => $request->url()->relative(),
                 'name' => $user->getName(),
                 'email' => $user->getEmail(),
@@ -122,7 +122,7 @@ class HandleUserPreferences
             $this->csrfProtector->store();
             return $this->view->message("fail", 'err_old_password_wrong')
                 . $this->view->render('userprefs-form', [
-                    'csrfTokenInput' => new HtmlString($csrfTokenInput),
+                    'csrfTokenInput' => Html::from($csrfTokenInput),
                     'actionUrl' => $request->url()->relative(),
                     'name' => $name,
                     'email' => $email,
@@ -147,7 +147,7 @@ class HandleUserPreferences
             $this->csrfProtector->store();
             return $this->renderErrorMessages($errors)
                 . $this->view->render('userprefs-form', [
-                    'csrfTokenInput' => new HtmlString($csrfTokenInput),
+                    'csrfTokenInput' => Html::from($csrfTokenInput),
                     'actionUrl' => $request->url()->relative(),
                     'name' => $name,
                     'email' => $email,
@@ -211,7 +211,7 @@ class HandleUserPreferences
             $this->csrfProtector->store();
             return $this->view->message("fail", 'err_old_password_wrong')
                 . $this->view->render('userprefs-form', [
-                    'csrfTokenInput' => new HtmlString($csrfTokenInput),
+                    'csrfTokenInput' => Html::from($csrfTokenInput),
                     'actionUrl' => $request->url()->relative(),
                     'name' => $name,
                     'email' => $email,

@@ -254,6 +254,7 @@ class UserAdminControllerTest extends TestCase
     private function makeCsrfProtector(bool $used): CsrfProtector
     {
         $csrfProtector = $this->createStub(CsrfProtector::class);
+        $csrfProtector->method("tokenInput")->willReturn("");
         if ($used) {
             $csrfProtector->expects($this->once())->method('check');
         }

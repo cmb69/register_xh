@@ -12,7 +12,7 @@ namespace Register;
 
 use XH\CSRFProtection as CsrfProtector;
 
-use Register\Value\HtmlString;
+use Register\Value\Html;
 use Register\Value\User;
 use Register\Value\UserGroup;
 use Register\Logic\AdminProcessor;
@@ -176,21 +176,38 @@ class UserAdminController
         $response->addMeta("register_max_number_of_users", $this->calcMaxRecords(8, 4));
 
         $data = [
-            'csrfTokenInput' => new HtmlString($this->csrfProtector->tokenInput()),
+            'csrfTokenInput' => Html::from($this->csrfProtector->tokenInput()),
             'defaultGroup' => $this->conf['group_default'],
-            'statusSelectActivated' => new HtmlString($this->statusSelectbox('activated')),
-            'groups' => $this->findGroups(),
+            'statusSelectActivated' => Html::from($this->statusSelectbox('activated')),
+            'groups' => $this->findGroupNames(),
             'actionUrl' => $request->url()->withPage("register")->withParams(["admin" => "users"])->relative(),
-            'users' => $users,
+            'users' => $this->userRecords($users),
         ];
         $groupStrings = $statusSelects = [];
         foreach ($users as $i => $entry) {
             $groupStrings[] = implode(",", $entry->getAccessgroups());
-            $statusSelects[] = new HtmlString($this->statusSelectbox($entry->getStatus(), $i));
+            $statusSelects[] = Html::from($this->statusSelectbox($entry->getStatus(), $i));
         }
         $data['groupStrings'] = $groupStrings;
         $data['statusSelects'] = $statusSelects;
         return $this->view->render('admin-users', $data);
+    }
+
+    /**
+     * @param list<User> $users
+     * @return list<array{username:string,password:string,name:string,email:string,secret:string}>
+     */
+    private function userRecords(array $users)
+    {
+        return array_map(function (User $user) {
+            return [
+                "username" => $user->getUsername(),
+                "password" => $user->getPassword(),
+                "name" => $user->getName(),
+                "email" => $user->getEmail(),
+                "secret" => $user->secret(),
+            ];
+        }, $users);
     }
 
     /** @return array<string,string> */
@@ -208,14 +225,16 @@ class UserAdminController
         return $txts;
     }
 
-    /** @return UserGroup[] */
-    private function findGroups(): array
+    /** @return list<string> */
+    private function findGroupNames(): array
     {
         $groups = $this->dbService->readGroups();
         usort($groups, function ($a, $b) {
             return strcasecmp($a->getGroupname(), $b->getGroupname());
         });
-        return $groups;
+        return array_map(function (UserGroup $group) {
+            return $group->getGroupname();
+        }, $groups);
     }
 
     /**

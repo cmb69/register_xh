@@ -11,15 +11,15 @@ use Register\Infra\View;
  */
 ?>
 
-<form action="<?=$this->esc($action)?>" method="post" id="register">
+<form action="<?=$action?>" method="post" id="register">
   <p>
     <div class="pl_tooltip">
-      <img src="<?=$this->esc($iconFilename)?>" alt="<?=$this->esc($iconAlt)?>">
+      <img src="<?=$iconFilename?>" alt="<?=$iconAlt?>">
       <div><?=$this->text("hint_accessgroups")?></div>
     </div>
     <label>
       <?=$this->text("accessgroups")?><br/>
-      <input name="register_access" value="<?=$this->esc($accessGroups)?>">
+      <input name="register_access" value="<?=$accessGroups?>">
     </label>
   </p>
   <input name="save_page_data" type="hidden">

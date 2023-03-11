@@ -10,8 +10,8 @@ use Register\Infra\View;
  */
 ?>
 
-<h1><?=$this->esc($title)?></h1>
-<p><?=$this->esc($intro)?></p>
+<h1><?=$title?></h1>
+<p><?=$intro?></p>
 <?php if (!empty($plugin_call)):?>
-<div>{{{<?=$this->esc($plugin_call)?>}}}</div>
+<div>{{{<?=$plugin_call?>}}}</div>
 <?php endif?>

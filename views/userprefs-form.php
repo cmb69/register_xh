@@ -12,13 +12,13 @@ use Register\Infra\View;
 ?>
 
 <div class="regi_settings">
-  <form method="post" action="<?=$this->esc($actionUrl)?>" target="_self">
+  <form method="post" action="<?=$actionUrl?>" target="_self">
     <input type="hidden" name="action" value="edit_user_prefs">
-    <?=$this->esc($csrfTokenInput)?>
+    <?=$csrfTokenInput?>
     <table style="margin: auto;">
       <tr>
         <td><?=$this->text('name')?></td>
-        <td><input class="text" name="name" type="text" size="35" value="<?=$this->esc($name)?>"></td>
+        <td><input class="text" name="name" type="text" size="35" value="<?=$name?>"></td>
       </tr>
       <tr>
         <td><?=$this->text('oldpassword')?></td>
@@ -34,7 +34,7 @@ use Register\Infra\View;
       </tr>
       <tr>
         <td><?=$this->text('email')?></td>
-        <td><input class="text" name="email" type="email" size="35" value="<?=$this->esc($email)?>"></td>
+        <td><input class="text" name="email" type="email" size="35" value="<?=$email?>"></td>
       </tr>
       <tr>
         <td colspan="2">

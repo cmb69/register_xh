@@ -1,17 +1,15 @@
 <?php
 
-use Register\Value\User;
-use Register\Value\UserGroup;
 use Register\Infra\View;
 
 /**
  * @var View $this
  * @var string $defaultGroup
  * @var string $statusSelectActivated
- * @var array<int,UserGroup> $groups
+ * @var list<string> $groups
  * @var string $actionUrl
  * @var string $csrfTokenInput
- * @var array<int,User> $users
+ * @var list<array{username:string,password:string,name:string,email:string,secret:string}> $users
  * @var array<int,string> $groupStrings
  * @var array<int,string> $statusSelects
  */
@@ -23,8 +21,8 @@ use Register\Infra\View;
     <tr id="register_user_template" style="display: none">
       <td><button title="<?=$this->text('user_delete')?>" onclick="register.removeRow(this); return false"><?=$this->text("label_delete")?></button></td>
       <td><input type="text" value="" name="name[]"></td>
-      <td><input type="text" value="<?=$this->esc($defaultGroup)?>" name="accessgroups[]"></td>
-      <td><?=$this->esc($statusSelectActivated)?></td>
+      <td><input type="text" value="<?=$defaultGroup?>" name="accessgroups[]"></td>
+      <td><?=$statusSelectActivated?></td>
     </tr>
     <tr style="display: none">
       <td></td>
@@ -45,12 +43,12 @@ use Register\Infra\View;
     <select id="register_group_selectbox" title="<?=$this->text('filter_group')?>">
       <option value=""><?=$this->text('all')?></option>
 <?php foreach ($groups as $group):?>
-      <option value="<?=$this->esc($group->getGroupname())?>"><?=$this->esc($group->getGroupname())?></option>
+      <option value="<?=$group?>"><?=$group?></option>
 <?php endforeach?>
     </select>
   </div>
-  <form id="register_user_form" method="post" action="<?=$this->esc($actionUrl)?>">
-    <?=$this->esc($csrfTokenInput)?>
+  <form id="register_user_form" method="post" action="<?=$actionUrl?>">
+    <?=$csrfTokenInput?>
     <table id="register_user_table">
       <tr>
         <th></th>
@@ -64,22 +62,22 @@ use Register\Infra\View;
         <th class="register_sort" onclick="register.sort(this, 'email')" style="cursor: pointer"><?=$this->text('email')?></th>
         <th><?=$this->text('password')?></th>
       </tr>
-<?php foreach ($users as $i => $entry):?>
-      <tr id="register_user_<?=$this->esc($i)?>">
+<?php foreach ($users as $i => $user):?>
+      <tr id="register_user_<?=$i?>">
         <td><button title="<?=$this->text('user_delete')?>" onclick="register.removeRow(this); return false"><?=$this->text("label_delete")?></button></td>
-        <td><input type="text" value="<?=$this->esc($entry->getName())?>" name="name[<?=$this->esc($i)?>]"></td>
-        <td><input type="text" value="<?=$this->esc($groupStrings[$i])?>" name="accessgroups[<?=$this->esc($i)?>]"></td>
-        <td><?=$this->esc($statusSelects[$i])?></td>
+        <td><input type="text" value="<?=$user['name']?>" name="name[<?=$i?>]"></td>
+        <td><input type="text" value="<?=$groupStrings[$i]?>" name="accessgroups[<?=$i?>]"></td>
+        <td><?=$statusSelects[$i]?></td>
       </tr>
       <tr class="register_second_row">
         <td><button type="button" onclick="register.mailTo(this)" title="<?=$this->text('email')?>"><?=$this->text("label_mail")?></i></button></td>
-        <td><input type="text" value="<?=$this->esc($entry->getUsername())?>" name="username[<?=$this->esc($i)?>]"></td>
-        <td><input type="email" value="<?=$this->esc($entry->getEmail())?>" name="email[<?=$this->esc($i)?>]"></td>
+        <td><input type="text" value="<?=$user['username']?>" name="username[<?=$i?>]"></td>
+        <td><input type="email" value="<?=$user['email']?>" name="email[<?=$i?>]"></td>
         <td>
           <button onclick="register.changePassword(this.nextElementSibling); return false"><?=$this->text('change_password')?></button>
-          <input type="hidden" value="<?=$this->esc($entry->getPassword())?>" name="password[<?=$this->esc($i)?>]">
-          <input type="hidden" value="<?=$this->esc($entry->getPassword())?>" name="oldpassword[<?=$this->esc($i)?>]">
-          <input type="hidden" value="<?=$this->esc($entry->secret())?>" name="secrets[<?=$this->esc($i)?>]">
+          <input type="hidden" value="<?=$user['password']?>" name="password[<?=$i?>]">
+          <input type="hidden" value="<?=$user['password']?>" name="oldpassword[<?=$i?>]">
+          <input type="hidden" value="<?=$user['secret']?>" name="secrets[<?=$i?>]">
         </td>
       </tr>
 <?php endforeach?>

@@ -10,15 +10,15 @@
 
 namespace Register;
 
-use Register\Value\HtmlString;
-use Register\Value\UserGroup;
-use Register\Logic\AdminProcessor;
 use Register\Infra\DbService;
 use Register\Infra\Pages;
 use Register\Infra\Request;
 use Register\Infra\Response;
 use Register\Infra\Url;
 use Register\Infra\View;
+use Register\Logic\AdminProcessor;
+use Register\Value\Html;
+use Register\Value\UserGroup;
 use XH\CSRFProtection as CsrfProtector;
 
 class GroupAdminController
@@ -105,11 +105,22 @@ class GroupAdminController
     private function renderGroupsForm(array $groups, Url $url): string
     {
         return $this->view->render('admin-groups', [
-            'csrfTokenInput' => new HtmlString($this->csrfProtector->tokenInput()),
+            'csrfTokenInput' => Html::from($this->csrfProtector->tokenInput()),
             'actionUrl' => $url->withPage("register")->withParams(["admin" => "groups"])->relative(),
-            'groups' => $groups,
+            'groups' => $this->groupNames($groups),
             'selects' => $this->selects($groups),
         ]);
+    }
+
+    /**
+     * @param list<UserGroup> $groups
+     * @return list<string>
+     */
+    private function groupNames(array $groups): array
+    {
+        return array_map(function (UserGroup $group) {
+            return $group->getGroupname();
+        }, $groups);
     }
 
     /**

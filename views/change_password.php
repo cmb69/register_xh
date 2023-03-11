@@ -8,7 +8,7 @@ use Register\Infra\View;
  */
 ?>
 
-<form class="register_change_password" action="<?=$this->esc($url)?>" method="post">
+<form class="register_change_password" action="<?=$url?>" method="post">
   <p>
     <label>
       <span><?=$this->text('password')?></span>

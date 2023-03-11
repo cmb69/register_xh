@@ -16,13 +16,13 @@ use Register\Infra\View;
   <div class="regi_loggedin_loggedin"><?=$this->text('loggedin')?></div>
   <div class="regi_loggedin_settings">
 <?php if ($hasUserPrefs):?>
-    <a href="<?=$this->esc($userPrefUrl)?>" title="<?=$this->text('user_prefs')?>">
+    <a href="<?=$userPrefUrl?>" title="<?=$this->text('user_prefs')?>">
       <?=$this->text('user_prefs')?>
     </a>
 <?php endif?>
   </div>
   <div class="regi_loggedin_logout">
-    <a href="<?=$this->esc($logoutUrl)?>" title="<?=$this->text('logout')?>">
+    <a href="<?=$logoutUrl?>" title="<?=$this->text('logout')?>">
       <?=$this->text('logout')?>
     </a>
   </div>
