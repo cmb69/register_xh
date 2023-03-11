@@ -56,7 +56,7 @@ class GroupAdminControllerTest extends TestCase
         $sut = $this->makeGroupAdminController($dbService);
         $this->request->method("groupAdminAction")->willReturn("do_update");
         $this->request->method("groupAdminSubmission")->willReturn([
-            "on", [""], ["guest"], [""]
+            "add", ["guest"], [""]
         ]);
         $response = $sut($this->request);
         Approvals::verifyHtml($response->output());
@@ -69,7 +69,7 @@ class GroupAdminControllerTest extends TestCase
         $sut = $this->makeGroupAdminController($dbService);
         $this->request->method("groupAdminAction")->willReturn("do_update");
         $this->request->method("groupAdminSubmission")->willReturn([
-            "", ["1", ""], ["to_be_deleted", "guest"], ["", "Start"]
+            "0", ["to_be_deleted", "guest"], ["", "Start"]
         ]);
         $response = $sut($this->request);
         Approvals::verifyHtml($response->output());
@@ -82,7 +82,7 @@ class GroupAdminControllerTest extends TestCase
         $sut = $this->makeGroupAdminController($dbService);
         $this->request->method("groupAdminAction")->willReturn("do_update");
         $this->request->method("groupAdminSubmission")->willReturn([
-            "", ["", ""], ["illegal name", "guest"], ["", "Start"]
+            "save", ["illegal name", "guest"], ["", "Start"]
         ]);
         $response = $sut($this->request);
         Approvals::verifyHtml($response->output());
@@ -95,7 +95,7 @@ class GroupAdminControllerTest extends TestCase
         $sut = $this->makeGroupAdminController($dbService);
         $this->request->method("groupAdminAction")->willReturn("do_update");
         $this->request->method("groupAdminSubmission")->willReturn([
-            "", ["", ""], ["admin", "guest"], ["", "Start"]
+            "save", ["admin", "guest"], ["", "Start"]
         ]);
         $response = $sut($this->request);
         Approvals::verifyHtml($response->output());
@@ -108,7 +108,7 @@ class GroupAdminControllerTest extends TestCase
         $sut = $this->makeGroupAdminController($dbService);
         $this->request->method("groupAdminAction")->willReturn("do_update");
         $this->request->method("groupAdminSubmission")->willReturn([
-            "", ["", ""], ["admin", "guest"], ["", "Start"]
+            "save", ["admin", "guest"], ["", "Start"]
         ]);
         $response = $sut($this->request);
         Approvals::verifyHtml($response->output());

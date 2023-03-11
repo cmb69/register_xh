@@ -111,12 +111,11 @@ class AdminProcessor
     }
 
     /**
-     * @param list<string> $delete
      * @param list<string> $names
      * @param list<string> $loginPages
      * @return array{list<UserGroup>,bool,list<array{string}>}
      */
-    public function processGroups(string $add, array $delete, array $names, array $loginPages): array
+    public function processGroups(string $action, array $names, array $loginPages): array
     {
         $groups = [];
         $save = true;
@@ -125,13 +124,13 @@ class AdminProcessor
             if (!preg_match("/^[A-Za-z0-9_-]+$/", $names[$i])) {
                 $errors[] = ['err_group_illegal'];
             }
-            if (!isset($delete[$i]) || $delete[$i] == '') {
+            if (!is_numeric($action) || $i !== (int) $action) {
                 $groups[] = new UserGroup($names[$i], $loginPages[$i]);
             } else {
                 $save = false;
             }
         }
-        if ($add != '') {
+        if ($action === "add") {
             $groups[] = new UserGroup("NewGroup", '');
             $save = false;
         }

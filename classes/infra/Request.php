@@ -21,14 +21,13 @@ class Request
         return $this->hasGroupAdminSubmission($this->post()) ? "do_update" : "update";
     }
 
-    /** @return array{string,list<string>,list<string>,list<string>} */
+    /** @return array{string,list<string>,list<string>} */
     public function groupAdminSubmission(): array
     {
         $post = $this->post();
         assert($this->hasGroupAdminSubmission($post));
         return [
-            $post["add"],
-            $post["delete"],
+            $post["action"],
             $post["groupname"],
             $post["grouploginpage"],
         ];
@@ -36,13 +35,13 @@ class Request
 
     /**
      * @param array<string,string|array<string>> $post
-     * @phpstan-assert-if-true array{add:string,delete:list<string>,groupname:list<string>,grouploginpage:list<string>} $post
+     * @phpstan-assert-if-true array{action:string,groupname:list<string>,grouploginpage:list<string>} $post
      */
     private function hasGroupAdminSubmission(array $post): bool
     {
         $post = $this->post();
-        if (isset($post["add"]) && is_string($post["add"])
-            && isset($post["delete"]) && is_array($post["delete"])
+        if (isset($post["action"])
+            && ($post["action"] === "add" || is_numeric($post["action"]) || $post["action"] === "save")
             && isset($post["groupname"]) && is_array($post["groupname"])
             && isset($post["grouploginpage"]) && is_array($post["grouploginpage"])
         ) {

@@ -33,7 +33,7 @@ class RequestTest extends TestCase
 
     /**
      * @param array<string,string|array<string>> $post
-     * @param array{string,list<string>,list<string>,list<string>} $expected
+     * @param array{string,list<string>,list<string>} $expected
      * @dataProvider groupAdminSubmissions
      */
     public function testGroupAdminSubmission(array $post, array $expected): void
@@ -47,17 +47,16 @@ class RequestTest extends TestCase
     public function groupAdminSubmissions(): array
     {
         return [
-            [[
-                "add" => "",
-                "delete" => [],
-                "groupname" => [],
-                "grouploginpage" => [],
+            [
+                ["action" => "save", "groupname" => [], "grouploginpage" => []],
+                ["save", [], []]
             ], [
-                "",
-                [],
-                [],
-                []
-            ]],
+                ["action" => "add", "groupname" => [], "grouploginpage" => []],
+                ["add", [], []]
+            ], [
+                ["action" => "1", "groupname" => [], "grouploginpage" => []],
+                ["1", [], []]
+            ],
         ];
     }
 

@@ -22,7 +22,7 @@ if (!defined("CMSIMPLE_XH_VERSION")) {header("HTTP/1.1 403 Forbidden"); exit;}
       <tr>
         <th><?=$this->text('groupname')?></th>
         <th><?=$this->text('login')?></th>
-        <th><button name="add" value="add"><?=$this->text("label_add")?></button></th>
+        <th><button name="action" value="add"><?=$this->text("label_add")?></button></th>
       </tr>
 <?foreach ($groups as $i => $group):?>
       <tr>
@@ -35,10 +35,10 @@ if (!defined("CMSIMPLE_XH_VERSION")) {header("HTTP/1.1 403 Forbidden"); exit;}
 <?  endforeach?>
           </select>
         </td>
-        <td><button name="delete[<?=$i?>]" value="1"><?=$this->text("label_delete")?></i></td>
+        <td><button name="action" value="<?=$i?>"><?=$this->text("label_delete")?></i></td>
       </tr>
 <?endforeach?>
     </table>
-    <button class="submit" value="save" name="send"><?=$this->text('label_save')?></button>
+    <button class="submit" value="save" name="action"><?=$this->text('label_save')?></button>
   </form>
 </div>
