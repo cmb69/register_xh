@@ -10,9 +10,6 @@
 
 namespace Register;
 
-use Register\Infra\CurrentUser;
-use Register\Value\User;
-use Register\Logic\Validator;
 use Register\Infra\Mailer;
 use Register\Infra\Password;
 use Register\Infra\Random;
@@ -21,12 +18,11 @@ use Register\Infra\Response;
 use Register\Infra\UserRepository;
 use Register\Infra\View;
 use Register\Logic\Util;
+use Register\Logic\Validator;
+use Register\Value\User;
 
 class HandleUserRegistration
 {
-    /** @var CurrentUser */
-    private $currentUser;
-
     /** @var array<string,string> */
     private $conf;
 
@@ -53,7 +49,6 @@ class HandleUserRegistration
      * @param array<string,string> $text
      */
     public function __construct(
-        CurrentUser $currentUser,
         array $conf,
         array $text,
         Random $random,
@@ -62,7 +57,6 @@ class HandleUserRegistration
         Mailer $mailer,
         Password $password
     ) {
-        $this->currentUser = $currentUser;
         $this->conf = $conf;
         $this->text = $text;
         $this->random = $random;
@@ -74,7 +68,7 @@ class HandleUserRegistration
 
     public function __invoke(Request $request): Response
     {
-        if ($this->currentUser->get()) {
+        if ($request->username()) {
             return (new Response)->redirect(CMSIMPLE_URL);
         }
         if (isset($_POST['action']) && $_POST['action'] === 'register_user') {

@@ -8,12 +8,9 @@
 
 namespace Register;
 
-use XH_includeVar;
-
 use ApprovalTests\Approvals;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
-use Register\Infra\CurrentUser;
 use Register\Infra\FakeMailer;
 use Register\Value\User;
 use Register\Infra\Request;
@@ -25,9 +22,6 @@ class ChangePasswordTest extends TestCase
 {
     /** @var ChangePassword */
     private $subject;
-
-    /** @var CurrentUser&MockObject */
-    private $currentUser;
 
     /** @var View&MockObject */
     private $view;
@@ -43,7 +37,6 @@ class ChangePasswordTest extends TestCase
 
     public function setUp(): void
     {
-        $this->currentUser = $this->createStub(CurrentUser::class);
         $plugin_cf = XH_includeVar("./config/config.php", 'plugin_cf');
         $conf = $plugin_cf['register'];
         $plugin_tx = XH_includeVar("./languages/en.php", 'plugin_tx');
@@ -52,7 +45,6 @@ class ChangePasswordTest extends TestCase
         $this->userRepository = $this->createStub(UserRepository::class);
         $this->mailer = new FakeMailer(false, $text);
         $this->subject = new HandlePasswordForgotten(
-            $this->currentUser,
             $conf,
             $this->view,
             $this->userRepository,

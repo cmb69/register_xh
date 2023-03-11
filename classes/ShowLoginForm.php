@@ -10,11 +10,11 @@
 
 namespace Register;
 
-use Register\Infra\CurrentUser;
-use Register\Value\User;
 use Register\Infra\Request;
 use Register\Infra\Response;
+use Register\Infra\UserRepository;
 use Register\Infra\View;
+use Register\Value\User;
 
 class ShowLoginForm
 {
@@ -24,11 +24,11 @@ class ShowLoginForm
     /** @var array<string,string> */
     private $text;
 
+    /** @var UserRepository */
+    private $userRepository;
+
     /** @var View */
     private $view;
-
-    /** @var CurrentUser */
-    private $currentUser;
 
     /**
      * @param array<string,string> $conf
@@ -37,18 +37,18 @@ class ShowLoginForm
     public function __construct(
         array $conf,
         array $text,
-        View $view,
-        CurrentUser $currentUser
+        UserRepository $userRepository,
+        View $view
     ) {
         $this->conf = $conf;
         $this->text = $text;
+        $this->userRepository = $userRepository;
         $this->view = $view;
-        $this->currentUser = $currentUser;
     }
 
     public function __invoke(Request $request, bool $loggedInOnly = false): Response
     {
-        if ($this->currentUser->get() === null) {
+        if ($request->username() === "") {
             if ($loggedInOnly) {
                 return new Response;
             }
@@ -75,7 +75,7 @@ class ShowLoginForm
 
     private function renderLoggedInForm(Request $request): string
     {
-        $user = $this->currentUser->get();
+        $user = $this->userRepository->findByUsername($request->username());
         assert($user instanceof User);
         $userPrefPage = $this->text['user_prefs'];
         $data = [

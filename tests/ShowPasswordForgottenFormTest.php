@@ -8,14 +8,9 @@
 
 namespace Register;
 
-use XH_includeVar;
-
 use ApprovalTests\Approvals;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
-
-use Register\Value\User;
-use Register\Infra\CurrentUser;
 use Register\Infra\Mailer;
 use Register\Infra\Request;
 use Register\Infra\Url;
@@ -27,9 +22,6 @@ class ShowPasswordForgottenFormTest extends TestCase
     /** @var ShowPasswordForgottenForm */
     private $subject;
 
-    /** @var CurrentUser&MockObject */
-    private $currentUser;
-
     /** @var View&MockObject */
     private $view;
 
@@ -38,7 +30,6 @@ class ShowPasswordForgottenFormTest extends TestCase
 
     public function setUp(): void
     {
-        $this->currentUser = $this->createStub(CurrentUser::class);
         $plugin_cf = XH_includeVar("./config/config.php", 'plugin_cf');
         $conf = $plugin_cf['register'];
         $plugin_tx = XH_includeVar("./languages/en.php", 'plugin_tx');
@@ -47,7 +38,6 @@ class ShowPasswordForgottenFormTest extends TestCase
         $this->userRepository = $this->createStub(UserRepository::class);
         $this->mailer = $this->createMock(Mailer::class);
         $this->subject = new HandlePasswordForgotten(
-            $this->currentUser,
             $conf,
             $this->view,
             $this->userRepository,
@@ -60,7 +50,7 @@ class ShowPasswordForgottenFormTest extends TestCase
 
     public function testLoggedInUserIsRedirected(): void
     {
-        $this->currentUser->method("get")->willReturn(new User("", "", [], "", "", "", "secret"));
+        $this->request->method("username")->willReturn("cmb");
         $response = ($this->subject)($this->request);
         $this->assertEquals("http://example.com/", $response->location());
     }

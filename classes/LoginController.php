@@ -10,15 +10,15 @@
 
 namespace Register;
 
-use Register\Infra\CurrentUser;
-use Register\Logic\Util;
-use Register\Value\User;
 use Register\Infra\Logger;
+use Register\Infra\LoginManager;
 use Register\Infra\Password;
 use Register\Infra\Response;
 use Register\Infra\Request;
 use Register\Infra\UserGroupRepository;
 use Register\Infra\UserRepository;
+use Register\Logic\Util;
+use Register\Value\User;
 
 class LoginController
 {
@@ -37,8 +37,8 @@ class LoginController
     /** @var Logger */
     private $logger;
 
-    /** @var CurrentUser */
-    private $currentUser;
+    /** @var LoginManager */
+    private $loginManager;
 
     /** @var Password */
     private $password;
@@ -53,7 +53,7 @@ class LoginController
         UserRepository $userRepository,
         UserGroupRepository $userGroupRepository,
         Logger $logger,
-        CurrentUser $currentUser,
+        LoginManager $loginManager,
         Password $password
     ) {
         $this->conf = $conf;
@@ -61,23 +61,23 @@ class LoginController
         $this->userRepository = $userRepository;
         $this->userGroupRepository = $userGroupRepository;
         $this->logger = $logger;
-        $this->currentUser = $currentUser;
+        $this->loginManager = $loginManager;
         $this->password = $password;
     }
 
     public function __invoke(Request $request): Response
     {
         if ($this->conf["remember_user"] && $request->cookie("register_remember") !== null
-                && !$this->currentUser->get()) {
+                && !$request->username()) {
             return $this->loginAction($request);
         }
-        if (!$this->currentUser->get() && $request->function() === "registerlogin") {
+        if (!$request->username() && $request->function() === "registerlogin") {
             return $this->loginAction($request);
         }
-        if ($this->currentUser->get() && $request->function() === "registerlogout") {
+        if ($request->username() && $request->function() === "registerlogout") {
             return $this->logoutAction($request);
         }
-        if ($this->currentUser->invalid()) {
+        if ($request->username() && !$this->userRepository->findByUsername($request->username())) {
             return $this->forcedLogout($request);
         }
         return new Response();
@@ -105,7 +105,7 @@ class LoginController
                     $request->time() + (100 * 24 * 60 * 60)
                 );
             }
-            $this->currentUser->login($entry);
+            $this->loginManager->login($entry);
 
             $this->logger->logInfo('login', "$username logged in");
 
@@ -148,16 +148,14 @@ class LoginController
 
     private function logoutAction(Request $request): Response
     {
-        $user = $this->currentUser->get();
-        assert($user !== null);
-        $this->currentUser->logout();
-        $this->logger->logInfo('logout', "{$user->getUsername()} logged out");
+        $this->loginManager->logout();
+        $this->logger->logInfo('logout', "{$request->username()} logged out");
         return (new Response)->redirect($request->url()->withPage($this->text['loggedout'])->absolute());
     }
 
     private function forcedLogout(Request $request): Response
     {
-        $this->currentUser->logout();
+        $this->loginManager->logout();
         return (new Response)->redirect($request->url()->withPage($this->text['loggedout'])->absolute());
     }
 }

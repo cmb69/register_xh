@@ -10,15 +10,14 @@ namespace Register;
 
 use XH\CSRFProtection as CsrfProtector;
 
-use Register\Infra\CurrentUser;
 use Register\Infra\DbService;
 use Register\Infra\Logger;
+use Register\Infra\LoginManager;
 use Register\Infra\Mailer;
 use Register\Infra\Pages;
 use Register\Infra\Password;
 use Register\Infra\Random;
 use Register\Infra\Request;
-use Register\Infra\Session;
 use Register\Infra\SystemChecker;
 use Register\Infra\UserGroupRepository;
 use Register\Infra\UserRepository;
@@ -61,7 +60,7 @@ class Dic
             self::makeUserRepository(),
             new UserGroupRepository(self::makeDbService()),
             new Logger(),
-            self::makeCurrentUser(),
+            new LoginManager(),
             new Password()
         );
     }
@@ -110,7 +109,6 @@ class Dic
         global $plugin_cf, $plugin_tx;
 
         return new HandleUserRegistration(
-            Dic::makeCurrentUser(),
             $plugin_cf["register"],
             $plugin_tx["register"],
             new Random,
@@ -125,14 +123,14 @@ class Dic
     {
         global $plugin_tx;
 
-        return new HandlePageAccess($plugin_tx["register"], Dic::makeCurrentUser());
+        return new HandlePageAccess($plugin_tx["register"], Dic::makeUserRepository());
     }
 
     public static function makeHandlePageProtection(): HandlePageProtection
     {
         global $plugin_cf;
 
-        return new HandlePageProtection($plugin_cf["register"], Dic::makeCurrentUser(), new Pages);
+        return new HandlePageProtection($plugin_cf["register"], Dic::makeUserRepository(), new Pages);
     }
 
     public static function makeHandlePasswordForgotten(): HandlePasswordForgotten
@@ -140,7 +138,6 @@ class Dic
         global $plugin_cf;
 
         return new HandlePasswordForgotten(
-            Dic::makeCurrentUser(),
             $plugin_cf["register"],
             self::makeView(),
             self::makeUserRepository(),
@@ -153,7 +150,6 @@ class Dic
         global $plugin_cf;
 
         return new HandleUserPreferences(
-            Dic::makeCurrentUser(),
             $plugin_cf["register"],
             new CsrfProtector('register_csrf_token', false),
             self::makeUserRepository(),
@@ -171,8 +167,8 @@ class Dic
         return new ShowLoginForm(
             $plugin_cf["register"],
             $plugin_tx["register"],
-            self::makeView(),
-            Dic::makeCurrentUser()
+            Dic::makeUserRepository(),
+            self::makeView()
         );
     }
 
@@ -198,18 +194,6 @@ class Dic
     private static function makeUserRepository(): UserRepository
     {
         return new UserRepository(self::makeDbService());
-    }
-
-    private static function makeCurrentUser(): CurrentUser
-    {
-        global $pth;
-
-        static $instance = null;
-
-        if ($instance === null) {
-            $instance = new CurrentUser($pth["folder"]["cmsimple"] . ".sessionname", self::makeUserRepository());
-        }
-        return $instance;
     }
 
     private static function makeDbService(): DbService

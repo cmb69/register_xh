@@ -12,6 +12,7 @@ use PHPUnit\Framework\TestCase;
 use Register\Infra\CurrentUser;
 use Register\Value\User;
 use Register\Infra\Logger;
+use Register\Infra\LoginManager;
 use Register\Infra\Password;
 use Register\Infra\Request;
 use Register\Infra\Url;
@@ -38,8 +39,7 @@ class LoginControllerTest extends TestCase
     /** @var Request&MockObject */
     private $request;
 
-    /** @var CurrentUser&MockObject */
-    private $currentUser;
+    private $loginManager;
 
     public function setUp(): void
     {
@@ -50,7 +50,7 @@ class LoginControllerTest extends TestCase
         $this->userRepository = $this->createStub(UserRepository::class);
         $this->userGroupRepository = $this->createStub(UserGroupRepository::class);
         $this->logger = $this->createStub(Logger::class);
-        $this->currentUser = $this->createStub(CurrentUser::class);
+        $this->loginManager = $this->createStub(LoginManager::class);
         $this->request = $this->createStub(Request::class);
         $this->request->method("url")->willReturn(new Url("/", "irrelevant page"));
     }
@@ -66,7 +66,7 @@ class LoginControllerTest extends TestCase
             $this->userRepository,
             $this->userGroupRepository,
             $this->logger,
-            $this->currentUser,
+            $this->loginManager,
             $password
         );
         $this->request->method("function")->willReturn("registerlogin");
@@ -82,7 +82,7 @@ class LoginControllerTest extends TestCase
             $this->userRepository,
             $this->userGroupRepository,
             $this->logger,
-            $this->currentUser,
+            $this->loginManager,
             $this->createStub(Password::class)
         );
         $this->request->method("function")->willReturn("registerlogin");
@@ -98,11 +98,12 @@ class LoginControllerTest extends TestCase
             $this->userRepository,
             $this->userGroupRepository,
             $this->logger,
-            $this->currentUser,
+            $this->loginManager,
             $this->createStub(Password::class)
         );
-        $this->currentUser->method("get")->willReturn($this->jane());
+        $this->userRepository->method("findByUsername")->willReturn($this->jane());
         $this->request->method("function")->willReturn("registerlogout");
+        $this->request->method("username")->willReturn("jane");
         $response = $sut($this->request);
         $this->assertEquals("http://example.com/?Logged-out", $response->location());
     }

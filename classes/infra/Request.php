@@ -10,6 +10,12 @@ namespace Register\Infra;
 
 class Request
 {
+    /** @codeCoverageIgnore */
+    public function username(): string
+    {
+        return $_SESSION["username"] ?? "";
+    }
+
     public function groupAdminAction(): string
     {
         return $this->hasGroupAdminSubmission($this->post()) ? "do_update" : "update";

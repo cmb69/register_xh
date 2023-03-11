@@ -11,22 +11,18 @@ namespace Register;
 use ApprovalTests\Approvals;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
-use Register\Infra\CurrentUser;
-use Register\Value\User;
 use Register\Infra\Mailer;
 use Register\Infra\Password;
 use Register\Infra\Random;
 use Register\Infra\Request;
 use Register\Infra\UserRepository;
 use Register\Infra\View;
+use Register\Value\User;
 
 class ActivateUserTest extends TestCase
 {
     /** @var ActivateUser */
     private $subject;
-
-    /** @var CurrentUser&MockObject */
-    private $currentUser;
 
     /** @var array<string,User> */
     private $users;
@@ -43,7 +39,6 @@ class ActivateUserTest extends TestCase
     public function setUp(): void
     {
         $hash = "\$2y\$10\$f4ldVDiVXTkNrcPmBdbW7.g/.mw5GOEqBid650oN9hE56UC28aXSq";
-        $this->currentUser = $this->createStub(CurrentUser::class);
         $this->users = [
             "john" => new User("john", $hash, [], "John Doe", "john@example.com", "", "secret"),
             "jane" => new User("jane", "", [], "Jane Doe", "jane@example.com", "12345", "secret"),
@@ -59,7 +54,6 @@ class ActivateUserTest extends TestCase
         $mailer = $this->createStub(Mailer::class);
         $password = $this->createStub(Password::class);
         $this->subject = new HandleUserRegistration(
-            $this->currentUser,
             $conf,
             $text,
             $random,

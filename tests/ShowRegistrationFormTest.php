@@ -8,11 +8,8 @@
 
 namespace Register;
 
-use XH_includeVar;
-
 use ApprovalTests\Approvals;
 use PHPUnit\Framework\TestCase;
-use Register\Infra\CurrentUser;
 use Register\Infra\Mailer;
 use Register\Infra\Password;
 use Register\Infra\Random;
@@ -26,9 +23,6 @@ class ShowRegistrationFormTest extends TestCase
     /** @var HandleUserRegistration */
     private $subject;
 
-    /** @var CurrentUser&MockObject */
-    private $currentUser;
-
     /** @var View */
     private $view;
 
@@ -37,7 +31,6 @@ class ShowRegistrationFormTest extends TestCase
 
     public function setUp(): void
     {
-        $this->currentUser = $this->createStub(CurrentUser::class);
         $plugin_cf = XH_includeVar("./config/config.php", 'plugin_cf');
         $conf = $plugin_cf['register'];
         $plugin_tx = XH_includeVar("./languages/en.php", 'plugin_tx');
@@ -49,7 +42,6 @@ class ShowRegistrationFormTest extends TestCase
         $mailer = $this->createStub(Mailer::class);
         $password = $this->createStub(Password::class);
         $this->subject = new HandleUserRegistration(
-            $this->currentUser,
             $conf,
             $text,
             $random,

@@ -10,11 +10,11 @@ namespace Register;
 
 use ApprovalTests\Approvals;
 use PHPUnit\Framework\TestCase;
-use Register\Infra\CurrentUser;
-use Register\Value\User;
 use Register\Infra\Request;
 use Register\Infra\Url;
+use Register\Infra\UserRepository;
 use Register\Infra\View;
+use Register\Value\User;
 
 class ShowLoginFormTest extends TestCase
 {
@@ -24,8 +24,8 @@ class ShowLoginFormTest extends TestCase
         $conf = $plugin_cf['register'];
         $plugin_tx = XH_includeVar("./languages/en.php", 'plugin_tx');
         $text = $plugin_tx['register'];
-        $currentUser = $this->createStub(CurrentUser::class);
-        $subject = new ShowLoginForm($conf, $text, new View("./", $text), $currentUser);
+        $userRepository = $this->createStub(UserRepository::class);
+        $subject = new ShowLoginForm($conf, $text, $userRepository, new View("./", $text));
 
         $request = $this->createStub(Request::class);
         $request->method("url")->willReturn(new Url("/", "Foo"));
@@ -39,12 +39,13 @@ class ShowLoginFormTest extends TestCase
         $plugin_tx = XH_includeVar("./languages/en.php", 'plugin_tx');
         $text = $plugin_tx['register'];
         $user = new User("jane", "", [], "Jane Doe", "jane@example.com", "activated", "secret");
-        $currentUser = $this->createStub(CurrentUser::class);
-        $currentUser->method("get")->willReturn($user);
-        $subject = new ShowLoginForm([], $text, new View("./", $text), $currentUser);
+        $userRepository = $this->createStub(UserRepository::class);
+        $userRepository->method("findByUsername")->willReturn($user);
+        $subject = new ShowLoginForm([], $text, $userRepository, new View("./", $text));
 
         $request = $this->createStub(Request::class);
         $request->method("url")->willReturn(new Url("/", "Foo"));
+        $request->method("username")->willReturn("jane");
         $response = $subject($request);
 
         Approvals::verifyHtml($response->output());

@@ -10,24 +10,19 @@
 
 namespace Register;
 
-use Register\Infra\Mailer;
-use XH\CSRFProtection as CsrfProtector;
-
-use Register\Value\HtmlString;
-use Register\Logic\Validator;
-use Register\Infra\CurrentUser;
 use Register\Infra\Logger;
+use Register\Infra\Mailer;
 use Register\Infra\Password;
 use Register\Infra\Request;
 use Register\Infra\Response;
 use Register\Infra\UserRepository;
 use Register\Infra\View;
+use Register\Logic\Validator;
+use Register\Value\HtmlString;
+use XH\CSRFProtection as CsrfProtector;
 
 class HandleUserPreferences
 {
-    /** @var CurrentUser */
-    private $currentUser;
-
     /** @var array<string,string> */
     private $conf;
 
@@ -53,7 +48,6 @@ class HandleUserPreferences
      * @param array<string,string> $conf
      */
     public function __construct(
-        CurrentUser $currentUser,
         array $conf,
         CsrfProtector $csrfProtector,
         UserRepository $userRepository,
@@ -62,7 +56,6 @@ class HandleUserPreferences
         Logger $logger,
         Password $password
     ) {
-        $this->currentUser = $currentUser;
         $this->conf = $conf;
         $this->csrfProtector = $csrfProtector;
         $this->userRepository = $userRepository;
@@ -74,7 +67,7 @@ class HandleUserPreferences
 
     public function __invoke(Request $request): Response
     {
-        if (!$this->currentUser->get()) {
+        if (!$request->username()) {
             return (new Response)->body($this->view->message("fail", "access_error_text"));
         }
         if (isset($_POST['action']) && $_POST['action'] === 'edit_user_prefs' && isset($_POST['submit'])) {
@@ -88,7 +81,7 @@ class HandleUserPreferences
 
     private function showForm(Request $request): string
     {
-        $user = $this->currentUser->get();
+        $user = $this->userRepository->findByUsername($request->username());
         assert($user !== null);
         if ($user->isLocked()) {
             return $this->view->message('fail', 'user_locked', $user->getUsername());
@@ -115,7 +108,7 @@ class HandleUserPreferences
         $password2 = $this->trimmedPostString("password2");
         $email = $this->trimmedPostString("email");
 
-        $user = $this->currentUser->get();
+        $user = $this->userRepository->findByUsername($request->username());
         assert($user !== null);
 
         // Test if user is locked
@@ -204,7 +197,7 @@ class HandleUserPreferences
         $name = $_POST['name'] ?? '';
         $email = $_POST['email'] ?? '';
 
-        $user = $this->currentUser->get();
+        $user = $this->userRepository->findByUsername($request->username());
         assert($user !== null);
 
         // Test if user is locked
@@ -229,7 +222,6 @@ class HandleUserPreferences
             return $this->view->message("fail", 'err_cannot_write_csv');
         }
 
-        $this->currentUser->logout();
         $this->logger->logInfo('logout', "{$user->getUsername()} deleted and logged out");
         return $this->view->message('success', 'user_deleted', $user->getUsername());
     }

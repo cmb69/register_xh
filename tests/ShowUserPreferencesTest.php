@@ -10,11 +10,6 @@ namespace Register;
 
 use ApprovalTests\Approvals;
 use PHPUnit\Framework\TestCase;
-
-use XH\CSRFProtection as CsrfProtector;
-
-use Register\Value\User;
-use Register\Infra\CurrentUser;
 use Register\Infra\Logger;
 use Register\Infra\Mailer;
 use Register\Infra\Password;
@@ -22,6 +17,8 @@ use Register\Infra\Request;
 use Register\Infra\Url;
 use Register\Infra\UserRepository;
 use Register\Infra\View;
+use Register\Value\User;
+use XH\CSRFProtection as CsrfProtector;
 
 class ShowUserPreferencesTest extends TestCase
 {
@@ -30,9 +27,6 @@ class ShowUserPreferencesTest extends TestCase
 
     /** @var array<string,User> */
     private $users;
-
-    /** @var CurrentUser */
-    private $currentUser;
 
     /** @var CsrfProtector */
     private $csrfProtector;
@@ -53,7 +47,6 @@ class ShowUserPreferencesTest extends TestCase
             "john" => new User("john", $hash, [], "John Doe", "john@example.com", "activated", "secret"),
             "jane" => new User("jane", "", [], "Jane Doe", "jane@example.com", "locked", "secret"),
         ];
-        $this->currentUser = $this->createStub(CurrentUser::class);
         $conf = XH_includeVar("./config/config.php", "plugin_cf")["register"];
         $plugin_tx = XH_includeVar("./languages/en.php", 'plugin_tx');
         $lang = $plugin_tx['register'];
@@ -64,7 +57,6 @@ class ShowUserPreferencesTest extends TestCase
         $logger = $this->createStub(Logger::class);
         $password = $this->createStub(Password::class);
         $this->subject = new HandleUserPreferences(
-            $this->currentUser,
             $conf,
             $this->csrfProtector,
             $this->userRepository,
@@ -79,14 +71,14 @@ class ShowUserPreferencesTest extends TestCase
 
     public function testNoUser(): void
     {
-        $this->currentUser->method("get")->willReturn(null);
+        $this->request->method("username")->willReturn("");
         $response = ($this->subject)($this->request);
         Approvals::verifyHtml($response->output());
     }
 
     public function testUserIsLocked(): void
     {
-        $this->currentUser->method("get")->willReturn($this->users["jane"]);
+        $this->request->method("username")->willReturn("jane");
         $this->userRepository->method("findByUsername")->willReturn($this->users["jane"]);
         $response = ($this->subject)($this->request);
         Approvals::verifyHtml($response->output());
@@ -94,7 +86,7 @@ class ShowUserPreferencesTest extends TestCase
 
     public function testSuccess(): void
     {
-        $this->currentUser->method("get")->willReturn($this->users["john"]);
+        $this->request->method("username")->willReturn("john");
         $this->userRepository->method("findByUsername")->willReturn($this->users["john"]);
         $response = ($this->subject)($this->request);
         Approvals::verifyHtml($response->output());

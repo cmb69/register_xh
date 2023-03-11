@@ -10,27 +10,27 @@
 
 namespace Register;
 
-use Register\Infra\CurrentUser;
 use Register\Infra\Pages;
 use Register\Infra\Request;
 use Register\Infra\Response;
+use Register\Infra\UserRepository;
 
 class HandlePageProtection
 {
     /** @var array<string,string> */
     private $conf;
 
-    /** @var CurrentUser */
-    private $currentUser;
+    /** @var UserRepository */
+    private $userRepository;
 
     /** @var Pages */
     private $pages;
 
     /** @param array<string,string> $conf */
-    public function __construct(array $conf, CurrentUser $currentUser, Pages $pages)
+    public function __construct(array $conf, UserRepository $userRepository, Pages $pages)
     {
         $this->conf = $conf;
-        $this->currentUser = $currentUser;
+        $this->userRepository = $userRepository;
         $this->pages = $pages;
     }
 
@@ -39,7 +39,7 @@ class HandlePageProtection
         if ($request->editMode() || !$this->conf["hide_pages"]) {
             return new Response();
         }
-        $user = $this->currentUser->get();
+        $user = $this->userRepository->findByUsername($request->username());
         $userGroups = $user ? $user->getAccessgroups() : [];
         foreach ($this->pages->data() as $i => $pd) {
             if (($arg = trim($pd["register_access"] ?? ""))) {

@@ -10,7 +10,6 @@
 
 namespace Register;
 
-use Register\Infra\CurrentUser;
 use Register\Infra\Mailer;
 use Register\Infra\Request;
 use Register\Infra\Response;
@@ -21,9 +20,6 @@ use Register\Logic\Util;
 class HandlePasswordForgotten
 {
     private const TTL = 3600;
-
-    /** @var CurrentUser */
-    private $currentUser;
 
     /** @var array<string,string> */
     private $conf;
@@ -39,13 +35,11 @@ class HandlePasswordForgotten
 
     /** @param array<string,string> $conf */
     public function __construct(
-        CurrentUser $currentUser,
         array $conf,
         View $view,
         UserRepository $userRepository,
         Mailer $mailer
     ) {
-        $this->currentUser = $currentUser;
         $this->conf = $conf;
         $this->view = $view;
         $this->userRepository = $userRepository;
@@ -54,7 +48,7 @@ class HandlePasswordForgotten
 
     public function __invoke(Request $request): Response
     {
-        if ($this->currentUser->get()) {
+        if ($request->username()) {
             return (new Response)->redirect(CMSIMPLE_URL);
         }
         if (isset($_POST['action']) && $_POST['action'] === 'forgotten_password') {

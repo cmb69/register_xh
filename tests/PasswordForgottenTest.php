@@ -12,7 +12,6 @@ use XH_includeVar;
 
 use ApprovalTests\Approvals;
 use PHPUnit\Framework\TestCase;
-use Register\Infra\CurrentUser;
 use Register\Infra\FakeMailer;
 use Register\Value\User;
 use Register\Infra\Mailer;
@@ -25,9 +24,6 @@ class PasswordForgottenTest extends TestCase
 {
     /** @var HandlePasswordForgotten */
     private $subject;
-
-    /** @var CurrentUser&MockObject */
-    private $currentUser;
 
     /** @var View&MockObject */
     private $view;
@@ -43,7 +39,6 @@ class PasswordForgottenTest extends TestCase
 
     public function setUp(): void
     {
-        $this->currentUser = $this->createStub(CurrentUser::class);
         $plugin_cf = XH_includeVar("./config/config.php", 'plugin_cf');
         $conf = $plugin_cf['register'];
         $plugin_tx = XH_includeVar("./languages/en.php", 'plugin_tx');
@@ -52,7 +47,6 @@ class PasswordForgottenTest extends TestCase
         $this->userRepository = $this->createStub(UserRepository::class);
         $this->mailer = new FakeMailer(false, $text);
         $this->subject = new HandlePasswordForgotten(
-            $this->currentUser,
             $conf,
             $this->view,
             $this->userRepository,

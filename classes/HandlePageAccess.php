@@ -10,23 +10,23 @@
 
 namespace Register;
 
-use Register\Infra\CurrentUser;
 use Register\Infra\Request;
 use Register\Infra\Response;
+use Register\Infra\UserRepository;
 
 class HandlePageAccess
 {
     /** @var array<string,string> */
     private $text;
 
-    /** @var CurrentUser */
-    private $currentUser;
+    /** @var UserRepository */
+    private $userRepository;
 
     /** @param array<string,string> $text */
-    public function __construct(array $text, CurrentUser $currentUser)
+    public function __construct(array $text, UserRepository $userRepository)
     {
         $this->text = $text;
-        $this->currentUser = $currentUser;
+        $this->userRepository = $userRepository;
     }
 
     public function __invoke(Request $request, string $groupString): Response
@@ -36,7 +36,7 @@ class HandlePageAccess
         $groupString = (string) preg_replace("/[ \t\r\n]*/", '', $groupString);
         $groupNames = explode(",", $groupString);
     
-        $user = $this->currentUser->get();
+        $user = $this->userRepository->findByUsername($request->username());
         if ($request->function() !== "search"
                 && (!$user || !count(array_intersect($groupNames, $user->getAccessgroups())))) {
             // go to access error page
