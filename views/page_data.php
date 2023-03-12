@@ -8,7 +8,6 @@ if (!defined("CMSIMPLE_XH_VERSION")) {header("HTTP/1.1 403 Forbidden"); exit;}
  * @var View $this
  * @var string $action
  * @var string $iconFilename
- * @var string $iconAlt
  * @var string $accessGroups
  */
 ?>
@@ -16,7 +15,7 @@ if (!defined("CMSIMPLE_XH_VERSION")) {header("HTTP/1.1 403 Forbidden"); exit;}
 <form action="<?=$action?>" method="post" id="register">
   <p>
     <div class="pl_tooltip">
-      <img src="<?=$iconFilename?>" alt="<?=$iconAlt?>">
+      <img src="<?=$iconFilename?>" alt="<?=$this->text('alt_help')?>">
       <div><?=$this->text("hint_accessgroups")?></div>
     </div>
     <label>

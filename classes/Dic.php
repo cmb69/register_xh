@@ -176,9 +176,7 @@ class Dic
 
     public static function makeShowPageDataTab(): ShowPageDataTab
     {
-        global $plugin_tx;
-
-        return new ShowPageDataTab($plugin_tx["register"], self::makeView());
+        return new ShowPageDataTab(self::makeView());
     }
 
     public static function makeShowPluginInfo(): ShowPluginInfo

@@ -12,16 +12,11 @@ use Register\Value\Response;
 
 class ShowPageDataTab
 {
-    /** @var array<string,string> */
-    private $text;
-
     /** @var View */
     private $view;
 
-    /** @param array<string,string> $text */
-    public function __construct(array $text, View $view)
+    public function __construct(View $view)
     {
-        $this->text = $text;
         $this->view = $view;
     }
 
@@ -31,7 +26,6 @@ class ShowPageDataTab
         return Response::create($this->view->render("page_data", [
             "action" => $request->url()->relative(),
             "iconFilename" => $request->coreStyleFolder() . "help_icon.png",
-            "iconAlt" => $this->text["alt_help"],
             "accessGroups" => $pageData["register_access"],
         ]));
     }
