@@ -31,6 +31,7 @@ class HandlePageProtectionTest extends TestCase
     {
         $conf = XH_includeVar("./config/config.php", "plugin_cf")["register"];
         $this->userRepository = $this->createMock(UserRepository::class);
+        $this->userRepository->method("findByUsername")->willReturn(new User("cmb", "", ["guest"], "", "", "", ""));
         $this->pages = $this->createStub(Pages::class);
         $this->pages->method("data")->willReturn([
             ["register_access" => ""],
@@ -43,10 +44,17 @@ class HandlePageProtectionTest extends TestCase
 
     public function testProtectsPages(): void
     {
-        $this->userRepository->method("findByUsername")->willReturn(new User("cmb", "", ["guest"], "", "", "", ""));
-        $this->pages->method("setContentOf")->withConsecutive(
-            [2, "#CMSimple hide# {{{register_access('admin')}}}"],
+        $this->pages->expects($this->once())->method("setContentOf")->with(
+            2, "#CMSimple hide# {{{register_access('admin')}}}"
         );
         ($this->sut)($this->request);
+    }
+
+    public function testDoesNotProtectPagesInEditMode(): void
+    {
+        $this->pages->expects($this->never())->method("setContentOf");
+        $this->request->method("editMode")->willReturn(true);
+        ($this->sut)($this->request);
+
     }
 }

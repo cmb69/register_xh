@@ -36,7 +36,7 @@ class HandlePageAccess
             return Response::create();
         }
         $user = $this->userRepository->findByUsername($request->username());
-        if ($user === null || !Util::isAuthorized($user, $groupString)) {
+        if (!Util::isAuthorized($user, $groupString)) {
             return Response::redirect($request->url()->withPage($this->text["access_error"])->absolute());
         }
         return Response::create();

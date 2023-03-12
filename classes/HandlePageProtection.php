@@ -13,6 +13,7 @@ namespace Register;
 use Register\Infra\Pages;
 use Register\Infra\Request;
 use Register\Infra\UserRepository;
+use Register\Logic\Util;
 use Register\Value\Response;
 
 class HandlePageProtection
@@ -37,18 +38,15 @@ class HandlePageProtection
     public function __invoke(Request $request): Response
     {
         if ($request->editMode() || !$this->conf["hide_pages"]) {
-            return new Response();
+            return Response::create();
         }
         $user = $this->userRepository->findByUsername($request->username());
-        $userGroups = $user ? $user->getAccessgroups() : [];
         foreach ($this->pages->data() as $i => $pd) {
-            if (($arg = trim($pd["register_access"] ?? ""))) {
-                $groups = array_map('trim', explode(',', $arg));
-                if (count(array_intersect($groups, $userGroups)) == 0) {
-                    $this->pages->setContentOf($i, "#CMSimple hide# {{{register_access('$arg')}}}");
-                }
+            $arg = $pd["register_access"] ?? "";
+            if (!Util::isAuthorized($user, $arg)) {
+                $this->pages->setContentOf($i, "#CMSimple hide# {{{register_access('$arg')}}}");
             }
         }
-        return new Response();
+        return Response::create();
     }
 }
