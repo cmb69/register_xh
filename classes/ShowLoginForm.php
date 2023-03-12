@@ -48,29 +48,27 @@ class ShowLoginForm
 
     public function __invoke(Request $request, bool $loggedInOnly = false): Response
     {
-        if ($request->username() === "") {
-            if ($loggedInOnly) {
-                return Response::create("");
-            }
-            return Response::create($this->renderLoginForm($request));
-        } else {
+        if ($request->username() !== "") {
             return Response::create($this->renderLoggedInForm($request));
         }
+        if (!$loggedInOnly) {
+            return Response::create($this->renderLoginForm($request));
+        }
+        return Response::create("");
     }
 
     private function renderLoginForm(Request $request): string
     {
         $forgotPasswordPage = $this->text['forgot_password'];
-        $data = [
+        return $this->view->render('loginform', [
             'actionUrl' => $request->url()->relative(),
             'hasForgotPasswordLink' => $this->conf['password_forgotten']
                 && !$request->url()->pageMatches($forgotPasswordPage),
             'forgotPasswordUrl' => $request->url()->withPage($forgotPasswordPage)->relative(),
-            'hasRememberMe' => $this->conf['remember_user'],
-            'isRegisterAllowed' => $this->conf['allowed_register'],
+            'hasRememberMe' => (bool) $this->conf['remember_user'],
+            'isRegisterAllowed' => (bool) $this->conf['allowed_register'],
             'registerUrl' => $request->url()->withPage($this->text['register'])->relative(),
-        ];
-        return $this->view->render('loginform', $data);
+        ]);
     }
 
     private function renderLoggedInForm(Request $request): string
@@ -78,13 +76,12 @@ class ShowLoginForm
         $user = $this->userRepository->findByUsername($request->username());
         assert($user instanceof User);
         $userPrefPage = $this->text['user_prefs'];
-        $data = [
+        return $this->view->render('loggedin_area', [
             'fullName' => $user->getName(),
             'hasUserPrefs' => $user->isActivated() &&
                 !$request->url()->pageMatches($userPrefPage),
             'userPrefUrl' => $request->url()->withPage($userPrefPage)->relative(),
             'logoutUrl' => $request->url()->withPage("")->withParams(["function" => "registerlogout"])->relative(),
-        ];
-        return $this->view->render('loggedin_area', $data);
+        ]);
     }
 }
