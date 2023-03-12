@@ -55,26 +55,27 @@ class PasswordForgottenTest extends TestCase
         $this->request = $this->createStub(Request::class);
         $this->request->method("url")->willReturn(new Url("/", ""));
         $this->request->method("time")->willReturn(1637449200);
+        $this->request->method("registerAction")->willReturn("forgot_password");
     }
 
     public function testEmptyEmail(): void
     {
-        $_POST = ["action" => "forgotten_password", "email" => ""];
+        $this->request->method("forgotPasswordPost")->willReturn(["email" => ""]);
         $response = ($this->subject)($this->request);
         Approvals::verifyHtml($response->output());
     }
 
     public function testInvalidEmail(): void
     {
-        $_POST = ["action" => "forgotten_password", "email" => "invalid"];
+        $this->request->method("forgotPasswordPost")->willReturn(["email" => "invalid"]);
         $response = ($this->subject)($this->request);
         Approvals::verifyHtml($response->output());
     }
 
     public function testUnknownEmail(): void
     {
-        $_POST = ["action" => "forgotten_password", "email" => "jane@example.com"];
         $this->userRepository->method("findByEmail")->willReturn(null);
+        $this->request->method("forgotPasswordPost")->willReturn(["email" => "jane@example.com"]);
         $response = ($this->subject)($this->request);
         Approvals::verifyHtml($response->output());
     }
@@ -82,19 +83,19 @@ class PasswordForgottenTest extends TestCase
     public function testKnownEmail(): void
     {
         $_SERVER["SERVER_NAME"] = "example.com";
-        $_POST = ["action" => "forgotten_password", "email" => "john@example.com"];
         $john = new User("john", "12345", [], "John Dow", "john@example.com", "", "secret");
         $this->userRepository->method("findByEmail")->willReturn($john);
+        $this->request->method("forgotPasswordPost")->willReturn(["email" => "john@example.com"]);
         $response = ($this->subject)($this->request);
         Approvals::verifyHtml($response->output());
     }
 
     public function testSendsMailOnSuccess(): void
     {
-        $_SERVER["SERVER_NAME"] = "example.com";
-        $_POST = ["action" => "forgotten_password", "email" => "john@example.com"];
         $john = new User("john", "12345", [], "John Dow", "john@example.com", "", "secret");
         $this->userRepository->method("findByEmail")->willReturn($john);
+        $this->request->method("forgotPasswordPost")->willReturn(["email" => "john@example.com"]);
+        $this->request->method("serverName")->willReturn("example.com");
         ($this->subject)($this->request);
         $this->assertEquals("john@example.com", $this->mailer->to());
         $this->assertEquals("Account data for example.com", $this->mailer->subject());

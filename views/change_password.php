@@ -6,11 +6,15 @@ if (!defined("CMSIMPLE_XH_VERSION")) {header("HTTP/1.1 403 Forbidden"); exit;}
 
 /**
  * @var View $this
+ * @var list<array{string}> $errors
  * @var string $url
  */
 ?>
 <!-- register change password -->
 <form class="register_change_password" action="<?=$url?>" method="post">
+<?foreach ($errors as $error):?>
+  <p class="xh_fail"><?=$this->text(...$error)?></p>
+<?endforeach?>
   <p>
     <label>
       <span><?=$this->text('password')?></span>

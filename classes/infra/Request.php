@@ -43,6 +43,33 @@ class Request
         ];
     }
 
+    /** @return array{email:string} */
+    public function forgotPasswordPost(): array
+    {
+        return [
+            "email" => $this->trimmedPostString("email"),
+        ];
+    }
+
+    /** @return array{username:string,time:string,mac:string} */
+    public function resetPasswordParams(): array
+    {
+        return [
+            "username" => $this->trimmedGetString("username"),
+            "time" => $this->trimmedGetString("time"),
+            "mac" => $this->trimmedGetString("mac"),
+        ];
+    }
+
+    /** @return array{password1:string,password2:string} */
+    public function changePasswordPost(): array
+    {
+        return [
+            "password1" => $this->trimmedPostString("password1"),
+            "password2" => $this->trimmedPostString("password2"),
+        ];
+    }
+
     /** @return array{oldpassword:string,name:string,password1:string,password2:string,email:string} */
     public function changePrefsPost(): array
     {

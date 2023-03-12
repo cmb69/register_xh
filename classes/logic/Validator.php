@@ -77,7 +77,7 @@ class Validator
     /**
      * @return list<array{string}>
      */
-    private function validateEmail(string $email): array
+    public function validateEmail(string $email): array
     {
         $errors = [];
         if ($email === "") {

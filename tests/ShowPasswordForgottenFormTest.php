@@ -57,7 +57,6 @@ class ShowPasswordForgottenFormTest extends TestCase
 
     public function testSuccess(): void
     {
-        $_POST["email"] = "john@example.com";
         $response = ($this->subject)($this->request);
         Approvals::verifyHtml($response->output());
     }

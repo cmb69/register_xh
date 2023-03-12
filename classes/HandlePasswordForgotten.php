@@ -12,9 +12,11 @@ namespace Register;
 
 use Register\Infra\Mailer;
 use Register\Infra\Request;
+use Register\Infra\Url;
 use Register\Infra\UserRepository;
 use Register\Infra\View;
 use Register\Logic\Util;
+use Register\Logic\Validator;
 use Register\Value\Response;
 
 class HandlePasswordForgotten
@@ -51,50 +53,39 @@ class HandlePasswordForgotten
         if ($request->username()) {
             return Response::redirect(CMSIMPLE_URL);
         }
-        if (isset($_POST['action']) && $_POST['action'] === 'forgotten_password') {
-            return $this->passwordForgotten($request);
-        } elseif (isset($_GET['action']) && $_GET['action'] === 'registerResetPassword') {
-            return $this->resetPassword($request);
-        } elseif (isset($_GET['action']) && $_GET['action'] === 'register_change_password') {
-            return $this->changePassword($request);
-        } else {
-            return $this->showForm($request);
+        switch ($request->registerAction()) {
+            default:
+                return $this->showForm($request);
+            case "forgot_password":
+                return $this->passwordForgotten($request);
+            case "reset_password":
+                return $this->resetPassword($request);
+            case "change_password":
+                return $this->changePassword($request);
         }
     }
 
     private function showForm(Request $request): Response
     {
-        $email = $_POST['email'] ?? '';
-        return Response::create($this->view->render('forgotten_form', [
-            'actionUrl' => $request->url()->relative(),
-            'email' => $email,
-        ]));
+        return Response::create($this->renderForm($request->url(), [], ""));
     }
 
     private function passwordForgotten(Request $request): Response
     {
-        $email = $_POST['email'] ?? '';
-
-        if ($email == '') {
-            return Response::create($this->view->message("fail", 'err_email')
-                . $this->view->render('forgotten_form', [
-                    'actionUrl' => $request->url()->relative(),
-                    'email' => $email,
-                ]));
+        $post = $request->forgotPasswordPost();
+        if ($post["email"] === "") {
+            return Response::create($this->renderForm($request->url(), [["err_email"]], ""));
         }
-        if (!preg_match("/^[^\s()<>@,;:\"\/\[\]?=]+@\w[\w-]*(\.\w[\w-]*)*\.[a-z]{2,}$/i", $email)) {
-            return Response::create($this->view->message("fail", 'err_email_invalid')
-                . $this->view->render('forgotten_form', [
-                    'actionUrl' => $request->url()->relative(),
-                    'email' => $email,
-                ]));
+        $errors = (new Validator)->validateEmail($post["email"]);
+        if ($errors) {
+            return Response::create($this->renderForm($request->url(), $errors, $post["email"]));
         }
 
-        $user = $this->userRepository->findByEmail($email);
+        $user = $this->userRepository->findByEmail($post["email"]);
         if ($user) {
             $mac = Util::hmac($user->getUsername() .  $request->time(), $user->secret());
             $url = $request->url()->withParams([
-                "action" => "registerResetPassword",
+                "register_action" => "reset_password",
                 "username" => $user->getUsername(),
                 "time" => (string) $request->time(),
                 "mac" => $mac,
@@ -103,7 +94,7 @@ class HandlePasswordForgotten
                 $user,
                 $this->conf['senderemail'],
                 $url->absolute(),
-                $_SERVER["SERVER_NAME"]
+                $request->serverName()
             );
         }
         return Response::create($this->view->message('success', 'remindersent_reset'));
@@ -111,65 +102,69 @@ class HandlePasswordForgotten
 
     private function resetPassword(Request $request): Response
     {
-        $username = $_GET["username"] ?? "";
-        $time = $_GET["time"] ?? 0;
-        $mac = $_GET["mac"] ?? "";
+        $params = $request->resetPasswordParams();
 
-        $user = $this->userRepository->findByUsername($username);
-        if (!$user || !hash_equals(Util::hmac($username . $time, $user->secret()), $mac)) {
+        $user = $this->userRepository->findByUsername($params["username"]);
+        if (!$user || !hash_equals(Util::hmac($params["username"] . $params["time"], $user->secret()), $params["mac"])) {
             return Response::create($this->view->message("fail", 'err_status_invalid'));
         }
-        if ($request->time() > $time + self::TTL) {
+        if ($request->time() > (int) $params["time"] + self::TTL) {
             return Response::create($this->view->message("fail", "forgotten_expired"));
         }
-        $url = $request->url()->withParams([
-            "action" => "register_change_password",
-            "username" => $username,
-            "time" => $time,
-            "mac" => $mac,
-        ]);
-        $username = urlencode($username);
-        $time = urlencode($time);
-        $mac = urlencode($mac);
-        return Response::create($this->view->render("change_password", [
-            "url" => $url->relative(),
-        ]));
+        return Response::create($this->renderChangePasswordForm($request->url(), $params, []));
     }
 
     private function changePassword(Request $request): Response
     {
-        $username = $_GET["username"] ?? "";
-        $time = $_GET["time"] ?? 0;
-        $mac = $_GET["mac"] ?? "";
+        $params = $request->resetPasswordParams();
 
-        $user = $this->userRepository->findByUsername($username);
-        if (!$user || !hash_equals(Util::hmac($username . $time, $user->secret()), $mac)) {
+        $user = $this->userRepository->findByUsername($params["username"]);
+        if (!$user || !hash_equals(Util::hmac($params["username"] . $params["time"], $user->secret()), $params["mac"])) {
             return Response::create($this->view->message("fail", 'err_status_invalid'));
         }
-        if ($request->time() > $time + self::TTL) {
+        if ($request->time() > (int) $params["time"] + self::TTL) {
             return Response::create($this->view->message("fail", "forgotten_expired"));
         }
-
-        if (!isset($_POST["password1"], $_POST["password2"]) || $_POST["password1"] !== $_POST["password2"]) {
-            $url = $request->url()->withParams([
-                "action" => "register_change_password",
-                "username" => $username,
-                "time" => $time,
-                "nonce" => $mac,
-            ]);
-            return Response::create($this->view->message("fail", 'err_password2')
-                . $this->view->render("change_password", [
-                    "url" => $url->relative(),
-                ]));
+        $post = $request->changePasswordPost();
+        if ($post["password1"] === "" || $post["password2"] === "" || $post["password1"] !== $post["password2"]) {
+            return Response::create($this->renderChangePasswordForm($request->url(), $params, [["err_password2"]]));
         }
 
-        $password = $_POST["password1"];
+        $password = $post["password1"];
         $user = $user->withPassword($password);
         if (!$this->userRepository->update($user)) {
             return Response::create($this->view->message("fail", 'err_cannot_write_csv'));
         }
 
-        $this->mailer->notifyPasswordReset($user, $this->conf['senderemail'], $_SERVER["SERVER_NAME"]);
+        $this->mailer->notifyPasswordReset($user, $this->conf['senderemail'], $request->serverName());
         return Response::create($this->view->message('success', 'remindersent'));
+    }
+
+    /** @param list<array{string}> $errors */
+    private function renderForm(Url $url, array $errors, string $email): string
+    {
+        return $this->view->render("forgotten_form", [
+            'actionUrl' => $url->relative(),
+            "errors" => $errors,
+            'email' => $email,
+        ]);
+    }
+
+    /**
+     * @param array{username:string,time:string,mac:string} $params
+     * @param list<array{string}> $errors
+     */
+    private function renderChangePasswordForm(Url $url, array $params, array $errors): string
+    {
+        $url = $url->withParams([
+            "register_action" => "change_password",
+            "username" => $params["username"],
+            "time" => $params["time"],
+            "mac" => $params["mac"],
+        ]);
+        return $this->view->render("change_password", [
+            "url" => $url->relative(),
+            "errors" => $errors,
+        ]);
     }
 }

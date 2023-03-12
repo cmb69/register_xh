@@ -53,66 +53,67 @@ class ChangePasswordTest extends TestCase
         $this->request = $this->createStub(Request::class);
         $this->request->method("url")->willReturn(new Url("/", ""));
         $this->request->method("time")->willReturn(1637449200);
+        $this->request->method("registerAction")->willReturn("change_password");
     }
 
     public function testUnknownUsername(): void
     {
-        $_GET = ["action" => "register_change_password", "username" => "colt"];
         $this->userRepository->method("findByUsername")->willReturn(null);
+        $this->request->method("resetPasswordParams")->willReturn([
+            "username" => "colt",
+            "time" => "",
+            "mac" => "",
+        ]);
         $response = ($this->subject)($this->request);
         Approvals::verifyHtml($response->output());
     }
 
     public function testWrongMac(): void
     {
-        $_GET = [
-            "action" => "register_change_password",
-            "username" => "john",
-            "time" => 1637449800,
-            "mac" => "54321",
-        ];
         $john = new User("john", "12345", [], "John Dow", "john@example.com", "", "secret");
         $this->userRepository->method("findByUsername")->willReturn($john);
+        $this->request->method("resetPasswordParams")->willReturn([
+            "username" => "john",
+            "time" => "1637449800",
+            "mac" => "54321",
+        ]);
         $response = ($this->subject)($this->request);
         Approvals::verifyHtml($response->output());
     }
 
     public function testSuccess(): void
     {
-        $_GET = [
-            "action" => "register_change_password",
-            "username" => "john",
-            "time" => 1637449800,
-            "mac" => "3pjbpRHFI9OO3gUHV42CHT3IHL8",
-        ];
-        $_POST = [
-            "password1" => "admin",
-            "password2" => "admin",
-        ];
-        $_SERVER['SERVER_NAME'] = "example.com";
         $john = new User("john", "12345", [], "John Dow", "john@example.com", "", "secret");
         $this->userRepository->method("findByUsername")->willReturn($john);
         $this->userRepository->method("update")->willReturn(true);
+        $this->request->method("resetPasswordParams")->willReturn([
+            "username" => "john",
+            "time" => "1637449800",
+            "mac" => "3pjbpRHFI9OO3gUHV42CHT3IHL8",
+        ]);
+        $this->request->method("changePasswordPost")->willReturn([
+            "password1" => "admin",
+            "password2" => "admin",
+        ]);
         $response = ($this->subject)($this->request);
         Approvals::verifyHtml($response->output());
     }
 
     public function testSendsMailOnSuccess(): void
     {
-        $_GET = [
-            "action" => "register_change_password",
-            "username" => "john",
-            "time" => 1637449800,
-            "mac" => "3pjbpRHFI9OO3gUHV42CHT3IHL8",
-        ];
-        $_POST = [
-            "password1" => "admin",
-            "password2" => "admin",
-        ];
-        $_SERVER['SERVER_NAME'] = "example.com";
         $john = new User("john", "12345", [], "John Dow", "john@example.com", "", "secret");
         $this->userRepository->method("findByUsername")->willReturn($john);
         $this->userRepository->method("update")->willReturn(true);
+        $this->request->method("resetPasswordParams")->willReturn([
+            "username" => "john",
+            "time" => "1637449800",
+            "mac" => "3pjbpRHFI9OO3gUHV42CHT3IHL8",
+        ]);
+        $this->request->method("changePasswordPost")->willReturn([
+            "password1" => "admin",
+            "password2" => "admin",
+        ]);
+        $this->request->method("serverName")->willReturn("example.com");
         ($this->subject)($this->request);
         $this->assertEquals("john@example.com", $this->mailer->to());
         $this->assertEquals("Account data for example.com", $this->mailer->subject());
@@ -122,20 +123,50 @@ class ChangePasswordTest extends TestCase
 
     public function testReportsExpiration(): void
     {
-        $_GET = [
-            "action" => "register_change_password",
-            "username" => "john",
-            "time" => 1637445599,
-            "mac" => "TLIb1A2yKWBs_ZGmC0l0V4w6bS8",
-        ];
-        $_POST = [
-            "password1" => "admin",
-            "password2" => "admin",
-        ];
-        $_SERVER['SERVER_NAME'] = "example.com";
         $john = new User("john", "12345", [], "John Dow", "john@example.com", "", "secret");
         $this->userRepository->method("findByUsername")->willReturn($john);
         $this->userRepository->method("update")->willReturn(true);
+        $this->request->method("resetPasswordParams")->willReturn([
+            "username" => "john",
+            "time" => "1637445599",
+            "mac" => "TLIb1A2yKWBs_ZGmC0l0V4w6bS8",
+        ]);
+        $response = ($this->subject)($this->request);
+        Approvals::verifyHtml($response->output());
+    }
+
+    public function testReportsNotMatchingPasswords(): void
+    {
+        $john = new User("john", "12345", [], "John Dow", "john@example.com", "", "secret");
+        $this->userRepository->method("findByUsername")->willReturn($john);
+        $this->userRepository->method("update")->willReturn(true);
+        $this->request->method("resetPasswordParams")->willReturn([
+            "username" => "john",
+            "time" => "1637449800",
+            "mac" => "3pjbpRHFI9OO3gUHV42CHT3IHL8",
+        ]);
+        $this->request->method("changePasswordPost")->willReturn([
+            "password1" => "admin",
+            "password2" => "amdin",
+        ]);
+        $response = ($this->subject)($this->request);
+        Approvals::verifyHtml($response->output());
+    }
+
+    public function testReportsFailureToUpdateUser(): void
+    {
+        $john = new User("john", "12345", [], "John Dow", "john@example.com", "", "secret");
+        $this->userRepository->method("findByUsername")->willReturn($john);
+        $this->userRepository->expects($this->once())->method("update")->willReturn(false);
+        $this->request->method("resetPasswordParams")->willReturn([
+            "username" => "john",
+            "time" => "1637449800",
+            "mac" => "3pjbpRHFI9OO3gUHV42CHT3IHL8",
+        ]);
+        $this->request->method("changePasswordPost")->willReturn([
+            "password1" => "admin",
+            "password2" => "admin",
+        ]);
         $response = ($this->subject)($this->request);
         Approvals::verifyHtml($response->output());
     }

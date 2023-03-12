@@ -50,54 +50,56 @@ class ResetPasswordTest extends TestCase
         $this->request = $this->createStub(Request::class);
         $this->request->method("url")->willReturn(new Url("/", ""));
         $this->request->method("time")->willReturn(1637449200);
+        $this->request->method("registerAction")->willReturn("reset_password");
     }
 
     public function testUnknownUsername(): void
     {
-        $_GET = ["action" => "registerResetPassword", "username" => "colt"];
         $this->userRepository->method("findByUsername")->willReturn(null);
+        $this->request->method("resetPasswordParams")->willReturn([
+            "username" => "colt",
+            "time" => "",
+            "mac" => "",
+        ]);
         $response = ($this->subject)($this->request);
         Approvals::verifyHtml($response->output());
     }
 
     public function testWrongMac(): void
     {
-        $_GET = [
-            "action" => "registerResetPassword",
+        $john = new User("john", "12345", [], "John Dow", "john@example.com", "", "secret");
+        $this->userRepository->method("findByUsername")->willReturn($john);
+        $this->request->method("resetPasswordParams")->willReturn([
             "username" => "john",
             "time" => 1637449800,
             "mac" => "54321",
-        ];
-        $john = new User("john", "12345", [], "John Dow", "john@example.com", "", "secret");
-        $this->userRepository->method("findByUsername")->willReturn($john);
+        ]);
         $response = ($this->subject)($this->request);
         Approvals::verifyHtml($response->output());
     }
 
     public function testSuccess(): void
     {
-        $_GET = [
-            "action" => "registerResetPassword",
+        $john = new User("john", "12345", [], "John Dow", "john@example.com", "", "secret");
+        $this->userRepository->method("findByUsername")->willReturn($john);
+        $this->request->method("resetPasswordParams")->willReturn([
             "username" => "john",
             "time" => 1637449800,
             "mac" => "3pjbpRHFI9OO3gUHV42CHT3IHL8",
-        ];
-        $john = new User("john", "12345", [], "John Dow", "john@example.com", "", "secret");
-        $this->userRepository->method("findByUsername")->willReturn($john);
+        ]);
         $response = ($this->subject)($this->request);
         Approvals::verifyHtml($response->output());
     }
 
     public function testReportsExpiration(): void
     {
-        $_GET = [
-            "action" => "registerResetPassword",
+        $john = new User("john", "12345", [], "John Dow", "john@example.com", "", "secret");
+        $this->userRepository->method("findByUsername")->willReturn($john);
+        $this->request->method("resetPasswordParams")->willReturn([
             "username" => "john",
             "time" => 1637445599,
             "mac" => "TLIb1A2yKWBs_ZGmC0l0V4w6bS8",
-        ];
-        $john = new User("john", "12345", [], "John Dow", "john@example.com", "", "secret");
-        $this->userRepository->method("findByUsername")->willReturn($john);
+        ]);
         $response = ($this->subject)($this->request);
         Approvals::verifyHtml($response->output());
     }

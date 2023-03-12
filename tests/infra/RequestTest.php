@@ -44,6 +44,54 @@ class RequestTest extends TestCase
         ];
     }
 
+    /** @dataProvider forgotPasswordPosts */
+    public function testForgotPasswordPost(array $post, array $expected): void
+    {
+        $sut = $this->sut();
+        $sut->method("post")->willReturn($post);
+        $result = $sut->forgotPasswordPost();
+        $this->assertEquals($expected, $result);
+    }
+
+    public function forgotPasswordPosts(): array
+    {
+        return [
+            [[], ["email" => ""]],
+        ];
+    }
+
+    /** @dataProvider resetPasswordParams */
+    public function testResetPasswordParams(array $get, array $expected): void
+    {
+        $sut = $this->sut();
+        $sut->method("get")->willReturn($get);
+        $result = $sut->resetPasswordParams();
+        $this->assertEquals($expected, $result);
+    }
+
+    public function resetPasswordParams(): array
+    {
+        return [
+            [[], ["username" => "", "time" => "", "mac" => ""]],
+        ];
+    }
+
+    /** @dataProvider changePasswordPosts */
+    public function testChangePasswordPost(array $post, array $expected): void
+    {
+        $sut = $this->sut();
+        $sut->method("post")->willReturn($post);
+        $result = $sut->changePasswordPost();
+        $this->assertEquals($expected, $result);
+    }
+
+    public function changePasswordPosts(): array
+    {
+        return [
+            [[], ["password1" => "", "password2" => ""]],
+        ];
+    }
+
     /** @dataProvider changePrefsPosts */
     public function testChangePrefsPost(array $post, array $expected): void
     {
