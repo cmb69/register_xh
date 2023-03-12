@@ -155,10 +155,7 @@ class Dic
 
     public static function makeShowPluginInfo(): ShowPluginInfo
     {
-        global $plugin_tx;
-
         return new ShowPluginInfo(
-            $plugin_tx['register'],
             self::makeDbService(),
             new SystemChecker(),
             self::makeView()

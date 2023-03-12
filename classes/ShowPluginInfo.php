@@ -16,9 +16,6 @@ use Register\Value\Response;
 
 class ShowPluginInfo
 {
-    /** @var array<string,string> */
-    private $text;
-
     /** @var DbService */
     private $dbService;
 
@@ -28,14 +25,11 @@ class ShowPluginInfo
     /** @var View */
     private $view;
 
-    /** @param array<string,string> $text */
     public function __construct(
-        array $text,
         DbService $dbService,
         SystemChecker $systemChecker,
         View $view
     ) {
-        $this->text = $text;
         $this->dbService = $dbService;
         $this->systemChecker = $systemChecker;
         $this->view = $view;
@@ -50,11 +44,11 @@ class ShowPluginInfo
     }
 
     /**
-     * @return array<int,array{state:string,label:string,stateLabel:string}>
+     * @return list<array{class:string,key:string,arg:string,statekey:string}>
      */
     public function getChecks(string $pluginFolder)
     {
-        return array(
+        return [
             $this->checkPhpVersion('7.1.0'),
             $this->checkExtension('hash'),
             $this->checkExtension('session'),
@@ -63,55 +57,67 @@ class ShowPluginInfo
             $this->checkWritability($pluginFolder . "config/"),
             $this->checkWritability($pluginFolder . "languages/"),
             $this->checkWritability($this->dbService->dataFolder())
-        );
+        ];
     }
 
     /**
      * @param string $version
-     * @return array{state:string,label:string,stateLabel:string}
+     * @return array{class:string,key:string,arg:string,statekey:string}
      */
     private function checkPhpVersion($version)
     {
         $state = $this->systemChecker->checkVersion(PHP_VERSION, $version) ? 'success' : 'fail';
-        $label = sprintf($this->text['syscheck_phpversion'], $version);
-        $stateLabel = $this->text["syscheck_$state"];
-        return compact('state', 'label', 'stateLabel');
+        return [
+            "class" => "xh_$state",
+            "key" => "syscheck_phpversion",
+            "arg" => $version,
+            "statekey" => "syscheck_$state",
+        ];
     }
 
     /**
      * @param string $extension
      * @param bool $isMandatory
-     * @return array{state:string,label:string,stateLabel:string}
+     * @return array{class:string,key:string,arg:string,statekey:string}
      */
     private function checkExtension($extension, $isMandatory = true)
     {
         $state = $this->systemChecker->checkExtension($extension) ? 'success' : ($isMandatory ? 'fail' : 'warning');
-        $label = sprintf($this->text['syscheck_extension'], $extension);
-        $stateLabel = $this->text["syscheck_$state"];
-        return compact('state', 'label', 'stateLabel');
+        return [
+            "class" => "xh_$state",
+            "key" => "syscheck_extension",
+            "arg" => $extension,
+            "statekey" => "syscheck_$state",
+        ];
     }
 
     /**
      * @param string $version
-     * @return array{state:string,label:string,stateLabel:string}
+     * @return array{class:string,key:string,arg:string,statekey:string}
      */
     private function checkXhVersion($version)
     {
         $state = $this->systemChecker->checkVersion(CMSIMPLE_XH_VERSION, "CMSimple_XH $version") ? 'success' : 'fail';
-        $label = sprintf($this->text['syscheck_xhversion'], $version);
-        $stateLabel = $this->text["syscheck_$state"];
-        return compact('state', 'label', 'stateLabel');
+        return [
+            "class" => "xh_$state",
+            "key" => "syscheck_xhversion",
+            "arg" => $version,
+            "statekey" => "syscheck_$state",
+        ];
     }
 
     /**
      * @param string $folder
-     * @return array{state:string,label:string,stateLabel:string}
+     * @return array{class:string,key:string,arg:string,statekey:string}
      */
     private function checkWritability($folder)
     {
         $state = $this->systemChecker->checkWritability($folder) ? 'success' : 'warning';
-        $label = sprintf($this->text['syscheck_writable'], $folder);
-        $stateLabel = $this->text["syscheck_$state"];
-        return compact('state', 'label', 'stateLabel');
+        return [
+            "class" => "xh_$state",
+            "key" => "syscheck_writable",
+            "arg" => $folder,
+            "statekey" => "syscheck_$state",
+        ];
     }
 }
