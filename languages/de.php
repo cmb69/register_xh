@@ -103,15 +103,14 @@ $plugin_tx['register']['js_tooManyUsers']="Es gibt zu viele Benutzer!";
 
 $plugin_tx['register']['alt_help']="Fragezeichen";
 
-$plugin_tx['register']['syscheck_extension']="die PHP-Erweiterung '%s' geladen ist";
+$plugin_tx['register']['syscheck_extension']="PHP-Erweiterung '%s'ist  geladen: ";
 $plugin_tx['register']['syscheck_fail']="Fehler";
-$plugin_tx['register']['syscheck_message']="Prüfe, dass %1\$s … %2\$s";
-$plugin_tx['register']['syscheck_phpversion']="die PHP-Version ≥ %s";
+$plugin_tx['register']['syscheck_phpversion']="PHP-Version ≥ %s: ";
 $plugin_tx['register']['syscheck_success']="OK";
 $plugin_tx['register']['syscheck_title']="System-Prüfung";
 $plugin_tx['register']['syscheck_warning']="Warnung";
-$plugin_tx['register']['syscheck_writable']="'%s' schreibbar ist";
-$plugin_tx['register']['syscheck_xhversion']="die CMSimple_XH-Version ≥ %s";
+$plugin_tx['register']['syscheck_writable']="'%s' ist schreibbar: ";
+$plugin_tx['register']['syscheck_xhversion']="CMSimple_XH-Version ≥ %s: ";
 
 $plugin_tx['register']['cf_allowed_register']="Ob sich neue Mitglieder selbst registrieren können.";
 $plugin_tx['register']['cf_fix_mail_headers']="Ob Probleme mit einigen fehlerhaften Mail Transfer Agents behoben werden sollen. Aktivieren Sie diese Option, wenn Sie die E-Mails nicht empfangen oder wenn ein Teil der Header-Informationen (z.B. \"MIME-Version: 1.0\") im Rumpf der E-Mail erscheint.";

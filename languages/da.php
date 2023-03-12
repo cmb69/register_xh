@@ -80,8 +80,8 @@ $plugin_tx['register']['cf_group_activated']="Status for nye medlemmer (gruppe e
 $plugin_tx['register']['cf_group_default']="Status for nye medlemmer (standard gruppe for brugeren efter registrering, men før konto aktivering).";
 $plugin_tx['register']['cf_senderemail']="E-mail-konto til administrator";
 $plugin_tx['register']['syscheck_title']="System check";
-$plugin_tx['register']['syscheck_phpversion']="PHP version ≥ %s";
-$plugin_tx['register']['syscheck_extension']="Extension '%s' loaded";
-$plugin_tx['register']['syscheck_writable']="Mappen '%s' skrivebar";
+$plugin_tx['register']['syscheck_phpversion']="PHP version ≥ %s: ";
+$plugin_tx['register']['syscheck_extension']="Extension '%s' loaded: ";
+$plugin_tx['register']['syscheck_writable']="Mappen '%s' skrivebar: ";
 
 ?>
