@@ -40,4 +40,11 @@ class Util
         }
         return $record;
     }
+
+    public static function isAuthorized(User $user, string $groups): bool
+    {
+        $groups = (string) preg_replace("/[ \t\r\n]*/", "", $groups);
+        $groups = explode(",", $groups);
+        return count(array_intersect($groups, $user->getAccessgroups())) > 0;
+    }
 }

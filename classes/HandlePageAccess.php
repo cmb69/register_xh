@@ -12,6 +12,7 @@ namespace Register;
 
 use Register\Infra\Request;
 use Register\Infra\UserRepository;
+use Register\Logic\Util;
 use Register\Value\Response;
 
 class HandlePageAccess
@@ -31,14 +32,11 @@ class HandlePageAccess
 
     public function __invoke(Request $request, string $groupString): Response
     {
-        // remove spaces etc.
-        $groupString = (string) preg_replace("/[ \t\r\n]*/", '', $groupString);
-        $groupNames = explode(",", $groupString);
-    
+        if ($request->function() === "search") {
+            return Response::create();
+        }
         $user = $this->userRepository->findByUsername($request->username());
-        if ($request->function() !== "search"
-                && (!$user || !count(array_intersect($groupNames, $user->getAccessgroups())))) {
-            // go to access error page
+        if ($user === null || !Util::isAuthorized($user, $groupString)) {
             return Response::redirect($request->url()->withPage($this->text["access_error"])->absolute());
         }
         return Response::create();
