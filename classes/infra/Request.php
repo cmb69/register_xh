@@ -19,7 +19,28 @@ class Request
     /** @codeCoverageIgnore */
     public function registerAction(): string
     {
-        return $_POST["register_action"] ?? "";
+        return $_POST["register_action"] ?? $_GET["register_action"] ?? "";
+    }
+
+    /** @return array{name:string,username:string,password1:string,password2:string,email:string} */
+    public function registerUserPost(): array
+    {
+        return [
+            "name" => $this->trimmedPostString("name"),
+            "username" => $this->trimmedPostString("username"),
+            "password1" => $this->trimmedPostString("password1"),
+            "password2" => $this->trimmedPostString("password2"),
+            "email" => $this->trimmedPostString("email"),
+        ];
+    }
+
+    /** @return array{username:string,nonce:string} */
+    public function activationParams(): array
+    {
+        return [
+            "username" => $this->trimmedGetString("username"),
+            "nonce" => $this->trimmedGetString("nonce"),
+        ];
     }
 
     /** @return array{oldpassword:string,name:string,password1:string,password2:string,email:string} */
@@ -48,6 +69,12 @@ class Request
     {
         $post = $this->post();
         return (isset($post[$param]) && is_string($post[$param])) ? trim($post[$param]) : "";
+    }
+
+    private function trimmedGetString(string $param): string
+    {
+        $get = $this->get();
+        return (isset($get[$param]) && is_string($get[$param])) ? trim($get[$param]) : "";
     }
 
     public function groupAdminAction(): string
@@ -125,6 +152,15 @@ class Request
             return true;
         }
         return false;
+    }
+
+    /**
+     * @return array<string,string|array<string>>
+     * @codeCoverageIgnore
+     */
+    protected function get(): array
+    {
+        return $_GET;
     }
 
     /**

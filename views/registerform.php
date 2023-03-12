@@ -7,6 +7,7 @@ if (!defined("CMSIMPLE_XH_VERSION")) {header("HTTP/1.1 403 Forbidden"); exit;}
 /**
  * @var View $this
  * @var string $actionUrl
+ * @var list<array{string}> $errors
  * @var string $name
  * @var string $username
  * @var string $password1
@@ -17,10 +18,12 @@ if (!defined("CMSIMPLE_XH_VERSION")) {header("HTTP/1.1 403 Forbidden"); exit;}
 <!-- register registration form -->
 <form method="post" action="<?=$actionUrl?>" target="_self">
   <div class="regi_register">
+<?foreach ($errors as $error):?>
+    <p class="xh_fail"><?=$this->text(...$error)?></p>
+<?endforeach?>
     <table>
       <tr>
         <td>
-          <input type="hidden" name="action" value="register_user">
           <?=$this->text('name')?>
         </td>
         <td colspan="2"><input class="text" name="name" type="text" size="35" value="<?=$name?>"></td>
@@ -42,7 +45,7 @@ if (!defined("CMSIMPLE_XH_VERSION")) {header("HTTP/1.1 403 Forbidden"); exit;}
         <td colspan="2"><input class="text" name="email" type="email" size="35" value="<?=$email?>"></td>
       </tr>
       <tr>
-        <td colspan="3"><button class="submit" value="register"><?=$this->text('register')?></button></td>
+        <td colspan="3"><button class="submit" name="register_action" value="register"><?=$this->text('register')?></button></td>
       </tr>
     </table>
     <p><?=$this->text('register_form2')?></p>

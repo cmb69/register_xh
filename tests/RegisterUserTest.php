@@ -71,22 +71,29 @@ class RegisterUserTest extends TestCase
 
     public function testValidationError(): void
     {
-        $_POST = ["action" => "register_user", "username" => ""];
+        $this->request->method("registerAction")->willReturn("register");
+        $this->request->method("registerUserPost")->willReturn([
+            "name" => "",
+            "username" => "",
+            "password1" => "",
+            "password2" => "",
+            "email" => "",
+        ]);
         $response = ($this->subject)($this->request);
         Approvals::verifyHtml($response->output());
     }
 
     public function testExistingUser(): void
     {
-        $_POST = [
-            "action" => "register_user",
+        $this->userRepository->method("findByUsername")->willReturn($this->users["jane"]);
+        $this->request->method("registerAction")->willReturn("register");
+        $this->request->method("registerUserPost")->willReturn([
             "name" => "Jane Smith",
             "username" => "jane",
             "password1" => "test",
             "password2" => "test",
             "email" => "jane.smith@example.com",
-        ];
-        $this->userRepository->method("findByUsername")->willReturn($this->users["jane"]);
+        ]);
         $response = ($this->subject)($this->request);
         Approvals::verifyHtml($response->output());
     }
@@ -95,66 +102,64 @@ class RegisterUserTest extends TestCase
     {
         $_SERVER["REMOTE_ADDR"] = "example.com";
         $_SERVER['SERVER_NAME'] = "example.com";
-        $_POST = [
-            "action" => "register_user",
+        $this->userRepository->method("findByEmail")->willReturn($this->users["john"]);
+        $this->request->method("registerAction")->willReturn("register");
+        $this->request->method("registerUserPost")->willReturn([
             "name" => "John Smith",
             "username" => "js",
             "password1" => "test",
             "password2" => "test",
             "email" => "john@example.com",
-        ];
-        $this->userRepository->method("findByEmail")->willReturn($this->users["john"]);
+        ]);
         $response = ($this->subject)($this->request);
         Approvals::verifyHtml($response->output());
     }
 
     public function testSendsMailOnExistingEmail(): void
     {
-        $_SERVER["REMOTE_ADDR"] = "example.com";
-        $_SERVER['SERVER_NAME'] = "example.com";
-        $_POST = [
-            "action" => "register_user",
+        $this->userRepository->method("findByEmail")->willReturn($this->users["john"]);
+        $this->request->method("registerAction")->willReturn("register");
+        $this->request->method("registerUserPost")->willReturn([
             "name" => "John Smith",
             "username" => "js",
             "password1" => "test",
             "password2" => "test",
             "email" => "john@example.com",
-        ];
-        $this->userRepository->method("findByEmail")->willReturn($this->users["john"]);
+        ]);
+        $this->request->method("serverName")->willReturn("example.com");
+        $this->request->method("remoteAddress")->willReturn("127.0.0.1");
         ($this->subject)($this->request);
         Approvals::verifyHtml($this->mailer->message());
     }
 
     public function testSuccess(): void
     {
-        $_SERVER["REMOTE_ADDR"] = "example.com";
-        $_SERVER['SERVER_NAME'] = "example.com";
-        $_POST = [
-            "action" => "register_user",
+        $this->userRepository->expects($this->once())->method("add")->willReturn(true);
+        $this->request->method("registerAction")->willReturn("register");
+        $this->request->method("registerUserPost")->willReturn([
             "name" => "John Smith",
             "username" => "js",
             "password1" => "test",
             "password2" => "test",
             "email" => "js@example.com",
-        ];
-        $this->userRepository->expects($this->once())->method("add")->willReturn(true);
+        ]);
         $response = ($this->subject)($this->request);
         Approvals::verifyHtml($response->output());
     }
 
     public function testSendsEmailOnSuccess(): void
     {
-        $_SERVER["REMOTE_ADDR"] = "example.com";
-        $_SERVER['SERVER_NAME'] = "example.com";
-        $_POST = [
-            "action" => "register_user",
+        $this->userRepository->expects($this->once())->method("add")->willReturn(true);
+        $this->request->method("registerAction")->willReturn("register");
+        $this->request->method("registerUserPost")->willReturn([
             "name" => "John Smith",
             "username" => "js",
             "password1" => "test",
             "password2" => "test",
             "email" => "js@example.com",
-        ];
-        $this->userRepository->expects($this->once())->method("add")->willReturn(true);
+        ]);
+        $this->request->method("serverName")->willReturn("example.com");
+        $this->request->method("remoteAddress")->willReturn("127.0.0.1");
         ($this->subject)($this->request);
         $this->assertEquals("js@example.com", $this->mailer->to());
         $this->assertEquals("Account activation for example.com", $this->mailer->subject());

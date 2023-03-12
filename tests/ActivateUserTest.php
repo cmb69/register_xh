@@ -67,48 +67,48 @@ class ActivateUserTest extends TestCase
 
     public function testActivateUserActionNoUser(): void
     {
-        $_GET = [
-            "action" => "register_activate_user",
+        $this->request->method("registerAction")->willReturn("activate");
+        $this->request->method("activationParams")->willReturn([
             "username" => "john",
-            "nonce" => "",
-        ];
+            "nonce" => "12345",
+        ]);
         $response = ($this->subject)($this->request);
         Approvals::verifyHtml($response->output());
     }
 
     public function testActivateUserEmptyState(): void
     {
-        $_GET = [
-            "action" => "register_activate_user",
-            "username" => "john",
-            "nonce" => "",
-        ];
         $this->userRepository->method("findByUsername")->willReturn($this->users["john"]);
+        $this->request->method("registerAction")->willReturn("activate");
+        $this->request->method("activationParams")->willReturn([
+            "username" => "john",
+            "nonce" => "12345",
+        ]);
         $response = ($this->subject)($this->request);
         Approvals::verifyHtml($response->output());
     }
 
     public function testActivateUserInvalidState(): void
     {
-        $_GET = [
-            "action" => "register_activate_user",
-            "username" => "jane",
-            "nonce" => "",
-        ];
         $this->userRepository->method("findByUsername")->willReturn($this->users["jane"]);
+        $this->request->method("registerAction")->willReturn("activate");
+        $this->request->method("activationParams")->willReturn([
+            "username" => "jane",
+            "nonce" => "54321",
+        ]);
         $response = ($this->subject)($this->request);
         Approvals::verifyHtml($response->output());
     }
 
     public function testActivateUserSuccess(): void
     {
-        $_GET = [
-            "action" => "register_activate_user",
-            "username" => "jane",
-            "nonce" => "12345",
-        ];
         $this->userRepository->method("findByUsername")->willReturn($this->users["jane"]);
         $this->userRepository->expects($this->once())->method("update");
+        $this->request->method("registerAction")->willReturn("activate");
+        $this->request->method("activationParams")->willReturn([
+            "username" => "jane",
+            "nonce" => "12345",
+        ]);
         $response = ($this->subject)($this->request);
         Approvals::verifyHtml($response->output());
     }

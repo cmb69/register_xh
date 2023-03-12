@@ -12,6 +12,38 @@ use PHPUnit\Framework\TestCase;
 
 class RequestTest extends TestCase
 {
+    /** @dataProvider registerUserPosts */
+    public function testRegisterUserPost(array $post, array $expected): void
+    {
+        $sut = $this->sut();
+        $sut->method("post")->willReturn($post);
+        $result = $sut->registerUserPost();
+        $this->assertEquals($expected, $result);
+    }
+
+    public function registerUserPosts(): array
+    {
+        return [
+            [[], ["name" => "", "username" => "", "password1" => "", "password2" => "", "email" => ""]],
+        ];
+    }
+
+    /** @dataProvider activationParams */
+    public function testActivationParams(array $get, array $expected): void
+    {
+        $sut = $this->sut();
+        $sut->method("get")->willReturn($get);
+        $result = $sut->activationParams();
+        $this->assertEquals($expected, $result);
+    }
+
+    public function activationParams(): array
+    {
+        return [
+            [[], ["username" => "", "nonce" => ""]],
+        ];
+    }
+
     /** @dataProvider changePrefsPosts */
     public function testChangePrefsPost(array $post, array $expected): void
     {
@@ -156,7 +188,7 @@ class RequestTest extends TestCase
             ->disableOriginalClone()
             ->disableArgumentCloning()
             ->disallowMockingUnknownTypes()
-            ->onlyMethods(["post"])
+            ->onlyMethods(["get", "post"])
             ->getMock();
     }
 }
