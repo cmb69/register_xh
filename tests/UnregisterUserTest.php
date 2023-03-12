@@ -74,6 +74,7 @@ class UnregisterUserTest extends TestCase
         );
         $this->request = $this->createStub(Request::class);
         $this->request->method("url")->willReturn(new Url("/", "User-Preferences"));
+        $this->request->method("registerAction")->willReturn("unregister");
     }
 
     public function testNoUser(): void
@@ -96,8 +97,12 @@ class UnregisterUserTest extends TestCase
 
     public function testWrongPassword(): void
     {
-        $_POST = ["action" => "edit_user_prefs", "delete" => "", "oldpassword" => "54321"];
         $this->request->method("username")->willReturn("john");
+        $this->request->method("unregisterPost")->willReturn([
+            "oldpassword" => "54321",
+            "name" => "",
+            "email" => "",
+        ]);
         $this->userRepository->method("findByUsername")->willReturn($this->users["john"]);
         $this->csrfProtector->expects($this->once())->method("check");
         $this->password->method("verify")->willReturn(false);
@@ -107,8 +112,12 @@ class UnregisterUserTest extends TestCase
 
     public function testCorrectPassword(): void
     {
-        $_POST = ["action" => "edit_user_prefs", "delete" => "", "oldpassword" => "12345"];
         $this->request->method("username")->willReturn("john");
+        $this->request->method("unregisterPost")->willReturn([
+            "oldpassword" => "12345",
+            "name" => "",
+            "email" => "",
+        ]);
         $this->userRepository->method("findByUsername")->willReturn($this->users["john"]);
         $this->userRepository->expects($this->once())->method("delete")->willReturn(true);
         $this->csrfProtector->expects($this->once())->method("check");

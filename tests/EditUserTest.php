@@ -75,11 +75,11 @@ class EditUserTest extends TestCase
         );
         $this->request = $this->createStub(Request::class);
         $this->request->expects($this->any())->method("url")->willReturn(new Url("/", "User-Preferences"));
+        $this->request->method("registerAction")->willReturn("change_prefs");
     }
 
     public function testNoUser(): void
     {
-        $_POST = ["action" => "edit_user_prefs", "submit" => ""];
         $this->request->method("username")->willReturn("");
         $response = ($this->subject)($this->request);
         Approvals::verifyHtml($response->output());
@@ -87,7 +87,6 @@ class EditUserTest extends TestCase
 
     public function testIsLocked(): void
     {
-        $_POST = ["action" => "edit_user_prefs", "submit" => ""];
         $this->request->method("username")->willReturn("jane");
         $this->userRepository->method("findByUsername")->willReturn($this->users["jane"]);
         $this->csrfProtector->expects($this->once())->method("check");
@@ -97,8 +96,14 @@ class EditUserTest extends TestCase
 
     public function testWrongPassword(): void
     {
-        $_POST = ["action" => "edit_user_prefs", "submit" => "", "oldpassword" => "54321"];
         $this->request->method("username")->willReturn("john");
+        $this->request->method("changePrefsPost")->willReturn([
+            "oldpassword" => "54321",
+            "name" => "",
+            "password1" => "",
+            "password2" => "",
+            "email" => "",
+        ]);
         $this->userRepository->method("findByUsername")->willReturn($this->users["john"]);
         $this->csrfProtector->expects($this->once())->method("check");
         $this->password->method("verify")->willReturn(false);
@@ -116,6 +121,13 @@ class EditUserTest extends TestCase
             "password2" => "two",
         ];
         $this->request->method("username")->willReturn("john");
+        $this->request->method("changePrefsPost")->willReturn([
+            "oldpassword" => "12345",
+            "name" => "",
+            "password1" => "one",
+            "password2" => "two",
+            "email" => "",
+        ]);
         $this->userRepository->method("findByUsername")->willReturn($this->users["john"]);
         $this->csrfProtector->expects($this->once())->method("check");
         $this->password->method("verify")->willReturn(true);
@@ -125,10 +137,14 @@ class EditUserTest extends TestCase
 
     public function testCorrectPassword(): void
     {
-        $_SERVER["SERVER_NAME"] = "example.com";
-        $_SERVER["REMOTE_ADDR"] = "127.0.0.1";
-        $_POST = ["action" => "edit_user_prefs", "submit" => "", "oldpassword" => "12345"];
         $this->request->method("username")->willReturn("john");
+        $this->request->method("changePrefsPost")->willReturn([
+            "oldpassword" => "12345",
+            "name" => "",
+            "password1" => "",
+            "password2" => "",
+            "email" => "",
+        ]);
         $this->userRepository->method("findByUsername")->willReturn($this->users["john"]);
         $this->csrfProtector->expects($this->once())->method("check");
         $this->userRepository->expects($this->once())->method("update")->willReturn(true);
@@ -139,10 +155,16 @@ class EditUserTest extends TestCase
 
     public function testSendsEmailOnSuccess(): void
     {
-        $_SERVER["SERVER_NAME"] = "example.com";
-        $_SERVER["REMOTE_ADDR"] = "127.0.0.1";
-        $_POST = ["action" => "edit_user_prefs", "submit" => "", "oldpassword" => "12345"];
         $this->request->method("username")->willReturn("john");
+        $this->request->method("changePrefsPost")->willReturn([
+            "oldpassword" => "12345",
+            "name" => "",
+            "password1" => "",
+            "password2" => "",
+            "email" => "",
+        ]);
+        $this->request->method("serverName")->willReturn("example.com");
+        $this->request->method("remoteAddress")->willReturn("127.0.0.1");
         $this->userRepository->method("findByUsername")->willReturn($this->users["john"]);
         $this->csrfProtector->expects($this->once())->method("check");
         $this->userRepository->expects($this->once())->method("update")->willReturn(true);

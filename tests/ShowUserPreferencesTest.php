@@ -68,6 +68,7 @@ class ShowUserPreferencesTest extends TestCase
         );
         $this->request = $this->createStub(Request::class);
         $this->request->method("url")->willReturn(new Url("/", "User-Preferences"));
+        $this->request->method("registerAction")->willReturn("");
     }
 
     public function testNoUser(): void

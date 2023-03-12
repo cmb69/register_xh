@@ -16,6 +16,40 @@ class Request
         return $_SESSION["username"] ?? "";
     }
 
+    /** @codeCoverageIgnore */
+    public function registerAction(): string
+    {
+        return $_POST["register_action"] ?? "";
+    }
+
+    /** @return array{oldpassword:string,name:string,password1:string,password2:string,email:string} */
+    public function changePrefsPost(): array
+    {
+        return [
+            "oldpassword" => $this->trimmedPostString("oldpassword"),
+            "name" => $this->trimmedPostString("name"),
+            "password1" => $this->trimmedPostString("password1"),
+            "password2" => $this->trimmedPostString("password2"),
+            "email" => $this->trimmedPostString("email"),
+        ];
+    }
+
+    /** @return array{oldpassword:string,name:string,email:string} */
+    public function unregisterPost(): array
+    {
+        return [
+            "oldpassword" => $this->trimmedPostString("oldpassword"),
+            "name" => $this->trimmedPostString("name"),
+            "email" => $this->trimmedPostString("email"),
+        ];
+    }
+
+    private function trimmedPostString(string $param): string
+    {
+        $post = $this->post();
+        return (isset($post[$param]) && is_string($post[$param])) ? trim($post[$param]) : "";
+    }
+
     public function groupAdminAction(): string
     {
         return $this->hasGroupAdminSubmission($this->post()) ? "do_update" : "update";
@@ -141,6 +175,18 @@ class Request
     public function time(): int
     {
         return $_SERVER["REQUEST_TIME"];
+    }
+
+    /** @codeCoverageIgnore */
+    public function serverName(): string
+    {
+        return $_SERVER["SERVER_NAME"];
+    }
+
+    /** @codeCoverageIgnore */
+    public function remoteAddress(): string
+    {
+        return $_SERVER["REMOTE_ADDR"];
     }
 
     /** @codeCoverageIgnore */

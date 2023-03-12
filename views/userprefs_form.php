@@ -8,6 +8,7 @@ if (!defined("CMSIMPLE_XH_VERSION")) {header("HTTP/1.1 403 Forbidden"); exit;}
  * @var View $this
  * @var string $actionUrl
  * @var string $csrfTokenInput
+ * @var list<array{string}> $errors
  * @var string $name
  * @var string $email
  */
@@ -15,8 +16,10 @@ if (!defined("CMSIMPLE_XH_VERSION")) {header("HTTP/1.1 403 Forbidden"); exit;}
 <!-- register user preferences -->
 <div class="regi_settings">
   <form method="post" action="<?=$actionUrl?>" target="_self">
-    <input type="hidden" name="action" value="edit_user_prefs">
     <?=$csrfTokenInput?>
+<?foreach ($errors as $error):?>
+    <p class="xh_fail"><?=$this->text(...$error)?></p>
+<?endforeach?>
     <table style="margin: auto;">
       <tr>
         <td><?=$this->text('name')?></td>
@@ -40,8 +43,8 @@ if (!defined("CMSIMPLE_XH_VERSION")) {header("HTTP/1.1 403 Forbidden"); exit;}
       </tr>
       <tr>
         <td colspan="2">
-          <button class="submit" name="submit" value="change"><?=$this->text('change')?></button>
-          <button class="submit" name="delete" value="delete"><?=$this->text('user_delete')?></button>
+          <button class="submit" name="register_action" value="change_prefs"><?=$this->text('change')?></button>
+          <button class="submit" name="register_action" value="unregister"><?=$this->text('user_delete')?></button>
         </td>
       </tr>
     </table>

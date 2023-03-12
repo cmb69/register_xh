@@ -12,6 +12,38 @@ use PHPUnit\Framework\TestCase;
 
 class RequestTest extends TestCase
 {
+    /** @dataProvider changePrefsPosts */
+    public function testChangePrefsPost(array $post, array $expected): void
+    {
+        $sut = $this->sut();
+        $sut->method("post")->willReturn($post);
+        $result = $sut->changePrefsPost();
+        $this->assertEquals($expected, $result);
+    }
+
+    public function changePrefsPosts(): array
+    {
+        return [
+            [[], ["oldpassword" => "", "name" => "", "password1" => "", "password2" => "", "email" => ""]],
+        ];
+    }
+
+    /** @dataProvider unregisterPosts */
+    public function testUnregisterPost(array $post, array $expected): void
+    {
+        $sut = $this->sut();
+        $sut->method("post")->willReturn($post);
+        $result = $sut->unregisterPost();
+        $this->assertEquals($expected, $result);
+    }
+
+    public function unregisterPosts(): array
+    {
+        return [
+            [[], ["oldpassword" => "", "name" => "", "email" => ""]],
+        ];
+    }
+
     /**
      * @param array<string,string|array<string>> $post
      * @dataProvider groupAdminActions
