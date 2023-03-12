@@ -19,39 +19,13 @@ use Register\Infra\Password;
 use Register\Infra\Random;
 use Register\Infra\Request;
 use Register\Infra\Responder;
-use Register\Infra\Response;
 use Register\Infra\SystemChecker;
 use Register\Infra\UserGroupRepository;
 use Register\Infra\UserRepository;
 use Register\Infra\View;
 
-/**
- * @method static string|never loginController()
- * @method static string|never handleSpecialPages()
- * @method static string|never userAdminController()
- * @method static string|never groupAdminController()
- * @method static string|never handleUserRegistration()
- * @method static string|never handlePageAccess(string $groupString)
- * @method static string|never handlePageProtection()
- * @method static string|never handlePasswordForgotten()
- * @method static string|never handleUserPreferences()
- * @method static string|never showLoginForm(bool $loggedInOnly = false)
- * @method static string|never showPageDataTab(array $pageData)
- * @method static string|never showPluginInfo()
- */
 class Dic
 {
-    /**
-     * @param list<mixed> $args
-     * @return string|never
-     */
-    public static function __callStatic(string $name, array $args)
-    {
-        $handler = self::{"make" . ucfirst($name)}();
-        $response = $handler(new Request, ...$args);
-        return Responder::respond($response);
-    }
-
     public static function makeLoginController(): LoginController
     {
         global $plugin_cf, $plugin_tx;

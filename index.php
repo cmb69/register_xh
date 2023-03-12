@@ -9,6 +9,8 @@
  */
 
 use Register\Dic;
+use Register\Infra\Request;
+use Register\Infra\Responder;
 use XH\PageDataRouter;
 
 const REGISTER_VERSION = "2.0-dev";
@@ -19,16 +21,16 @@ const REGISTER_VERSION = "2.0-dev";
  */
 
 $pd_router->add_interest("register_access");
-Dic::loginController();
-Dic::handlePageProtection();
-$o .= Dic::handleSpecialPages();
+Responder::respond(Dic::makeLoginController()(Request::current()));
+Responder::respond(Dic::makeHandlePageProtection()(Request::current()));
+$o .= Responder::respond(Dic::makeHandleSpecialPages()(Request::current()));
 
 /**
  * Create and handle register form
  */
 function registerUser(): string
 {
-    return Dic::handleUserRegistration();
+    return Responder::respond(Dic::makeHandleUserRegistration()(Request::current()));
 }
 
 /**
@@ -36,7 +38,7 @@ function registerUser(): string
  */
 function registerForgotPassword(): string
 {
-    return Dic::handlePasswordForgotten();
+    return Responder::respond(Dic::makeHandlePasswordForgotten()(Request::current()));
 }
 
 /*
@@ -44,7 +46,7 @@ function registerForgotPassword(): string
  */
 function registerUserPrefs(): string
 {
-    return Dic::handleUserPreferences();
+    return Responder::respond(Dic::makeHandleUserPreferences()(Request::current()));
 }
 
 /*
@@ -52,7 +54,7 @@ function registerUserPrefs(): string
  */
 function registerloginform(): string
 {
-    return Dic::showLoginForm();
+    return Responder::respond(Dic::makeShowLoginForm()(Request::current()));
 }
 
 /**
@@ -62,12 +64,12 @@ function registerloginform(): string
  */
 function Register_loggedInForm(): string
 {
-    return Dic::showLoginForm(true);
+    return Responder::respond(Dic::makeShowLoginForm()(Request::current(), true));
 }
 
 function register_access(string $groupString): string
 {
-    return Dic::handlePageAccess($groupString);
+    return Responder::respond(Dic::makeHandlePageAccess()(Request::current(), $groupString));
 }
 
 function access(string $groupString): string
@@ -77,5 +79,5 @@ function access(string $groupString): string
         . " or better define the access groups via the page data tab.",
         E_USER_DEPRECATED
     );
-    return Dic::handlePageAccess($groupString);
+    return Responder::respond(Dic::makeHandlePageAccess()(Request::current(), $groupString));
 }

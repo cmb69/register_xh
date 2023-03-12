@@ -11,6 +11,12 @@ namespace Register\Infra;
 class Request
 {
     /** @codeCoverageIgnore */
+    public static function current(): self
+    {
+        return new self;
+    }
+
+    /** @codeCoverageIgnore */
     public function username(): string
     {
         return $_SESSION["username"] ?? "";

@@ -5,6 +5,8 @@
  */
 
 use Register\Dic;
+use Register\Infra\Request;
+use Register\Infra\Responder;
 
 if (!defined("CMSIMPLE_XH_VERSION")) {
     header("HTTP/1.1 403 Forbidden");
@@ -13,5 +15,5 @@ if (!defined("CMSIMPLE_XH_VERSION")) {
 /** @param array<string,string> $pageData */
 function register_pd_view(array $pageData): string
 {
-    return Dic::showPageDataTab($pageData);
+    return Responder::respond(Dic::makeShowPageDataTab()(Request::current(), $pageData));
 }

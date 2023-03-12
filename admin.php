@@ -8,9 +8,10 @@
  * This file is part of Register_XH.
  */
 
-use XH\PageDataRouter;
 use Register\Dic;
 use Register\Infra\Request;
+use Register\Infra\Responder;
+use XH\PageDataRouter;
 
 if (!defined("CMSIMPLE_XH_VERSION")) {
     header("HTTP/1.1 403 Forbidden");
@@ -27,8 +28,8 @@ if (!defined("CMSIMPLE_XH_VERSION")) {
  */
 
 $temp = [
-    "users_url" => (new Request)->url()->withPage("register")->withParams(["admin" => "users"])->relative(),
-    "groups_url" => (new Request)->url()->withPage("register")->withParams(["admin" => "groups"])->relative(),
+    "users_url" => Request::current()->url()->withPage("register")->withParams(["admin" => "users"])->relative(),
+    "groups_url" => Request::current()->url()->withPage("register")->withParams(["admin" => "groups"])->relative(),
 ];
 
 XH_registerPluginMenuItem("register", $plugin_tx["register"]["mnu_user_admin"], $temp["users_url"]);
@@ -48,13 +49,13 @@ if (XH_wantsPluginAdministration("register")) {
     $o .= pluginmenu("SHOW");
     switch ($admin) {
         case "":
-            $o .= Dic::showPluginInfo();
+            $o .= Responder::respond(Dic::makeShowPluginInfo()(Request::current()));
             break;
         case "groups":
-            $o .= Dic::groupAdminController();
+            $o .= Responder::respond(Dic::makeGroupAdminController()(Request::current()));
             break;
         case "users":
-            $o .= Dic::userAdminController();
+            $o .= Responder::respond(Dic::makeUserAdminController()(Request::current()));
             break;
         default:
             $o .= plugin_admin_common();
