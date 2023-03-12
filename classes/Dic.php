@@ -18,6 +18,8 @@ use Register\Infra\Pages;
 use Register\Infra\Password;
 use Register\Infra\Random;
 use Register\Infra\Request;
+use Register\Infra\Responder;
+use Register\Infra\Response;
 use Register\Infra\SystemChecker;
 use Register\Infra\UserGroupRepository;
 use Register\Infra\UserRepository;
@@ -47,7 +49,7 @@ class Dic
     {
         $handler = self::{"make" . ucfirst($name)}();
         $response = $handler(new Request, ...$args);
-        return $response->fire();
+        return Responder::respond($response);
     }
 
     public static function makeLoginController(): LoginController

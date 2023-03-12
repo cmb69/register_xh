@@ -12,8 +12,8 @@ namespace Register;
 
 use Register\Infra\Pages;
 use Register\Infra\Request;
-use Register\Infra\Response;
 use Register\Infra\UserRepository;
+use Register\Value\Response;
 
 class HandlePageProtection
 {

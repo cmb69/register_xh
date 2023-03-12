@@ -14,13 +14,13 @@ use Register\Infra\Logger;
 use Register\Infra\Mailer;
 use Register\Infra\Password;
 use Register\Infra\Request;
-use Register\Infra\Response;
 use Register\Infra\Url;
 use Register\Infra\UserRepository;
 use Register\Infra\View;
 use Register\Logic\Util;
 use Register\Logic\Validator;
 use Register\Value\Html;
+use Register\Value\Response;
 use XH\CSRFProtection as CsrfProtector;
 
 class HandleUserPreferences
@@ -70,15 +70,15 @@ class HandleUserPreferences
     public function __invoke(Request $request): Response
     {
         if (!$request->username()) {
-            return (new Response)->body($this->view->message("fail", "access_error_text"));
+            return Response::create($this->view->message("fail", "access_error_text"));
         }
         switch ($request->registerAction()) {
             default:
-                return (new Response)->body($this->showForm($request));
+                return Response::create($this->showForm($request));
             case "change_prefs":
-                return (new Response)->body($this->saveUser($request));
+                return Response::create($this->saveUser($request));
             case "unregister":
-                return (new Response)->body($this->unregisterUser($request));
+                return Response::create($this->unregisterUser($request));
         }
     }
 

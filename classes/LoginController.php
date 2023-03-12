@@ -13,11 +13,11 @@ namespace Register;
 use Register\Infra\Logger;
 use Register\Infra\LoginManager;
 use Register\Infra\Password;
-use Register\Infra\Response;
 use Register\Infra\Request;
 use Register\Infra\UserGroupRepository;
 use Register\Infra\UserRepository;
 use Register\Logic\Util;
+use Register\Value\Response;
 use Register\Value\User;
 
 class LoginController
@@ -98,13 +98,6 @@ class LoginController
         $entry = $this->userRepository->findByUsername($username);
         if ($this->isUserAuthenticated($entry, $password, $token)) {
             assert($entry instanceof User);
-            if ($this->conf['remember_user'] && isset($_POST['remember'])) {
-                $response = $response->withCookie(
-                    "register_remember",
-                    $entry->getUsername() . "." . Util::hmac($entry->getUsername(), $entry->secret()),
-                    $request->time() + (100 * 24 * 60 * 60)
-                );
-            }
             $this->loginManager->login($entry);
 
             $this->logger->logInfo('login', "$username logged in");
@@ -116,13 +109,22 @@ class LoginController
             } else {
                 $url = $request->url()->withPage($this->text['loggedin']);
             }
-            return $response->redirect($url->absolute());
+            $response = Response::redirect($url->absolute());
+            if ($this->conf['remember_user'] && isset($_POST['remember'])) {
+                $response = $response->withCookie(
+                    "register_remember",
+                    $entry->getUsername() . "." . Util::hmac($entry->getUsername(), $entry->secret()),
+                    $request->time() + (100 * 24 * 60 * 60)
+                );
+            }
+            return $response;
         } else {
+            $this->logger->logError('login', "$username wrong password");
+            $response = Response::redirect($request->url()->withPage($this->text['login_error'])->absolute());
             if ($request->cookie("register_remember")) {
                 $response->withCookie("register_remember", "", 0);
             }
-            $this->logger->logError('login', "$username wrong password");
-            return $response->redirect($request->url()->withPage($this->text['login_error'])->absolute());
+            return $response;
         }
     }
 
@@ -150,12 +152,12 @@ class LoginController
     {
         $this->loginManager->logout();
         $this->logger->logInfo('logout', "{$request->username()} logged out");
-        return (new Response)->redirect($request->url()->withPage($this->text['loggedout'])->absolute());
+        return Response::redirect($request->url()->withPage($this->text['loggedout'])->absolute());
     }
 
     private function forcedLogout(Request $request): Response
     {
         $this->loginManager->logout();
-        return (new Response)->redirect($request->url()->withPage($this->text['loggedout'])->absolute());
+        return Response::redirect($request->url()->withPage($this->text['loggedout'])->absolute());
     }
 }

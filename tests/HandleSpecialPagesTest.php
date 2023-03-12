@@ -82,7 +82,7 @@ class HandleSpecialPagesTest extends TestCase
             return $other === $this->text["login_error"];
         });
         $response = ($this->sut)($this->request);
-        $this->assertTrue($response->forbidden());
+        $this->assertTrue($response->isForbidden());
         $this->assertEquals($this->text["login_error"], $response->title());
         Approvals::verifyHtml($response->output());
     }
@@ -113,7 +113,7 @@ class HandleSpecialPagesTest extends TestCase
             return $other === $this->text["access_error"];
         });
         $response = ($this->sut)($this->request);
-        $this->assertTrue($response->forbidden());
+        $this->assertTrue($response->isForbidden());
         $this->assertEquals($this->text["access_error"], $response->title());
         Approvals::verifyHtml($response->output());
     }

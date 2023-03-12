@@ -12,16 +12,16 @@ namespace Register;
 
 use XH\CSRFProtection as CsrfProtector;
 
-use Register\Value\Html;
-use Register\Value\User;
-use Register\Value\UserGroup;
-use Register\Logic\AdminProcessor;
 use Register\Infra\DbService;
 use Register\Infra\Password;
 use Register\Infra\Random;
 use Register\Infra\Request;
-use Register\Infra\Response;
 use Register\Infra\View;
+use Register\Logic\AdminProcessor;
+use Register\Value\Html;
+use Register\Value\Response;
+use Register\Value\User;
+use Register\Value\UserGroup;
 
 class UserAdminController
 {
@@ -80,23 +80,23 @@ class UserAdminController
 
     private function editUsers(Request $request): Response
     {
-        $response = new Response();
         $fn = $this->dbService->dataFolder() . 'users.csv';
-        if ($this->dbService->hasUsersFile()) {
-            $lock = $this->dbService->lock(false);
-            $users  = $this->dbService->readUsers();
-            $this->dbService->unlock($lock);
-            $o = $this->renderUsersForm($users, $request, $response)
-                . $this->view->messagep('info', count($users), 'entries_in_csv', $fn);
-        } else {
-            $o = $this->view->message('fail', 'err_csv_missing', $fn);
+        if (!$this->dbService->hasUsersFile()) {
+            return Response::create($this->view->message('fail', 'err_csv_missing', $fn));
         }
-        return $response->body($o);
+        $lock = $this->dbService->lock(false);
+        $users  = $this->dbService->readUsers();
+        $this->dbService->unlock($lock);
+        $o = $this->renderUsersForm($users, $request)
+            . $this->view->messagep('info', count($users), 'entries_in_csv', $fn);
+        return Response::create($o)
+            ->withScript($request->pluginsFolder() . "register/admin.min.js")
+            ->withMeta("register_texts", $this->texts())
+            ->withMeta("register_max_number_of_users", $this->calcMaxRecords(8, 4));
     }
 
     private function saveUsers(Request $request): Response
     {
-        $response = new Response();
         $this->csrfProtector->check();
         $errors = [];
         if ($this->dbService->hasGroupsFile()) {
@@ -146,8 +146,11 @@ class UserAdminController
             $o .= $this->renderErrorMessages($errors);
         }
 
-        $o .= $this->renderUsersForm($newusers, $request, $response);
-        return $response->body($o);
+        $o .= $this->renderUsersForm($newusers, $request);
+        return Response::create($o)
+            ->withScript($request->pluginsFolder() . "register/admin.min.js")
+            ->withMeta("register_texts", $this->texts())
+            ->withMeta("register_max_number_of_users", $this->calcMaxRecords(8, 4));
     }
 
     /** @param list<array{string}|list<array{string}>> $errors */
@@ -169,12 +172,8 @@ class UserAdminController
     }
 
     /** @param User[] $users */
-    private function renderUsersForm(array $users, Request $request, Response $response): string
+    private function renderUsersForm(array $users, Request $request): string
     {
-        $response->addScript($request->pluginsFolder() . "register/admin.min.js");
-        $response->addMeta("register_texts", $this->texts());
-        $response->addMeta("register_max_number_of_users", $this->calcMaxRecords(8, 4));
-
         $data = [
             'csrfTokenInput' => Html::from($this->csrfProtector->tokenInput()),
             'defaultGroup' => $this->conf['group_default'],

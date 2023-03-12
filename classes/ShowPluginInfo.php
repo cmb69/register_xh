@@ -10,9 +10,9 @@ namespace Register;
 
 use Register\Infra\DbService;
 use Register\Infra\Request;
-use Register\Infra\Response;
 use Register\Infra\SystemChecker;
 use Register\Infra\View;
+use Register\Value\Response;
 
 class ShowPluginInfo
 {
@@ -43,7 +43,7 @@ class ShowPluginInfo
 
     public function __invoke(Request $request): Response
     {
-        return (new Response)->body($this->view->render('info', [
+        return Response::create($this->view->render('info', [
             'version' => REGISTER_VERSION,
             'checks' => $this->getChecks($request->pluginsFolder() . "register/"),
         ]));

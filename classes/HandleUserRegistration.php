@@ -14,11 +14,11 @@ use Register\Infra\Mailer;
 use Register\Infra\Password;
 use Register\Infra\Random;
 use Register\Infra\Request;
-use Register\Infra\Response;
 use Register\Infra\UserRepository;
 use Register\Infra\View;
 use Register\Logic\Util;
 use Register\Logic\Validator;
+use Register\Value\Response;
 use Register\Value\User;
 
 class HandleUserRegistration
@@ -69,7 +69,7 @@ class HandleUserRegistration
     public function __invoke(Request $request): Response
     {
         if ($request->username()) {
-            return (new Response)->redirect(CMSIMPLE_URL);
+            return Response::redirect(CMSIMPLE_URL);
         }
         if (isset($_POST['action']) && $_POST['action'] === 'register_user') {
             return $this->registerUser($request);
@@ -82,8 +82,7 @@ class HandleUserRegistration
 
     private function showForm(Request $request): Response
     {
-        $response = new Response;
-        $response->body($this->view->render('registerform', [
+        return Response::create($this->view->render('registerform', [
             'actionUrl' => $request->url()->relative(),
             'name' => "",
             'username' => "",
@@ -91,12 +90,10 @@ class HandleUserRegistration
             'password2' => "",
             'email' => "",
         ]));
-        return $response;
     }
 
     private function registerUser(Request $request): Response
     {
-        $response = new Response;
         $name      = isset($_POST['name']) && is_string($_POST["name"]) ? trim($_POST['name']) : '';
         $username  = isset($_POST['username']) && is_string($_POST["username"]) ? trim($_POST['username']) : '';
         $password1 = isset($_POST['password1']) && is_string($_POST["password1"]) ? trim($_POST['password1']) : '';
@@ -106,7 +103,7 @@ class HandleUserRegistration
         $validator = new Validator();
         $errors = $validator->validateUser($name, $username, $password1, $password2, $email);
         if ($errors) {
-            $response->body($this->renderErrorMessages($errors)
+            return Response::create($this->renderErrorMessages($errors)
                 . $this->view->render('registerform', [
                     'actionUrl' => $request->url()->relative(),
                     'name' => $name,
@@ -115,11 +112,10 @@ class HandleUserRegistration
                     'password2' => $password2,
                     'email' => $email,
                 ]));
-            return $response;
         }
 
         if ($this->userRepository->findByUsername($username)) {
-            return $response->body($this->view->message("fail", 'err_username_exists'));
+            return Response::create($this->view->message("fail", 'err_username_exists'));
         }
         $user = $this->userRepository->findByEmail($email);
 
@@ -137,7 +133,7 @@ class HandleUserRegistration
             );
 
             if (!$this->userRepository->add($newUser)) {
-                return $response->body($this->view->message("fail", 'err_cannot_write_csv'));
+                return Response::create($this->view->message("fail", 'err_cannot_write_csv'));
             }
         }
 
@@ -161,7 +157,7 @@ class HandleUserRegistration
             $_SERVER["SERVER_NAME"],
             $_SERVER["REMOTE_ADDR"]
         );
-        return $response->body($this->view->message('success', 'registered'));
+        return Response::create($this->view->message('success', 'registered'));
     }
 
     /** @param list<array{string}> $errors */
@@ -174,11 +170,10 @@ class HandleUserRegistration
 
     private function activateUser(): Response
     {
-        $response = new Response;
         if (isset($_GET['username']) && isset($_GET['nonce'])) {
-            return $response->body($this->doActivateUser($_GET['username'], $_GET['nonce']));
+            return Response::create($this->doActivateUser($_GET['username'], $_GET['nonce']));
         }
-        return $response->body("");
+        return Response::create();
     }
 
     private function doActivateUser(string $username, string $nonce): string

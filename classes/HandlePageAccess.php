@@ -11,8 +11,8 @@
 namespace Register;
 
 use Register\Infra\Request;
-use Register\Infra\Response;
 use Register\Infra\UserRepository;
+use Register\Value\Response;
 
 class HandlePageAccess
 {
@@ -31,7 +31,6 @@ class HandlePageAccess
 
     public function __invoke(Request $request, string $groupString): Response
     {
-        $response = new Response;
         // remove spaces etc.
         $groupString = (string) preg_replace("/[ \t\r\n]*/", '', $groupString);
         $groupNames = explode(",", $groupString);
@@ -40,8 +39,8 @@ class HandlePageAccess
         if ($request->function() !== "search"
                 && (!$user || !count(array_intersect($groupNames, $user->getAccessgroups())))) {
             // go to access error page
-            return $response->redirect($request->url()->withPage($this->text["access_error"])->absolute());
+            return Response::redirect($request->url()->withPage($this->text["access_error"])->absolute());
         }
-        return $response;
+        return Response::create();
     }
 }

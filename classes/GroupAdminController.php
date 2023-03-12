@@ -13,11 +13,11 @@ namespace Register;
 use Register\Infra\DbService;
 use Register\Infra\Pages;
 use Register\Infra\Request;
-use Register\Infra\Response;
 use Register\Infra\Url;
 use Register\Infra\View;
 use Register\Logic\AdminProcessor;
 use Register\Value\Html;
+use Register\Value\Response;
 use Register\Value\UserGroup;
 use XH\CSRFProtection as CsrfProtector;
 
@@ -51,9 +51,9 @@ class GroupAdminController
     {
         switch ($request->groupAdminAction()) {
             default:
-                return (new Response)->body($this->editGroups($request));
+                return Response::create($this->editGroups($request));
             case "do_update":
-                return (new Response)->body($this->saveGroups($request));
+                return Response::create($this->saveGroups($request));
         }
     }
 

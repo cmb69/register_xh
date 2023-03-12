@@ -11,9 +11,9 @@
 namespace Register;
 
 use Register\Infra\Request;
-use Register\Infra\Response;
 use Register\Infra\UserRepository;
 use Register\Infra\View;
+use Register\Value\Response;
 use Register\Value\User;
 
 class ShowLoginForm
@@ -50,11 +50,11 @@ class ShowLoginForm
     {
         if ($request->username() === "") {
             if ($loggedInOnly) {
-                return new Response;
+                return Response::create("");
             }
-            return (new Response)->body($this->renderLoginForm($request));
+            return Response::create($this->renderLoginForm($request));
         } else {
-            return (new Response)->body($this->renderLoggedInForm($request));
+            return Response::create($this->renderLoggedInForm($request));
         }
     }
 

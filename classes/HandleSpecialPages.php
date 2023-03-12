@@ -12,8 +12,8 @@ namespace Register;
 
 use Register\Infra\Pages;
 use Register\Infra\Request;
-use Register\Infra\Response;
 use Register\Infra\View;
+use Register\Value\Response;
 
 class HandleSpecialPages
 {
@@ -67,112 +67,82 @@ class HandleSpecialPages
 
     private function registrationPageAction(): Response
     {
-        $response = new Response();
         if ($this->conf['allowed_register'] && !$this->pages->has($this->text['register'])) {
-            $response->setTitle($this->text['register']);
-            $response->body(
-                $this->renderPageView(
-                    $this->text['register'],
-                    $this->text['register_form1'],
-                    "registerUser()"
-                )
-            );
+            return Response::create($this->renderPageView(
+                $this->text['register'],
+                $this->text['register_form1'],
+                "registerUser()"
+            ))->withTitle($this->text['register']);
         }
-        return $response;
+        return Response::create();
     }
 
     private function passwordForgottenPageAction(): Response
     {
-        $response = new Response();
         if (!$this->pages->has($this->text['forgot_password'])) {
-            $response->setTitle($this->text['forgot_password']);
-            $response->body(
-                $this->renderPageView(
-                    $this->text['forgot_password'],
-                    $this->text['reminderexplanation'],
-                    "registerForgotPassword()"
-                )
-            );
+            return Response::create($this->renderPageView(
+                $this->text['forgot_password'],
+                $this->text['reminderexplanation'],
+                "registerForgotPassword()"
+            ))->withTitle($this->text['forgot_password']);
         }
-        return $response;
+        return Response::create();
     }
 
     private function userPrefsPageAction(): Response
     {
-        $response = new Response();
         if (!$this->pages->has($this->text['user_prefs'])) {
-            $response->setTitle($this->text['user_prefs']);
-            $response->body(
-                $this->renderPageView(
-                    $this->text['user_prefs'],
-                    $this->text['changeexplanation'],
-                    "registerUserPrefs()"
-                )
-            );
+            return Response::create($this->renderPageView(
+                $this->text['user_prefs'],
+                $this->text['changeexplanation'],
+                "registerUserPrefs()"
+            ))->withTitle($this->text['user_prefs']);
         }
-        return $response;
+        return Response::create();
     }
 
     private function loginErrorPageAction(): Response
     {
-        $response = new Response();
-        $response->forbid();
         if (!$this->pages->has($this->text['login_error'])) {
-            $response->setTitle($this->text['login_error']);
-            $response->body(
-                $this->renderPageView(
-                    $this->text['login_error'],
-                    $this->text['login_error_text']
-                )
-            );
+            return Response::forbid($this->renderPageView(
+                $this->text['login_error'],
+                $this->text['login_error_text']
+            ))->withTitle($this->text['login_error']);
         }
-        return $response;
+        return Response::forbid();
     }
 
     private function logoutPageAction(): Response
     {
-        $response = new Response();
         if (!$this->pages->has($this->text['loggedout'])) {
-            $response->setTitle($this->text['loggedout']);
-            $response->body(
-                $this->renderPageView(
-                    $this->text['loggedout'],
-                    $this->text['loggedout_text']
-                )
-            );
+            return Response::create($this->renderPageView(
+                $this->text['loggedout'],
+                $this->text['loggedout_text']
+            ))->withTitle($this->text['loggedout']);
         }
-        return $response;
+        return Response::create();
     }
 
     private function loginPageAction(): Response
     {
-        $response = new Response();
         if (!$this->pages->has($this->text['loggedin'])) {
-            $response->setTitle($this->text['loggedin']);
-            $response->body(
-                $this->renderPageView(
-                    $this->text['loggedin'],
-                    $this->text['loggedin_text']
-                )
-            );
+            return Response::create($this->renderPageView(
+                $this->text['loggedin'],
+                $this->text['loggedin_text']
+            ))->withTitle($this->text['loggedin']);
         }
-        return $response;
+        return Response::create();
     }
 
     private function accessErrorPageAction(): Response
     {
-        $response = new Response();
-        $response->forbid();
         if (!$this->pages->has($this->text['access_error'])) {
-            $response->setTitle($this->text['access_error']);
-            $response->body(
-                $this->renderPageView(
-                    $this->text['access_error'],
-                    $this->text['access_error_text']
-                )
-            );
+            return Response::forbid($this->renderPageView(
+                $this->text['access_error'],
+                $this->text['access_error_text']
+            ))->withTitle($this->text['access_error']);
         }
-        return $response;
+        return Response::forbid();
     }
 
     /**
