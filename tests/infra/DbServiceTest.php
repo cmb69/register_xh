@@ -23,12 +23,6 @@ class DbServiceTest extends TestCase
         $this->subject = new DbService(vfsStream::url("root/register/"), "guest", $this->createStub(Random::class));
     }
 
-    public function testUsersAndGroupsFileAreCreatedAutomatically(): void
-    {
-        $this->assertTrue($this->subject->hasUsersFile());
-        $this->assertTrue($this->subject->hasGroupsFile());
-    }
-
     public function testCanAquireLock(): void
     {
         $lock = $this->subject->lock(false);

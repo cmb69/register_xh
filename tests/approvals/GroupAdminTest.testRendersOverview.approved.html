@@ -1,0 +1,40 @@
+<section class="register_admin">
+<h1>Register – Groups</h1>
+<!-- register groups -->
+<form method="get">
+  <input type="hidden" name="selected" value="register">
+  <input type="hidden" name="admin" value="groups">
+  <table>
+    <thead>
+      <tr>
+        <th>Groupname</th>
+        <th>Login</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>
+          <label><input type="radio" name="group" value="guest"> guest</label>
+        </td>
+        <td></td>
+      </tr>
+      <tr>
+        <td>
+          <label><input type="radio" name="group" value="new"> new</label>
+        </td>
+        <td>Start</td>
+      </tr>
+    </tbody>
+    <tfoot>
+      <tr>
+        <td colspan="2">
+          <button name="action" value="create">New</button>
+          <button name="action" value="update">Edit</button>
+          <button name="action" value="delete">Delete</button>
+          <button name="admin" value="users">Users</button>
+        </td>
+      </tr>
+    </tfoot>
+  </table>
+</form>
+</section>

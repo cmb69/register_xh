@@ -8,6 +8,10 @@
 
 namespace Register\Infra;
 
+use Register\Value\Mail;
+use Register\Value\User;
+use Register\Value\UserGroup;
+
 class Request
 {
     /** @codeCoverageIgnore */
@@ -26,6 +30,11 @@ class Request
     public function registerAction(): string
     {
         return $_POST["register_action"] ?? $_GET["register_action"] ?? "";
+    }
+
+    public function action(): string
+    {
+        return $_POST["action"] ?? $_GET["action"] ?? "";
     }
 
     /** @return array{name:string,username:string,password1:string,password2:string,email:string} */
@@ -98,93 +107,89 @@ class Request
         ];
     }
 
+    /** @return array{username:string,name:string,group:string,email:string,status:string} */
+    public function userFilters(): array
+    {
+        return [
+            "username" => $this->trimmedGetString("username"),
+            "name" => $this->trimmedGetString("name"),
+            "group" => $this->trimmedGetString("group"),
+            "email" => $this->trimmedGetString("email"),
+            "status" => $this->trimmedGetString("status"),
+        ];
+    }
+
+    public function selectedUser(): string
+    {
+        return isset($_GET["user"]) && is_string($_GET["user"]) ? $_GET["user"] : "";
+    }
+
+    /** @return array{name:string,email:string,groups:list<string>,status:string} */
+    public function userPost(): array
+    {
+        return [
+            "name" => $this->trimmedPostString("name"),
+            "email" => $this->trimmedPostString("email"),
+            "groups" => $this->trimmedPostArray("groups"),
+            "status" => $this->trimmedPostString("status"),
+        ];
+    }
+
+    public function postedUser(): User
+    {
+        return new User(
+            $this->trimmedPostString("username") ?: $this->selectedUser(),
+            $this->trimmedPostString("password1"),
+            $this->trimmedPostArray("groups"),
+            $this->trimmedPostString("name"),
+            $this->trimmedPostString("email"),
+            $this->trimmedPostString("status"),
+            ""
+        );
+    }
+
+    public function postedPassword(): string
+    {
+        return $this->trimmedPostString("password2");
+    }
+
+    public function postedMail(): Mail
+    {
+        return new Mail($this->trimmedPostString("subject"), $this->trimmedPostString("message"));
+    }
+
+    public function selectedGroup(): string
+    {
+        return isset($_GET["group"]) && is_string($_GET["group"]) ? $_GET["group"] : "";
+    }
+
+    public function postedGroup(): UserGroup
+    {
+        return new UserGroup(
+            $this->trimmedPostString("groupname") ?: $this->selectedGroup(),
+            $this->trimmedPostString("loginpage")
+        );
+    }
+
     private function trimmedPostString(string $param): string
     {
         $post = $this->post();
         return (isset($post[$param]) && is_string($post[$param])) ? trim($post[$param]) : "";
     }
 
+    /** @return list<string> */
+    private function trimmedPostArray(string $param): array
+    {
+        $post = $this->post();
+        return (isset($post[$param]) && is_array($post[$param]))
+            ? array_values(array_map("trim", ($post[$param])))
+            : [];
+    }
+
     private function trimmedGetString(string $param): string
     {
         $get = $this->get();
         return (isset($get[$param]) && is_string($get[$param])) ? trim($get[$param]) : "";
-    }
-
-    public function groupAdminAction(): string
-    {
-        return $this->hasGroupAdminSubmission($this->post()) ? "do_update" : "update";
-    }
-
-    /** @return array{string,list<string>,list<string>} */
-    public function groupAdminSubmission(): array
-    {
-        $post = $this->post();
-        assert($this->hasGroupAdminSubmission($post));
-        return [
-            $post["action"],
-            $post["groupname"],
-            $post["grouploginpage"],
-        ];
-    }
-
-    /**
-     * @param array<string,string|array<string>> $post
-     * @phpstan-assert-if-true array{action:string,groupname:list<string>,grouploginpage:list<string>} $post
-     */
-    private function hasGroupAdminSubmission(array $post): bool
-    {
-        $post = $this->post();
-        if (isset($post["action"])
-            && ($post["action"] === "add" || is_numeric($post["action"]) || $post["action"] === "save")
-            && isset($post["groupname"]) && is_array($post["groupname"])
-            && isset($post["grouploginpage"]) && is_array($post["grouploginpage"])
-        ) {
-            return true;
-        }
-        return false;
-    }
-
-    public function userAdminAction(): string
-    {
-        return $this->hasUserAdminSubmission($this->post()) ? "do_update" : "update";
-    }
-
-    /** @return array{list<string>,list<string>,list<string>,list<string>,list<string>,list<string>,list<string>,list<string>} */
-    public function userAdminSubmission(): array
-    {
-        $post = $this->post();
-        assert($this->hasUserAdminSubmission($post));
-        return [
-            $post["username"],
-            $post["password"],
-            $post["oldpassword"],
-            $post["name"],
-            $post["email"],
-            $post["accessgroups"],
-            $post["status"],
-            $post["secrets"],
-        ];
-    }
-
-    /**
-     * @param array<string,string|array<string>> $post
-     * @phpstan-assert-if-true array{username:list<string>,password:list<string>,oldpassword:list<string>,name:list<string>,email:list<string>,accessgroups:list<string>,status:list<string>,secrets:list<string>} $post
-     */
-    private function hasUserAdminSubmission(array $post): bool
-    {
-        $post = $this->post();
-        if (isset($post["username"]) && is_array($post["username"])
-            && isset($post["password"]) && is_array($post["password"])
-            && isset($post["oldpassword"]) && is_array($post["oldpassword"])
-            && isset($post["name"]) && is_array($post["name"])
-            && isset($post["email"]) && is_array($post["email"])
-            && isset($post["accessgroups"]) && is_array($post["accessgroups"])
-            && isset($post["status"]) && is_array($post["status"])
-            && isset($post["secrets"]) && is_array($post["secrets"])
-        ) {
-            return true;
-        }
-        return false;
     }
 
     /**

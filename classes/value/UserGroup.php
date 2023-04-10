@@ -40,4 +40,11 @@ class UserGroup
     {
         return $this->loginpage;
     }
+
+    public function with(string $loginpage): self
+    {
+        $that = clone $this;
+        $that->loginpage = $loginpage;
+        return $that;
+    }
 }

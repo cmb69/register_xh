@@ -8,7 +8,9 @@
 
 namespace Register\Logic;
 
+use Register\Value\Mail;
 use Register\Value\User;
+use Register\Value\UserGroup;
 
 class Util
 {
@@ -49,5 +51,18 @@ class Util
             return true;
         }
         return count(array_intersect($groups, $user !== null ? $user->getAccessgroups() : [])) > 0;
+    }
+
+    /** @return list<array{string}> */
+    public static function validateMail(Mail $mail): array
+    {
+        $errors = [];
+        if (!preg_match('/.+/u', $mail->subject())) {
+            $errors[] = ["err_subject"];
+        }
+        if (!preg_match('/.+/u', $mail->message())) {
+            $errors[] = ["err_message"];
+        }
+        return $errors;
     }
 }

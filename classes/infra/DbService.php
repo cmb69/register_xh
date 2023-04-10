@@ -53,14 +53,15 @@ class DbService
         return $this->dirname;
     }
 
-    public function hasUsersFile(): bool
+    /** @return Lock|null */
+    private function lockex(bool $exclusive)
     {
-        return is_file($this->dataFolder() . 'users.csv');
-    }
-
-    public function hasGroupsFile(): bool
-    {
-        return is_file($this->dataFolder() . 'groups.csv');
+        $fn = $this->dataFolder() . '/.lock';
+        if ($fp = @fopen($fn, 'c')) {
+            flock($fp, $exclusive ? LOCK_EX : LOCK_SH);
+            return new Lock($fp);
+        }
+        return null;
     }
 
     /** @return resource|null */
@@ -87,6 +88,23 @@ class DbService
         }
     }
 
+    /** @return array{list<User>,list<UserGroup>,Lock|null} */
+    public function readUsersAndGroupsWithLock(bool $exclusive)
+    {
+        $lock = $this->lockex($exclusive);
+        $users = $this->readUsers();
+        $groups = $this->readGroups();
+        return [$users, $groups, $lock];
+    }
+
+    /** @return array{list<UserGroup>,Lock|null} */
+    public function readGroupsWithLock(bool $exclusive)
+    {
+        $lock = $this->lockex($exclusive);
+        $groups = $this->readGroups();
+        return [$groups, $lock];
+    }
+
     /** @return list<UserGroup> */
     public function readGroups(): array
     {
@@ -95,6 +113,14 @@ class DbService
             $fields = array_pad($fields, 2, "");
             return UserGroup::fromArray($fields);
         });
+    }
+
+    /** @return array{list<User>,Lock|null} */
+    public function readUsersWithLock(bool $exclusive)
+    {
+        $lock = $this->lockex($exclusive);
+        $users = $this->readUsers();
+        return [$users, $lock];
     }
 
     /** @return list<User> */

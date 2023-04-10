@@ -15,7 +15,7 @@ class Responder
     /** @return string|never */
     public static function respond(Response $response)
     {
-        global $hjs, $title;
+        global $title;
 
         if ($response->location() !== null) {
             while (ob_get_level()) {
@@ -30,15 +30,6 @@ class Responder
         }
         if ($response->isForbidden()) {
             header("HTTP/1.1 403 Forbidden");
-        }
-        foreach ($response->meta() as $key => $data) {
-            $key = XH_hsc($key);
-            $content = (string) json_encode($data, JSON_HEX_APOS | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
-            $hjs .= "\n<meta name=\"$key\" content='$content'>";
-        }
-        if ($response->script() !== null) {
-            $filename = XH_hsc($response->script());
-            $hjs .= "\n<script src=\"$filename\"></script>";
         }
         if ($response->title() !== null) {
             $title = XH_hsc($response->title());

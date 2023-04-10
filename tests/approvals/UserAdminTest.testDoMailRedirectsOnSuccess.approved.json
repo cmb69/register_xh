@@ -1,0 +1,8 @@
+[
+    "jane@example.com",
+    "subject",
+    "message",
+    [
+        "From: postmaster@example.com"
+    ]
+]

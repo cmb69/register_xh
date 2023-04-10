@@ -71,28 +71,27 @@ div.regi_loggedin_logout {float: left; width: 100%; padding: 2px 0;}
 .register_change_password {}
 .register_change_password label span {display: inline-block; width: 10em}
 
-/* Admin area */
-
-.register_admin_main {margin-bottom: 1em; overflow-x: auto}
-
-#register_toggle_details {margin: 0 0.2em 0 1em}
-#register_group_selectbox {margin-left: 1em}
-
-div.register_admin_main table {margin-bottom: 1em}
-div.register_admin_main table th {text-align: center; font-weight: bold}
-div.register_admin_main table input {}
-div.register_admin_main table img {width: 16px; height: 16px; cursor: pointer}
-
-div.register_admin_main a img {border: none}
-
-#register_user_table {margin: 1em 0; width:100%}
-#register_user_table th.register_sort:after {content: "\f0dc"; font-family: FontAwesome; padding-left: 1em}
-#register_user_table th.register_sort_asc:after {content: "\f0de"; font-family: FontAwesome; padding-left: 1em}
-#register_user_table th.register_sort_desc:after {content: "\f0dd"; font-family: FontAwesome; padding-left: 1em}
-#register_user_table input[type="text"], #register_user_table select, #register_user_table button {width: 95%} /* if necessary, adjust the width to your template */
-
-img.register_plugin_icon {display: block; float: left; margin: 0 20px 0 0}
-p.register_license {clear: both; text-align: justify}
+/* adminstration */
+section.register_admin div.register_table_wrapper {
+    overflow-x: auto;
+}
+section.register_admin th,
+section.register_admin td {
+    white-space: nowrap;
+    padding: 0.2em 0.5em 0.2em 0;
+}
+section.register_admin table input[type=search],
+section.register_admin table select {
+    width: 100%;
+}
+section.register_admin label span {
+    display: inline-block;
+    width: 10em;
+}
+section.register_admin select[multiple],
+section.register_admin textarea {
+    vertical-align: top;
+}
 
 /* page data tab */
 #xh_view_register_pd_view .pl_tooltip {

@@ -10,6 +10,8 @@ namespace Register\Value;
 
 class User
 {
+    public const STATUSES = ["activated", "locked", "deactivated"];
+
     /** @param list<string> $fields */
     public static function fromArray(array $fields): ?self
     {
@@ -113,6 +115,17 @@ class User
         return $this->secret;
     }
 
+    /** @param list<string> $accessgroups */
+    public function with(string $name, string $email, array $accessgroups, string $status): self
+    {
+        $that = clone $this;
+        $that->name = $name;
+        $that->email = $email;
+        $that->accessgroups = $accessgroups;
+        $that->status = $status;
+        return $that;
+    }
+
     public function withPassword(string $password): self
     {
         $that = clone $this;
@@ -146,6 +159,13 @@ class User
     {
         $that = clone $this;
         $that->status = "activated";
+        return $that;
+    }
+
+    public function withSecret(string $secret): self
+    {
+        $that = clone $this;
+        $that->secret = $secret;
         return $that;
     }
 }

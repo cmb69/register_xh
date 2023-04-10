@@ -1,0 +1,43 @@
+<section class="register_admin">
+<h1>Register – Users</h1>
+<!-- register admin user form -->
+<form method="post">
+  <input type="hidden" name="xh_csrf_token" value="f7302cf6675b89edab0d716efdbbfdab">  <p>
+    <label>
+      <span>Username</span>
+      <input name="username" value="jane" disabled>
+    </label>
+  </p>
+  <p>
+    <label>
+      <span>Full Name</span>
+      <input name="name" value="Jane Doe" required>
+    </label>
+  </p>
+  <p>
+    <label>
+      <span>Email</span>
+      <input type="email" name="email" value="jane@example.com" required>
+    </label>
+  </p>
+  <p>
+    <label><span>Access Groups</span>
+      <select name="groups[]" multiple required>
+        <option >guest</option>
+      </select>
+    </label>
+  </p>
+  <p>
+    <label><span>Status</span>
+      <select name="status">
+        <option value="activated" selected>activated</option>
+        <option value="locked" >locked</option>
+        <option value="deactivated" >deactivated</option>
+      </select>
+    </label>
+  </p>
+  <p>
+    <button name="action" value="do_update">Update</button>
+  </p>
+</form>
+</section>

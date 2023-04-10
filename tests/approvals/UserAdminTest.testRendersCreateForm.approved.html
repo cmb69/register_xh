@@ -1,0 +1,56 @@
+<section class="register_admin">
+<h1>Register – Users</h1>
+<!-- register admin user form -->
+<form method="post">
+  <input type="hidden" name="xh_csrf_token" value="f7302cf6675b89edab0d716efdbbfdab">  <p>
+    <label>
+      <span>Username</span>
+      <input name="username" value="" required>
+    </label>
+  </p>
+  <p>
+    <label>
+      <span>Full Name</span>
+      <input name="name" value="" required>
+    </label>
+  </p>
+  <p>
+    <label>
+      <span>Email</span>
+      <input type="email" name="email" value="" required>
+    </label>
+  </p>
+  <p>
+    <label><span>Access Groups</span>
+      <select name="groups[]" multiple required>
+        <option >admin</option>
+        <option selected>guest</option>
+      </select>
+    </label>
+  </p>
+  <p>
+    <label><span>Status</span>
+      <select name="status">
+        <option value="activated" selected>activated</option>
+        <option value="locked" >locked</option>
+        <option value="deactivated" >deactivated</option>
+      </select>
+    </label>
+  </p>
+  <p>
+    <label>
+      <span>Password</span>
+      <input type="password" autocomplete="new-password" name="password1" value="" required>
+    </label>
+  </p>
+  <p>
+    <label>
+      <span>Confirm Password</span>
+      <input type="password" name="password2" value="" required>
+    </label>
+  </p>
+  <p>
+    <button name="action" value="do_create">Create</button>
+  </p>
+</form>
+</section>

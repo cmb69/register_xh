@@ -10,6 +10,7 @@
 
 namespace Register\Infra;
 
+use Register\Value\Mail;
 use Register\Value\User;
 
 class Mailer
@@ -116,6 +117,11 @@ MAIL;
             $content,
             ["From: $from", "Cc: $from"]
         );
+    }
+
+    public function adHocMail(User $user, Mail $mail, string $from): bool
+    {
+        return $this->sendMail($user->getEmail(), $mail->subject(), $mail->message(), ["From: $from"]);
     }
 
     /** @param list<string> $headers */

@@ -23,7 +23,6 @@ if (!defined("CMSIMPLE_XH_VERSION")) {
  * @var array{folder:array<string,string>,file:array<string,string>} $pth
  * @var PageDataRouter $pd_router
  * @var string $admin
- * @var string $action
  * @var array<string,array<string,string>> $plugin_tx
  */
 
@@ -52,10 +51,10 @@ if (XH_wantsPluginAdministration("register")) {
             $o .= Responder::respond(Dic::makeShowPluginInfo()(Request::current()));
             break;
         case "groups":
-            $o .= Responder::respond(Dic::makeGroupAdminController()(Request::current()));
+            $o .= Responder::respond(Dic::makeGroupAdmin()(Request::current()));
             break;
         case "users":
-            $o .= Responder::respond(Dic::makeUserAdminController()(Request::current()));
+            $o .= Responder::respond(Dic::makeUserAdmin()(Request::current()));
             break;
         default:
             $o .= plugin_admin_common();

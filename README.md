@@ -65,34 +65,22 @@ The look of Register_XH can be customized under `Stylesheet`.
 ### User and Group Administration
 
 The first thing you should do is to adjust the user groups according to your
-needs. You can do this under `Plugins` → `Register` → `Group administration`.
-You can administrate the users under `Plugins` → `Register` → `User administration`.
-Both screens should be pretty much self explaining,
-but some notes about the latter seem to be in order:
+needs. You can do this under `Plugins` → `Register` → `Groups`.
+You can administrate the users under `Plugins` → `Register` → `Users`.
 
-- The selectbox allows to filter the users by an access group. When you add a
-  new user, the filter is reset, as you might not be able to see the new user
-  record otherwise. When you save the data all user records will be saved,
-  even if they are filtered out.
+The status can have one of the following values (the label of the values are
+language specific, and can be changed in the language settings):
 
-- You can sort the user records by clicking on the respective column heading.
+- `activated`:
+  the user has the full privileges according to his groups
+- `locked`:
+  the user has the full privileges according to his groups, but may not change his preferences
+- `deactivated`:
+  the user account is (temporarily) deactivated
+- `not yet activated`:
+  the user has registered, but the account has not been activated
 
-- The status can have one of the following values (the label of the values are
-  language specific, and can be changed in the language settings):
-
-  - `activated`:
-    the user has the full privileges according to his groups
-  - `locked`:
-    the user has the full privileges according to his groups, but may not change his preferences
-  - `deactivated`:
-    the user account is (temporarily) deactivated
-  - `not yet activated`:
-    the user has registered, but the account has not been activated
-
-- In both group as well as user administration adding or deleting a user is
-  temporary; to make the changes permanent, you have to explicitly save them.
-
-Please note also, that the possibility to switch to admin mode after being
+Please note that the possibility to switch to admin mode after being
 logged in as registered admin has been removed. The call to
 `registeradminmodelink()` is now deprecated and does not return
 the link anymore. Plugins should not offer any backdoor to circumvent the
@@ -182,14 +170,6 @@ this is likely to change in the future.
 If any CMSimple_XH page inadvertently has a heading that is used for one of
 the [special Register_XH pages](#special-pages), the plugin might
 not work as expected.
-
-Depending on the PHP ini settings `max_input_vars`,
-`suhosin.post.max_vars` and `suhosin.request.max_vars`
-there is a limit on the maximum number of users that can be administrated in
-the plugin back-end. In a default configuration of PHP at most 124
-users are allowed. The plugin checks this limit, and does not permit more
-users to be added. If this limit is exceeded, you have to administrate the
-users in `users.csv` manually.
 
 ## Troubleshooting
 

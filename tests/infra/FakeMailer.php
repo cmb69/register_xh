@@ -22,6 +22,10 @@ class FakeMailer extends Mailer
     /** @var list<string> */
     private $headers;
 
+    private $lastMail;
+
+    private $options;
+
     /** @param list<string> $headers */
     protected function sendMail(string $to, string $subject, string $message, array $headers): bool
     {
@@ -29,7 +33,8 @@ class FakeMailer extends Mailer
         $this->subject = $subject;
         $this->message = $message;
         $this->headers = $headers;
-        return true;
+        $this->lastMail = func_get_args();
+        return $this->options["sendMail"] ?? true;
     }
 
     public function to(): string
@@ -51,5 +56,15 @@ class FakeMailer extends Mailer
     public function headers(): array
     {
         return $this->headers;
+    }
+
+    public function lastMail(): array
+    {
+        return $this->lastMail;
+    }
+
+    public function options(array $options)
+    {
+        $this->options = $options;
     }
 }

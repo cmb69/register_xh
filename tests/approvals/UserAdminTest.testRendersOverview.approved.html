@@ -1,0 +1,61 @@
+<section class="register_admin">
+<h1>Register – Users</h1>
+<!-- register users -->
+<form method="get">
+  <input type="hidden" name="selected" value="register">
+  <input type="hidden" name="admin" value="users">
+  <div class="register_table_wrapper">
+    <table>
+      <thead>
+        <tr>
+          <th>Username</th>
+          <th>Full Name</th>
+          <th>Email</th>
+          <th>Access Groups</th>
+          <th>Status</th>
+        </tr>
+        <tr>
+          <td><input type="search" name="username" value="" placeholder="Filter"></td>
+          <td><input type="search" name="name" value="" placeholder="Filter"></td>
+          <td><input type="search" name="email" value="" placeholder="Filter"></td>
+          <td>
+            <select name="group" onchange="this.form.submit()">
+              <option selected></option>
+              <option >guest</option>
+            </select>
+          </td>
+          <td><input type="search" name="status" value="" placeholder="Filter"></td>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>
+            <label><input type="radio" name="user" value="jane" > jane</label>
+          </td>
+          <td>Jane Doe</td>
+          <td>jane@example.com</td>
+          <td>admin</td>
+          <td>activated</td>
+        </tr>
+        <tr>
+          <td>
+            <label><input type="radio" name="user" value="john" > john</label>
+          </td>
+          <td>John Doe</td>
+          <td>john@example.com</td>
+          <td>guest</td>
+          <td>locked</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <p>
+    <button>Refresh</button>
+    <button name="action" value="create">New</button>
+    <button name="action" value="update">Edit</button>
+    <button name="action" value="delete">Delete</button>
+    <button name="action" value="change_password">Change Password</button>
+    <button name="action" value="mail">Mail</button>
+  </p>
+</form>
+</section>

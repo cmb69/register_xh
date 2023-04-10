@@ -68,20 +68,15 @@
 <p>The look of Register_XH can be customized under <code>Stylesheet</code>.</p>
 <h2 id="usage">Usage</h2>
 <h3 id="user-and-group-administration">User and Group Administration</h3>
-<p>The first thing you should do is to adjust the user groups according to your needs. You can do this under <code>Plugins</code> → <code>Register</code> → <code>Group administration</code>. You can administrate the users under <code>Plugins</code> → <code>Register</code> → <code>User administration</code>. Both screens should be pretty much self explaining, but some notes about the latter seem to be in order:</p>
-<ul>
-<li><p>The selectbox allows to filter the users by an access group. When you add a new user, the filter is reset, as you might not be able to see the new user record otherwise. When you save the data all user records will be saved, even if they are filtered out.</p></li>
-<li><p>You can sort the user records by clicking on the respective column heading.</p></li>
-<li><p>The status can have one of the following values (the label of the values are language specific, and can be changed in the language settings):</p>
+<p>The first thing you should do is to adjust the user groups according to your needs. You can do this under <code>Plugins</code> → <code>Register</code> → <code>Groups</code>. You can administrate the users under <code>Plugins</code> → <code>Register</code> → <code>Users</code>.</p>
+<p>The status can have one of the following values (the label of the values are language specific, and can be changed in the language settings):</p>
 <ul>
 <li><code>activated</code>: the user has the full privileges according to his groups</li>
 <li><code>locked</code>: the user has the full privileges according to his groups, but may not change his preferences</li>
 <li><code>deactivated</code>: the user account is (temporarily) deactivated</li>
 <li><code>not yet activated</code>: the user has registered, but the account has not been activated</li>
-</ul></li>
-<li><p>In both group as well as user administration adding or deleting a user is temporary; to make the changes permanent, you have to explicitly save them.</p></li>
 </ul>
-<p>Please note also, that the possibility to switch to admin mode after being logged in as registered admin has been removed. The call to <code>registeradminmodelink()</code> is now deprecated and does not return the link anymore. Plugins should not offer any backdoor to circumvent the login security of CMSimple_XH.</p>
+<p>Please note that the possibility to switch to admin mode after being logged in as registered admin has been removed. The call to <code>registeradminmodelink()</code> is now deprecated and does not return the link anymore. Plugins should not offer any backdoor to circumvent the login security of CMSimple_XH.</p>
 <h3 id="login-form">Login Form</h3>
 <p>To offer the user the possibility to log in and optionally register first, the <em>login form</em> must be displayed. You can put it in the template, so it is shown on all pages:</p>
 <pre><code>&lt;?=registerloginform()?&gt;</code></pre>
@@ -111,7 +106,6 @@
 <p>Please note that the handling and recognition of these pages is a bit sloppy currently (e.g. it does not matter on which menu level they are defined), but this is likely to change in the future.</p>
 <h2 id="limitations">Limitations</h2>
 <p>If any CMSimple_XH page inadvertently has a heading that is used for one of the <a href="#special-pages">special Register_XH pages</a>, the plugin might not work as expected.</p>
-<p>Depending on the PHP ini settings <code>max_input_vars</code>, <code>suhosin.post.max_vars</code> and <code>suhosin.request.max_vars</code> there is a limit on the maximum number of users that can be administrated in the plugin back-end. In a default configuration of PHP at most 124 users are allowed. The plugin checks this limit, and does not permit more users to be added. If this limit is exceeded, you have to administrate the users in <code>users.csv</code> manually.</p>
 <h2 id="troubleshooting">Troubleshooting</h2>
 <p>Report bugs and ask for support either on <a href="https://github.com/cmb69/register_xh/issues">Github</a> or in the <a href="https://cmsimpleforum.com/">CMSimple_XH Forum</a>.</p>
 <h2 id="license">License</h2>

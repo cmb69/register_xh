@@ -68,43 +68,28 @@ Das Aussehen von Register_XH kann unter `Stylesheet` angepasst werden.
 
 Das erste was Sie tun sollten, ist die Benutzergruppen entsprechend Ihren
 Wünschen anzupassen. Dies ist unter `Plugins` → `Register` →
-`Gruppenverwaltung` möglich. Sie können die Benutzer unter
-`Plugins` → `Register` → `Benutzerverwaltung` verwalten.
-Beide Masken sollten weitgehen selbsterklärend sein, aber einige Hinweise
-besonders bezüglich der Letzteren scheinen angebracht:
+`Gruppen` möglich. Sie können die Benutzer unter
+`Plugins` → `Register` → `Benutzer` verwalten.
 
-- Das Auswahlfeld erlaubt es die Benutzer nach ihrer Gruppenzugehörig zu
-  filtern. Wenn Sie einen Benutzer hinzufügen, wird der Filter zurück gesetzt,
-  da Sie sonst u.U. den neuen Benutzerdatensatz nicht sehen könnten. Wenn Sie
-  die Daten speichern, werden alle Benutzerdatensätze gespeichert, selbst wenn
-  sie ausgefiltert wurden.
+Der Benutzerstatus kann einen der folgenden Werte haben (die Bezeichnungen der Werte
+sind sprachspezifisch und können in den Spracheinstellungen geändert
+werden):
 
-- Sie können die Benutzerdatensätze durch Anklicken der entsprechenden
-  Spaltenüberschrift sortieren.
-
-- Der Status kann einen der folgenden Werte haben (die Bezeichnungen der Werte
-  sind sprachspezifisch und können in den Spracheinstellungen geändert
-  werden):
-
-  - `aktiviert`:
+- `aktiviert`:
   der Benutzer hat die vollen Rechte entsprechend seiner Gruppenzugehörigkeit
-  - `gesperrt`:
+- `gesperrt`:
   der Benutzer hat die vollen Rechte entsprechend seiner Gruppenzugehörigkeit,
   aber darf seine Benutzereinstellungen nicht ändern
-  - `deaktiviert`:
+- `deaktiviert`:
   das Benutzerkonto ist (vorübergehend) deaktiviert
-  - `noch nicht aktiviert`:
+- `noch nicht aktiviert`:
   der Benutzer hat sich registriert, aber das Konto wurde noch nicht aktiviert
 
-Sowohl in der Gruppen- wie auch in der Benutzerverwaltung ist das Hinzufügen
-und Löschen eines Benutzers nur temporär; um die Änderungen dauerhaft zu
-machen, müssen Sie sie ausdrücklich speichern.
-
-Bitte beachten sie weiterhin, dass die Möglichkeit nach dem Login als
+Bitte beachten Sie, dass die Möglichkeit nach dem Login als
 registrierter Benutzer der Admingruppe in den Administrationsmodus zu
 wechseln, entfernt wurde. Der Aufruf von
 `registeradminmodelink()` ist nun missbilligt und gibt den Link
- nicht mehr zurück. Plugins sollten keine Hintertür anbieten, um die
+nicht mehr zurück. Plugins sollten keine Hintertür anbieten, um die
 Login-Sicherheit von CMSimple_XH zu umgehen.
 
 ### Login-Formular
@@ -194,15 +179,6 @@ Menüebene sich diese befinden), was sich vermutlich in Zukunft ändern wird.
 Wenn irgend eine CMSimple_XH-Seite unbeabsichtigt eine Überschrift hat, die
 für eine der [Register_XH-Spezialseiten](#spezialseiten) reserviert
 ist, könnte das Plugin nicht richtig funktionieren.
-
-In Abhängigkeit der PHP ini Einstellungen `max_input_vars`,
-`suhosin.post.max_vars` und `suhosin.request.max_vars`
-gibt es eine Obergrenze für die Höchstanzahl von Benutzern, die im
-Plugin-Back-End verwaltet werden können. In der Standardkonfiguration von PHP
-sind höchstens 124 Benutzer erlaubt. Das Plugin überprüft diese
-Grenze, und verhindert das Hinzufügen weiterer Benutzer. Wenn die Obergrenze
-überschritten wurde, müssen Sie die Benutzer manuell in
-`user.csv` verwalten.
 
 ## Problembehebung
 

@@ -30,6 +30,12 @@ class View
     }
 
     /** @param scalar $args */
+    public function plain(string $key, ...$args): string
+    {
+        return sprintf($this->text[$key], ...$args);
+    }
+
+    /** @param scalar $args */
     public function plural(string $key, int $count, ...$args): string
     {
         return sprintf($this->esc($this->text[$this->pluralKey($key, $count)]), $count, ...$args);
@@ -42,9 +48,9 @@ class View
     }
 
     /** @param scalar $args */
-    public function messagep(string $type, int $count, string $key, ...$args): string
+    public function error(string $key, ...$args): string
     {
-        return XH_message($type, $this->text[$this->pluralKey($key, $count)], $count, ...$args) . "\n";
+        return XH_message("fail", $this->text[$key], ...$args) . "\n";
     }
 
     private function pluralKey(string $key, int $count): string

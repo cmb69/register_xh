@@ -8,8 +8,6 @@
 
 namespace Register;
 
-use XH\CSRFProtection as CsrfProtector;
-
 use Register\Infra\DbService;
 use Register\Infra\Logger;
 use Register\Infra\LoginManager;
@@ -17,12 +15,11 @@ use Register\Infra\Mailer;
 use Register\Infra\Pages;
 use Register\Infra\Password;
 use Register\Infra\Random;
-use Register\Infra\Request;
-use Register\Infra\Responder;
 use Register\Infra\SystemChecker;
 use Register\Infra\UserGroupRepository;
 use Register\Infra\UserRepository;
 use Register\Infra\View;
+use XH\CSRFProtection as CsrfProtector;
 
 class Dic
 {
@@ -53,30 +50,28 @@ class Dic
         );
     }
 
-    public static function makeUserAdminController(): UserAdminController
+    public static function makeUserAdmin(): UserAdmin
     {
-        global $plugin_cf, $plugin_tx, $_XH_csrfProtection;
-
-        return new UserAdminController(
+        global $plugin_cf, $_XH_csrfProtection;
+        return new UserAdmin(
             $plugin_cf["register"],
-            $plugin_tx["register"],
             $_XH_csrfProtection,
             self::makeDbService(),
-            self::makeView(),
+            new Password,
             new Random,
-            new Password
+            self::makeMailer(),
+            self::makeView()
         );
     }
 
-    public static function makeGroupAdminController(): GroupAdminController
+    public static function makeGroupAdmin(): GroupAdmin
     {
         global $_XH_csrfProtection;
-
-        return new GroupAdminController(
+        return new GroupAdmin(
             $_XH_csrfProtection,
-            self::makeView(),
             self::makeDbService(),
-            new Pages()
+            new Pages,
+            self::makeView(),
         );
     }
 

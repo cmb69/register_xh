@@ -35,12 +35,6 @@ class Response
     /** @var string */
     private $output = "";
 
-    /** @var array<string,mixed> */
-    private $meta = [];
-
-    /** @var string|null */
-    private $script = null;
-
     /** @var string|null */
     private $title = null;
 
@@ -52,21 +46,6 @@ class Response
 
     /** @var string|null */
     private $location = null;
-
-    /** @param mixed $data */
-    public function withMeta(string $key, $data): self
-    {
-        $that = clone $this;
-        $that->meta[$key] = $data;
-        return $that;
-    }
-
-    public function withScript(string $filename): self
-    {
-        $that = clone $this;
-        $that->script = $filename;
-        return $that;
-    }
 
     public function withTitle(string $title): self
     {
@@ -85,17 +64,6 @@ class Response
     public function output(): string
     {
         return $this->output;
-    }
-
-    /** @return array<string,mixed> */
-    public function meta(): array
-    {
-        return $this->meta;
-    }
-
-    public function script(): ?string
-    {
-        return $this->script;
     }
 
     public function title(): ?string

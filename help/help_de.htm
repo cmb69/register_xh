@@ -68,20 +68,15 @@
 <p>Das Aussehen von Register_XH kann unter <code>Stylesheet</code> angepasst werden.</p>
 <h2 id="verwendung">Verwendung</h2>
 <h3 id="benutzer--und-gruppenverwaltung">Benutzer- und Gruppenverwaltung</h3>
-<p>Das erste was Sie tun sollten, ist die Benutzergruppen entsprechend Ihren Wünschen anzupassen. Dies ist unter <code>Plugins</code> → <code>Register</code> → <code>Gruppenverwaltung</code> möglich. Sie können die Benutzer unter <code>Plugins</code> → <code>Register</code> → <code>Benutzerverwaltung</code> verwalten. Beide Masken sollten weitgehen selbsterklärend sein, aber einige Hinweise besonders bezüglich der Letzteren scheinen angebracht:</p>
-<ul>
-<li><p>Das Auswahlfeld erlaubt es die Benutzer nach ihrer Gruppenzugehörig zu filtern. Wenn Sie einen Benutzer hinzufügen, wird der Filter zurück gesetzt, da Sie sonst u.U. den neuen Benutzerdatensatz nicht sehen könnten. Wenn Sie die Daten speichern, werden alle Benutzerdatensätze gespeichert, selbst wenn sie ausgefiltert wurden.</p></li>
-<li><p>Sie können die Benutzerdatensätze durch Anklicken der entsprechenden Spaltenüberschrift sortieren.</p></li>
-<li><p>Der Status kann einen der folgenden Werte haben (die Bezeichnungen der Werte sind sprachspezifisch und können in den Spracheinstellungen geändert werden):</p>
+<p>Das erste was Sie tun sollten, ist die Benutzergruppen entsprechend Ihren Wünschen anzupassen. Dies ist unter <code>Plugins</code> → <code>Register</code> → <code>Gruppen</code> möglich. Sie können die Benutzer unter <code>Plugins</code> → <code>Register</code> → <code>Benutzer</code> verwalten.</p>
+<p>Der Benutzerstatus kann einen der folgenden Werte haben (die Bezeichnungen der Werte sind sprachspezifisch und können in den Spracheinstellungen geändert werden):</p>
 <ul>
 <li><code>aktiviert</code>: der Benutzer hat die vollen Rechte entsprechend seiner Gruppenzugehörigkeit</li>
 <li><code>gesperrt</code>: der Benutzer hat die vollen Rechte entsprechend seiner Gruppenzugehörigkeit, aber darf seine Benutzereinstellungen nicht ändern</li>
 <li><code>deaktiviert</code>: das Benutzerkonto ist (vorübergehend) deaktiviert</li>
 <li><code>noch nicht aktiviert</code>: der Benutzer hat sich registriert, aber das Konto wurde noch nicht aktiviert</li>
-</ul></li>
 </ul>
-<p>Sowohl in der Gruppen- wie auch in der Benutzerverwaltung ist das Hinzufügen und Löschen eines Benutzers nur temporär; um die Änderungen dauerhaft zu machen, müssen Sie sie ausdrücklich speichern.</p>
-<p>Bitte beachten sie weiterhin, dass die Möglichkeit nach dem Login als registrierter Benutzer der Admingruppe in den Administrationsmodus zu wechseln, entfernt wurde. Der Aufruf von <code>registeradminmodelink()</code> ist nun missbilligt und gibt den Link nicht mehr zurück. Plugins sollten keine Hintertür anbieten, um die Login-Sicherheit von CMSimple_XH zu umgehen.</p>
+<p>Bitte beachten Sie, dass die Möglichkeit nach dem Login als registrierter Benutzer der Admingruppe in den Administrationsmodus zu wechseln, entfernt wurde. Der Aufruf von <code>registeradminmodelink()</code> ist nun missbilligt und gibt den Link nicht mehr zurück. Plugins sollten keine Hintertür anbieten, um die Login-Sicherheit von CMSimple_XH zu umgehen.</p>
 <h3 id="login-formular">Login-Formular</h3>
 <p>Um dem Benutzer die Möglichkeit zu bieten sich einzuloggen und sich optional zunächst zu registrieren, muss das <em>Login-Formular</em> angezeigt werden. Sie können es im Template aufrufen, so dass es auf allen Seiten angezeigt wird:</p>
 <pre><code>&lt;?=registerloginform()?&gt;</code></pre>
@@ -111,7 +106,6 @@
 <p>Bitte beachten Sie, dass die Behandlung und Erkennung dieser Seiten derzeit etwas locker gehandhabt wird (so spielt es z.B. keine Rolle, auf welcher Menüebene sich diese befinden), was sich vermutlich in Zukunft ändern wird.</p>
 <h2 id="einschränkungen">Einschränkungen</h2>
 <p>Wenn irgend eine CMSimple_XH-Seite unbeabsichtigt eine Überschrift hat, die für eine der <a href="#spezialseiten">Register_XH-Spezialseiten</a> reserviert ist, könnte das Plugin nicht richtig funktionieren.</p>
-<p>In Abhängigkeit der PHP ini Einstellungen <code>max_input_vars</code>, <code>suhosin.post.max_vars</code> und <code>suhosin.request.max_vars</code> gibt es eine Obergrenze für die Höchstanzahl von Benutzern, die im Plugin-Back-End verwaltet werden können. In der Standardkonfiguration von PHP sind höchstens 124 Benutzer erlaubt. Das Plugin überprüft diese Grenze, und verhindert das Hinzufügen weiterer Benutzer. Wenn die Obergrenze überschritten wurde, müssen Sie die Benutzer manuell in <code>user.csv</code> verwalten.</p>
 <h2 id="problembehebung">Problembehebung</h2>
 <p>Melden Sie Programmfehler und stellen Sie Supportanfragen entweder auf <a href="https://github.com/cmb69/register_xh/issues">Github</a> oder im <a href="https://cmsimpleforum.com/">CMSimple_XH Forum</a>.</p>
 <h2 id="lizenz">Lizenz</h2>

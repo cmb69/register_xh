@@ -33,14 +33,14 @@ class DicTest extends TestCase
         $this->assertInstanceOf(HandleSpecialPages::class, Dic::makeHandleSpecialPages());
     }
 
-    public function testMakesUserAdminController(): void
+    public function testMakesUserAdmin(): void
     {
-        $this->assertInstanceOf(UserAdminController::class, Dic::makeUserAdminController());
+        $this->assertInstanceOf(UserAdmin::class, Dic::makeUserAdmin());
     }
 
-    public function testMakesGroupAdminController(): void
+    public function testMakesGroupAdmin(): void
     {
-        $this->assertInstanceOf(GroupAdminController::class, Dic::makeGroupAdminController());
+        $this->assertInstanceOf(GroupAdmin::class, Dic::makeGroupAdmin());
     }
 
     public function testMakesHandleUserRegistration(): void
