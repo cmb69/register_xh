@@ -36,12 +36,6 @@ class View
     }
 
     /** @param scalar $args */
-    public function plural(string $key, int $count, ...$args): string
-    {
-        return sprintf($this->esc($this->text[$this->pluralKey($key, $count)]), $count, ...$args);
-    }
-
-    /** @param scalar $args */
     public function message(string $type, string $key, ...$args): string
     {
         return XH_message($type, $this->text[$key], ...$args) . "\n";
@@ -51,11 +45,6 @@ class View
     public function error(string $key, ...$args): string
     {
         return XH_message("fail", $this->text[$key], ...$args) . "\n";
-    }
-
-    private function pluralKey(string $key, int $count): string
-    {
-        return $count === 0 ? "{$key}_0" : $key . XH_numberSuffix($count);
     }
 
     /** @param array<string,mixed> $_data */
