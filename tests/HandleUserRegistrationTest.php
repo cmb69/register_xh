@@ -19,24 +19,15 @@ use Register\Infra\UserRepository;
 use Register\Infra\View;
 use Register\Value\User;
 
-class RegisterUserTest extends TestCase
+class HandleUserRegistrationTest extends TestCase
 {
-    /** @var RegisterUser */
     private $subject;
 
-    /** @var array<string,User> */
     private $users;
-
-    /** @var View */
     private $view;
-
-    /** @var UserRepository */
     private $userRepository;
-
-    /** @var FakeMailer */
     private $mailer;
 
-    /** @var Request */
     private $request;
 
     public function setUp(): void
@@ -51,7 +42,7 @@ class RegisterUserTest extends TestCase
         $plugin_tx = XH_includeVar("./languages/en.php", 'plugin_tx');
         $text = $plugin_tx['register'];
         $random = $this->createStub(Random::class);
-        $random->method("bytes")->willReturn("0123456789ABCDEFGH");
+        $random->method("bytes")->willReturn("0123456789ABCDE");
         $this->view = new View("./views/", $text);
         $this->userRepository = $this->createMock(UserRepository::class);
         $this->mailer = new FakeMailer(false, $text);
@@ -67,6 +58,12 @@ class RegisterUserTest extends TestCase
         );
         $this->request = $this->createStub(Request::class);
         $this->request->method("url")->willReturn(new Url("/", ""));
+    }
+
+    public function testShowsRegistrationForm(): void
+    {
+        $response = ($this->subject)($this->request);
+        Approvals::verifyHtml($response->output());
     }
 
     public function testValidationError(): void
@@ -168,5 +165,53 @@ class RegisterUserTest extends TestCase
         $this->request->method("remoteAddress")->willReturn("127.0.0.1");
         ($this->subject)($this->request);
         Approvals::verifyList($this->mailer->lastMail());
+    }
+
+    public function testActivateUserActionNoUser(): void
+    {
+        $this->request->method("registerAction")->willReturn("activate");
+        $this->request->method("activationParams")->willReturn([
+            "username" => "john",
+            "nonce" => "12345",
+        ]);
+        $response = ($this->subject)($this->request);
+        $this->assertStringContainsString("The Username 'john' could not be found!", $response->output());
+    }
+
+    public function testActivateUserEmptyState(): void
+    {
+        $this->userRepository->method("findByUsername")->willReturn($this->users["john"]);
+        $this->request->method("registerAction")->willReturn("activate");
+        $this->request->method("activationParams")->willReturn([
+            "username" => "john",
+            "nonce" => "12345",
+        ]);
+        $response = ($this->subject)($this->request);
+        $this->assertStringContainsString("The status of your username is empty.", $response->output());
+    }
+
+    public function testActivateUserInvalidState(): void
+    {
+        $this->userRepository->method("findByUsername")->willReturn($this->users["jane"]);
+        $this->request->method("registerAction")->willReturn("activate");
+        $this->request->method("activationParams")->willReturn([
+            "username" => "jane",
+            "nonce" => "54321",
+        ]);
+        $response = ($this->subject)($this->request);
+        $this->assertStringContainsString("The entered validation code is invalid.", $response->output());
+    }
+
+    public function testActivateUserSuccess(): void
+    {
+        $this->userRepository->method("findByUsername")->willReturn($this->users["jane"]);
+        $this->userRepository->expects($this->once())->method("update");
+        $this->request->method("registerAction")->willReturn("activate");
+        $this->request->method("activationParams")->willReturn([
+            "username" => "jane",
+            "nonce" => "12345",
+        ]);
+        $response = ($this->subject)($this->request);
+        $this->assertStringContainsString("You have successfully activated your new account.", $response->output());
     }
 }

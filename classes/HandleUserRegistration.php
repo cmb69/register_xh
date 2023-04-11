@@ -122,7 +122,7 @@ class HandleUserRegistration
         $user = $this->userRepository->findByEmail($post["email"]);
 
         // generate a nonce for the user activation
-        $nonce = Util::base64url($this->random->bytes(18));
+        $nonce = Util::base64url($this->random->bytes(15));
         if (!$user) {
             $newUser = new User(
                 $post["username"],

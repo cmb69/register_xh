@@ -9,7 +9,7 @@
 
 Please click the following link to activate your new user account:
 
-<http://example.com/?&register_action=activate&username=js&nonce=MDEyMzQ1Njc4OUFCQ0RFRkdI>
+<http://example.com/?&register_action=activate&username=js&nonce=MDEyMzQ1Njc4OUFCQ0RF>
 [3] -> From: postmaster@example.com
 Cc: postmaster@example.com
 MIME-Version: 1.0
