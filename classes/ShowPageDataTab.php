@@ -12,11 +12,15 @@ use Register\Value\Response;
 
 class ShowPageDataTab
 {
+    /** @var string */
+    private $coreStyleFolder;
+
     /** @var View */
     private $view;
 
-    public function __construct(View $view)
+    public function __construct(string $coreStyleFolder, View $view)
     {
+        $this->coreStyleFolder = $coreStyleFolder;
         $this->view = $view;
     }
 
@@ -25,7 +29,7 @@ class ShowPageDataTab
     {
         return Response::create($this->view->render("page_data", [
             "action" => $request->url()->relative(),
-            "iconFilename" => $request->coreStyleFolder() . "help_icon.png",
+            "iconFilename" => $this->coreStyleFolder . "help_icon.png",
             "accessGroups" => $pageData["register_access"],
         ]));
     }

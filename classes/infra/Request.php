@@ -218,20 +218,6 @@ class Request
     }
 
     /** @codeCoverageIgnore */
-    public function coreStyleFolder(): string
-    {
-        global $pth;
-        return $pth["folder"]["corestyle"];
-    }
-
-    /** @codeCoverageIgnore */
-    public function pluginsFolder(): string
-    {
-        global $pth;
-        return $pth["folder"]["plugins"];
-    }
-
-    /** @codeCoverageIgnore */
     public function editMode(): bool
     {
         global $edit;

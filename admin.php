@@ -48,7 +48,7 @@ if (XH_wantsPluginAdministration("register")) {
     $o .= pluginmenu("SHOW");
     switch ($admin) {
         case "":
-            $o .= Responder::respond(Dic::makeShowPluginInfo()(Request::current()));
+            $o .= Responder::respond(Dic::makeShowPluginInfo()());
             break;
         case "groups":
             $o .= Responder::respond(Dic::makeGroupAdmin()(Request::current()));

@@ -26,11 +26,9 @@ class ShowPluginInfoTest extends TestCase
         $systemChecker->method('checkVersion')->willReturn(true);
         $systemChecker->method('checkExtension')->willReturn(true);
         $systemChecker->method('checkWritability')->willReturn(true);
-        $subject = new ShowPluginInfo($dbService, $systemChecker, new View("./views/", $text));
+        $subject = new ShowPluginInfo("./plugins/register/", $dbService, $systemChecker, new View("./views/", $text));
         $request = $this->createStub(Request::class);
-        $request->method("pluginsFolder")->willReturn("");
         $response = $subject($request);
-
         Approvals::verifyHtml($response->output());
     }
 }

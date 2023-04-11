@@ -16,6 +16,9 @@ use Register\Value\Response;
 
 class ShowPluginInfo
 {
+    /** @var string */
+    private $pluginFolder;
+
     /** @var DbService */
     private $dbService;
 
@@ -26,20 +29,22 @@ class ShowPluginInfo
     private $view;
 
     public function __construct(
+        string $pluginFolder,
         DbService $dbService,
         SystemChecker $systemChecker,
         View $view
     ) {
+        $this->pluginFolder = $pluginFolder;
         $this->dbService = $dbService;
         $this->systemChecker = $systemChecker;
         $this->view = $view;
     }
 
-    public function __invoke(Request $request): Response
+    public function __invoke(): Response
     {
         return Response::create($this->view->render('info', [
             'version' => REGISTER_VERSION,
-            'checks' => $this->getChecks($request->pluginsFolder() . "register/"),
+            'checks' => $this->getChecks($this->pluginFolder),
         ]));
     }
 

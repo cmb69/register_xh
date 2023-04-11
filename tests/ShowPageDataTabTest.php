@@ -6,9 +6,8 @@
 
 namespace Register;
 
-use PHPUnit\Framework\TestCase;
 use ApprovalTests\Approvals;
-
+use PHPUnit\Framework\TestCase;
 use Register\Infra\Request;
 use Register\Infra\Url;
 use Register\Infra\View;
@@ -18,10 +17,9 @@ class ShowPageDataTabTest extends TestCase
     public function testRendersPageDataTab(): void
     {
         $text = XH_includeVar("./languages/en.php", "plugin_tx")["register"];
-        $sut = new ShowPageDataTab(new View("./views/", $text));
+        $sut = new ShowPageDataTab("../../assets/css/", new View("./views/", $text));
         $request = $this->createStub(Request::class);
         $request->method("url")->willReturn(new Url("/", "SomePage"));
-        $request->method("coreStyleFolder")->willReturn("../../assets/css/");
         $response = $sut($request, ["register_access" => "cmb"]);
         Approvals::verifyHtml($response->output());
     }

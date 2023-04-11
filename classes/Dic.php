@@ -145,12 +145,15 @@ class Dic
 
     public static function makeShowPageDataTab(): ShowPageDataTab
     {
-        return new ShowPageDataTab(self::makeView());
+        global $pth;
+        return new ShowPageDataTab($pth["folder"]["corestyle"], self::makeView());
     }
 
     public static function makeShowPluginInfo(): ShowPluginInfo
     {
+        global $pth;
         return new ShowPluginInfo(
+            $pth["folder"]["plugins"] . "register/",
             self::makeDbService(),
             new SystemChecker(),
             self::makeView()
