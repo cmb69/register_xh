@@ -9,9 +9,7 @@ const REGISTER_VERSION = "2.0-dev";
 require_once './vendor/autoload.php';
 
 require_once '../../cmsimple/functions.php';
-require_once "../../cmsimple/classes/CSRFProtection.php";
 require_once "../../cmsimple/classes/PageDataRouter.php";
-require_once "../../cmsimple/classes/Pages.php";
 
 spl_autoload_register(function (string $className) {
     $parts = explode("\\", $className);

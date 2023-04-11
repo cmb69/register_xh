@@ -8,6 +8,7 @@
 
 namespace Register;
 
+use Register\Infra\CsrfProtector;
 use Register\Infra\DbService;
 use Register\Infra\Mailer;
 use Register\Infra\Password;
@@ -22,15 +23,14 @@ use Register\Value\Mail;
 use Register\Value\Response;
 use Register\Value\User;
 use Register\Value\UserGroup;
-use XH\CSRFProtection;
 
 class UserAdmin
 {
     /** @var array<string,string> */
     private $conf;
 
-    /** @var CSRFProtection */
-    private $csrfProtection;
+    /** @var CsrfProtector */
+    private $csrfProtector;
 
     /** @var DbService */
     private $dbService;
@@ -50,7 +50,7 @@ class UserAdmin
     /** @param array<string,string> $conf */
     public function __construct(
         array $conf,
-        CSRFProtection $csrfProtection,
+        CsrfProtector $csrfProtector,
         DbService $dbService,
         Password $password,
         Random $random,
@@ -58,7 +58,7 @@ class UserAdmin
         View $view
     ) {
         $this->conf = $conf;
-        $this->csrfProtection = $csrfProtection;
+        $this->csrfProtector = $csrfProtector;
         $this->dbService = $dbService;
         $this->password = $password;
         $this->random = $random;
@@ -168,7 +168,9 @@ class UserAdmin
 
     private function doCreate(Request $request): Response
     {
-        $this->csrfProtection->check();
+        if (!$this->csrfProtector->check()) {
+            return $this->respondWith($this->view->error("err_unauthorized"));
+        }
         $user = $request->postedUser();
         [$users, $groups, $lock] = $this->dbService->readUsersAndGroupsWithLock(true);
         if (($errors = Users::validate($user, $request->postedPassword(), $users, true))) {
@@ -191,7 +193,7 @@ class UserAdmin
     {
         return $this->view->render("user_create", [
             "errors" => $errors,
-            "token" => Html::from($this->csrfProtection->tokenInput()),
+            "token" => $this->csrfProtector->token(),
             "username" => $user->getUsername(),
             "name" => $user->getName(),
             "email" => $user->getEmail(),
@@ -214,7 +216,9 @@ class UserAdmin
 
     private function doUpdate(Request $request): Response
     {
-        $this->csrfProtection->check();
+        if (!$this->csrfProtector->check()) {
+            return $this->respondWith($this->view->error("err_unauthorized"));
+        }
         $username = $request->selectedUser();
         [$users, $groups, $lock] = $this->dbService->readUsersAndGroupsWithLock(true);
         if (!($user = Users::findByUsername($username, $users))) {
@@ -240,7 +244,7 @@ class UserAdmin
     {
         return $this->view->render("user_update", [
             "errors" => $errors,
-            "token" => Html::from($this->csrfProtection->tokenInput()),
+            "token" => $this->csrfProtector->token(),
             "username" => $user->getUsername(),
             "name" => $user->getName(),
             "email" => $user->getEmail(),
@@ -284,7 +288,9 @@ class UserAdmin
 
     private function doChangePassword(Request $request): Response
     {
-        $this->csrfProtection->check();
+        if (!$this->csrfProtector->check()) {
+            return $this->respondWith($this->view->error("err_unauthorized"));
+        }
         $username = $request->selectedUser();
         [$users, $lock] = $this->dbService->readUsersWithLock(true);
         if (!($user = Users::findByUsername($username, $users))) {
@@ -309,7 +315,7 @@ class UserAdmin
     {
         return $this->view->render("user_password", [
             "errors" => $errors,
-            "token" => Html::from($this->csrfProtection->tokenInput()),
+            "token" => $this->csrfProtector->token(),
             "username" => $user->getUsername(),
             "password1" => $user->getPassword(),
             "password2" => $password2,
@@ -329,7 +335,9 @@ class UserAdmin
 
     private function doMail(Request $request): Response
     {
-        $this->csrfProtection->check();
+        if (!$this->csrfProtector->check()) {
+            return $this->respondWith($this->view->error("err_unauthorized"));
+        }
         $username = $request->selectedUser();
         [$users, $lock] = $this->dbService->readUsersWithLock(false);
         if (!($user = Users::findByUsername($username, $users))) {
@@ -350,7 +358,7 @@ class UserAdmin
     {
         return $this->view->render("user_mail", [
             "errors" => $errors,
-            "token" => Html::from($this->csrfProtection->tokenInput()),
+            "token" => $this->csrfProtector->token(),
             "email" => $user->getEmail(),
             "subject" => $mail->subject(),
             "message" => $mail->message(),
@@ -369,7 +377,9 @@ class UserAdmin
 
     private function doDelete(Request $request): Response
     {
-        $this->csrfProtection->check();
+        if (!$this->csrfProtector->check()) {
+            return $this->respondWith($this->view->error("err_unauthorized"));
+        }
         $username = $request->selectedUser();
         [$users, $lock] = $this->dbService->readUsersWithLock(true);
         if (!($user = Users::findByUsername($username, $users))) {
@@ -387,7 +397,7 @@ class UserAdmin
     {
         return $this->view->render("user_delete", [
             "errors" => $errors,
-            "token" => Html::from($this->csrfProtection->tokenInput()),
+            "token" => $this->csrfProtector->token(),
             "username" => $user->getUsername(),
         ]);
     }

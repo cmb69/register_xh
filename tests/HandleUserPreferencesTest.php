@@ -10,16 +10,15 @@ namespace Register;
 
 use ApprovalTests\Approvals;
 use PHPUnit\Framework\TestCase;
+use Register\Infra\FakeCsrfProtector;
 use Register\Infra\FakeMailer;
 use Register\Infra\Logger;
-use Register\Infra\Mailer;
 use Register\Infra\Password;
 use Register\Infra\Request;
 use Register\Infra\Url;
 use Register\Infra\UserRepository;
 use Register\Infra\View;
 use Register\Value\User;
-use XH\CSRFProtection as CsrfProtector;
 
 class HandleUserPreferencesTest extends TestCase
 {
@@ -45,8 +44,7 @@ class HandleUserPreferencesTest extends TestCase
         $conf = XH_includeVar("./config/config.php", "plugin_cf")["register"];
         $plugin_tx = XH_includeVar("./languages/en.php", 'plugin_tx');
         $text = $plugin_tx['register'];
-        $this->csrfProtector = $this->createMock(CsrfProtector::class);
-        $this->csrfProtector->method("tokenInput")->willReturn("");
+        $this->csrfProtector = new FakeCsrfProtector;
         $this->userRepository = $this->createMock(UserRepository::class);
         $this->view = new View("./views/", $text);
         $this->mailer = new FakeMailer(false, $text);
@@ -94,6 +92,15 @@ class HandleUserPreferencesTest extends TestCase
         Approvals::verifyHtml($response->output());
     }
 
+    public function testChangePrefsIsCsrfProtected(): void
+    {
+        $this->csrfProtector->options(["check" => false]);
+        $this->request->method("registerAction")->willReturn("change_prefs");
+        $this->request->method("username")->willReturn("john");
+        $response = ($this->subject)($this->request);
+        $this->assertStringContainsString("You are not authorized for this action!", $response->output());
+    }
+
     public function testEditNoUser(): void
     {
         $this->request->method("registerAction")->willReturn("change_prefs");
@@ -110,7 +117,6 @@ class HandleUserPreferencesTest extends TestCase
         $this->request->method("registerAction")->willReturn("change_prefs");
         $this->request->method("username")->willReturn("jane");
         $this->userRepository->method("findByUsername")->willReturn($this->users["jane"]);
-        $this->csrfProtector->expects($this->once())->method("check");
         $response = ($this->subject)($this->request);
         $this->assertStringContainsString("User Preferences for 'jane' can't be changed!", $response->output());
     }
@@ -127,7 +133,6 @@ class HandleUserPreferencesTest extends TestCase
             "email" => "",
         ]);
         $this->userRepository->method("findByUsername")->willReturn($this->users["john"]);
-        $this->csrfProtector->expects($this->once())->method("check");
         $this->password->method("verify")->willReturn(false);
         $response = ($this->subject)($this->request);
         $this->assertStringContainsString("The old password you entered is wrong.", $response->output());
@@ -152,7 +157,6 @@ class HandleUserPreferencesTest extends TestCase
             "email" => "",
         ]);
         $this->userRepository->method("findByUsername")->willReturn($this->users["john"]);
-        $this->csrfProtector->expects($this->once())->method("check");
         $this->password->method("verify")->willReturn(true);
         $response = ($this->subject)($this->request);
         $this->assertStringContainsString("The two entered passwords do not match.", $response->output());
@@ -170,7 +174,6 @@ class HandleUserPreferencesTest extends TestCase
             "email" => "",
         ]);
         $this->userRepository->method("findByUsername")->willReturn($this->users["john"]);
-        $this->csrfProtector->expects($this->once())->method("check");
         $this->userRepository->expects($this->once())->method("update")->willReturn(true);
         $this->password->method("verify")->willReturn(true);
         $response = ($this->subject)($this->request);
@@ -194,11 +197,19 @@ class HandleUserPreferencesTest extends TestCase
         $this->request->method("serverName")->willReturn("example.com");
         $this->request->method("remoteAddress")->willReturn("127.0.0.1");
         $this->userRepository->method("findByUsername")->willReturn($this->users["john"]);
-        $this->csrfProtector->expects($this->once())->method("check");
         $this->userRepository->expects($this->once())->method("update")->willReturn(true);
         $this->password->method("verify")->willReturn(true);
         ($this->subject)($this->request);
         Approvals::verifyList($this->mailer->lastMail());
+    }
+
+    public function testUnregisterIsCsrfProtected(): void
+    {
+        $this->csrfProtector->options(["check" => false]);
+        $this->request->method("registerAction")->willReturn("unregister");
+        $this->request->method("username")->willReturn("john");
+        $response = ($this->subject)($this->request);
+        $this->assertStringContainsString("You are not authorized for this action!", $response->output());
     }
 
     public function testUnregisterNoUser(): void
@@ -219,7 +230,6 @@ class HandleUserPreferencesTest extends TestCase
         $this->request->method("registerAction")->willReturn("unregister");
         $this->request->method("username")->willReturn("jane");
         $this->userRepository->method("findByUsername")->willReturn($this->users["jane"]);
-        $this->csrfProtector->expects($this->once())->method("check");
         $response = ($this->subject)($this->request);
         $this->assertStringContainsString("User Preferences for 'jane' can't be changed!", $response->output());
     }
@@ -234,7 +244,6 @@ class HandleUserPreferencesTest extends TestCase
             "email" => "",
         ]);
         $this->userRepository->method("findByUsername")->willReturn($this->users["john"]);
-        $this->csrfProtector->expects($this->once())->method("check");
         $this->password->method("verify")->willReturn(false);
         $response = ($this->subject)($this->request);
         $this->assertStringContainsString("The old password you entered is wrong.", $response->output());
@@ -251,7 +260,6 @@ class HandleUserPreferencesTest extends TestCase
         ]);
         $this->userRepository->method("findByUsername")->willReturn($this->users["john"]);
         $this->userRepository->expects($this->once())->method("delete")->willReturn(true);
-        $this->csrfProtector->expects($this->once())->method("check");
         $this->password->method("verify")->willReturn(true);
         $response = ($this->subject)($this->request);
         $this->assertStringContainsString("User 'john' deleted!", $response->output());

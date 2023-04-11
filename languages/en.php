@@ -42,6 +42,7 @@ $plugin_tx['register']['login_error_text'] = "You entered a wrong username or pa
 $plugin_tx['register']['access_error']="Access Restricted";
 $plugin_tx['register']['access_error_text']="This page is only accessible for members with appropriate permissions.";
 $plugin_tx['register']['error']="Error";
+$plugin_tx['register']['err_unauthorized']="You are not authorized for this action!";
 $plugin_tx['register']['err_user_does_not_exist']="User '%s' does not exist!";
 $plugin_tx['register']['err_name']="Please enter your full name.";
 $plugin_tx['register']['err_groupname_exists']="This groupname already exists!";

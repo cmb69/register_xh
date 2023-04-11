@@ -11,6 +11,7 @@ namespace Register;
 use ApprovalTests\Approvals;
 use org\bovigo\vfs\vfsStream;
 use PHPUnit\Framework\TestCase;
+use Register\Infra\FakeCsrfProtector;
 use Register\Infra\FakeDbService;
 use Register\Infra\Pages;
 use Register\Infra\Random;
@@ -18,11 +19,10 @@ use Register\Infra\Request;
 use Register\Infra\Url;
 use Register\Infra\View;
 use Register\Value\UserGroup;
-use XH\CSRFProtection;
 
 class GroupAdminTest extends TestCase
 {
-    private $csrfProtection;
+    private $csrfProtector;
     private $dbService;
     private $pages;
     private $view;
@@ -32,10 +32,7 @@ class GroupAdminTest extends TestCase
     public function setUp(): void
     {
         vfsStream::setup("root");
-        $this->csrfProtection = $this->createStub(CSRFProtection::class);
-        $this->csrfProtection->method("tokenInput")->willReturn(
-            "<input type=\"hidden\" name=\"xh_csrf_token\" value=\"f7302cf6675b89edab0d716efdbbfdab\">"
-        );
+        $this->csrfProtector = new FakeCsrfProtector;
         $this->dbService = new FakeDbService("vfs://root/register/", "guest", $this->createMock(Random::class));
         $this->dbService->dataFolder();
         $this->pages = $this->createStub(Pages::class);
@@ -48,7 +45,7 @@ class GroupAdminTest extends TestCase
     private function sut(): GroupAdmin
     {
         return new GroupAdmin(
-            $this->csrfProtection,
+            $this->csrfProtector,
             $this->dbService,
             $this->pages,
             $this->view
@@ -75,9 +72,17 @@ class GroupAdminTest extends TestCase
         Approvals::verifyHtml($response->output());
     }
 
+    public function testDoCreateIsCsrfProtected(): void
+    {
+        $this->csrfProtector->options(["check" => false]);
+        $this->request->method("action")->willReturn("do_create");
+        $response = $this->sut()($this->request);
+        $this->assertEquals("Register – Groups", $response->title());
+        $this->assertStringContainsString("You are not authorized for this action!", $response->output());
+    }
+
     public function testDoCreateReportsInvalidGroup(): void
     {
-        $this->csrfProtection->expects($this->once())->method("check");
         $this->request->method("action")->willReturn("do_create");
         $this->request->method("postedGroup")->willReturn(new UserGroup("", ""));
         $response = $this->sut()($this->request);
@@ -90,7 +95,6 @@ class GroupAdminTest extends TestCase
 
     public function testDoCreateReportsFailureToSave(): void
     {
-        $this->csrfProtection->expects($this->once())->method("check");
         $this->dbService->options(["writeGroups" => false]);
         $this->request->method("action")->willReturn("do_create");
         $this->request->method("postedGroup")->willReturn(new UserGroup("new", ""));
@@ -101,7 +105,6 @@ class GroupAdminTest extends TestCase
 
     public function testDoCreateRedirectsOnSuccess(): void
     {
-        $this->csrfProtection->expects($this->once())->method("check");
         $this->request->method("action")->willReturn("do_create");
         $this->request->method("postedGroup")->willReturn(new UserGroup("new", ""));
         $this->request->method("url")->willReturn(new Url("/", ""));
@@ -128,6 +131,15 @@ class GroupAdminTest extends TestCase
         Approvals::verifyHtml($response->output());
     }
 
+    public function testDoUpdateIsCsrfProtected(): void
+    {
+        $this->csrfProtector->options(["check" => false]);
+        $this->request->method("action")->willReturn("do_update");
+        $response = $this->sut()($this->request);
+        $this->assertEquals("Register – Groups", $response->title());
+        $this->assertStringContainsString("You are not authorized for this action!", $response->output());
+    }
+
     public function testDoUpdateReportsMissingGroup(): void
     {
         $this->request->method("action")->willReturn("do_update");
@@ -139,7 +151,6 @@ class GroupAdminTest extends TestCase
 
     public function testDoUpdateReportsFailureToSave(): void
     {
-        $this->csrfProtection->expects($this->once())->method("check");
         $this->dbService->options(["writeGroups" => false]);
         $this->request->method("action")->willReturn("do_update");
         $this->request->method("postedGroup")->willReturn(new UserGroup("guest", "Login"));
@@ -151,7 +162,6 @@ class GroupAdminTest extends TestCase
 
     public function testDoUpdateRedirectsOnSuccess(): void
     {
-        $this->csrfProtection->expects($this->once())->method("check");
         $this->request->method("action")->willReturn("do_update");
         $this->request->method("postedGroup")->willReturn(new UserGroup("guest", "Login"));
         $this->request->method("selectedGroup")->willReturn("guest");
@@ -179,9 +189,16 @@ class GroupAdminTest extends TestCase
         Approvals::verifyHtml($response->output());
     }
 
+    public function testDoDeleteIsCsrfProtected(): void
+    {
+        $this->csrfProtector->options(["check" => false]);
+        $this->request->method("action")->willReturn("do_delete");
+        $response = $this->sut()($this->request);
+        $this->assertEquals("Register – Groups", $response->title());
+        $this->assertStringContainsString("You are not authorized for this action!", $response->output());
+    }
     public function testDoDeleteReportsMissingGroup(): void
     {
-        $this->csrfProtection->expects($this->once())->method("check");
         $this->dbService->options(["writeGroups" => false]);
         $this->request->method("action")->willReturn("do_delete");
         $this->request->method("selectedGroup")->willReturn("missing");
@@ -192,7 +209,6 @@ class GroupAdminTest extends TestCase
 
     public function testDoDeleteReportsFailureToSave(): void
     {
-        $this->csrfProtection->expects($this->once())->method("check");
         $this->dbService->options(["writeGroups" => false]);
         $this->request->method("action")->willReturn("do_delete");
         $this->request->method("selectedGroup")->willReturn("guest");
@@ -203,7 +219,6 @@ class GroupAdminTest extends TestCase
 
     public function testDoDeleteRedirectsOnSuccess(): void
     {
-        $this->csrfProtection->expects($this->once())->method("check");
         $this->request->method("action")->willReturn("do_delete");
         $this->request->method("selectedGroup")->willReturn("guest");
         $this->request->method("url")->willReturn(new Url("/", ""));

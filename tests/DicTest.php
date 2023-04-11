@@ -9,16 +9,14 @@
 namespace Register;
 
 use PHPUnit\Framework\TestCase;
-use XH\CSRFProtection as CsrfProtector;
 
 class DicTest extends TestCase
 {
     public function setUp(): void
     {
-        global $pth, $_XH_csrfProtection, $plugin_cf, $plugin_tx;
+        global $pth, $plugin_cf, $plugin_tx;
 
         $pth = ["folder" => ["base" => "", "cmsimple" => "", "content" => "", "corestyle" => "", "plugins" => ""]];
-        $_XH_csrfProtection = $this->createStub(CsrfProtector::class);
         $plugin_cf = XH_includeVar("./config/config.php", "plugin_cf");
         $plugin_tx = XH_includeVar("./languages/en.php", "plugin_tx");
     }

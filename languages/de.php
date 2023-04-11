@@ -42,6 +42,7 @@ $plugin_tx['register']['login_error_text']="Sie haben einen falschen Benutzernam
 $plugin_tx['register']['access_error']="Beschränkter Zugriff";
 $plugin_tx['register']['access_error_text']="Auf diese Seite können nur Benutzer zugreifen, die die dafür benötigten Zugriffsrechte besitzen.";
 $plugin_tx['register']['error']="Fehler";
+$plugin_tx['register']['err_unauthorized']="Sie sind nicht befugt diese Aktion durchzuführen!";
 $plugin_tx['register']['err_user_does_not_exist']="Benutzer '%s' gibt es nicht!";
 $plugin_tx['register']['err_name']="Bitte geben Sie Ihren Vornamen und Nachnamen an.";
 $plugin_tx['register']['err_groupname_exists']="Diesen Gruppennamen gibt es bereits!";

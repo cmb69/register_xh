@@ -15,7 +15,7 @@ use Register\Infra\View;
 <?foreach ($errors as $error):?>
   <p class="xh_fail"><?=$this->text(...$error)?></p>
 <?endforeach?>
-  <?=$token?>
+  <input type="hidden" name="register_token" value="<?=$token?>">
   <p>
     <label>
       <span><?=$this->text('groupname')?></span>

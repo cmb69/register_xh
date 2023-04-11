@@ -11,6 +11,7 @@ namespace Register;
 use ApprovalTests\Approvals;
 use org\bovigo\vfs\vfsStream;
 use PHPUnit\Framework\TestCase;
+use Register\Infra\FakeCsrfProtector;
 use Register\Infra\FakeDbService;
 use Register\Infra\FakeMailer;
 use Register\Infra\Password;
@@ -20,12 +21,11 @@ use Register\Infra\Url;
 use Register\Infra\View;
 use Register\Value\User;
 use Register\Value\UserGroup;
-use XH\CSRFProtection;
 
 class UserAdminTest extends TestCase
 {
     private $conf;
-    private $csrfProtection;
+    private $csrfProtector;
     private $dbService;
     private $password;
     private $random;
@@ -38,10 +38,7 @@ class UserAdminTest extends TestCase
     {
         vfsStream::setup("root");
         $this->conf = XH_includeVar("./config/config.php", "plugin_cf")["register"];
-        $this->csrfProtection = $this->createMock(CSRFProtection::class);
-        $this->csrfProtection->method("tokenInput")->willReturn(
-            "<input type=\"hidden\" name=\"xh_csrf_token\" value=\"f7302cf6675b89edab0d716efdbbfdab\">"
-        );
+        $this->csrfProtector = new FakeCsrfProtector;
         $this->dbService = new FakeDbService("vfs://root/register/", "guest", $this->createMock(Random::class));
         $this->dbService->writeUsers($this->users());
         $this->dbService->readUsers();
@@ -60,7 +57,7 @@ class UserAdminTest extends TestCase
     {
         return new UserAdmin(
             $this->conf,
-            $this->csrfProtection,
+            $this->csrfProtector,
             $this->dbService,
             $this->password,
             $this->random,
@@ -85,9 +82,17 @@ class UserAdminTest extends TestCase
         Approvals::verifyHtml($response->output());
     }
 
+    public function testDoCreateIsCsrfProtected(): void
+    {
+        $this->csrfProtector->options(["check" => false]);
+        $this->request->method("action")->willReturn("do_create");
+        $response = $this->sut()($this->request);
+        $this->assertEquals("Register – Users", $response->title());
+        $this->assertStringContainsString("You are not authorized for this action!", $response->output());
+    }
+
     public function testDoCreateReportsValidationErrors(): void
     {
-        $this->csrfProtection->expects($this->once())->method("check")->willReturn(true);
         $this->request->method("action")->willReturn("do_create");
         $this->request->method("postedUser")->willReturn(
             new User("cmb", "test", ["guest"], "Christoph M. Becker", "cmb@example.com", "activated", "")
@@ -100,7 +105,6 @@ class UserAdminTest extends TestCase
 
     public function testDoCreateReportsFailureToSave(): void
     {
-        $this->csrfProtection->expects($this->once())->method("check")->willReturn(true);
         $this->dbService->options(["writeUsers" => false]);
         $this->request->method("action")->willReturn("do_create");
         $this->request->method("postedUser")->willReturn(
@@ -114,7 +118,6 @@ class UserAdminTest extends TestCase
 
     public function testCreateRedirectsOnSuccess(): void
     {
-        $this->csrfProtection->expects($this->once())->method("check")->willReturn(true);
         $this->request->method("action")->willReturn("do_create");
         $this->request->method("postedUser")->willReturn(
             new User("cmb", "test", ["guest"], "Christoph M. Becker", "cmb@example.com", "activated", "")
@@ -143,9 +146,17 @@ class UserAdminTest extends TestCase
         Approvals::verifyHtml($response->output());
     }
 
+    public function testDoUpdateIsCsrfProtected(): void
+    {
+        $this->csrfProtector->options(["check" => false]);
+        $this->request->method("action")->willReturn("do_update");
+        $response = $this->sut()($this->request);
+        $this->assertEquals("Register – Users", $response->title());
+        $this->assertStringContainsString("You are not authorized for this action!", $response->output());
+    }
+
     public function testDoUpdateReportsMissingUser(): void
     {
-        $this->csrfProtection->expects($this->once())->method("check");
         $this->request->method("action")->willReturn("do_update");
         $response = $this->sut()($this->request);
         $this->assertEquals("Register – Users", $response->title());
@@ -154,7 +165,6 @@ class UserAdminTest extends TestCase
 
     public function testDoUpdateReportsValidationErrors(): void
     {
-        $this->csrfProtection->expects($this->once())->method("check");
         $this->request->method("action")->willReturn("do_update");
         $this->request->method("postedUser")->willReturn(
             new User("cmb", "test", ["guest"], "", "cmb@example.com", "activated", "")
@@ -167,7 +177,6 @@ class UserAdminTest extends TestCase
 
     public function testDoUpdateReportsFailureToSave(): void
     {
-        $this->csrfProtection->expects($this->once())->method("check");
         $this->dbService->options(["writeUsers" => false]);
         $this->request->method("action")->willReturn("do_update");
         $this->request->method("post")->willReturn(
@@ -181,7 +190,6 @@ class UserAdminTest extends TestCase
 
     public function testDoUpdateRedirectsOnSuccess(): void
     {
-        $this->csrfProtection->expects($this->once())->method("check");
         $this->request->method("action")->willReturn("do_update");
         $this->request->method("post")->willReturn(
             ["name" => "John Doe", "email" => "john@example.com", "groups" => ["guest"], "status" => "activated"]
@@ -207,6 +215,15 @@ class UserAdminTest extends TestCase
         $response = $this->sut()($this->request);
         $this->assertEquals("Register – Users", $response->title());
         Approvals::verifyHtml($response->output());
+    }
+
+    public function testDoChangePasswordIsCsrfProtected(): void
+    {
+        $this->csrfProtector->options(["check" => false]);
+        $this->request->method("action")->willReturn("do_change_password");
+        $response = $this->sut()($this->request);
+        $this->assertEquals("Register – Users", $response->title());
+        $this->assertStringContainsString("You are not authorized for this action!", $response->output());
     }
 
     public function testDoChangePasswordReportsMissingUser(): void
@@ -268,6 +285,15 @@ class UserAdminTest extends TestCase
         Approvals::verifyHtml($response->output());
     }
 
+    public function testDoMailIsCsrfProtected(): void
+    {
+        $this->csrfProtector->options(["check" => false]);
+        $this->request->method("action")->willReturn("do_mail");
+        $response = $this->sut()($this->request);
+        $this->assertEquals("Register – Users", $response->title());
+        $this->assertStringContainsString("You are not authorized for this action!", $response->output());
+    }
+
     public function testDoMailReportsMissingUser(): void
     {
         $this->request->method("action")->willReturn("do_mail");
@@ -325,6 +351,15 @@ class UserAdminTest extends TestCase
         $response = $this->sut()($this->request);
         $this->assertEquals("Register – Users", $response->title());
         Approvals::verifyHtml($response->output());
+    }
+
+    public function testDoDeleteIsCsrfProtected(): void
+    {
+        $this->csrfProtector->options(["check" => false]);
+        $this->request->method("action")->willReturn("do_delete");
+        $response = $this->sut()($this->request);
+        $this->assertEquals("Register – Users", $response->title());
+        $this->assertStringContainsString("You are not authorized for this action!", $response->output());
     }
 
     public function testDoDeleteReportsMissingUser(): void

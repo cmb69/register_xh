@@ -8,6 +8,7 @@
 
 namespace Register;
 
+use Register\Infra\CsrfProtector;
 use Register\Infra\DbService;
 use Register\Infra\Pages;
 use Register\Infra\Request;
@@ -16,12 +17,11 @@ use Register\Logic\Groups;
 use Register\Value\Html;
 use Register\Value\Response;
 use Register\Value\UserGroup;
-use XH\CSRFProtection;
 
 class GroupAdmin
 {
-    /** @var CSRFProtection */
-    private $csrfProtection;
+    /** @var CsrfProtector */
+    private $csrfProtector;
 
     /** @var DbService */
     private $dbService;
@@ -33,12 +33,12 @@ class GroupAdmin
     private $view;
 
     public function __construct(
-        CSRFProtection $csrfProtection,
+        CsrfProtector $csrfProtector,
         DbService $dbService,
         Pages $pages,
         View $view
     ) {
-        $this->csrfProtection = $csrfProtection;
+        $this->csrfProtector = $csrfProtector;
         $this->dbService = $dbService;
         $this->pages = $pages;
         $this->view = $view;
@@ -88,7 +88,9 @@ class GroupAdmin
 
     private function doCreate(Request $request): Response
     {
-        $this->csrfProtection->check();
+        if (!$this->csrfProtector->check()) {
+            return $this->respondWith($this->view->error("err_unauthorized"));
+        }
         $group = $request->postedGroup();
         [$groups, $lock] = $this->dbService->readGroupsWithLock(true);
         if (($errors = Groups::validate($group, $groups, true))) {
@@ -106,7 +108,7 @@ class GroupAdmin
     {
         return $this->view->render("group_create", [
             "errors" => $errors,
-            "token" => Html::from($this->csrfProtection->tokenInput()),
+            "token" => $this->csrfProtector->token(),
             "group" => $group->getGroupname(),
             "options" => $this->options($group->getLoginpage()),
         ]);
@@ -124,7 +126,9 @@ class GroupAdmin
 
     private function doUpdate(Request $request): Response
     {
-        $this->csrfProtection->check();
+        if (!$this->csrfProtector->check()) {
+            return $this->respondWith($this->view->error("err_unauthorized"));
+        }
         $groupname = $request->selectedGroup();
         [$groups, $lock] = $this->dbService->readGroupsWithLock(true);
         if (!($group = Groups::findByGroupname($groupname, $groups))) {
@@ -144,7 +148,7 @@ class GroupAdmin
     {
         return $this->view->render("group_update", [
             "errors" => $errors,
-            "token" => Html::from($this->csrfProtection->tokenInput()),
+            "token" => $this->csrfProtector->token(),
             "group" => $group->getGroupname(),
             "options" => $this->options($group->getLoginpage()),
         ]);
@@ -162,7 +166,9 @@ class GroupAdmin
 
     private function doDelete(Request $request): Response
     {
-        $this->csrfProtection->check();
+        if (!$this->csrfProtector->check()) {
+            return $this->respondWith($this->view->error("err_unauthorized"));
+        }
         $groupname = $request->selectedGroup();
         [$groups, $lock] = $this->dbService->readGroupsWithLock(true);
         if (!($group = Groups::findByGroupname($groupname, $groups))) {
@@ -180,7 +186,7 @@ class GroupAdmin
     {
         return $this->view->render("group_delete", [
             "errors" => $errors,
-            "token" => Html::from($this->csrfProtection->tokenInput()),
+            "token" => $this->csrfProtector->token(),
             "groupname" => $group->getGroupname(),
         ]);
     }

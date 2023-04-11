@@ -10,6 +10,7 @@
 
 namespace Register;
 
+use Register\Infra\CsrfProtector;
 use Register\Infra\Logger;
 use Register\Infra\Mailer;
 use Register\Infra\Password;
@@ -21,7 +22,6 @@ use Register\Logic\Util;
 use Register\Logic\Validator;
 use Register\Value\Html;
 use Register\Value\Response;
-use XH\CSRFProtection as CsrfProtector;
 
 class HandleUserPreferences
 {
@@ -94,7 +94,9 @@ class HandleUserPreferences
 
     private function saveUser(Request $request): string
     {
-        $this->csrfProtector->check();
+        if (!$this->csrfProtector->check()) {
+            return $this->view->error("err_unauthorized");
+        }
         $user = $this->userRepository->findByUsername($request->username());
         assert($user !== null); // TODO 403 to be safe
         if ($user->isLocked()) {
@@ -134,7 +136,9 @@ class HandleUserPreferences
 
     private function unregisterUser(Request $request): string
     {
-        $this->csrfProtector->check();
+        if (!$this->csrfProtector->check()) {
+            return $this->view->error("err_unauthorized");
+        }
         $user = $this->userRepository->findByUsername($request->username());
         assert($user !== null); // TODO 403 to be safe
         if ($user->isLocked()) {
@@ -154,10 +158,8 @@ class HandleUserPreferences
     /** @param list<array{string}> $errors */
     private function renderForm(Url $url, array $errors, string $name, string $email): string
     {
-        $csrfTokenInput = $this->csrfProtector->tokenInput();
-        $this->csrfProtector->store();
         return $this->view->render("userprefs_form", [
-            "csrfTokenInput" => Html::from($csrfTokenInput),
+            "token" => $this->csrfProtector->token(),
             "actionUrl" => $url->relative(),
             "errors" => $errors,
             "name" => $name,
