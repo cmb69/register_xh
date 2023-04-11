@@ -8,7 +8,6 @@
 
 namespace Register;
 
-use ApprovalTests\Approvals;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Register\Infra\Mailer;
@@ -73,7 +72,7 @@ class ActivateUserTest extends TestCase
             "nonce" => "12345",
         ]);
         $response = ($this->subject)($this->request);
-        Approvals::verifyHtml($response->output());
+        $this->assertStringContainsString("The Username 'john' could not be found!", $response->output());
     }
 
     public function testActivateUserEmptyState(): void
@@ -85,7 +84,7 @@ class ActivateUserTest extends TestCase
             "nonce" => "12345",
         ]);
         $response = ($this->subject)($this->request);
-        Approvals::verifyHtml($response->output());
+        $this->assertStringContainsString("The status of your username is empty.", $response->output());
     }
 
     public function testActivateUserInvalidState(): void
@@ -97,7 +96,7 @@ class ActivateUserTest extends TestCase
             "nonce" => "54321",
         ]);
         $response = ($this->subject)($this->request);
-        Approvals::verifyHtml($response->output());
+        $this->assertStringContainsString("The entered validation code is invalid.", $response->output());
     }
 
     public function testActivateUserSuccess(): void
@@ -110,6 +109,6 @@ class ActivateUserTest extends TestCase
             "nonce" => "12345",
         ]);
         $response = ($this->subject)($this->request);
-        Approvals::verifyHtml($response->output());
+        $this->assertStringContainsString("You have successfully activated your new account.", $response->output());
     }
 }

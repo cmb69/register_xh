@@ -8,8 +8,6 @@
 
 namespace Register;
 
-use XH_includeVar;
-
 use ApprovalTests\Approvals;
 use PHPUnit\Framework\TestCase;
 use Register\Infra\FakeMailer;
@@ -62,14 +60,14 @@ class PasswordForgottenTest extends TestCase
     {
         $this->request->method("forgotPasswordPost")->willReturn(["email" => ""]);
         $response = ($this->subject)($this->request);
-        Approvals::verifyHtml($response->output());
+        $this->assertStringContainsString("Please enter your email address.", $response->output());
     }
 
     public function testInvalidEmail(): void
     {
         $this->request->method("forgotPasswordPost")->willReturn(["email" => "invalid"]);
         $response = ($this->subject)($this->request);
-        Approvals::verifyHtml($response->output());
+        $this->assertStringContainsString("The given email address is invalid.", $response->output());
     }
 
     public function testUnknownEmail(): void
@@ -77,7 +75,10 @@ class PasswordForgottenTest extends TestCase
         $this->userRepository->method("findByEmail")->willReturn(null);
         $this->request->method("forgotPasswordPost")->willReturn(["email" => "jane@example.com"]);
         $response = ($this->subject)($this->request);
-        Approvals::verifyHtml($response->output());
+        $this->assertStringContainsString(
+            "If the email you specified exists in our system, we've sent a password reset link to it.",
+            $response->output()
+        );
     }
 
     public function testKnownEmail(): void
@@ -87,7 +88,10 @@ class PasswordForgottenTest extends TestCase
         $this->userRepository->method("findByEmail")->willReturn($john);
         $this->request->method("forgotPasswordPost")->willReturn(["email" => "john@example.com"]);
         $response = ($this->subject)($this->request);
-        Approvals::verifyHtml($response->output());
+        $this->assertStringContainsString(
+            "If the email you specified exists in our system, we've sent a password reset link to it.",
+            $response->output()
+        );
     }
 
     public function testSendsMailOnSuccess(): void

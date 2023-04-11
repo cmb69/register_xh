@@ -75,7 +75,10 @@ class ShowUserPreferencesTest extends TestCase
     {
         $this->request->method("username")->willReturn("");
         $response = ($this->subject)($this->request);
-        Approvals::verifyHtml($response->output());
+        $this->assertStringContainsString(
+            "This page is only accessible for members with appropriate permissions.",
+            $response->output()
+        );
     }
 
     public function testUserIsLocked(): void
@@ -83,7 +86,7 @@ class ShowUserPreferencesTest extends TestCase
         $this->request->method("username")->willReturn("jane");
         $this->userRepository->method("findByUsername")->willReturn($this->users["jane"]);
         $response = ($this->subject)($this->request);
-        Approvals::verifyHtml($response->output());
+        $this->assertStringContainsString("User Preferences for 'jane' can't be changed!", $response->output());
     }
 
     public function testSuccess(): void

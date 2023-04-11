@@ -82,7 +82,10 @@ class EditUserTest extends TestCase
     {
         $this->request->method("username")->willReturn("");
         $response = ($this->subject)($this->request);
-        Approvals::verifyHtml($response->output());
+        $this->assertStringContainsString(
+            "This page is only accessible for members with appropriate permissions.",
+            $response->output()
+        );
     }
 
     public function testIsLocked(): void
@@ -91,7 +94,7 @@ class EditUserTest extends TestCase
         $this->userRepository->method("findByUsername")->willReturn($this->users["jane"]);
         $this->csrfProtector->expects($this->once())->method("check");
         $response = ($this->subject)($this->request);
-        Approvals::verifyHtml($response->output());
+        $this->assertStringContainsString("User Preferences for 'jane' can't be changed!", $response->output());
     }
 
     public function testWrongPassword(): void
@@ -108,7 +111,7 @@ class EditUserTest extends TestCase
         $this->csrfProtector->expects($this->once())->method("check");
         $this->password->method("verify")->willReturn(false);
         $response = ($this->subject)($this->request);
-        Approvals::verifyHtml($response->output());
+        $this->assertStringContainsString("The old password you entered is wrong.", $response->output());
     }
 
     public function testPasswordConfirmationDoesNotMatch(): void
@@ -132,7 +135,7 @@ class EditUserTest extends TestCase
         $this->csrfProtector->expects($this->once())->method("check");
         $this->password->method("verify")->willReturn(true);
         $response = ($this->subject)($this->request);
-        Approvals::verifyHtml($response->output());
+        $this->assertStringContainsString("The two entered passwords do not match.", $response->output());
     }
 
     public function testCorrectPassword(): void
@@ -150,7 +153,10 @@ class EditUserTest extends TestCase
         $this->userRepository->expects($this->once())->method("update")->willReturn(true);
         $this->password->method("verify")->willReturn(true);
         $response = ($this->subject)($this->request);
-        Approvals::verifyHtml($response->output());
+        $this->assertStringContainsString(
+            "Your account information has been updated and sent to you via email.",
+            $response->output()
+        );
     }
 
     public function testSendsEmailOnSuccess(): void

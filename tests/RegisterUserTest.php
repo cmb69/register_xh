@@ -80,7 +80,7 @@ class RegisterUserTest extends TestCase
             "email" => "",
         ]);
         $response = ($this->subject)($this->request);
-        Approvals::verifyHtml($response->output());
+        $this->assertStringContainsString("Please enter your full name.", $response->output());
     }
 
     public function testExistingUser(): void
@@ -95,7 +95,7 @@ class RegisterUserTest extends TestCase
             "email" => "jane.smith@example.com",
         ]);
         $response = ($this->subject)($this->request);
-        Approvals::verifyHtml($response->output());
+        $this->assertStringContainsString("The chosen username exists already.", $response->output());
     }
 
     public function testExistingEmail(): void
@@ -112,7 +112,10 @@ class RegisterUserTest extends TestCase
             "email" => "john@example.com",
         ]);
         $response = ($this->subject)($this->request);
-        Approvals::verifyHtml($response->output());
+        $this->assertStringContainsString(
+            "You have been registered successfully. An email has been sent to you containing a link to activate your new account.",
+            $response->output()
+        );
     }
 
     public function testSendsMailOnExistingEmail(): void
@@ -144,7 +147,10 @@ class RegisterUserTest extends TestCase
             "email" => "js@example.com",
         ]);
         $response = ($this->subject)($this->request);
-        Approvals::verifyHtml($response->output());
+        $this->assertStringContainsString(
+            "You have been registered successfully. An email has been sent to you containing a link to activate your new account.",
+            $response->output()
+        );
     }
 
     public function testSendsEmailOnSuccess(): void

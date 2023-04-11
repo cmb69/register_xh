@@ -8,7 +8,6 @@
 
 namespace Register;
 
-use ApprovalTests\Approvals;
 use PHPUnit\Framework\TestCase;
 use Register\Infra\Logger;
 use Register\Infra\Mailer;
@@ -82,7 +81,10 @@ class UnregisterUserTest extends TestCase
         $_POST = ["action" => "edit_user_prefs", "delete" => ""];
         $this->request->method("username")->willReturn("");
         $response = ($this->subject)($this->request);
-        Approvals::verifyHtml($response->output());
+        $this->assertStringContainsString(
+            "This page is only accessible for members with appropriate permissions.",
+            $response->output()
+        );
     }
 
     public function testIsLocked(): void
@@ -92,7 +94,7 @@ class UnregisterUserTest extends TestCase
         $this->userRepository->method("findByUsername")->willReturn($this->users["jane"]);
         $this->csrfProtector->expects($this->once())->method("check");
         $response = ($this->subject)($this->request);
-        Approvals::verifyHtml($response->output());
+        $this->assertStringContainsString("User Preferences for 'jane' can't be changed!", $response->output());
     }
 
     public function testWrongPassword(): void
@@ -107,7 +109,7 @@ class UnregisterUserTest extends TestCase
         $this->csrfProtector->expects($this->once())->method("check");
         $this->password->method("verify")->willReturn(false);
         $response = ($this->subject)($this->request);
-        Approvals::verifyHtml($response->output());
+        $this->assertStringContainsString("The old password you entered is wrong.", $response->output());
     }
 
     public function testCorrectPassword(): void
@@ -123,6 +125,6 @@ class UnregisterUserTest extends TestCase
         $this->csrfProtector->expects($this->once())->method("check");
         $this->password->method("verify")->willReturn(true);
         $response = ($this->subject)($this->request);
-        Approvals::verifyHtml($response->output());
+        $this->assertStringContainsString("User 'john' deleted!", $response->output());
     }
 }

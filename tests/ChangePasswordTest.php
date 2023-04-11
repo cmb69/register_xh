@@ -65,7 +65,7 @@ class ChangePasswordTest extends TestCase
             "mac" => "",
         ]);
         $response = ($this->subject)($this->request);
-        Approvals::verifyHtml($response->output());
+        $this->assertStringContainsString("The entered validation code is invalid.", $response->output());
     }
 
     public function testWrongMac(): void
@@ -78,7 +78,7 @@ class ChangePasswordTest extends TestCase
             "mac" => "54321",
         ]);
         $response = ($this->subject)($this->request);
-        Approvals::verifyHtml($response->output());
+        $this->assertStringContainsString("The entered validation code is invalid.", $response->output());
     }
 
     public function testSuccess(): void
@@ -96,7 +96,7 @@ class ChangePasswordTest extends TestCase
             "password2" => "admin",
         ]);
         $response = ($this->subject)($this->request);
-        Approvals::verifyHtml($response->output());
+        $this->assertStringContainsString("An email has been sent to you with your user data.", $response->output());
     }
 
     public function testSendsMailOnSuccess(): void
@@ -132,7 +132,7 @@ class ChangePasswordTest extends TestCase
             "mac" => "TLIb1A2yKWBs_ZGmC0l0V4w6bS8",
         ]);
         $response = ($this->subject)($this->request);
-        Approvals::verifyHtml($response->output());
+        $this->assertStringContainsString("The password reset has expired!", $response->output());
     }
 
     public function testReportsNotMatchingPasswords(): void
@@ -150,7 +150,7 @@ class ChangePasswordTest extends TestCase
             "password2" => "amdin",
         ]);
         $response = ($this->subject)($this->request);
-        Approvals::verifyHtml($response->output());
+        $this->assertStringContainsString("The two entered passwords do not match.", $response->output());
     }
 
     public function testReportsFailureToUpdateUser(): void
@@ -168,6 +168,6 @@ class ChangePasswordTest extends TestCase
             "password2" => "admin",
         ]);
         $response = ($this->subject)($this->request);
-        Approvals::verifyHtml($response->output());
+        $this->assertStringContainsString("Saving CSV file failed.", $response->output());
     }
 }

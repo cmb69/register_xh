@@ -8,9 +8,8 @@
 
 namespace Register;
 
-use PHPUnit\Framework\TestCase;
 use ApprovalTests\Approvals;
-
+use PHPUnit\Framework\TestCase;
 use Register\Infra\Pages;
 use Register\Infra\Request;
 use Register\Infra\Url;
