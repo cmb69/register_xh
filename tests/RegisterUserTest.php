@@ -132,7 +132,7 @@ class RegisterUserTest extends TestCase
         $this->request->method("serverName")->willReturn("example.com");
         $this->request->method("remoteAddress")->willReturn("127.0.0.1");
         ($this->subject)($this->request);
-        Approvals::verifyHtml($this->mailer->message());
+        Approvals::verifyList($this->mailer->lastMail());
     }
 
     public function testSuccess(): void
@@ -167,9 +167,6 @@ class RegisterUserTest extends TestCase
         $this->request->method("serverName")->willReturn("example.com");
         $this->request->method("remoteAddress")->willReturn("127.0.0.1");
         ($this->subject)($this->request);
-        $this->assertEquals("js@example.com", $this->mailer->to());
-        $this->assertEquals("Account activation for example.com", $this->mailer->subject());
-        Approvals::verifyString($this->mailer->message());
-        $this->assertEquals(["From: postmaster@example.com", "Cc: postmaster@example.com"], $this->mailer->headers());
+        Approvals::verifyList($this->mailer->lastMail());
     }
 }

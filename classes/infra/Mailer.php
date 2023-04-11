@@ -125,11 +125,17 @@ MAIL;
     }
 
     /** @param list<string> $headers */
-    protected function sendMail(string $to, string $subject, string $message, array $headers): bool
+    private function sendMail(string $to, string $subject, string $message, array $headers): bool
     {
         $headers[] = 'MIME-Version: 1.0';
         $headers[] = 'Content-type: text/plain; charset=UTF-8';
         $sep = $this->fixMailHeaders ? "\n" : "\r\n";
-        return mail($to, '=?UTF-8?Q?'.quoted_printable_encode($subject).'?=', $message, implode($sep, $headers));
+        return $this->mail($to, '=?UTF-8?Q?'.quoted_printable_encode($subject).'?=', $message, implode($sep, $headers));
+    }
+
+    /** @codeCoverageIgnore */
+    protected function mail(string $to, string $subject, string $message, string $headers): bool
+    {
+        return mail($to, $subject, $message, $headers);
     }
 }

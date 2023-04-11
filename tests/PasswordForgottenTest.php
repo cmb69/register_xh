@@ -101,9 +101,6 @@ class PasswordForgottenTest extends TestCase
         $this->request->method("forgotPasswordPost")->willReturn(["email" => "john@example.com"]);
         $this->request->method("serverName")->willReturn("example.com");
         ($this->subject)($this->request);
-        $this->assertEquals("john@example.com", $this->mailer->to());
-        $this->assertEquals("Account data for example.com", $this->mailer->subject());
-        Approvals::verifyHtml($this->mailer->message());
-        $this->assertEquals(["From: postmaster@example.com"], $this->mailer->headers());
+        Approvals::verifyList($this->mailer->lastMail());
     }
 }

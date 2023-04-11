@@ -306,7 +306,7 @@ class UserAdminTest extends TestCase
         $this->request->method("url")->willReturn(new Url("/", ""));
         $response = $this->sut()($this->request);
         $this->assertEquals("http://example.com/?register&admin=users", $response->location());
-        Approvals::verifyAsJson($this->mailer->lastMail());
+        Approvals::verifyList($this->mailer->lastMail());
     }
 
     public function testDeleteReportsMissingUser(): void

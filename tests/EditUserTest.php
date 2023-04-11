@@ -176,12 +176,6 @@ class EditUserTest extends TestCase
         $this->userRepository->expects($this->once())->method("update")->willReturn(true);
         $this->password->method("verify")->willReturn(true);
         ($this->subject)($this->request);
-        $this->assertEquals("john@example.com", $this->mailer->to());
-        $this->assertEquals("Account data changed for example.com", $this->mailer->subject());
-        Approvals::verifyHtml($this->mailer->message());
-        $this->assertEquals(
-            ["From: postmaster@example.com", "Cc: john@example.com, postmaster@example.com"],
-            $this->mailer->headers()
-        );
+        Approvals::verifyList($this->mailer->lastMail());
     }
 }

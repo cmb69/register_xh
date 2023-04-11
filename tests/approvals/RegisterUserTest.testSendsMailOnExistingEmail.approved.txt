@@ -1,0 +1,16 @@
+[0] -> john@example.com
+[1] -> =?UTF-8?Q?Account activation for example.com?=
+[2] -> A user account with your email has been registered with following information:
+
+ Full Name: John Smith
+ Username: js
+ Email: john@example.com
+ From IP-Address: 127.0.0.1
+
+However, a user account for this email already exists. Please click the following link if you forgot your account settings:
+
+<http://example.com/?Password-forgotten>
+[3] -> From: postmaster@example.com
+Cc: postmaster@example.com
+MIME-Version: 1.0
+Content-type: text/plain; charset=UTF-8

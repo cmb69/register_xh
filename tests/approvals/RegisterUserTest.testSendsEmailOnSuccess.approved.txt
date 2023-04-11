@@ -1,4 +1,6 @@
-A user account with your email has been registered with following information:
+[0] -> js@example.com
+[1] -> =?UTF-8?Q?Account activation for example.com?=
+[2] -> A user account with your email has been registered with following information:
 
  Full Name: John Smith
  Username: js
@@ -8,3 +10,7 @@ A user account with your email has been registered with following information:
 Please click the following link to activate your new user account:
 
 <http://example.com/?&register_action=activate&username=js&nonce=MDEyMzQ1Njc4OUFCQ0RFRkdI>
+[3] -> From: postmaster@example.com
+Cc: postmaster@example.com
+MIME-Version: 1.0
+Content-type: text/plain; charset=UTF-8
