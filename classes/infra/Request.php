@@ -97,13 +97,11 @@ class Request
         ];
     }
 
-    /** @return array{oldpassword:string,name:string,email:string} */
+    /** @return array{oldpassword:string} */
     public function unregisterPost(): array
     {
         return [
             "oldpassword" => $this->trimmedPostString("oldpassword"),
-            "name" => $this->trimmedPostString("name"),
-            "email" => $this->trimmedPostString("email"),
         ];
     }
 

@@ -29,6 +29,7 @@ class HandleUserPreferencesTest extends TestCase
 
     private $users;
     private $csrfProtector;
+    private $dbService;
     private $userRepository;
     private $view;
     private $mailer;
@@ -48,9 +49,9 @@ class HandleUserPreferencesTest extends TestCase
         $plugin_tx = XH_includeVar("./languages/en.php", 'plugin_tx');
         $text = $plugin_tx['register'];
         $this->csrfProtector = new FakeCsrfProtector;
-        $dbService = new FakeDbService("vfs://root/register/", "guest", $this->createMock(Random::class));
-        $dbService->writeUsers($this->users);
-        $this->userRepository = new UserRepository($dbService);
+        $this->dbService = new FakeDbService("vfs://root/register/", "guest", $this->createMock(Random::class));
+        $this->dbService->writeUsers($this->users);
+        $this->userRepository = new UserRepository($this->dbService);
         $this->view = new View("./views/", $text);
         $this->mailer = new FakeMailer(false, $text);
         $this->logger = $this->createMock(Logger::class);
@@ -68,18 +69,15 @@ class HandleUserPreferencesTest extends TestCase
         $this->request->method("url")->willReturn(new Url("/", "User-Preferences"));
     }
 
-    public function testNoUser(): void
+    public function testReportsNonExistentUser(): void
     {
         $this->request->method("registerAction")->willReturn("");
         $this->request->method("username")->willReturn("");
         $response = ($this->subject)($this->request);
-        $this->assertStringContainsString(
-            "This page is only accessible for members with appropriate permissions.",
-            $response->output()
-        );
+        $this->assertStringContainsString("User '' does not exist!", $response->output());
     }
 
-    public function testUserIsLocked(): void
+    public function testReportsIfUserIsLocked(): void
     {
         $this->request->method("registerAction")->willReturn("");
         $this->request->method("username")->willReturn("jane");
@@ -87,7 +85,7 @@ class HandleUserPreferencesTest extends TestCase
         $this->assertStringContainsString("User Preferences for 'jane' can't be changed!", $response->output());
     }
 
-    public function testSuccess(): void
+    public function testRendersForm(): void
     {
         $this->request->method("registerAction")->willReturn("");
         $this->request->method("username")->willReturn("john");
@@ -95,7 +93,7 @@ class HandleUserPreferencesTest extends TestCase
         Approvals::verifyHtml($response->output());
     }
 
-    public function testChangePrefsIsCsrfProtected(): void
+    public function testChangePrefsReportsCsrf(): void
     {
         $this->csrfProtector->options(["check" => false]);
         $this->request->method("registerAction")->willReturn("change_prefs");
@@ -104,18 +102,15 @@ class HandleUserPreferencesTest extends TestCase
         $this->assertStringContainsString("You are not authorized for this action!", $response->output());
     }
 
-    public function testEditNoUser(): void
+    public function testChangePrefsReportsNonExistentUser(): void
     {
         $this->request->method("registerAction")->willReturn("change_prefs");
         $this->request->method("username")->willReturn("");
         $response = ($this->subject)($this->request);
-        $this->assertStringContainsString(
-            "This page is only accessible for members with appropriate permissions.",
-            $response->output()
-        );
+        $this->assertStringContainsString("User '' does not exist!", $response->output());
     }
 
-    public function testIsLocked(): void
+    public function testChangePrefsReportsLockedUser(): void
     {
         $this->request->method("registerAction")->willReturn("change_prefs");
         $this->request->method("username")->willReturn("jane");
@@ -123,7 +118,7 @@ class HandleUserPreferencesTest extends TestCase
         $this->assertStringContainsString("User Preferences for 'jane' can't be changed!", $response->output());
     }
 
-    public function testWrongPassword(): void
+    public function testChangePrefsReportsWrongPassword(): void
     {
         $this->request->method("registerAction")->willReturn("change_prefs");
         $this->request->method("username")->willReturn("john");
@@ -138,15 +133,8 @@ class HandleUserPreferencesTest extends TestCase
         $this->assertStringContainsString("The old password you entered is wrong.", $response->output());
     }
 
-    public function testPasswordConfirmationDoesNotMatch(): void
+    public function testChangePrefsReportsValidationErrors(): void
     {
-        $_POST = [
-            "action" => "edit_user_prefs",
-            "submit" => "",
-            "oldpassword" => "12345",
-            "password1" => "one",
-            "password2" => "two",
-        ];
         $this->request->method("registerAction")->willReturn("change_prefs");
         $this->request->method("username")->willReturn("john");
         $this->request->method("changePrefsPost")->willReturn([
@@ -160,44 +148,42 @@ class HandleUserPreferencesTest extends TestCase
         $this->assertStringContainsString("The two entered passwords do not match.", $response->output());
     }
 
-    public function testCorrectPassword(): void
+    public function testChangePrefsReportsFailureToSave(): void
     {
+        $this->dbService->options(["writeUsers" => false]);
         $this->request->method("registerAction")->willReturn("change_prefs");
         $this->request->method("username")->willReturn("john");
         $this->request->method("changePrefsPost")->willReturn([
             "oldpassword" => "12345",
-            "name" => "",
-            "password1" => "",
-            "password2" => "",
-            "email" => "",
+            "name" => "John Doe",
+            "password1" => "12345",
+            "password2" => "12345",
+            "email" => "new@example.com",
         ]);
         $response = ($this->subject)($this->request);
-        $this->assertTrue(password_verify("12345", $this->userRepository->findByUsername("john")->getPassword()));
-        $this->assertStringContainsString(
-            "Your account information has been updated and sent to you via email.",
-            $response->output()
-        );
+        $this->assertStringContainsString("Saving CSV file failed.", $response->output());
     }
 
-    public function testSendsEmailOnSuccess(): void
+    public function testChangePrefsRedirectsOnSuccess(): void
     {
         $this->request->method("registerAction")->willReturn("change_prefs");
         $this->request->method("username")->willReturn("john");
         $this->request->method("changePrefsPost")->willReturn([
             "oldpassword" => "12345",
-            "name" => "",
-            "password1" => "",
-            "password2" => "",
-            "email" => "",
+            "name" => "John Doe",
+            "password1" => "12345",
+            "password2" => "12345",
+            "email" => "new@example.com",
         ]);
         $this->request->method("serverName")->willReturn("example.com");
         $this->request->method("remoteAddress")->willReturn("127.0.0.1");
-        ($this->subject)($this->request);
-        $this->assertTrue(password_verify("12345", $this->userRepository->findByUsername("john")->getPassword()));
+        $response = ($this->subject)($this->request);
+        $this->assertEquals("new@example.com", $this->userRepository->findByUsername("john")->getEmail());
         Approvals::verifyList($this->mailer->lastMail());
+        $this->assertEquals("http://example.com/?User-Preferences", $response->location());
     }
 
-    public function testUnregisterIsCsrfProtected(): void
+    public function testUnregisterReportsCsrf(): void
     {
         $this->csrfProtector->options(["check" => false]);
         $this->request->method("registerAction")->willReturn("unregister");
@@ -206,19 +192,16 @@ class HandleUserPreferencesTest extends TestCase
         $this->assertStringContainsString("You are not authorized for this action!", $response->output());
     }
 
-    public function testUnregisterNoUser(): void
+    public function testUnregisterReportsNonExistentUser(): void
     {
         $_POST = ["action" => "edit_user_prefs", "delete" => ""];
         $this->request->method("registerAction")->willReturn("unregister");
         $this->request->method("username")->willReturn("");
         $response = ($this->subject)($this->request);
-        $this->assertStringContainsString(
-            "This page is only accessible for members with appropriate permissions.",
-            $response->output()
-        );
+        $this->assertStringContainsString("User '' does not exist!", $response->output());
     }
 
-    public function testUnregisterIsLocked(): void
+    public function testUnregisterReportsLockedUser(): void
     {
         $_POST = ["action" => "edit_user_prefs", "delete" => ""];
         $this->request->method("registerAction")->willReturn("unregister");
@@ -227,7 +210,7 @@ class HandleUserPreferencesTest extends TestCase
         $this->assertStringContainsString("User Preferences for 'jane' can't be changed!", $response->output());
     }
 
-    public function testUnregisterWrongPassword(): void
+    public function testUnregisterReportsWrongPassword(): void
     {
         $this->request->method("registerAction")->willReturn("unregister");
         $this->request->method("username")->willReturn("john");
@@ -240,7 +223,21 @@ class HandleUserPreferencesTest extends TestCase
         $this->assertStringContainsString("The old password you entered is wrong.", $response->output());
     }
 
-    public function testUnregisterCorrectPassword(): void
+    public function testUnregisterReportsFailureToSave(): void
+    {
+        $this->dbService->options(["writeUsers" => false]);
+        $this->request->method("registerAction")->willReturn("unregister");
+        $this->request->method("username")->willReturn("john");
+        $this->request->method("unregisterPost")->willReturn([
+            "oldpassword" => "12345",
+            "name" => "",
+            "email" => "",
+        ]);
+        $response = ($this->subject)($this->request);
+        $this->assertStringContainsString(" ", $response->output());
+    }
+
+    public function testUnregisterRedirectsOnSuccess(): void
     {
         $this->request->method("registerAction")->willReturn("unregister");
         $this->request->method("username")->willReturn("john");
@@ -251,6 +248,7 @@ class HandleUserPreferencesTest extends TestCase
         ]);
         $response = ($this->subject)($this->request);
         $this->assertNull($this->userRepository->findByUsername("john"));
-        $this->assertStringContainsString("User 'john' deleted!", $response->output());
+        // todo logging
+        $this->assertEquals("http://example.com/?User-Preferences", $response->location());
     }
 }

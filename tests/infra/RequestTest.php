@@ -120,7 +120,7 @@ class RequestTest extends TestCase
     public function unregisterPosts(): array
     {
         return [
-            [[], ["oldpassword" => "", "name" => "", "email" => ""]],
+            [[], ["oldpassword" => ""]],
         ];
     }
 
