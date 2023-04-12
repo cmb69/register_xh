@@ -13,7 +13,7 @@ use org\bovigo\vfs\vfsStream;
 use PHPUnit\Framework\TestCase;
 use Register\Infra\FakeDbService;
 use Register\Infra\FakeMailer;
-use Register\Infra\Password;
+use Register\Infra\FakePassword;
 use Register\Infra\Random;
 use Register\Infra\Request;
 use Register\Infra\Url;
@@ -28,7 +28,6 @@ class HandlePasswordForgottenTest extends TestCase
     private $view;
     private $dbService;
     private $userRepository;
-    private $password;
     private $mailer;
 
     private $request;
@@ -44,13 +43,13 @@ class HandlePasswordForgottenTest extends TestCase
         $this->dbService = new FakeDbService("vfs://root/register/", "guest", $this->createMock(Random::class));
         $this->dbService->writeUsers([new User("john", "12345", ["guest"], "John Dow", "john@example.com", "activated", "secret")]);
         $this->userRepository = new UserRepository($this->dbService);
-        $this->password = $this->createMock(Password::class);
+        $password = new FakePassword;
         $this->mailer = new FakeMailer(false, $text);
         $this->subject = new HandlePasswordForgotten(
             $conf,
             $this->view,
             $this->userRepository,
-            $this->password,
+            $password,
             $this->mailer
         );
         $this->request = $this->createStub(Request::class);
@@ -193,7 +192,6 @@ class HandlePasswordForgottenTest extends TestCase
 
     public function testSuccess(): void
     {
-        $this->password->method("hash")->willReturn("\$2y\$10\$OJrimnUX6ZTQUO5ZDwnn/u1xXB0fr96ul33wJO6jMCzdrhY5BcOe.");
         $this->request->method("registerAction")->willReturn("change_password");
         $this->request->method("resetPasswordParams")->willReturn([
             "username" => "john",

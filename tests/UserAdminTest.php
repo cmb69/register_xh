@@ -14,7 +14,7 @@ use PHPUnit\Framework\TestCase;
 use Register\Infra\FakeCsrfProtector;
 use Register\Infra\FakeDbService;
 use Register\Infra\FakeMailer;
-use Register\Infra\Password;
+use Register\Infra\FakePassword;
 use Register\Infra\Random;
 use Register\Infra\Request;
 use Register\Infra\Url;
@@ -49,8 +49,7 @@ class UserAdminTest extends TestCase
         $this->dbService->writeUsers($this->users());
         $this->userRepository = new UserRepository($this->dbService);
         $this->userGroupRepository = new UserGroupRepository($this->dbService);
-        $this->password = $this->createMock(Password::class);
-        $this->password->method("hash")->willReturn("\$2y\$10\$sQkSA2tLcb2pKwLeZ5rCqeLn.034Nk36etev3bYVNBDyqTnZ2i3qG");
+        $this->password = new FakePassword;
         $this->mailer = new FakeMailer(false, XH_includeVar("./languages/en.php", "plugin_tx")["register"]);
         $this->view = new View("./views/", XH_includeVar("./languages/en.php", "plugin_tx")["register"]);
         $this->request = $this->getMockBuilder(Request::class)

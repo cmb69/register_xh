@@ -13,7 +13,7 @@ use org\bovigo\vfs\vfsStream;
 use PHPUnit\Framework\TestCase;
 use Register\Infra\FakeDbService;
 use Register\Infra\FakeMailer;
-use Register\Infra\Password;
+use Register\Infra\FakePassword;
 use Register\Infra\Random;
 use Register\Infra\Request;
 use Register\Infra\Url;
@@ -35,7 +35,7 @@ class HandleUserRegistrationTest extends TestCase
     public function setUp(): void
     {
         vfsStream::setup("root");
-        $hash = "\$2y\$10\$f4ldVDiVXTkNrcPmBdbW7.g/.mw5GOEqBid650oN9hE56UC28aXSq";
+        $hash = "\$2y\$04\$FMR/.rF4uHySPVzW4ZSYDO.BMmJNLAsHdzrD.r8EufGEk7XkWuwzW";
         $this->users = [
             "john" => new User("john", $hash, ["guest"], "John Doe", "john@example.com", "", "secret"),
             "jane" => new User("jane", $hash, ["guest"], "Jane Doe", "jane@example.com", "12345", "secret"),
@@ -51,10 +51,7 @@ class HandleUserRegistrationTest extends TestCase
         $dbService->writeUsers($this->users);
         $this->userRepository = new UserRepository($dbService);
         $this->mailer = new FakeMailer(false, $text);
-        $password = $this->createStub(Password::class);
-        $password->method("hash")->willReturnMap([
-            ["test", "\$2y\$10\$aGzxwrdMUUbjt2f2Dbbowus.dcYuquRlSHfEFIuKMAoSyK4vW90aG"],
-        ]);
+        $password = new FakePassword;
         $this->subject = new HandleUserRegistration(
             $conf,
             $text,

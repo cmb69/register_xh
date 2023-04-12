@@ -11,10 +11,10 @@ namespace Register;
 use org\bovigo\vfs\vfsStream;
 use PHPUnit\Framework\TestCase;
 use Register\Infra\FakeDbService;
+use Register\Infra\FakePassword;
 use Register\Value\User;
 use Register\Infra\Logger;
 use Register\Infra\LoginManager;
-use Register\Infra\Password;
 use Register\Infra\Random;
 use Register\Infra\Request;
 use Register\Infra\Url;
@@ -62,9 +62,8 @@ class LoginControllerTest extends TestCase
 
     public function testLoginActionSuccessRedirects(): void
     {
-        $_POST = ["username" => "jane"];
-        $password = $this->createStub(Password::class);
-        $password->method("verify")->willReturn(true);
+        $_POST = ["username" => "jane", "password" => "test"];
+        $password = new FakePassword;
         $sut = new LoginController(
             $this->conf,
             $this->text,
@@ -88,7 +87,7 @@ class LoginControllerTest extends TestCase
             $this->userGroupRepository,
             $this->logger,
             $this->loginManager,
-            $this->createStub(Password::class)
+            new FakePassword
         );
         $this->request->method("function")->willReturn("registerlogin");
         $response = $sut($this->request);
@@ -104,7 +103,7 @@ class LoginControllerTest extends TestCase
             $this->userGroupRepository,
             $this->logger,
             $this->loginManager,
-            $this->createStub(Password::class)
+            new FakePassword
         );
         $this->request->method("function")->willReturn("registerlogout");
         $this->request->method("username")->willReturn("jane");
@@ -116,7 +115,7 @@ class LoginControllerTest extends TestCase
     {
         return new User(
             "jane",
-            '$2y$10$gOae/VL5wrESo5Uf6ZcWhuNlAEycCGW5Ov5opny5PWxa.gbl4SHQW',
+            "\$2y\$04\$vcjV1rBQmBIKJsVNhRvWZukMmECVkKIHKAdVI9FlcXmVbSb/km3c6",
             ["admin"],
             "Jane Doe",
             "jane@example.com",

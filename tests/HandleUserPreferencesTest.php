@@ -14,8 +14,8 @@ use PHPUnit\Framework\TestCase;
 use Register\Infra\FakeCsrfProtector;
 use Register\Infra\FakeDbService;
 use Register\Infra\FakeMailer;
+use Register\Infra\FakePassword;
 use Register\Infra\Logger;
-use Register\Infra\Password;
 use Register\Infra\Random;
 use Register\Infra\Request;
 use Register\Infra\Url;
@@ -33,14 +33,13 @@ class HandleUserPreferencesTest extends TestCase
     private $view;
     private $mailer;
     private $logger;
-    private $password;
 
     private $request;
 
     public function setUp(): void
     {
         vfsStream::setup("root");
-        $hash = "\$2y\$10\$f4ldVDiVXTkNrcPmBdbW7.g/.mw5GOEqBid650oN9hE56UC28aXSq";
+        $hash = "\$2y\$04\$FMR/.rF4uHySPVzW4ZSYDO.BMmJNLAsHdzrD.r8EufGEk7XkWuwzW";
         $this->users = [
             "john" => new User("john", $hash, ["guest"], "John Doe", "john@example.com", "activated", "secret"),
             "jane" => new User("jane", $hash, ["guest"], "Jane Doe", "jane@example.com", "locked", "secret"),
@@ -55,7 +54,7 @@ class HandleUserPreferencesTest extends TestCase
         $this->view = new View("./views/", $text);
         $this->mailer = new FakeMailer(false, $text);
         $this->logger = $this->createMock(Logger::class);
-        $this->password = $this->createStub(Password::class);
+        $password = new FakePassword;
         $this->subject = new HandleUserPreferences(
             $conf,
             $this->csrfProtector,
@@ -63,7 +62,7 @@ class HandleUserPreferencesTest extends TestCase
             $this->view,
             $this->mailer,
             $this->logger,
-            $this->password
+            $password
         );
         $this->request = $this->createStub(Request::class);
         $this->request->method("url")->willReturn(new Url("/", "User-Preferences"));
@@ -135,7 +134,6 @@ class HandleUserPreferencesTest extends TestCase
             "password2" => "",
             "email" => "",
         ]);
-        $this->password->method("verify")->willReturn(false);
         $response = ($this->subject)($this->request);
         $this->assertStringContainsString("The old password you entered is wrong.", $response->output());
     }
@@ -158,7 +156,6 @@ class HandleUserPreferencesTest extends TestCase
             "password2" => "two",
             "email" => "",
         ]);
-        $this->password->method("verify")->willReturn(true);
         $response = ($this->subject)($this->request);
         $this->assertStringContainsString("The two entered passwords do not match.", $response->output());
     }
@@ -174,8 +171,6 @@ class HandleUserPreferencesTest extends TestCase
             "password2" => "",
             "email" => "",
         ]);
-        $this->password->method("verify")->willReturn(true);
-        $this->password->method("hash")->willReturn("\$2y\$10\$f4ldVDiVXTkNrcPmBdbW7.g/.mw5GOEqBid650oN9hE56UC28aXSq");
         $response = ($this->subject)($this->request);
         $this->assertTrue(password_verify("12345", $this->userRepository->findByUsername("john")->getPassword()));
         $this->assertStringContainsString(
@@ -197,8 +192,6 @@ class HandleUserPreferencesTest extends TestCase
         ]);
         $this->request->method("serverName")->willReturn("example.com");
         $this->request->method("remoteAddress")->willReturn("127.0.0.1");
-        $this->password->method("verify")->willReturn(true);
-        $this->password->method("hash")->willReturn("\$2y\$10\$/ROb2dfft5sGI5MoWm9iGulFJHcC4X74n0VdZzDvShkA06FY/ZCje");
         ($this->subject)($this->request);
         $this->assertTrue(password_verify("12345", $this->userRepository->findByUsername("john")->getPassword()));
         Approvals::verifyList($this->mailer->lastMail());
@@ -243,7 +236,6 @@ class HandleUserPreferencesTest extends TestCase
             "name" => "",
             "email" => "",
         ]);
-        $this->password->method("verify")->willReturn(false);
         $response = ($this->subject)($this->request);
         $this->assertStringContainsString("The old password you entered is wrong.", $response->output());
     }
@@ -257,7 +249,6 @@ class HandleUserPreferencesTest extends TestCase
             "name" => "",
             "email" => "",
         ]);
-        $this->password->method("verify")->willReturn(true);
         $response = ($this->subject)($this->request);
         $this->assertNull($this->userRepository->findByUsername("john"));
         $this->assertStringContainsString("User 'john' deleted!", $response->output());
