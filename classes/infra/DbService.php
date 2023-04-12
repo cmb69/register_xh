@@ -162,18 +162,7 @@ class DbService
      */
     public function write(array $entries, string $filename, $header, $writeLine): bool
     {
-        // remove old backup
-        if (is_file($filename . ".bak")) {
-            unlink($filename . ".bak");
-        }
-        // create new backup
-        $permissions = false;
-        if (is_file($filename)) {
-            $permissions = fileperms($filename) & 0777;
-            rename($filename, $filename . ".bak");
-        }
-        $stream = fopen($filename, "w");
-        if ($stream === false) {
+        if (!($stream = fopen($filename, "w"))) {
             return false;
         }
         if (!fwrite($stream, $header)) {
@@ -187,10 +176,6 @@ class DbService
             }
         }
         fclose($stream);
-        // change permissions of new file to same as backup file
-        if ($permissions !== false) {
-            chmod($filename, $permissions);
-        }
         return true;
     }
 }

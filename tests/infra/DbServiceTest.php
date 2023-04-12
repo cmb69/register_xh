@@ -66,24 +66,4 @@ class DbServiceTest extends TestCase
         $actual = $this->subject->readUsers();
         $this->assertEquals($expected, $actual);
     }
-
-    public function testGroupsBackup()
-    {
-        $this->subject->writeGroups([]);
-        $this->subject->writeGroups([]);
-        $this->assertFileEquals(
-            vfsStream::url('root/register/groups.csv.bak'),
-            vfsStream::url('root/register/groups.csv')
-        );
-    }
-
-    public function testUsersBackup()
-    {
-        $this->subject->writeUsers([]);
-        $this->subject->writeUsers([]);
-        $this->assertFileEquals(
-            vfsStream::url('root/register/users.csv.bak'),
-            vfsStream::url('root/register/users.csv')
-        );
-    }
 }
