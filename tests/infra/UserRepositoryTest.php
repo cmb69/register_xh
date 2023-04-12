@@ -8,8 +8,8 @@
 
 namespace Register\Infra;
 
+use org\bovigo\vfs\vfsStream;
 use PHPUnit\Framework\TestCase;
-
 use Register\Value\User;
 
 class UserRepositoryTest extends TestCase
@@ -69,28 +69,8 @@ class UserRepositoryTest extends TestCase
 
     private function makeDbService(): DbService
     {
-        return new class extends DbService {
-            /** array<User> */
-            private $users = [];
-            public function __construct()
-            {
-            }
-            public function lock($mode)
-            {
-                return;
-            }
-            /** @return array<User> */
-            public function readUsers(): array
-            {
-                return $this->users;
-            }
-            /** @param array<User> $array */
-            public function writeUsers(array $array): bool
-            {
-                $this->users = $array;
-                return true;
-            }
-        };
+        vfsStream::setup("root");
+        return new FakeDbService("vfs://root/register/", "guest", $this->createMock(Random::class));
     }
 
     private function john(): User

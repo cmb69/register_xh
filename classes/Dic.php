@@ -112,6 +112,7 @@ class Dic
             $plugin_cf["register"],
             self::makeView(),
             self::makeUserRepository(),
+            new Password,
             self::makeMailer()
         );
     }

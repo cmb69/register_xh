@@ -12,7 +12,9 @@ use ApprovalTests\Approvals;
 use org\bovigo\vfs\vfsStream;
 use PHPUnit\Framework\TestCase;
 use Register\Infra\FakeCsrfProtector;
+use Register\Infra\FakeDbService;
 use Register\Infra\Pages;
+use Register\Infra\Random;
 use Register\Infra\Request;
 use Register\Infra\Url;
 use Register\Infra\UserGroupRepository;
@@ -22,6 +24,7 @@ use Register\Value\UserGroup;
 class GroupAdminTest extends TestCase
 {
     private $csrfProtector;
+    private $dbService;
     private $userGroupRepository;
     private $pages;
     private $view;
@@ -32,7 +35,9 @@ class GroupAdminTest extends TestCase
     {
         vfsStream::setup("root");
         $this->csrfProtector = new FakeCsrfProtector;
-        $this->userGroupRepository = $this->createMock(UserGroupRepository::class);
+        $this->dbService = new FakeDbService("vfs://root/register/", "guest", $this->createMock(Random::class));
+        $this->dbService->dataFolder();
+        $this->userGroupRepository = new UserGroupRepository($this->dbService);
         $this->pages = $this->createStub(Pages::class);
         $this->view = new View("./views/", XH_includeVar("./languages/en.php", "plugin_tx")["register"]);
         $this->request = $this->getMockBuilder(Request::class)
@@ -52,7 +57,7 @@ class GroupAdminTest extends TestCase
 
     public function testRendersOverview(): void
     {
-        $this->userGroupRepository->method("all")->willReturn([new UserGroup("guest", ""), new UserGroup("new", "Start")]);
+        $this->userGroupRepository->save(new UserGroup("new", "Start"));
         $response = $this->sut()($this->request);
         $this->assertEquals("Register – Groups", $response->title());
         Approvals::verifyHtml($response->output());
@@ -81,9 +86,8 @@ class GroupAdminTest extends TestCase
 
     public function testDoCreateReportsExistingGroup(): void
     {
-        $this->userGroupRepository->method("findByGroupname")->willReturn(new UserGroup("new", ""));
         $this->request->method("action")->willReturn("do_create");
-        $this->request->method("selectedGroup")->willReturn("new");
+        $this->request->method("selectedGroup")->willReturn("guest");
         $response = $this->sut()($this->request);
         $this->assertEquals("Register – Groups", $response->title());
         $this->assertStringContainsString("This groupname already exists!", $response->output());
@@ -91,7 +95,6 @@ class GroupAdminTest extends TestCase
 
     public function testDoCreateReportsInvalidGroup(): void
     {
-        $this->userGroupRepository->method("findByGroupname")->willReturn(null);
         $this->request->method("action")->willReturn("do_create");
         $this->request->method("selectedGroup")->willReturn("new");
         $this->request->method("postedGroup")->willReturn(new UserGroup("", ""));
@@ -105,7 +108,7 @@ class GroupAdminTest extends TestCase
 
     public function testDoCreateReportsFailureToSave(): void
     {
-        $this->userGroupRepository->expects($this->once())->method("save")->willReturn(false);
+        $this->dbService->options(["writeGroups" => false]);
         $this->request->method("action")->willReturn("do_create");
         $this->request->method("postedGroup")->willReturn(new UserGroup("new", ""));
         $response = $this->sut()($this->request);
@@ -115,13 +118,12 @@ class GroupAdminTest extends TestCase
 
     public function testDoCreateRedirectsOnSuccess(): void
     {
-        $this->userGroupRepository->method("findByGroupname")->willReturn(null);
-        $this->userGroupRepository->method("save")->with(new UserGroup("new", ""))->willReturn(true);
         $this->request->method("action")->willReturn("do_create");
         $this->request->method("selectedGroup")->willReturn("new");
         $this->request->method("postedGroup")->willReturn(new UserGroup("new", ""));
         $this->request->method("url")->willReturn(new Url("/", ""));
         $response = $this->sut()($this->request);
+        $this->assertEquals(new UserGroup("new", ""), $this->userGroupRepository->findByGroupName("new"));
         $this->assertEquals("http://example.com/?register&admin=groups", $response->location());
     }
 
@@ -136,7 +138,6 @@ class GroupAdminTest extends TestCase
 
     public function testRendersUpdateForm(): void
     {
-        $this->userGroupRepository->method("findByGroupname")->willReturn(new UserGroup("guest", ""));
         $this->request->method("action")->willReturn("update");
         $this->request->method("selectedGroup")->willReturn("guest");
         $response = $this->sut()($this->request);
@@ -164,8 +165,7 @@ class GroupAdminTest extends TestCase
 
     public function testDoUpdateReportsFailureToSave(): void
     {
-        $this->userGroupRepository->method("findByGroupname")->willReturn(new UserGroup("guest", ""));
-        $this->userGroupRepository->expects($this->once())->method("save")->willReturn(false);
+        $this->dbService->options(["writeGroups" => false]);
         $this->request->method("action")->willReturn("do_update");
         $this->request->method("postedGroup")->willReturn(new UserGroup("guest", "Login"));
         $this->request->method("selectedGroup")->willReturn("guest");
@@ -176,13 +176,12 @@ class GroupAdminTest extends TestCase
 
     public function testDoUpdateRedirectsOnSuccess(): void
     {
-        $this->userGroupRepository->method("findByGroupName")->willReturn(new UserGroup("guest", ""));
-        $this->userGroupRepository->method("save")->with(new UserGroup("guest", "Login"))->willReturn(true);
         $this->request->method("action")->willReturn("do_update");
         $this->request->method("postedGroup")->willReturn(new UserGroup("guest", "Login"));
         $this->request->method("selectedGroup")->willReturn("guest");
         $this->request->method("url")->willReturn(new Url("/", ""));
         $response = $this->sut()($this->request);
+        $this->assertEquals(new UserGroup("guest", "Login"), $this->userGroupRepository->findByGroupName("guest"));
         $this->assertEquals("http://example.com/?register&admin=groups", $response->location());
     }
 
@@ -197,7 +196,6 @@ class GroupAdminTest extends TestCase
 
     public function testRendersDeleteForm(): void
     {
-        $this->userGroupRepository->method("findByGroupName")->willReturn(new UserGroup("guest", ""));
         $this->request->method("action")->willReturn("delete");
         $this->request->method("selectedGroup")->willReturn("guest");
         $response = $this->sut()($this->request);
@@ -224,8 +222,7 @@ class GroupAdminTest extends TestCase
 
     public function testDoDeleteReportsFailureToSave(): void
     {
-        $this->userGroupRepository->method("findByGroupname")->willReturn(new UserGroup("guest", ""));
-        $this->userGroupRepository->expects($this->once())->method("delete")->willReturn(false);
+        $this->dbService->options(["writeGroups" => false]);
         $this->request->method("action")->willReturn("do_delete");
         $this->request->method("selectedGroup")->willReturn("guest");
         $response = $this->sut()($this->request);
@@ -235,12 +232,11 @@ class GroupAdminTest extends TestCase
 
     public function testDoDeleteRedirectsOnSuccess(): void
     {
-        $this->userGroupRepository->method("findByGroupname")->willReturn(new UserGroup("guest", ""));
-        $this->userGroupRepository->expects($this->once())->method("delete")->willReturn(true);
         $this->request->method("action")->willReturn("do_delete");
         $this->request->method("selectedGroup")->willReturn("guest");
         $this->request->method("url")->willReturn(new Url("/", ""));
         $response = $this->sut()($this->request);
+        $this->assertNull($this->userGroupRepository->findByGroupName("guest"));
         $this->assertEquals("http://example.com/?register&admin=groups", $response->location());
     }
 }

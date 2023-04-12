@@ -9,7 +9,10 @@
 namespace Register;
 
 use ApprovalTests\Approvals;
+use org\bovigo\vfs\vfsStream;
 use PHPUnit\Framework\TestCase;
+use Register\Infra\FakeDbService;
+use Register\Infra\Random;
 use Register\Infra\Request;
 use Register\Infra\Url;
 use Register\Infra\UserRepository;
@@ -55,11 +58,12 @@ class ShowLoginFormTest extends TestCase
 
     private function userRepo(): UserRepository
     {
-        $userRepo = $this->createMock(UserRepository::class);
-        $userRepo->method("findByUsername")->willReturn(
-            new User("jane", "", [], "Jane Doe", "jane@example.com", "activated", "secret")
-        );
-        return $userRepo;
+        vfsStream::setup("root");
+        $dbService = new FakeDbService("vfs://root/register/", "guest", $this->createMock(Random::class));
+        $dbService->writeUsers([
+            new User("jane", "12345", ["guest"], "Jane Doe", "jane@example.com", "activated", "secret"),
+        ]);
+        return new UserRepository($dbService);
     }
 
     private function view(): View

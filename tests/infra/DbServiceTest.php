@@ -2,25 +2,20 @@
 
 namespace Register\Infra;
 
-use PHPUnit\Framework\TestCase;
 use org\bovigo\vfs\vfsStream;
-use org\bovigo\vfs\vfsStreamDirectory;
-
+use PHPUnit\Framework\TestCase;
 use Register\Value\User;
 use Register\Value\UserGroup;
 
 class DbServiceTest extends TestCase
 {
-    /** @var vfsStreamDirectory */
-    private $root;
-
     /** @var DbService */
     private $subject;
 
     protected function setUp(): void
     {
-        $this->root = vfsStream::setup("root");
-        $this->subject = new DbService(vfsStream::url("root/register/"), "guest", $this->createStub(Random::class));
+        vfsStream::setup("root");
+        $this->subject = new DbService("vfs://root/register/", "guest", $this->createStub(Random::class));
     }
 
     public function testCanAquireLock(): void

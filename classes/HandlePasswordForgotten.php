@@ -11,6 +11,7 @@
 namespace Register;
 
 use Register\Infra\Mailer;
+use Register\Infra\Password;
 use Register\Infra\Request;
 use Register\Infra\Url;
 use Register\Infra\UserRepository;
@@ -32,6 +33,9 @@ class HandlePasswordForgotten
     /** @var UserRepository */
     private $userRepository;
 
+    /** @var Password */
+    private $password;
+
     /** @var Mailer */
     private $mailer;
 
@@ -40,11 +44,13 @@ class HandlePasswordForgotten
         array $conf,
         View $view,
         UserRepository $userRepository,
+        Password $password,
         Mailer $mailer
     ) {
         $this->conf = $conf;
         $this->view = $view;
         $this->userRepository = $userRepository;
+        $this->password = $password;
         $this->mailer = $mailer;
     }
 
@@ -131,7 +137,7 @@ class HandlePasswordForgotten
         }
 
         $password = $post["password1"];
-        $user = $user->withPassword($password);
+        $user = $user->withPassword($this->password->hash($password));
         if (!$this->userRepository->save($user)) {
             return Response::create($this->view->message("fail", 'err_cannot_write_csv'));
         }

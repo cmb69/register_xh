@@ -9,11 +9,14 @@
 namespace Register;
 
 use ApprovalTests\Approvals;
+use org\bovigo\vfs\vfsStream;
 use PHPUnit\Framework\TestCase;
 use Register\Infra\FakeCsrfProtector;
+use Register\Infra\FakeDbService;
 use Register\Infra\FakeMailer;
 use Register\Infra\Logger;
 use Register\Infra\Password;
+use Register\Infra\Random;
 use Register\Infra\Request;
 use Register\Infra\Url;
 use Register\Infra\UserRepository;
@@ -36,16 +39,19 @@ class HandleUserPreferencesTest extends TestCase
 
     public function setUp(): void
     {
+        vfsStream::setup("root");
         $hash = "\$2y\$10\$f4ldVDiVXTkNrcPmBdbW7.g/.mw5GOEqBid650oN9hE56UC28aXSq";
         $this->users = [
-            "john" => new User("john", $hash, [], "John Doe", "john@example.com", "activated", "secret"),
-            "jane" => new User("jane", "", [], "Jane Doe", "jane@example.com", "locked", "secret"),
+            "john" => new User("john", $hash, ["guest"], "John Doe", "john@example.com", "activated", "secret"),
+            "jane" => new User("jane", $hash, ["guest"], "Jane Doe", "jane@example.com", "locked", "secret"),
         ];
         $conf = XH_includeVar("./config/config.php", "plugin_cf")["register"];
         $plugin_tx = XH_includeVar("./languages/en.php", 'plugin_tx');
         $text = $plugin_tx['register'];
         $this->csrfProtector = new FakeCsrfProtector;
-        $this->userRepository = $this->createMock(UserRepository::class);
+        $dbService = new FakeDbService("vfs://root/register/", "guest", $this->createMock(Random::class));
+        $dbService->writeUsers($this->users);
+        $this->userRepository = new UserRepository($dbService);
         $this->view = new View("./views/", $text);
         $this->mailer = new FakeMailer(false, $text);
         $this->logger = $this->createMock(Logger::class);
@@ -78,7 +84,6 @@ class HandleUserPreferencesTest extends TestCase
     {
         $this->request->method("registerAction")->willReturn("");
         $this->request->method("username")->willReturn("jane");
-        $this->userRepository->method("findByUsername")->willReturn($this->users["jane"]);
         $response = ($this->subject)($this->request);
         $this->assertStringContainsString("User Preferences for 'jane' can't be changed!", $response->output());
     }
@@ -87,7 +92,6 @@ class HandleUserPreferencesTest extends TestCase
     {
         $this->request->method("registerAction")->willReturn("");
         $this->request->method("username")->willReturn("john");
-        $this->userRepository->method("findByUsername")->willReturn($this->users["john"]);
         $response = ($this->subject)($this->request);
         Approvals::verifyHtml($response->output());
     }
@@ -116,7 +120,6 @@ class HandleUserPreferencesTest extends TestCase
     {
         $this->request->method("registerAction")->willReturn("change_prefs");
         $this->request->method("username")->willReturn("jane");
-        $this->userRepository->method("findByUsername")->willReturn($this->users["jane"]);
         $response = ($this->subject)($this->request);
         $this->assertStringContainsString("User Preferences for 'jane' can't be changed!", $response->output());
     }
@@ -132,7 +135,6 @@ class HandleUserPreferencesTest extends TestCase
             "password2" => "",
             "email" => "",
         ]);
-        $this->userRepository->method("findByUsername")->willReturn($this->users["john"]);
         $this->password->method("verify")->willReturn(false);
         $response = ($this->subject)($this->request);
         $this->assertStringContainsString("The old password you entered is wrong.", $response->output());
@@ -156,7 +158,6 @@ class HandleUserPreferencesTest extends TestCase
             "password2" => "two",
             "email" => "",
         ]);
-        $this->userRepository->method("findByUsername")->willReturn($this->users["john"]);
         $this->password->method("verify")->willReturn(true);
         $response = ($this->subject)($this->request);
         $this->assertStringContainsString("The two entered passwords do not match.", $response->output());
@@ -173,10 +174,10 @@ class HandleUserPreferencesTest extends TestCase
             "password2" => "",
             "email" => "",
         ]);
-        $this->userRepository->method("findByUsername")->willReturn($this->users["john"]);
-        $this->userRepository->expects($this->once())->method("save")->willReturn(true);
         $this->password->method("verify")->willReturn(true);
+        $this->password->method("hash")->willReturn("\$2y\$10\$f4ldVDiVXTkNrcPmBdbW7.g/.mw5GOEqBid650oN9hE56UC28aXSq");
         $response = ($this->subject)($this->request);
+        $this->assertTrue(password_verify("12345", $this->userRepository->findByUsername("john")->getPassword()));
         $this->assertStringContainsString(
             "Your account information has been updated and sent to you via email.",
             $response->output()
@@ -196,10 +197,10 @@ class HandleUserPreferencesTest extends TestCase
         ]);
         $this->request->method("serverName")->willReturn("example.com");
         $this->request->method("remoteAddress")->willReturn("127.0.0.1");
-        $this->userRepository->method("findByUsername")->willReturn($this->users["john"]);
-        $this->userRepository->expects($this->once())->method("save")->willReturn(true);
         $this->password->method("verify")->willReturn(true);
+        $this->password->method("hash")->willReturn("\$2y\$10\$/ROb2dfft5sGI5MoWm9iGulFJHcC4X74n0VdZzDvShkA06FY/ZCje");
         ($this->subject)($this->request);
+        $this->assertTrue(password_verify("12345", $this->userRepository->findByUsername("john")->getPassword()));
         Approvals::verifyList($this->mailer->lastMail());
     }
 
@@ -229,7 +230,6 @@ class HandleUserPreferencesTest extends TestCase
         $_POST = ["action" => "edit_user_prefs", "delete" => ""];
         $this->request->method("registerAction")->willReturn("unregister");
         $this->request->method("username")->willReturn("jane");
-        $this->userRepository->method("findByUsername")->willReturn($this->users["jane"]);
         $response = ($this->subject)($this->request);
         $this->assertStringContainsString("User Preferences for 'jane' can't be changed!", $response->output());
     }
@@ -243,7 +243,6 @@ class HandleUserPreferencesTest extends TestCase
             "name" => "",
             "email" => "",
         ]);
-        $this->userRepository->method("findByUsername")->willReturn($this->users["john"]);
         $this->password->method("verify")->willReturn(false);
         $response = ($this->subject)($this->request);
         $this->assertStringContainsString("The old password you entered is wrong.", $response->output());
@@ -258,10 +257,9 @@ class HandleUserPreferencesTest extends TestCase
             "name" => "",
             "email" => "",
         ]);
-        $this->userRepository->method("findByUsername")->willReturn($this->users["john"]);
-        $this->userRepository->expects($this->once())->method("delete")->willReturn(true);
         $this->password->method("verify")->willReturn(true);
         $response = ($this->subject)($this->request);
+        $this->assertNull($this->userRepository->findByUsername("john"));
         $this->assertStringContainsString("User 'john' deleted!", $response->output());
     }
 }

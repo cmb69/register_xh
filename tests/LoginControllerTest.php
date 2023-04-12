@@ -8,12 +8,14 @@
 
 namespace Register;
 
+use org\bovigo\vfs\vfsStream;
 use PHPUnit\Framework\TestCase;
-use Register\Infra\CurrentUser;
+use Register\Infra\FakeDbService;
 use Register\Value\User;
 use Register\Infra\Logger;
 use Register\Infra\LoginManager;
 use Register\Infra\Password;
+use Register\Infra\Random;
 use Register\Infra\Request;
 use Register\Infra\Url;
 use Register\Infra\UserGroupRepository;
@@ -43,12 +45,15 @@ class LoginControllerTest extends TestCase
 
     public function setUp(): void
     {
+        vfsStream::setup("root");
         $plugin_cf = XH_includeVar("./config/config.php", 'plugin_cf');
         $this->conf = $plugin_cf['register'];
         $plugin_tx = XH_includeVar("./languages/en.php", 'plugin_tx');
         $this->text = $plugin_tx['register'];
-        $this->userRepository = $this->createStub(UserRepository::class);
-        $this->userGroupRepository = $this->createStub(UserGroupRepository::class);
+        $dbService = new FakeDbService("vfs://root/register/", "guest", $this->createMock(Random::class));
+        $dbService->writeUsers([$this->jane()]);
+        $this->userRepository = new UserRepository($dbService);
+        $this->userGroupRepository = new UserGroupRepository($dbService);
         $this->logger = $this->createStub(Logger::class);
         $this->loginManager = $this->createStub(LoginManager::class);
         $this->request = $this->createStub(Request::class);
@@ -57,7 +62,7 @@ class LoginControllerTest extends TestCase
 
     public function testLoginActionSuccessRedirects(): void
     {
-        $this->userRepository->method('findByUsername')->willReturn($this->jane());
+        $_POST = ["username" => "jane"];
         $password = $this->createStub(Password::class);
         $password->method("verify")->willReturn(true);
         $sut = new LoginController(
@@ -101,7 +106,6 @@ class LoginControllerTest extends TestCase
             $this->loginManager,
             $this->createStub(Password::class)
         );
-        $this->userRepository->method("findByUsername")->willReturn($this->jane());
         $this->request->method("function")->willReturn("registerlogout");
         $this->request->method("username")->willReturn("jane");
         $response = $sut($this->request);

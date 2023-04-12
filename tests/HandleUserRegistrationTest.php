@@ -9,7 +9,9 @@
 namespace Register;
 
 use ApprovalTests\Approvals;
+use org\bovigo\vfs\vfsStream;
 use PHPUnit\Framework\TestCase;
+use Register\Infra\FakeDbService;
 use Register\Infra\FakeMailer;
 use Register\Infra\Password;
 use Register\Infra\Random;
@@ -32,10 +34,11 @@ class HandleUserRegistrationTest extends TestCase
 
     public function setUp(): void
     {
+        vfsStream::setup("root");
         $hash = "\$2y\$10\$f4ldVDiVXTkNrcPmBdbW7.g/.mw5GOEqBid650oN9hE56UC28aXSq";
         $this->users = [
-            "john" => new User("john", $hash, [], "John Doe", "john@example.com", "", "secret"),
-            "jane" => new User("jane", "", [], "Jane Doe", "jane@example.com", "12345", "secret"),
+            "john" => new User("john", $hash, ["guest"], "John Doe", "john@example.com", "", "secret"),
+            "jane" => new User("jane", $hash, ["guest"], "Jane Doe", "jane@example.com", "12345", "secret"),
         ];
         $plugin_cf = XH_includeVar("./config/config.php", 'plugin_cf');
         $conf = $plugin_cf['register'];
@@ -44,9 +47,14 @@ class HandleUserRegistrationTest extends TestCase
         $random = $this->createStub(Random::class);
         $random->method("bytes")->willReturn("0123456789ABCDE");
         $this->view = new View("./views/", $text);
-        $this->userRepository = $this->createMock(UserRepository::class);
+        $dbService = new FakeDbService("vfs://root/register/", "guest", $random);
+        $dbService->writeUsers($this->users);
+        $this->userRepository = new UserRepository($dbService);
         $this->mailer = new FakeMailer(false, $text);
         $password = $this->createStub(Password::class);
+        $password->method("hash")->willReturnMap([
+            ["test", "\$2y\$10\$aGzxwrdMUUbjt2f2Dbbowus.dcYuquRlSHfEFIuKMAoSyK4vW90aG"],
+        ]);
         $this->subject = new HandleUserRegistration(
             $conf,
             $text,
@@ -82,7 +90,6 @@ class HandleUserRegistrationTest extends TestCase
 
     public function testExistingUser(): void
     {
-        $this->userRepository->method("findByUsername")->willReturn($this->users["jane"]);
         $this->request->method("registerAction")->willReturn("register");
         $this->request->method("registerUserPost")->willReturn([
             "name" => "Jane Smith",
@@ -99,7 +106,6 @@ class HandleUserRegistrationTest extends TestCase
     {
         $_SERVER["REMOTE_ADDR"] = "example.com";
         $_SERVER['SERVER_NAME'] = "example.com";
-        $this->userRepository->method("findByEmail")->willReturn($this->users["john"]);
         $this->request->method("registerAction")->willReturn("register");
         $this->request->method("registerUserPost")->willReturn([
             "name" => "John Smith",
@@ -117,7 +123,6 @@ class HandleUserRegistrationTest extends TestCase
 
     public function testSendsMailOnExistingEmail(): void
     {
-        $this->userRepository->method("findByEmail")->willReturn($this->users["john"]);
         $this->request->method("registerAction")->willReturn("register");
         $this->request->method("registerUserPost")->willReturn([
             "name" => "John Smith",
@@ -134,7 +139,6 @@ class HandleUserRegistrationTest extends TestCase
 
     public function testSuccess(): void
     {
-        $this->userRepository->expects($this->once())->method("save")->willReturn(true);
         $this->request->method("registerAction")->willReturn("register");
         $this->request->method("registerUserPost")->willReturn([
             "name" => "John Smith",
@@ -144,6 +148,7 @@ class HandleUserRegistrationTest extends TestCase
             "email" => "js@example.com",
         ]);
         $response = ($this->subject)($this->request);
+        $this->assertNotNull($this->userRepository->findByUsername("js"));
         $this->assertStringContainsString(
             "You have been registered successfully. An email has been sent to you containing a link to activate your new account.",
             $response->output()
@@ -152,7 +157,6 @@ class HandleUserRegistrationTest extends TestCase
 
     public function testSendsEmailOnSuccess(): void
     {
-        $this->userRepository->expects($this->once())->method("save")->willReturn(true);
         $this->request->method("registerAction")->willReturn("register");
         $this->request->method("registerUserPost")->willReturn([
             "name" => "John Smith",
@@ -164,6 +168,7 @@ class HandleUserRegistrationTest extends TestCase
         $this->request->method("serverName")->willReturn("example.com");
         $this->request->method("remoteAddress")->willReturn("127.0.0.1");
         ($this->subject)($this->request);
+        $this->assertNotNull($this->userRepository->findByUsername("js"));
         Approvals::verifyList($this->mailer->lastMail());
     }
 
@@ -171,16 +176,15 @@ class HandleUserRegistrationTest extends TestCase
     {
         $this->request->method("registerAction")->willReturn("activate");
         $this->request->method("activationParams")->willReturn([
-            "username" => "john",
+            "username" => "js",
             "nonce" => "12345",
         ]);
         $response = ($this->subject)($this->request);
-        $this->assertStringContainsString("The Username 'john' could not be found!", $response->output());
+        $this->assertStringContainsString("The Username 'js' could not be found!", $response->output());
     }
 
     public function testActivateUserEmptyState(): void
     {
-        $this->userRepository->method("findByUsername")->willReturn($this->users["john"]);
         $this->request->method("registerAction")->willReturn("activate");
         $this->request->method("activationParams")->willReturn([
             "username" => "john",
@@ -192,7 +196,6 @@ class HandleUserRegistrationTest extends TestCase
 
     public function testActivateUserInvalidState(): void
     {
-        $this->userRepository->method("findByUsername")->willReturn($this->users["jane"]);
         $this->request->method("registerAction")->willReturn("activate");
         $this->request->method("activationParams")->willReturn([
             "username" => "jane",
@@ -204,14 +207,13 @@ class HandleUserRegistrationTest extends TestCase
 
     public function testActivateUserSuccess(): void
     {
-        $this->userRepository->method("findByUsername")->willReturn($this->users["jane"]);
-        $this->userRepository->expects($this->once())->method("save")->willReturn(true);
         $this->request->method("registerAction")->willReturn("activate");
         $this->request->method("activationParams")->willReturn([
             "username" => "jane",
             "nonce" => "12345",
         ]);
         $response = ($this->subject)($this->request);
+        $this->assertTrue($this->userRepository->findByUsername("jane")->isActivated());
         $this->assertStringContainsString("You have successfully activated your new account.", $response->output());
     }
 }

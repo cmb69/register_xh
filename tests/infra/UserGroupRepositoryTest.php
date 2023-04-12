@@ -8,8 +8,8 @@
 
 namespace Register\Infra;
 
+use org\bovigo\vfs\vfsStream;
 use PHPUnit\Framework\TestCase;
-
 use Register\Value\UserGroup;
 
 class UserGroupRepositoryTest extends TestCase
@@ -34,27 +34,7 @@ class UserGroupRepositoryTest extends TestCase
 
     private function makeDbService(): DbService
     {
-        return new class extends DbService {
-            /** array<UserGroup> */
-            private $groups = [];
-            public function __construct()
-            {
-            }
-            public function lock($mode)
-            {
-                return;
-            }
-            /** @return array<UserGroup> */
-            public function readGroups(): array
-            {
-                return $this->groups;
-            }
-            /** @param array<UserGroup> $array */
-            public function writeGroups(array $array): bool
-            {
-                $this->groups = $array;
-                return true;
-            }
-        };
+        vfsStream::setup("root");
+        return new FakeDbService("vfs://root/register/", "guest", $this->createMock(Random::class));
     }
 }

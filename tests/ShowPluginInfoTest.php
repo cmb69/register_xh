@@ -11,7 +11,6 @@ namespace Register;
 use ApprovalTests\Approvals;
 use PHPUnit\Framework\TestCase;
 use Register\Infra\DbService;
-use Register\Infra\Request;
 use Register\Infra\SystemChecker;
 use Register\Infra\View;
 
@@ -27,8 +26,7 @@ class ShowPluginInfoTest extends TestCase
         $systemChecker->method('checkExtension')->willReturn(true);
         $systemChecker->method('checkWritability')->willReturn(true);
         $subject = new ShowPluginInfo("./plugins/register/", $dbService, $systemChecker, new View("./views/", $text));
-        $request = $this->createStub(Request::class);
-        $response = $subject($request);
+        $response = $subject();
         Approvals::verifyHtml($response->output());
     }
 }

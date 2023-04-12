@@ -9,8 +9,12 @@
 namespace Register;
 
 use ApprovalTests\Approvals;
+use org\bovigo\vfs\vfsStream;
 use PHPUnit\Framework\TestCase;
+use Register\Infra\FakeDbService;
 use Register\Infra\FakeMailer;
+use Register\Infra\Password;
+use Register\Infra\Random;
 use Register\Infra\Request;
 use Register\Infra\Url;
 use Register\Infra\UserRepository;
@@ -22,24 +26,31 @@ class HandlePasswordForgottenTest extends TestCase
     private $subject;
 
     private $view;
+    private $dbService;
     private $userRepository;
+    private $password;
     private $mailer;
 
     private $request;
 
     public function setUp(): void
     {
+        vfsStream::setup("root");
         $plugin_cf = XH_includeVar("./config/config.php", 'plugin_cf');
         $conf = $plugin_cf['register'];
         $plugin_tx = XH_includeVar("./languages/en.php", 'plugin_tx');
         $text = $plugin_tx['register'];
         $this->view = new View("./views/", $text);
-        $this->userRepository = $this->createStub(UserRepository::class);
+        $this->dbService = new FakeDbService("vfs://root/register/", "guest", $this->createMock(Random::class));
+        $this->dbService->writeUsers([new User("john", "12345", ["guest"], "John Dow", "john@example.com", "activated", "secret")]);
+        $this->userRepository = new UserRepository($this->dbService);
+        $this->password = $this->createMock(Password::class);
         $this->mailer = new FakeMailer(false, $text);
         $this->subject = new HandlePasswordForgotten(
             $conf,
             $this->view,
             $this->userRepository,
+            $this->password,
             $this->mailer
         );
         $this->request = $this->createStub(Request::class);
@@ -79,7 +90,6 @@ class HandlePasswordForgottenTest extends TestCase
     public function testUnknownEmail(): void
     {
         $this->request->method("registerAction")->willReturn("forgot_password");
-        $this->userRepository->method("findByEmail")->willReturn(null);
         $this->request->method("forgotPasswordPost")->willReturn(["email" => "jane@example.com"]);
         $response = ($this->subject)($this->request);
         $this->assertStringContainsString(
@@ -91,8 +101,6 @@ class HandlePasswordForgottenTest extends TestCase
     public function testKnownEmail(): void
     {
         $_SERVER["SERVER_NAME"] = "example.com";
-        $john = new User("john", "12345", [], "John Dow", "john@example.com", "", "secret");
-        $this->userRepository->method("findByEmail")->willReturn($john);
         $this->request->method("registerAction")->willReturn("forgot_password");
         $this->request->method("forgotPasswordPost")->willReturn(["email" => "john@example.com"]);
         $response = ($this->subject)($this->request);
@@ -104,8 +112,6 @@ class HandlePasswordForgottenTest extends TestCase
 
     public function testSendsMailOnSuccess(): void
     {
-        $john = new User("john", "12345", [], "John Dow", "john@example.com", "", "secret");
-        $this->userRepository->method("findByEmail")->willReturn($john);
         $this->request->method("registerAction")->willReturn("forgot_password");
         $this->request->method("forgotPasswordPost")->willReturn(["email" => "john@example.com"]);
         $this->request->method("serverName")->willReturn("example.com");
@@ -115,7 +121,6 @@ class HandlePasswordForgottenTest extends TestCase
 
     public function testResetPasswordUnknownUsername(): void
     {
-        $this->userRepository->method("findByUsername")->willReturn(null);
         $this->request->method("registerAction")->willReturn("reset_password");
         $this->request->method("resetPasswordParams")->willReturn([
             "username" => "colt",
@@ -128,8 +133,6 @@ class HandlePasswordForgottenTest extends TestCase
 
     public function testResetPasswordWrongMac(): void
     {
-        $john = new User("john", "12345", [], "John Dow", "john@example.com", "", "secret");
-        $this->userRepository->method("findByUsername")->willReturn($john);
         $this->request->method("registerAction")->willReturn("reset_password");
         $this->request->method("resetPasswordParams")->willReturn([
             "username" => "john",
@@ -142,8 +145,6 @@ class HandlePasswordForgottenTest extends TestCase
 
     public function testResetPasswordSuccess(): void
     {
-        $john = new User("john", "12345", [], "John Dow", "john@example.com", "", "secret");
-        $this->userRepository->method("findByUsername")->willReturn($john);
         $this->request->method("registerAction")->willReturn("reset_password");
         $this->request->method("resetPasswordParams")->willReturn([
             "username" => "john",
@@ -156,8 +157,6 @@ class HandlePasswordForgottenTest extends TestCase
 
     public function testResetPasswordReportsExpiration(): void
     {
-        $john = new User("john", "12345", [], "John Dow", "john@example.com", "", "secret");
-        $this->userRepository->method("findByUsername")->willReturn($john);
         $this->request->method("registerAction")->willReturn("reset_password");
         $this->request->method("resetPasswordParams")->willReturn([
             "username" => "john",
@@ -170,7 +169,6 @@ class HandlePasswordForgottenTest extends TestCase
 
     public function testUnknownUsername(): void
     {
-        $this->userRepository->method("findByUsername")->willReturn(null);
         $this->request->method("registerAction")->willReturn("change_password");
         $this->request->method("resetPasswordParams")->willReturn([
             "username" => "colt",
@@ -183,8 +181,6 @@ class HandlePasswordForgottenTest extends TestCase
 
     public function testWrongMac(): void
     {
-        $john = new User("john", "12345", [], "John Dow", "john@example.com", "", "secret");
-        $this->userRepository->method("findByUsername")->willReturn($john);
         $this->request->method("registerAction")->willReturn("change_password");
         $this->request->method("resetPasswordParams")->willReturn([
             "username" => "john",
@@ -197,9 +193,7 @@ class HandlePasswordForgottenTest extends TestCase
 
     public function testSuccess(): void
     {
-        $john = new User("john", "12345", [], "John Dow", "john@example.com", "", "secret");
-        $this->userRepository->method("findByUsername")->willReturn($john);
-        $this->userRepository->method("save")->willReturn(true);
+        $this->password->method("hash")->willReturn("\$2y\$10\$OJrimnUX6ZTQUO5ZDwnn/u1xXB0fr96ul33wJO6jMCzdrhY5BcOe.");
         $this->request->method("registerAction")->willReturn("change_password");
         $this->request->method("resetPasswordParams")->willReturn([
             "username" => "john",
@@ -211,14 +205,12 @@ class HandlePasswordForgottenTest extends TestCase
             "password2" => "admin",
         ]);
         $response = ($this->subject)($this->request);
+        $this->assertTrue(password_verify("admin", $this->userRepository->findByUsername("john")->getPassword()));
         $this->assertStringContainsString("An email has been sent to you with your user data.", $response->output());
     }
 
     public function testChangePasswordSendsMailOnSuccess(): void
     {
-        $john = new User("john", "12345", [], "John Dow", "john@example.com", "", "secret");
-        $this->userRepository->method("findByUsername")->willReturn($john);
-        $this->userRepository->method("save")->willReturn(true);
         $this->request->method("registerAction")->willReturn("change_password");
         $this->request->method("resetPasswordParams")->willReturn([
             "username" => "john",
@@ -236,9 +228,6 @@ class HandlePasswordForgottenTest extends TestCase
 
     public function testReportsExpiration(): void
     {
-        $john = new User("john", "12345", [], "John Dow", "john@example.com", "", "secret");
-        $this->userRepository->method("findByUsername")->willReturn($john);
-        $this->userRepository->method("save")->willReturn(true);
         $this->request->method("registerAction")->willReturn("change_password");
         $this->request->method("resetPasswordParams")->willReturn([
             "username" => "john",
@@ -251,9 +240,6 @@ class HandlePasswordForgottenTest extends TestCase
 
     public function testReportsNotMatchingPasswords(): void
     {
-        $john = new User("john", "12345", [], "John Dow", "john@example.com", "", "secret");
-        $this->userRepository->method("findByUsername")->willReturn($john);
-        $this->userRepository->method("save")->willReturn(true);
         $this->request->method("registerAction")->willReturn("change_password");
         $this->request->method("resetPasswordParams")->willReturn([
             "username" => "john",
@@ -270,9 +256,7 @@ class HandlePasswordForgottenTest extends TestCase
 
     public function testReportsFailureToUpdateUser(): void
     {
-        $john = new User("john", "12345", [], "John Dow", "john@example.com", "", "secret");
-        $this->userRepository->method("findByUsername")->willReturn($john);
-        $this->userRepository->expects($this->once())->method("save")->willReturn(false);
+        $this->dbService->options(["writeUsers" => false]);
         $this->request->method("registerAction")->willReturn("change_password");
         $this->request->method("resetPasswordParams")->willReturn([
             "username" => "john",
