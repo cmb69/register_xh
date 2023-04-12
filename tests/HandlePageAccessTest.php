@@ -8,6 +8,7 @@
 
 namespace Register;
 
+use org\bovigo\vfs\vfsStream;
 use PHPUnit\Framework\TestCase;
 use Register\Infra\Request;
 use Register\Infra\Url;
@@ -19,13 +20,12 @@ class HandlePageAccessTest extends TestCase
     /** @var HandlePageAccess */
     private $sut;
 
-    private $userRepository;
-
     /** @var Request */
     private $request;
 
     public function setUp(): void
     {
+        vfsStream::setup("root");
         $text = XH_includeVar("./languages/en.php", "plugin_tx")["register"];
         $this->userRepository = $this->createMock(UserRepository::class);
         $this->sut = new HandlePageAccess($text, $this->userRepository);

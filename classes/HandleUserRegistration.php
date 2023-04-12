@@ -134,7 +134,7 @@ class HandleUserRegistration
                 base64_encode($this->random->bytes(15))
             );
 
-            if (!$this->userRepository->add($newUser)) {
+            if (!$this->userRepository->save($newUser)) {
                 return Response::create($this->view->message("fail", 'err_cannot_write_csv'));
             }
         }
@@ -179,7 +179,7 @@ class HandleUserRegistration
             return Response::create($this->view->message("fail", 'err_status_invalid'));
         }
         $user = $user->activate()->withAccessgroups([$this->conf['group_activated']]);
-        $this->userRepository->update($user);
+        $this->userRepository->save($user);
         return Response::create($this->view->message('success', 'activated'));
     }
 }

@@ -14,6 +14,9 @@ use Register\Value\UserGroup;
 
 class Util
 {
+    private const EMAIL_PATTERN = '/^[a-zA-Z0-9.!#$%&\'*+\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?'
+        . '(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/';
+
     public static function base64url(string $string): string
     {
         return rtrim(strtr(base64_encode($string), "+/", "-_"), "=");
@@ -51,6 +54,49 @@ class Util
             return true;
         }
         return count(array_intersect($groups, $user !== null ? $user->getAccessgroups() : [])) > 0;
+    }
+
+    /** @return list<array{string}> */
+    public static function validateUser(User $user, string $password2): array
+    {
+        $errors = [];
+        if ($user->getUsername() === "") {
+            $errors[] = ["err_username"];
+        } elseif (!preg_match('/^[A-Za-z0-9_]+$/u', $user->getUsername())) {
+            $errors[] = ["err_username_illegal"];
+        }
+        if ($user->getName() === "") {
+            $errors[] = ["err_name"];
+        } elseif (strpos($user->getName(), ":") !== false) {
+            $errors[] = ["err_colon"];
+        }
+        if ($user->getAccessgroups() === []) {
+            $errors[] = ["err_group_missing"];
+        }
+        if (!in_array($user->getStatus(), User::STATUSES, true)) {
+            $errors[] = ["err_status"];
+        }
+        if ($user->getPassword() === "") {
+            $errors[] = ["err_password"];
+        } elseif ($user->getPassword() !== $password2) {
+            $errors[] = ["err_password2"];
+        }
+        if ($user->getEmail() === "") {
+            $errors[] = ["err_email"];
+        } elseif (!preg_match(self::EMAIL_PATTERN, $user->getEmail())) {
+            $errors[] = ["err_email_invalid"];
+        }
+        return $errors;
+    }
+
+    /** @return list<array{string}> */
+    public static function validateGroup(UserGroup $group): array
+    {
+        $errors = [];
+        if (!preg_match('/^[A-Za-z0-9_-]+$/u', $group->getGroupname())) {
+            $errors[] = ["err_group_illegal"];
+        }
+        return $errors;
     }
 
     /** @return list<array{string}> */

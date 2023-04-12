@@ -22,6 +22,28 @@ class UserRepository
         $this->dbService = $dbService;
     }
 
+    /**
+     * @param array{username:string,name:string,group:string,email:string,status:string} $filters
+     * @return list<User>
+     */
+    public function select(array $filters): array
+    {
+        $lock = $this->dbService->lock(false);
+        $users = $this->dbService->readUsers();
+        $users = array_filter($users, function (User $user) use ($filters) {
+            return (!$filters["username"] || strpos($user->getUsername(), $filters["username"]) !== false)
+                && (!$filters["name"] || strpos($user->getName(), $filters["name"]) !== false)
+                && (!$filters["email"] || strpos($user->getEmail(), $filters["email"]) !== false)
+                && (!$filters["group"] || in_array($filters["group"], $user->getAccessgroups(), true))
+                && (!$filters["status"] || strpos($user->getStatus(), $filters["status"]) !== false);
+        });
+        usort($users, function (User $a, User $b) {
+            return strnatcasecmp($a->getUsername(), $b->getUsername());
+        });
+        $this->dbService->unlock($lock);
+        return $users;
+    }
+
     public function findByUsername(string $username): ?User
     {
         $lock = $this->dbService->lock(false);
@@ -42,40 +64,40 @@ class UserRepository
         });
     }
 
-    public function add(User $user): bool
+    public function hasDuplicateEmail(User $user): bool
     {
-        return $this->modify($user, function (array $users, User $user) {
-            $users[] = $user;
-            return $users;
-        });
+        $lock = $this->dbService->lock(false);
+        $users = $this->dbService->readUsers();
+        $this->dbService->unlock($lock);
+        return array_reduce($users, function (bool $carry, User $aUser) use ($user) {
+            return $carry || ($aUser->getEmail() === $user->getEmail() && $aUser->getUsername() !== $user->getUsername());
+        }, false);
     }
 
-    public function update(User $user): bool
+    public function save(User $user): bool
     {
-        return $this->modify($user, function (array $users, User $newuser) {
-            return array_map(function (User $user) use ($newuser) {
-                return $user->getUsername() === $newuser->getUsername() ? $newuser : $user;
-            }, $users);
-        });
+        $lock = $this->dbService->lock(true);
+        $users = $this->dbService->readUsers();
+        $users = array_combine(array_map(function (User $user) {
+            return $user->getUsername();
+        }, $users), $users);
+        assert($users !== false);
+        $users[$user->getUsername()] = $user;
+        $users = array_values($users);
+        $res = $this->dbService->writeUsers($users);
+        $this->dbService->unlock($lock);
+        return $res;
     }
 
     public function delete(User $user): bool
     {
-        return $this->modify($user, function (array $users, User $olduser) {
-            return array_values(array_filter($users, function (User $user) use ($olduser) {
-                return $user->getUsername() !== $olduser->getUsername();
-            }));
-        });
-    }
-
-    /** @param callable(list<User>,User):list<User> $modify */
-    private function modify(User $user, $modify): bool
-    {
         $lock = $this->dbService->lock(true);
         $users = $this->dbService->readUsers();
-        $userArray = $modify($users, $user);
-        $result = $this->dbService->writeUsers($userArray);
+        $users = array_values(array_filter($users, function (User $aUser) use ($user) {
+            return $aUser->getUsername() !== $user->getUsername();
+        }));
+        $res = $this->dbService->writeUsers($users);
         $this->dbService->unlock($lock);
-        return $result;
+        return $res;
     }
 }

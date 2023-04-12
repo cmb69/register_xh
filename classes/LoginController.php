@@ -143,7 +143,7 @@ class LoginController
             return false;
         }
         if ($this->password->needsRehash($user->getPassword())) {
-            $this->userRepository->update($user->withPassword($this->password->hash($password)));
+            $this->userRepository->save($user->withPassword($this->password->hash($password)));
         }
         return true;
     }

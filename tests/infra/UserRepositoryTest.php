@@ -43,7 +43,7 @@ class UserRepositoryTest extends TestCase
         $dbService = $this->makeDbService();
         $dbService->writeUsers([$this->john()]);
         $sut = new UserRepository($dbService);
-        $this->assertTrue($sut->add($this->jane()));
+        $this->assertTrue($sut->save($this->jane()));
         $this->assertEquals([$this->john(), $this->jane()], $dbService->readUsers());
     }
 
@@ -54,7 +54,7 @@ class UserRepositoryTest extends TestCase
         $dbService->writeUsers([$john, $this->jane()]);
         $john = $john->withName("Henry Doe");
         $sut = new UserRepository($dbService);
-        $this->assertTrue($sut->update($john));
+        $this->assertTrue($sut->save($john));
         $this->assertEquals([$john, $this->jane()], $dbService->readUsers());
     }
 

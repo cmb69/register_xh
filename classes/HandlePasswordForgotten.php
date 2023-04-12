@@ -132,7 +132,7 @@ class HandlePasswordForgotten
 
         $password = $post["password1"];
         $user = $user->withPassword($password);
-        if (!$this->userRepository->update($user)) {
+        if (!$this->userRepository->save($user)) {
             return Response::create($this->view->message("fail", 'err_cannot_write_csv'));
         }
 

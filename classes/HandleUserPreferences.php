@@ -121,7 +121,7 @@ class HandleUserPreferences
         $user = $user->withPassword($this->password->hash($post["password1"]))
             ->withEmail($post["email"])
             ->withName($post["name"]);
-        if (!$this->userRepository->update($user)) {
+        if (!$this->userRepository->save($user)) {
             return $this->view->message("fail", "err_cannot_write_csv");
         }
         $this->mailer->notifyUpdate(

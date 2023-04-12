@@ -199,7 +199,7 @@ class HandlePasswordForgottenTest extends TestCase
     {
         $john = new User("john", "12345", [], "John Dow", "john@example.com", "", "secret");
         $this->userRepository->method("findByUsername")->willReturn($john);
-        $this->userRepository->method("update")->willReturn(true);
+        $this->userRepository->method("save")->willReturn(true);
         $this->request->method("registerAction")->willReturn("change_password");
         $this->request->method("resetPasswordParams")->willReturn([
             "username" => "john",
@@ -218,7 +218,7 @@ class HandlePasswordForgottenTest extends TestCase
     {
         $john = new User("john", "12345", [], "John Dow", "john@example.com", "", "secret");
         $this->userRepository->method("findByUsername")->willReturn($john);
-        $this->userRepository->method("update")->willReturn(true);
+        $this->userRepository->method("save")->willReturn(true);
         $this->request->method("registerAction")->willReturn("change_password");
         $this->request->method("resetPasswordParams")->willReturn([
             "username" => "john",
@@ -238,7 +238,7 @@ class HandlePasswordForgottenTest extends TestCase
     {
         $john = new User("john", "12345", [], "John Dow", "john@example.com", "", "secret");
         $this->userRepository->method("findByUsername")->willReturn($john);
-        $this->userRepository->method("update")->willReturn(true);
+        $this->userRepository->method("save")->willReturn(true);
         $this->request->method("registerAction")->willReturn("change_password");
         $this->request->method("resetPasswordParams")->willReturn([
             "username" => "john",
@@ -253,7 +253,7 @@ class HandlePasswordForgottenTest extends TestCase
     {
         $john = new User("john", "12345", [], "John Dow", "john@example.com", "", "secret");
         $this->userRepository->method("findByUsername")->willReturn($john);
-        $this->userRepository->method("update")->willReturn(true);
+        $this->userRepository->method("save")->willReturn(true);
         $this->request->method("registerAction")->willReturn("change_password");
         $this->request->method("resetPasswordParams")->willReturn([
             "username" => "john",
@@ -272,7 +272,7 @@ class HandlePasswordForgottenTest extends TestCase
     {
         $john = new User("john", "12345", [], "John Dow", "john@example.com", "", "secret");
         $this->userRepository->method("findByUsername")->willReturn($john);
-        $this->userRepository->expects($this->once())->method("update")->willReturn(false);
+        $this->userRepository->expects($this->once())->method("save")->willReturn(false);
         $this->request->method("registerAction")->willReturn("change_password");
         $this->request->method("resetPasswordParams")->willReturn([
             "username" => "john",

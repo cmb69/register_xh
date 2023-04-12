@@ -134,7 +134,7 @@ class HandleUserRegistrationTest extends TestCase
 
     public function testSuccess(): void
     {
-        $this->userRepository->expects($this->once())->method("add")->willReturn(true);
+        $this->userRepository->expects($this->once())->method("save")->willReturn(true);
         $this->request->method("registerAction")->willReturn("register");
         $this->request->method("registerUserPost")->willReturn([
             "name" => "John Smith",
@@ -152,7 +152,7 @@ class HandleUserRegistrationTest extends TestCase
 
     public function testSendsEmailOnSuccess(): void
     {
-        $this->userRepository->expects($this->once())->method("add")->willReturn(true);
+        $this->userRepository->expects($this->once())->method("save")->willReturn(true);
         $this->request->method("registerAction")->willReturn("register");
         $this->request->method("registerUserPost")->willReturn([
             "name" => "John Smith",
@@ -205,7 +205,7 @@ class HandleUserRegistrationTest extends TestCase
     public function testActivateUserSuccess(): void
     {
         $this->userRepository->method("findByUsername")->willReturn($this->users["jane"]);
-        $this->userRepository->expects($this->once())->method("update");
+        $this->userRepository->expects($this->once())->method("save")->willReturn(true);
         $this->request->method("registerAction")->willReturn("activate");
         $this->request->method("activationParams")->willReturn([
             "username" => "jane",

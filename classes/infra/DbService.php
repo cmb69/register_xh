@@ -53,17 +53,6 @@ class DbService
         return $this->dirname;
     }
 
-    /** @return Lock|null */
-    private function lockex(bool $exclusive)
-    {
-        $fn = $this->dataFolder() . '/.lock';
-        if ($fp = @fopen($fn, 'c')) {
-            flock($fp, $exclusive ? LOCK_EX : LOCK_SH);
-            return new Lock($fp);
-        }
-        return null;
-    }
-
     /** @return resource|null */
     public function lock(bool $exclusive)
     {
@@ -88,23 +77,6 @@ class DbService
         }
     }
 
-    /** @return array{list<User>,list<UserGroup>,Lock|null} */
-    public function readUsersAndGroupsWithLock(bool $exclusive)
-    {
-        $lock = $this->lockex($exclusive);
-        $users = $this->readUsers();
-        $groups = $this->readGroups();
-        return [$users, $groups, $lock];
-    }
-
-    /** @return array{list<UserGroup>,Lock|null} */
-    public function readGroupsWithLock(bool $exclusive)
-    {
-        $lock = $this->lockex($exclusive);
-        $groups = $this->readGroups();
-        return [$groups, $lock];
-    }
-
     /** @return list<UserGroup> */
     public function readGroups(): array
     {
@@ -113,14 +85,6 @@ class DbService
             $fields = array_pad($fields, 2, "");
             return UserGroup::fromArray($fields);
         });
-    }
-
-    /** @return array{list<User>,Lock|null} */
-    public function readUsersWithLock(bool $exclusive)
-    {
-        $lock = $this->lockex($exclusive);
-        $users = $this->readUsers();
-        return [$users, $lock];
     }
 
     /** @return list<User> */

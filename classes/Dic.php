@@ -31,7 +31,7 @@ class Dic
             $plugin_cf["register"],
             $plugin_tx["register"],
             self::makeUserRepository(),
-            new UserGroupRepository(self::makeDbService()),
+            self::makeUserGroupRepository(),
             new Logger(),
             new LoginManager(),
             new Password()
@@ -56,7 +56,8 @@ class Dic
         return new UserAdmin(
             $plugin_cf["register"],
             new CsrfProtector,
-            self::makeDbService(),
+            self::makeUserRepository(),
+            self::makeUserGroupRepository(),
             new Password,
             new Random,
             self::makeMailer(),
@@ -68,7 +69,7 @@ class Dic
     {
         return new GroupAdmin(
             new CsrfProtector,
-            self::makeDbService(),
+            self::makeUserGroupRepository(),
             new Pages,
             self::makeView(),
         );
@@ -162,6 +163,11 @@ class Dic
     private static function makeUserRepository(): UserRepository
     {
         return new UserRepository(self::makeDbService());
+    }
+
+    private static function makeUserGroupRepository(): UserGroupRepository
+    {
+        return new UserGroupRepository(self::makeDbService());
     }
 
     private static function makeDbService(): DbService

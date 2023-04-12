@@ -12,12 +12,13 @@ use ApprovalTests\Approvals;
 use org\bovigo\vfs\vfsStream;
 use PHPUnit\Framework\TestCase;
 use Register\Infra\FakeCsrfProtector;
-use Register\Infra\FakeDbService;
 use Register\Infra\FakeMailer;
 use Register\Infra\Password;
 use Register\Infra\Random;
 use Register\Infra\Request;
 use Register\Infra\Url;
+use Register\Infra\UserGroupRepository;
+use Register\Infra\UserRepository;
 use Register\Infra\View;
 use Register\Value\User;
 use Register\Value\UserGroup;
@@ -26,7 +27,8 @@ class UserAdminTest extends TestCase
 {
     private $conf;
     private $csrfProtector;
-    private $dbService;
+    private $userRepository;
+    private $userGroupRepository;
     private $password;
     private $random;
     private $mailer;
@@ -39,9 +41,8 @@ class UserAdminTest extends TestCase
         vfsStream::setup("root");
         $this->conf = XH_includeVar("./config/config.php", "plugin_cf")["register"];
         $this->csrfProtector = new FakeCsrfProtector;
-        $this->dbService = new FakeDbService("vfs://root/register/", "guest", $this->createMock(Random::class));
-        $this->dbService->writeUsers($this->users());
-        $this->dbService->readUsers();
+        $this->userRepository = $this->createMock(UserRepository::class);
+        $this->userGroupRepository = $this->createMock(UserGroupRepository::class);
         $this->password = $this->createMock(Password::class);
         $this->password->method("hash")->willReturn("\$2y\$10\$sQkSA2tLcb2pKwLeZ5rCqeLn.034Nk36etev3bYVNBDyqTnZ2i3qG");
         $this->random = $this->createMock(Random::class);
@@ -58,7 +59,8 @@ class UserAdminTest extends TestCase
         return new UserAdmin(
             $this->conf,
             $this->csrfProtector,
-            $this->dbService,
+            $this->userRepository,
+            $this->userGroupRepository,
             $this->password,
             $this->random,
             $this->mailer,
@@ -68,6 +70,8 @@ class UserAdminTest extends TestCase
 
     public function testRendersOverview(): void
     {
+        $this->userRepository->method("select")->willReturn($this->users());
+        $this->userGroupRepository->method("all")->willReturn([new UserGroup("guest", "")]);
         $response = $this->sut()($this->request);
         $this->assertEquals("Register – Users", $response->title());
         Approvals::verifyHtml($response->output());
@@ -75,7 +79,7 @@ class UserAdminTest extends TestCase
 
     public function testRendersCreateForm(): void
     {
-        $this->dbService->writeGroups([new UserGroup("admin", ""), new UserGroup("guest", "")]);
+        $this->userGroupRepository->method("all")->willReturn([new UserGroup("admin", ""), new UserGroup("guest", "")]);
         $this->request->method("action")->willReturn("create");
         $response = $this->sut()($this->request);
         $this->assertEquals("Register – Users", $response->title());
@@ -91,6 +95,16 @@ class UserAdminTest extends TestCase
         $this->assertStringContainsString("You are not authorized for this action!", $response->output());
     }
 
+    public function testDoCreateReportsExistingUser(): void
+    {
+        $this->userRepository->method("findByUsername")->willReturn($this->users()[0]);
+        $this->request->method("action")->willReturn("do_create");
+        $this->request->method("selectedUser")->willReturn("jane");
+        $response = $this->sut()($this->request);
+        $this->assertEquals("Register – Users", $response->title());
+        $this->assertStringContainsString("The chosen username exists already.", $response->output());
+    }
+
     public function testDoCreateReportsValidationErrors(): void
     {
         $this->request->method("action")->willReturn("do_create");
@@ -103,9 +117,21 @@ class UserAdminTest extends TestCase
         $this->assertStringContainsString("The two entered passwords do not match.", $response->output());
     }
 
+    public function testDoCreateReportsExistingEmail(): void
+    {
+        $this->userRepository->method("hasDuplicateEmail")->willReturn(true);
+        $this->request->method("action")->willReturn("do_create");
+        $this->request->method("postedUser")->willReturn(
+            new User("cmb", "test", ["guest"], "Christoph M. Becker", "cmb@example.com", "activated", "")
+        );
+        $this->request->method("postedPassword")->willReturn("test");
+        $response = $this->sut()($this->request);
+        $this->assertEquals("Register – Users", $response->title());
+        $this->assertStringContainsString("A user with the given email address exists already.", $response->output());
+    }
+
     public function testDoCreateReportsFailureToSave(): void
     {
-        $this->dbService->options(["writeUsers" => false]);
         $this->request->method("action")->willReturn("do_create");
         $this->request->method("postedUser")->willReturn(
             new User("cmb", "test", ["guest"], "Christoph M. Becker", "cmb@example.com", "activated", "")
@@ -118,6 +144,7 @@ class UserAdminTest extends TestCase
 
     public function testCreateRedirectsOnSuccess(): void
     {
+        $this->userRepository->expects($this->once())->method("save")->willReturn(true);
         $this->request->method("action")->willReturn("do_create");
         $this->request->method("postedUser")->willReturn(
             new User("cmb", "test", ["guest"], "Christoph M. Becker", "cmb@example.com", "activated", "")
@@ -125,7 +152,6 @@ class UserAdminTest extends TestCase
         $this->request->method("postedPassword")->willReturn("test");
         $this->request->method("url")->willReturn(new Url("/", ""));
         $response = $this->sut()($this->request);
-        $this->assertCount(3, $this->dbService->readUsers());
         $this->assertEquals("http://example.com/?register&admin=users", $response->location());
     }
 
@@ -139,6 +165,8 @@ class UserAdminTest extends TestCase
 
     public function testRendersUpdateForm(): void
     {
+        $this->userRepository->method("findByUsername")->willReturn($this->users()[0]);
+        $this->userGroupRepository->method("all")->willReturn([new UserGroup("guest", "")]);
         $this->request->method("action")->willReturn("update");
         $this->request->method("selectedUser")->willReturn("jane");
         $response = $this->sut()($this->request);
@@ -165,6 +193,9 @@ class UserAdminTest extends TestCase
 
     public function testDoUpdateReportsValidationErrors(): void
     {
+        $this->userRepository->method("findByUsername")->willReturn(
+            new User("cmb", "test", ["guest"], "Christoph Becker", "cmb@example.com", "activated", "secret")
+        );
         $this->request->method("action")->willReturn("do_update");
         $this->request->method("postedUser")->willReturn(
             new User("cmb", "test", ["guest"], "", "cmb@example.com", "activated", "")
@@ -175,9 +206,27 @@ class UserAdminTest extends TestCase
         $this->assertStringContainsString("Please enter your full name.", $response->output());
     }
 
+    public function testDoUpdateReportsExistingEmail(): void
+    {
+        $this->userRepository->method("findByUsername")->willReturn(
+            new User("cmb", "test", ["guest"], "Christoph Becker", "cmb@example.com", "activated", "secret")
+        );
+        $this->userRepository->method("hasDuplicateEmail")->willReturn(true);
+        $this->request->method("action")->willReturn("do_update");
+        $this->request->method("selectedUser")->willReturn("cmb");
+        $this->request->method("post")->willReturn(
+            ["name" => "Christoph M. Becker", "email" => "cmb@example.com", "groups" => ["guest"], "status" => "activated"]
+        );
+        $this->request->method("postedPassword")->willReturn("test");
+        $response = $this->sut()($this->request);
+        $this->assertEquals("Register – Users", $response->title());
+        $this->assertStringContainsString("A user with the given email address exists already.", $response->output());
+    }
+
     public function testDoUpdateReportsFailureToSave(): void
     {
-        $this->dbService->options(["writeUsers" => false]);
+        $this->userRepository->method("findByUsername")->willReturn($this->users()[1]);
+        $this->userRepository->expects($this->once())->method("save")->willReturn(false);
         $this->request->method("action")->willReturn("do_update");
         $this->request->method("post")->willReturn(
             ["name" => "John Doe", "email" => "john@example.com", "groups" => ["guest"], "status" => "activated"]
@@ -190,14 +239,16 @@ class UserAdminTest extends TestCase
 
     public function testDoUpdateRedirectsOnSuccess(): void
     {
+        $this->userRepository->method("findByUsername")->willReturn($this->users()[1]);
+        $this->userRepository->expects($this->once())->method("save")->willReturn(true);
         $this->request->method("action")->willReturn("do_update");
         $this->request->method("post")->willReturn(
             ["name" => "John Doe", "email" => "john@example.com", "groups" => ["guest"], "status" => "activated"]
         );
         $this->request->method("selectedUser")->willReturn("john");
+        $this->request->method("url")->willReturn(new Url("/", ""));
         $response = $this->sut()($this->request);
-        $this->assertCount(2, $this->dbService->readUsers());
-        $this->assertEquals("", $response->location());
+        $this->assertEquals("http://example.com/?register&admin=users", $response->location());
     }
 
     public function testChangePasswordReportsMissingUser(): void
@@ -210,6 +261,7 @@ class UserAdminTest extends TestCase
 
     public function testRendersChangePasswordForm(): void
     {
+        $this->userRepository->method("findByUsername")->willReturn($this->users()[0]);
         $this->request->method("action")->willReturn("change_password");
         $this->request->method("selectedUser")->willReturn("jane");
         $response = $this->sut()($this->request);
@@ -237,6 +289,7 @@ class UserAdminTest extends TestCase
 
     public function testDoChangePasswordReportsValidationErrors(): void
     {
+        $this->userRepository->method("findByUsername")->willReturn($this->users()[0]);
         $this->request->method("action")->willReturn("do_change_password");
         $this->request->method("selectedUser")->willReturn("jane");
         $this->request->method("post")->willReturn(["password1" => "a", "password2" => "b"]);
@@ -247,7 +300,8 @@ class UserAdminTest extends TestCase
 
     public function testDoChangePasswordReportsFailureToWrite(): void
     {
-        $this->dbService->options(["writeUsers" => false]);
+        $this->userRepository->method("findByUsername")->willReturn($this->users()[0]);
+        $this->userRepository->method("save")->willReturn(false);
         $this->request->method("action")->willReturn("do_change_password");
         $this->request->method("selectedUser")->willReturn("jane");
         $this->request->method("post")->willReturn(["password1" => "a", "password2" => "a"]);
@@ -258,12 +312,13 @@ class UserAdminTest extends TestCase
 
     public function testDoChangePasswordRedirectsOnSuccess(): void
     {
+        $this->userRepository->method("findByUsername")->willReturn($this->users()[0]);
+        $this->userRepository->expects($this->once())->method("save")->willReturn(true);
         $this->request->method("action")->willReturn("do_change_password");
         $this->request->method("selectedUser")->willReturn("jane");
         $this->request->method("post")->willReturn(["password1" => "a", "password2" => "a"]);
         $this->request->method("url")->willReturn(new Url("/", ""));
         $response = $this->sut()($this->request);
-        $this->assertCount(2, $this->dbService->readUsers());
         $this->assertEquals("http://example.com/?register&admin=users", $response->location());
     }
 
@@ -278,6 +333,7 @@ class UserAdminTest extends TestCase
 
     public function testRendersMailForm(): void
     {
+        $this->userRepository->method("findByUsername")->willReturn($this->users()[0]);
         $this->request->method("action")->willReturn("mail");
         $this->request->method("selectedUser")->willReturn("jane");
         $response = $this->sut()($this->request);
@@ -305,6 +361,7 @@ class UserAdminTest extends TestCase
 
     public function testDoMailReportsValidationErrors(): void
     {
+        $this->userRepository->method("findByUsername")->willReturn($this->users()[0]);
         $this->request->method("action")->willReturn("do_mail");
         $this->request->method("selectedUser")->willReturn("jane");
         $this->request->method("post")->willReturn(["subject" => "", "message" => "message"]);
@@ -315,6 +372,7 @@ class UserAdminTest extends TestCase
 
     public function testDoMailReportsFailureToSendMail(): void
     {
+        $this->userRepository->method("findByUsername")->willReturn($this->users()[0]);
         $this->mailer->options(["sendMail" => false]);
         $this->request->method("action")->willReturn("do_mail");
         $this->request->method("selectedUser")->willReturn("jane");
@@ -326,6 +384,7 @@ class UserAdminTest extends TestCase
 
     public function testDoMailRedirectsOnSuccess(): void
     {
+        $this->userRepository->method("findByUsername")->willReturn($this->users()[0]);
         $this->request->method("action")->willReturn("do_mail");
         $this->request->method("selectedUser")->willReturn("jane");
         $this->request->method("post")->willReturn(["subject" => "subject", "message" => "message"]);
@@ -346,6 +405,7 @@ class UserAdminTest extends TestCase
 
     public function testDeleteRendersDeleteForm(): void
     {
+        $this->userRepository->method("findByUsername")->willReturn($this->users()[0]);
         $this->request->method("action")->willReturn("delete");
         $this->request->method("selectedUser")->willReturn("jane");
         $response = $this->sut()($this->request);
@@ -373,7 +433,8 @@ class UserAdminTest extends TestCase
 
     public function testDoDeleteReportsFailureToSave(): void
     {
-        $this->dbService->options(["writeUsers" => false]);
+        $this->userRepository->method("findByUsername")->willReturn($this->users()[0]);
+        $this->userRepository->expects($this->once())->method("delete")->willReturn(false);
         $this->request->method("action")->willReturn("do_delete");
         $this->request->method("selectedUser")->willReturn("jane");
         $response = $this->sut()($this->request);
@@ -383,12 +444,12 @@ class UserAdminTest extends TestCase
 
     public function testDoDeleteRedirectsOnSuccess(): void
     {
+        $this->userRepository->method("findByUsername")->willReturn($this->users()[0]);
+        $this->userRepository->expects($this->once())->method("delete")->willReturn(true);
         $this->request->method("action")->willReturn("do_delete");
         $this->request->method("selectedUser")->willReturn("jane");
         $this->request->method("url")->willReturn(new Url("/", ""));
-        $this->assertCount(2, $this->dbService->readUsers());
         $response = $this->sut()($this->request);
-        $this->assertCount(1, $this->dbService->readUsers());
         $this->assertEquals("http://example.com/?register&admin=users", $response->location());
     }
 

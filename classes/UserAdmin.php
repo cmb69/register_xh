@@ -9,16 +9,14 @@
 namespace Register;
 
 use Register\Infra\CsrfProtector;
-use Register\Infra\DbService;
 use Register\Infra\Mailer;
 use Register\Infra\Password;
 use Register\Infra\Random;
 use Register\Infra\Request;
+use Register\Infra\UserGroupRepository;
+use Register\Infra\UserRepository;
 use Register\Infra\View;
-use Register\Logic\Groups;
-use Register\Logic\Users;
 use Register\Logic\Util;
-use Register\Value\Html;
 use Register\Value\Mail;
 use Register\Value\Response;
 use Register\Value\User;
@@ -32,8 +30,11 @@ class UserAdmin
     /** @var CsrfProtector */
     private $csrfProtector;
 
-    /** @var DbService */
-    private $dbService;
+    /** @var UserRepository */
+    private $userRepository;
+
+    /** @var UserGroupRepository */
+    private $userGroupRepository;
 
     /** @var Password */
     private $password;
@@ -51,7 +52,8 @@ class UserAdmin
     public function __construct(
         array $conf,
         CsrfProtector $csrfProtector,
-        DbService $dbService,
+        UserRepository $userRepository,
+        UserGroupRepository $userGroupRepository,
         Password $password,
         Random $random,
         Mailer $mailer,
@@ -59,7 +61,8 @@ class UserAdmin
     ) {
         $this->conf = $conf;
         $this->csrfProtector = $csrfProtector;
-        $this->dbService = $dbService;
+        $this->userRepository = $userRepository;
+        $this->userGroupRepository = $userGroupRepository;
         $this->password = $password;
         $this->random = $random;
         $this->mailer = $mailer;
@@ -98,9 +101,8 @@ class UserAdmin
     private function overview(Request $request, array $errors = []): Response
     {
         $filters = $request->userFilters();
-        [$users, $groups, $lock] = $this->dbService->readUsersAndGroupsWithLock(false);
-        $users = Users::select($filters, $users);
-        $groups = Groups::sortByName($groups);
+        $users = $this->userRepository->select($filters);
+        $groups = $this->userGroupRepository->all();
         return $this->respondWith($this->view->render("users", [
             "errors" => $errors,
             "users" => $this->userRecords($users, $request->selectedUser()),
@@ -162,8 +164,7 @@ class UserAdmin
     private function create(): Response
     {
         $user = new User("", "", [$this->conf["group_default"]], "", "", "activated", "");
-        [$groups, $lock] = $this->dbService->readGroupsWithLock(true);
-        return $this->respondWith($this->renderCreateForm($user, $groups, ""));
+        return $this->respondWith($this->renderCreateForm($user, ""));
     }
 
     private function doCreate(Request $request): Response
@@ -171,26 +172,29 @@ class UserAdmin
         if (!$this->csrfProtector->check()) {
             return $this->respondWith($this->view->error("err_unauthorized"));
         }
+        $username = $request->selectedUser();
+        if ($this->userRepository->findByUsername($username)) {
+            return $this->respondWith($this->view->error("err_username_exists"));
+        }
         $user = $request->postedUser();
-        [$users, $groups, $lock] = $this->dbService->readUsersAndGroupsWithLock(true);
-        if (($errors = Users::validate($user, $request->postedPassword(), $users, true))) {
-            return $this->respondWith($this->renderCreateForm($user, $groups, $request->postedPassword(), $errors));
+        if (($errors = Util::validateUser($user, $request->postedPassword()))) {
+            return $this->respondWith($this->renderCreateForm($user, $request->postedPassword(), $errors));
+        }
+        if ($this->userRepository->hasDuplicateEmail($user)) {
+            return $this->respondWith($this->renderCreateForm($user, $request->postedPassword(), [["err_email_exists"]]));
         }
         $newUser = $user->withPassword($this->password->hash($user->getPassword()))
             ->withSecret(base64_encode($this->random->bytes(15)));
-        $users = Users::add($newUser, $users);
-        if (!$this->dbService->writeUsers($users)) {
-            return $this->respondWith($this->renderCreateForm($user, $groups, $request->postedPassword(), [["err_cannot_write_csv"]]));
+        if (!$this->userRepository->save($newUser)) {
+            return $this->respondWith($this->renderCreateForm($user, $request->postedPassword(), [["err_cannot_write_csv"]]));
         }
         return Response::redirect($request->url()->withPage("register")->withParams(["admin" => "users"])->absolute());
     }
 
-    /**
-     * @param list<UserGroup> $groups
-     * @param list<array{string}> $errors
-     */
-    private function renderCreateForm(User $user, array $groups, string $password2, array $errors = []): string
+    /** @param list<array{string}> $errors */
+    private function renderCreateForm(User $user, string $password2, array $errors = []): string
     {
+        $groups = $this->userGroupRepository->all();
         return $this->view->render("user_create", [
             "errors" => $errors,
             "token" => $this->csrfProtector->token(),
@@ -207,11 +211,10 @@ class UserAdmin
     private function update(Request $request): Response
     {
         $username = $request->selectedUser();
-        [$users, $groups, $lock] = $this->dbService->readUsersAndGroupsWithLock(false);
-        if (!($user = Users::findByUsername($username, $users))) {
+        if (!($user = $this->userRepository->findByUsername($username))) {
             return $this->overview($request, [["err_user_does_not_exist", $username]]);
         }
-        return $this->respondWith($this->renderUpdateForm($user, $groups));
+        return $this->respondWith($this->renderUpdateForm($user));
     }
 
     private function doUpdate(Request $request): Response
@@ -220,28 +223,27 @@ class UserAdmin
             return $this->respondWith($this->view->error("err_unauthorized"));
         }
         $username = $request->selectedUser();
-        [$users, $groups, $lock] = $this->dbService->readUsersAndGroupsWithLock(true);
-        if (!($user = Users::findByUsername($username, $users))) {
+        if (!($user = $this->userRepository->findByUsername($username))) {
             return $this->respondWith($this->view->error("err_user_does_not_exist", $username));
         }
         $post = $request->userPost();
         $user = $user->with($post["name"], $post["email"], $post["groups"], $post["status"]);
-        if (($errors = Users::validate($user, $user->getPassword(), $users, false))) {
-            return $this->respondWith($this->renderUpdateForm($user, $groups, $errors));
+        if (($errors = Util::validateUser($user, $user->getPassword()))) {
+            return $this->respondWith($this->renderUpdateForm($user, $errors));
         }
-        $users = Users::update($user, $users);
-        if (!$this->dbService->writeUsers($users)) {
-            return $this->respondWith($this->renderUpdateForm($user, $groups, [["err_cannot_write_csv"]]));
+        if ($this->userRepository->hasDuplicateEmail($user)) {
+            return $this->respondWith($this->renderUpdateForm($user, [["err_email_exists"]]));
+        }
+        if (!$this->userRepository->save($user)) {
+            return $this->respondWith($this->renderUpdateForm($user, [["err_cannot_write_csv"]]));
         }
         return Response::redirect($request->url()->withPage("register")->withParams(["admin" => "users"])->absolute());
     }
 
-    /**
-     * @param list<UserGroup> $groups
-     * @param list<array{string}> $errors
-     */
-    private function renderUpdateForm(User $user, array $groups, array $errors = []): string
+    /** @param list<array{string}> $errors */
+    private function renderUpdateForm(User $user, array $errors = []): string
     {
+        $groups = $this->userGroupRepository->all();
         return $this->view->render("user_update", [
             "errors" => $errors,
             "token" => $this->csrfProtector->token(),
@@ -278,8 +280,7 @@ class UserAdmin
     private function changePassword(Request $request): Response
     {
         $username = $request->selectedUser();
-        [$users, $lock] = $this->dbService->readUsersWithLock(false);
-        if (!($user = Users::findByUsername($username, $users))) {
+        if (!($user = $this->userRepository->findByUsername($username))) {
             return $this->overview($request, [["err_user_does_not_exist", $username]]);
         }
         $user = $user->withPassword("");
@@ -292,19 +293,16 @@ class UserAdmin
             return $this->respondWith($this->view->error("err_unauthorized"));
         }
         $username = $request->selectedUser();
-        [$users, $lock] = $this->dbService->readUsersWithLock(true);
-        if (!($user = Users::findByUsername($username, $users))) {
+        if (!($user = $this->userRepository->findByUsername($username))) {
             return $this->respondWith($this->view->error("err_user_does_not_exist", $username));
         }
         $post = $request->changePasswordPost();
         $user = $user->withPassword($post["password1"]);
-        if (($errors = Users::validate($user, $post["password2"], $users, false))) {
+        if (($errors = Util::validateUser($user, $post["password2"]))) {
             return $this->respondWith($this->renderPasswordForm($user, $post["password2"], $errors));
         }
-        $user = $user->withPassword($this->password->hash($post["password1"]));
-        $users = Users::update($user, $users);
-        if (!$this->dbService->writeUsers($users)) {
-            $user = $user->withPassword($post["password1"]);
+        $newUser = $user->withPassword($this->password->hash($post["password1"]));
+        if (!$this->userRepository->save($newUser)) {
             return $this->respondWith($this->renderPasswordForm($user, $post["password2"], [["err_cannot_write_csv"]]));
         }
         return Response::redirect($request->url()->withPage("register")->withParams(["admin" => "users"])->absolute());
@@ -325,8 +323,7 @@ class UserAdmin
     private function mail(Request $request): Response
     {
         $username = $request->selectedUser();
-        [$users, $lock] = $this->dbService->readUsersWithLock(false);
-        if (!($user = Users::findByUsername($username, $users))) {
+        if (!($user = $this->userRepository->findByUsername($username))) {
             return $this->overview($request, [["err_user_does_not_exist", $username]]);
         }
         $mail = new Mail("", "");
@@ -339,8 +336,7 @@ class UserAdmin
             return $this->respondWith($this->view->error("err_unauthorized"));
         }
         $username = $request->selectedUser();
-        [$users, $lock] = $this->dbService->readUsersWithLock(false);
-        if (!($user = Users::findByUsername($username, $users))) {
+        if (!($user = $this->userRepository->findByUsername($username))) {
             return $this->respondWith($this->view->error("err_user_does_not_exist", $username));
         }
         $mail = $request->postedMail();
@@ -368,8 +364,7 @@ class UserAdmin
     private function delete(Request $request): Response
     {
         $username = $request->selectedUser();
-        [$users, $lock] = $this->dbService->readUsersWithLock(false);
-        if (!($user = Users::findByUsername($username, $users))) {
+        if (!($user = $this->userRepository->findByUsername($username))) {
             return $this->overview($request, [["err_user_does_not_exist", $username]]);
         }
         return $this->respondWith($this->renderDeleteForm($user));
@@ -381,12 +376,10 @@ class UserAdmin
             return $this->respondWith($this->view->error("err_unauthorized"));
         }
         $username = $request->selectedUser();
-        [$users, $lock] = $this->dbService->readUsersWithLock(true);
-        if (!($user = Users::findByUsername($username, $users))) {
+        if (!($user = $this->userRepository->findByUsername($username))) {
             return $this->respondWith($this->view->error("err_user_does_not_exist", $username));
         }
-        $users = Users::delete($user, $users);
-        if (!$this->dbService->writeUsers($users)) {
+        if (!$this->userRepository->delete($user)) {
             return $this->respondWith($this->renderDeleteForm($user, [["err_cannot_write_csv"]]));
         }
         return Response::redirect($request->url()->withPage("register")->withParams(["admin" => "users"])->absolute());

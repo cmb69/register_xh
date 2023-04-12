@@ -174,7 +174,7 @@ class HandleUserPreferencesTest extends TestCase
             "email" => "",
         ]);
         $this->userRepository->method("findByUsername")->willReturn($this->users["john"]);
-        $this->userRepository->expects($this->once())->method("update")->willReturn(true);
+        $this->userRepository->expects($this->once())->method("save")->willReturn(true);
         $this->password->method("verify")->willReturn(true);
         $response = ($this->subject)($this->request);
         $this->assertStringContainsString(
@@ -197,7 +197,7 @@ class HandleUserPreferencesTest extends TestCase
         $this->request->method("serverName")->willReturn("example.com");
         $this->request->method("remoteAddress")->willReturn("127.0.0.1");
         $this->userRepository->method("findByUsername")->willReturn($this->users["john"]);
-        $this->userRepository->expects($this->once())->method("update")->willReturn(true);
+        $this->userRepository->expects($this->once())->method("save")->willReturn(true);
         $this->password->method("verify")->willReturn(true);
         ($this->subject)($this->request);
         Approvals::verifyList($this->mailer->lastMail());
