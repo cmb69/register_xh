@@ -6,21 +6,24 @@ if (!defined("CMSIMPLE_XH_VERSION")) {header("HTTP/1.1 403 Forbidden"); exit;}
 
 /**
  * @var View $this
- * @var string $actionUrl
  * @var list<array{string}> $errors
  * @var string $email
  */
 ?>
 <!-- register password forgotten -->
-<form method="post" action="<?=$actionUrl?>" target="_self">
+<div class="register_password_forgotten">
+  <form method="post">
 <?foreach ($errors as $error):?>
-  <p class="xh_fail"><?=$this->text(...$error)?></p>
+    <p class="xh_fail"><?=$this->text(...$error)?></p>
 <?endforeach?>
-  <table class="regi_register">
-    <tr>
-      <td><?=$this->text('email')?></td>
-      <td><input class="text" name="email" type="email" size="35" value="<?=$email?>"></td>
-      <td><button class="submit" name="register_action" value="forgot_password"><?=$this->text('send')?></button></td>
-    </tr>
-  </table>
-</form>
+    <p>
+      <label>
+        <span><?=$this->text('email')?></span>
+        <input class="text" name="email" type="email" value="<?=$email?>" required>
+      </label>
+    </p>
+    <p>
+      <button class="submit" name="register_action" value="forgot_password"><?=$this->text('send')?></button>
+    </p>
+  </form>
+</div>

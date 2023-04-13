@@ -63,7 +63,7 @@ class Validator
     /**
      * @return list<array{string}>
      */
-    private function validatePassword(string $password1, string $password2): array
+    public function validatePassword(string $password1, string $password2): array
     {
         $errors = [];
         if ($password1 === "") {

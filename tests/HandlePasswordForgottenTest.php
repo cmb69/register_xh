@@ -23,8 +23,6 @@ use Register\Value\User;
 
 class HandlePasswordForgottenTest extends TestCase
 {
-    private $subject;
-
     private $view;
     private $dbService;
     private $userRepository;
@@ -35,90 +33,80 @@ class HandlePasswordForgottenTest extends TestCase
     public function setUp(): void
     {
         vfsStream::setup("root");
-        $plugin_cf = XH_includeVar("./config/config.php", 'plugin_cf');
-        $conf = $plugin_cf['register'];
-        $plugin_tx = XH_includeVar("./languages/en.php", 'plugin_tx');
-        $text = $plugin_tx['register'];
+        $text = XH_includeVar("./languages/en.php", "plugin_tx")["register"];
         $this->view = new View("./views/", $text);
         $this->dbService = new FakeDbService("vfs://root/register/", "guest", $this->createMock(Random::class));
         $this->dbService->writeUsers([new User("john", "12345", ["guest"], "John Dow", "john@example.com", "activated", "secret")]);
         $this->userRepository = new UserRepository($this->dbService);
-        $password = new FakePassword;
         $this->mailer = new FakeMailer(false, $text);
-        $this->subject = new HandlePasswordForgotten(
-            $conf,
-            $this->view,
-            $this->userRepository,
-            $password,
-            $this->mailer
-        );
-        $this->request = $this->createStub(Request::class);
-        $this->request->method("url")->willReturn(new Url("/", ""));
-        $this->request->method("time")->willReturn(1637449200);
+        $this->request = $this->request();
     }
 
-    public function testLoggedInUserIsRedirected(): void
+    private function sut()
+    {
+        return new HandlePasswordForgotten(
+            XH_includeVar("./config/config.php", "plugin_cf")["register"],
+            $this->view,
+            $this->userRepository,
+            new FakePassword,
+            $this->mailer
+        );
+    }
+
+    private function request()
+    {
+        $request = $this->createStub(Request::class);
+        $request->method("url")->willReturn(new Url("/", ""));
+        $request->method("time")->willReturn(1637449200);
+        return $request;
+    }
+
+    public function testRedirectsLoggedInUser(): void
     {
         $this->request->method("username")->willReturn("cmb");
-        $response = ($this->subject)($this->request);
+        $response = $this->sut()($this->request);
         $this->assertEquals("http://example.com/", $response->location());
     }
 
     public function testRendersForm(): void
     {
-        $response = ($this->subject)($this->request);
+        $response = $this->sut()($this->request);
         Approvals::verifyHtml($response->output());
     }
 
-    public function testEmptyEmail(): void
-    {
-        $this->request->method("registerAction")->willReturn("forgot_password");
-        $this->request->method("forgotPasswordPost")->willReturn(["email" => ""]);
-        $response = ($this->subject)($this->request);
-        $this->assertStringContainsString("Please enter your email address.", $response->output());
-    }
-
-    public function testInvalidEmail(): void
+    public function testForgotReportsValidationErrors(): void
     {
         $this->request->method("registerAction")->willReturn("forgot_password");
         $this->request->method("forgotPasswordPost")->willReturn(["email" => "invalid"]);
-        $response = ($this->subject)($this->request);
+        $response = $this->sut()($this->request);
         $this->assertStringContainsString("The given email address is invalid.", $response->output());
     }
 
-    public function testUnknownEmail(): void
+    public function testReportsSuccessOnUnknownEmail(): void
     {
         $this->request->method("registerAction")->willReturn("forgot_password");
         $this->request->method("forgotPasswordPost")->willReturn(["email" => "jane@example.com"]);
-        $response = ($this->subject)($this->request);
+        $response = $this->sut()($this->request);
         $this->assertStringContainsString(
             "If the email you specified exists in our system, we've sent a password reset link to it.",
             $response->output()
         );
     }
 
-    public function testKnownEmail(): void
-    {
-        $_SERVER["SERVER_NAME"] = "example.com";
-        $this->request->method("registerAction")->willReturn("forgot_password");
-        $this->request->method("forgotPasswordPost")->willReturn(["email" => "john@example.com"]);
-        $response = ($this->subject)($this->request);
-        $this->assertStringContainsString(
-            "If the email you specified exists in our system, we've sent a password reset link to it.",
-            $response->output()
-        );
-    }
-
-    public function testSendsMailOnSuccess(): void
+    public function testReportsSuccessOnKnownEmail(): void
     {
         $this->request->method("registerAction")->willReturn("forgot_password");
         $this->request->method("forgotPasswordPost")->willReturn(["email" => "john@example.com"]);
         $this->request->method("serverName")->willReturn("example.com");
-        ($this->subject)($this->request);
+        $response = $this->sut()($this->request);
         Approvals::verifyList($this->mailer->lastMail());
+        $this->assertStringContainsString(
+            "If the email you specified exists in our system, we've sent a password reset link to it.",
+            $response->output()
+        );
     }
 
-    public function testResetPasswordUnknownUsername(): void
+    public function testResetReportsUnknownUser(): void
     {
         $this->request->method("registerAction")->willReturn("reset_password");
         $this->request->method("resetPasswordParams")->willReturn([
@@ -126,11 +114,11 @@ class HandlePasswordForgottenTest extends TestCase
             "time" => "",
             "mac" => "",
         ]);
-        $response = ($this->subject)($this->request);
-        $this->assertStringContainsString("The entered validation code is invalid.", $response->output());
+        $response = $this->sut()($this->request);
+        $this->assertStringContainsString("User 'colt' does not exist!", $response->output());
     }
 
-    public function testResetPasswordWrongMac(): void
+    public function testResetReportsWrongMac(): void
     {
         $this->request->method("registerAction")->willReturn("reset_password");
         $this->request->method("resetPasswordParams")->willReturn([
@@ -138,23 +126,11 @@ class HandlePasswordForgottenTest extends TestCase
             "time" => 1637449800,
             "mac" => "54321",
         ]);
-        $response = ($this->subject)($this->request);
+        $response = $this->sut()($this->request);
         $this->assertStringContainsString("The entered validation code is invalid.", $response->output());
     }
 
-    public function testResetPasswordSuccess(): void
-    {
-        $this->request->method("registerAction")->willReturn("reset_password");
-        $this->request->method("resetPasswordParams")->willReturn([
-            "username" => "john",
-            "time" => 1637449800,
-            "mac" => "3pjbpRHFI9OO3gUHV42CHT3IHL8",
-        ]);
-        $response = ($this->subject)($this->request);
-        Approvals::verifyHtml($response->output());
-    }
-
-    public function testResetPasswordReportsExpiration(): void
+    public function testResetReportsExpiration(): void
     {
         $this->request->method("registerAction")->willReturn("reset_password");
         $this->request->method("resetPasswordParams")->willReturn([
@@ -162,11 +138,23 @@ class HandlePasswordForgottenTest extends TestCase
             "time" => 1637445599,
             "mac" => "TLIb1A2yKWBs_ZGmC0l0V4w6bS8",
         ]);
-        $response = ($this->subject)($this->request);
+        $response = $this->sut()($this->request);
         $this->assertStringContainsString("The password reset has expired!", $response->output());
     }
 
-    public function testUnknownUsername(): void
+    public function testResetRendersForm(): void
+    {
+        $this->request->method("registerAction")->willReturn("reset_password");
+        $this->request->method("resetPasswordParams")->willReturn([
+            "username" => "john",
+            "time" => 1637449800,
+            "mac" => "3pjbpRHFI9OO3gUHV42CHT3IHL8",
+        ]);
+        $response = $this->sut()($this->request);
+        Approvals::verifyHtml($response->output());
+    }
+
+    public function testChangeReportsUnknownUser(): void
     {
         $this->request->method("registerAction")->willReturn("change_password");
         $this->request->method("resetPasswordParams")->willReturn([
@@ -174,11 +162,11 @@ class HandlePasswordForgottenTest extends TestCase
             "time" => "",
             "mac" => "",
         ]);
-        $response = ($this->subject)($this->request);
-        $this->assertStringContainsString("The entered validation code is invalid.", $response->output());
+        $response = $this->sut()($this->request);
+        $this->assertStringContainsString("User 'colt' does not exist!", $response->output());
     }
 
-    public function testWrongMac(): void
+    public function testChangeReportsWrongMac(): void
     {
         $this->request->method("registerAction")->willReturn("change_password");
         $this->request->method("resetPasswordParams")->willReturn([
@@ -186,45 +174,11 @@ class HandlePasswordForgottenTest extends TestCase
             "time" => "1637449800",
             "mac" => "54321",
         ]);
-        $response = ($this->subject)($this->request);
+        $response = $this->sut()($this->request);
         $this->assertStringContainsString("The entered validation code is invalid.", $response->output());
     }
 
-    public function testSuccess(): void
-    {
-        $this->request->method("registerAction")->willReturn("change_password");
-        $this->request->method("resetPasswordParams")->willReturn([
-            "username" => "john",
-            "time" => "1637449800",
-            "mac" => "3pjbpRHFI9OO3gUHV42CHT3IHL8",
-        ]);
-        $this->request->method("changePasswordPost")->willReturn([
-            "password1" => "admin",
-            "password2" => "admin",
-        ]);
-        $response = ($this->subject)($this->request);
-        $this->assertTrue(password_verify("admin", $this->userRepository->findByUsername("john")->getPassword()));
-        $this->assertStringContainsString("An email has been sent to you with your user data.", $response->output());
-    }
-
-    public function testChangePasswordSendsMailOnSuccess(): void
-    {
-        $this->request->method("registerAction")->willReturn("change_password");
-        $this->request->method("resetPasswordParams")->willReturn([
-            "username" => "john",
-            "time" => "1637449800",
-            "mac" => "3pjbpRHFI9OO3gUHV42CHT3IHL8",
-        ]);
-        $this->request->method("changePasswordPost")->willReturn([
-            "password1" => "admin",
-            "password2" => "admin",
-        ]);
-        $this->request->method("serverName")->willReturn("example.com");
-        ($this->subject)($this->request);
-        Approvals::verifyList($this->mailer->lastMail());
-    }
-
-    public function testReportsExpiration(): void
+    public function testChangeReportsExpiration(): void
     {
         $this->request->method("registerAction")->willReturn("change_password");
         $this->request->method("resetPasswordParams")->willReturn([
@@ -232,11 +186,11 @@ class HandlePasswordForgottenTest extends TestCase
             "time" => "1637445599",
             "mac" => "TLIb1A2yKWBs_ZGmC0l0V4w6bS8",
         ]);
-        $response = ($this->subject)($this->request);
+        $response = $this->sut()($this->request);
         $this->assertStringContainsString("The password reset has expired!", $response->output());
     }
 
-    public function testReportsNotMatchingPasswords(): void
+    public function testChangeReportsPasswordValidationErrors(): void
     {
         $this->request->method("registerAction")->willReturn("change_password");
         $this->request->method("resetPasswordParams")->willReturn([
@@ -248,11 +202,11 @@ class HandlePasswordForgottenTest extends TestCase
             "password1" => "admin",
             "password2" => "amdin",
         ]);
-        $response = ($this->subject)($this->request);
+        $response = $this->sut()($this->request);
         $this->assertStringContainsString("The two entered passwords do not match.", $response->output());
     }
 
-    public function testReportsFailureToUpdateUser(): void
+    public function testChangeReportsFailureToSave(): void
     {
         $this->dbService->options(["writeUsers" => false]);
         $this->request->method("registerAction")->willReturn("change_password");
@@ -265,7 +219,26 @@ class HandlePasswordForgottenTest extends TestCase
             "password1" => "admin",
             "password2" => "admin",
         ]);
-        $response = ($this->subject)($this->request);
+        $response = $this->sut()($this->request);
         $this->assertStringContainsString("Saving CSV file failed.", $response->output());
+    }
+
+    public function testChangeReportsSuccess(): void
+    {
+        $this->request->method("registerAction")->willReturn("change_password");
+        $this->request->method("resetPasswordParams")->willReturn([
+            "username" => "john",
+            "time" => "1637449800",
+            "mac" => "3pjbpRHFI9OO3gUHV42CHT3IHL8",
+        ]);
+        $this->request->method("changePasswordPost")->willReturn([
+            "password1" => "admin",
+            "password2" => "admin",
+        ]);
+        $this->request->method("serverName")->willReturn("example.com");
+        $response = $this->sut()($this->request);
+        $this->assertTrue(password_verify("admin", $this->userRepository->findByUsername("john")->getPassword()));
+        Approvals::verifyList($this->mailer->lastMail());
+        $this->assertStringContainsString("An email has been sent to you with your user data.", $response->output());
     }
 }
