@@ -122,7 +122,7 @@ class LoginController
             $this->logger->logError('login', "$username wrong password");
             $response = Response::redirect($request->url()->withPage($this->text['login_error'])->absolute());
             if ($request->cookie("register_remember")) {
-                $response->withCookie("register_remember", "", 0);
+                $response = $response->withCookie("register_remember", "", 0);
             }
             return $response;
         }
