@@ -58,7 +58,6 @@ $plugin_tx['register']['err_email_exists']="Пользователь с таки
 // $plugin_tx['register']['err_colon']="не может содержать двоеточие.";
 // $plugin_tx['register']['err_group_does_not_exist']="Такой группы нет.";
 $plugin_tx['register']['err_cannot_write_csv']="Файл CSV не сохранен.";
-$plugin_tx['register']['err_status_empty']="Ваша строка статуса не заполнена.";
 $plugin_tx['register']['err_status_invalid']="Введен неправильный код подтверждения.";
 $plugin_tx['register']['err_group_illegal']="Имя группы должно содержать только символы: A-Z, a-z, 0-9, _, -";
 $plugin_tx['register']['registered']="Вы зарегистрированы. На ваш электронный адрес отправлено сообщение, содержащее ссылку для активации вашей новой учетной записи.";

@@ -16,38 +16,44 @@ if (!defined("CMSIMPLE_XH_VERSION")) {header("HTTP/1.1 403 Forbidden"); exit;}
  */
 ?>
 <!-- register registration form -->
-<form method="post" action="<?=$actionUrl?>" target="_self">
-  <div class="regi_register">
+<div class="register_register">
+  <form method="post">
 <?foreach ($errors as $error):?>
     <p class="xh_fail"><?=$this->text(...$error)?></p>
 <?endforeach?>
-    <table>
-      <tr>
-        <td>
-          <?=$this->text('name')?>
-        </td>
-        <td colspan="2"><input class="text" name="name" type="text" size="35" value="<?=$name?>"></td>
-      </tr>
-      <tr>
-        <td><?=$this->text('username')?></td>
-        <td colspan="2"><input class="text" name="username" type="text" size="10" value="<?=$username?>"></td>
-      </tr>
-      <tr>
-        <td><?=$this->text('password')?></td>
-        <td colspan="2"><input class="text" name="password1" type="password" size="10" value="<?=$password1?>"></td>
-      </tr>
-      <tr>
-        <td><?=$this->text('password2')?></td>
-        <td colspan="2"><input class="text" name="password2" type="password" size="10" value="<?=$password2?>"></td>
-      </tr>
-      <tr>
-        <td><?=$this->text('email')?></td>
-        <td colspan="2"><input class="text" name="email" type="email" size="35" value="<?=$email?>"></td>
-      </tr>
-      <tr>
-        <td colspan="3"><button class="submit" name="register_action" value="register"><?=$this->text('register')?></button></td>
-      </tr>
-    </table>
+    <p>
+      <label>
+        <span><?=$this->text('name')?></span>
+        <input class="text" name="name" type="text" value="<?=$name?>" required>
+      </label>
+    </p>
+    <p>
+      <label>
+        <span><?=$this->text('username')?></span>
+        <input class="text" name="username" type="text" value="<?=$username?>" required>
+      </label>
+    </p>
+    <p>
+      <label>
+        <span><?=$this->text('password')?></span>
+        <input class="text" name="password1" type="password" value="<?=$password1?>" required>
+      </label>
+    </p>
+    <p>
+      <label>
+        <span><?=$this->text('password2')?></span>
+        <input class="text" name="password2" type="password" value="<?=$password2?>" required>
+      </label>
+    </p>
+    <p>
+      <label>
+        <span><?=$this->text('email')?></span>
+        <input class="text" name="email" type="email" value="<?=$email?>" required>
+      </label>
+    </p>
+    <p class="register_buttons">
+      <button name="register_action" value="register"><?=$this->text('register')?></button>
+    </p>
     <p><?=$this->text('register_form2')?></p>
-  </div>
-</form>
+  </form>
+</div>

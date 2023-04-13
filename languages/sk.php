@@ -45,7 +45,6 @@ $plugin_tx['register']['err_email_exists']="Užívateľ s uvedenou e-mailovou ad
 // $plugin_tx['register']['err_colon']="Nesmie obsahovať dvojbodku.";
 // $plugin_tx['register']['err_group_does_not_exist']="Skupina neexistuje.";
 $plugin_tx['register']['err_cannot_write_csv']="Uloženie CSV súboru zlyhalo.";
-$plugin_tx['register']['err_status_empty']="Status Vášho užívateľského mena je prázdny.";
 $plugin_tx['register']['err_status_invalid']="Uvedený validačný kód nie je správny.";
 $plugin_tx['register']['err_group_illegal']="Názov skupiny môže obsahovať iba znaky: A-Z, a-z, 0-9, '_', '-'.";
 $plugin_tx['register']['registered']="Boli ste úspešne zaregistrovaný. Úspešne ste sa zaregistrovali. Bol Vám odoslaný email s odkazom, ktorý Vám umožní aktivovať prístup.";

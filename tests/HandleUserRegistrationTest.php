@@ -23,55 +23,67 @@ use Register\Value\User;
 
 class HandleUserRegistrationTest extends TestCase
 {
-    private $subject;
-
-    private $users;
     private $view;
+    private $dbService;
     private $userRepository;
     private $mailer;
+    private $random;
 
     private $request;
 
     public function setUp(): void
     {
         vfsStream::setup("root");
-        $hash = "\$2y\$04\$FMR/.rF4uHySPVzW4ZSYDO.BMmJNLAsHdzrD.r8EufGEk7XkWuwzW";
-        $this->users = [
-            "john" => new User("john", $hash, ["guest"], "John Doe", "john@example.com", "", "secret"),
-            "jane" => new User("jane", $hash, ["guest"], "Jane Doe", "jane@example.com", "12345", "secret"),
-        ];
-        $plugin_cf = XH_includeVar("./config/config.php", 'plugin_cf');
-        $conf = $plugin_cf['register'];
-        $plugin_tx = XH_includeVar("./languages/en.php", 'plugin_tx');
-        $text = $plugin_tx['register'];
-        $random = $this->createStub(Random::class);
-        $random->method("bytes")->willReturn("0123456789ABCDE");
+        $text = XH_includeVar("./languages/en.php", "plugin_tx")["register"];
         $this->view = new View("./views/", $text);
-        $dbService = new FakeDbService("vfs://root/register/", "guest", $random);
-        $dbService->writeUsers($this->users);
-        $this->userRepository = new UserRepository($dbService);
+        $this->random = $this->createStub(Random::class);
+        $this->random->method("bytes")->willReturn("0123456789ABCDE");
+        $this->dbService = $this->dbService();
+        $this->userRepository = new UserRepository($this->dbService);
         $this->mailer = new FakeMailer(false, $text);
+        $this->request = $this->request();
+    }
+
+    public function sut(): HandleUserRegistration
+    {
         $password = new FakePassword;
-        $this->subject = new HandleUserRegistration(
-            $conf,
-            $text,
-            $random,
+        return new HandleUserRegistration(
+            XH_includeVar("./config/config.php", "plugin_cf")["register"],
+            XH_includeVar("./languages/en.php", "plugin_tx")["register"],
+            $this->random,
             $this->view,
             $this->userRepository,
             $this->mailer,
             $password
         );
-        $this->request = $this->createStub(Request::class);
-        $this->request->method("url")->willReturn(new Url("/", ""));
     }
 
-    public function testShowsRegistrationForm(): void
+    private function dbService()
     {
-        $response = ($this->subject)($this->request);
+        $hash = "\$2y\$04\$FMR/.rF4uHySPVzW4ZSYDO.BMmJNLAsHdzrD.r8EufGEk7XkWuwzW";
+        $users = [
+            "john" => new User("john", $hash, ["guest"], "John Doe", "john@example.com", "", "secret"),
+            "jane" => new User("jane", $hash, ["guest"], "Jane Doe", "jane@example.com", "12345", "secret"),
+        ];
+        $dbService = new FakeDbService("vfs://root/register/", "guest", $this->random);
+        $dbService->writeUsers($users);
+        return $dbService;
+    }
+
+    private function request()
+    {
+        $request = $this->createStub(Request::class);
+        $request->method("url")->willReturn(new Url("/", ""));
+        return $request;
+    }
+
+    public function testDefaultRendersRegistrationForm(): void
+    {
+        $response = $this->sut()($this->request);
         Approvals::verifyHtml($response->output());
     }
 
-    public function testValidationError(): void
+    public function testRegisterReportsValidationErrors(): void
     {
         $this->request->method("registerAction")->willReturn("register");
         $this->request->method("registerUserPost")->willReturn([
@@ -81,11 +93,11 @@ class HandleUserRegistrationTest extends TestCase
             "password2" => "",
             "email" => "",
         ]);
-        $response = ($this->subject)($this->request);
+        $response = $this->sut()($this->request);
         $this->assertStringContainsString("Please enter your full name.", $response->output());
     }
 
-    public function testExistingUser(): void
+    public function testRegisterReportsExistingUser(): void
     {
         $this->request->method("registerAction")->willReturn("register");
         $this->request->method("registerUserPost")->willReturn([
@@ -95,30 +107,11 @@ class HandleUserRegistrationTest extends TestCase
             "password2" => "test",
             "email" => "jane.smith@example.com",
         ]);
-        $response = ($this->subject)($this->request);
+        $response = $this->sut()($this->request);
         $this->assertStringContainsString("The chosen username exists already.", $response->output());
     }
 
-    public function testExistingEmail(): void
-    {
-        $_SERVER["REMOTE_ADDR"] = "example.com";
-        $_SERVER['SERVER_NAME'] = "example.com";
-        $this->request->method("registerAction")->willReturn("register");
-        $this->request->method("registerUserPost")->willReturn([
-            "name" => "John Smith",
-            "username" => "js",
-            "password1" => "test",
-            "password2" => "test",
-            "email" => "john@example.com",
-        ]);
-        $response = ($this->subject)($this->request);
-        $this->assertStringContainsString(
-            "You have been registered successfully. An email has been sent to you containing a link to activate your new account.",
-            $response->output()
-        );
-    }
-
-    public function testSendsMailOnExistingEmail(): void
+    public function testRegisterRedirectsOnExistingEmail(): void
     {
         $this->request->method("registerAction")->willReturn("register");
         $this->request->method("registerUserPost")->willReturn([
@@ -130,12 +123,14 @@ class HandleUserRegistrationTest extends TestCase
         ]);
         $this->request->method("serverName")->willReturn("example.com");
         $this->request->method("remoteAddress")->willReturn("127.0.0.1");
-        ($this->subject)($this->request);
+        $response = $this->sut()($this->request);
+        $this->assertEquals("http://example.com/", $response->location());
         Approvals::verifyList($this->mailer->lastMail());
     }
 
-    public function testSuccess(): void
+    public function testRegisterReportsFailureToSave(): void
     {
+        $this->dbService->options(["writeUsers" => false]);
         $this->request->method("registerAction")->willReturn("register");
         $this->request->method("registerUserPost")->willReturn([
             "name" => "John Smith",
@@ -144,15 +139,11 @@ class HandleUserRegistrationTest extends TestCase
             "password2" => "test",
             "email" => "js@example.com",
         ]);
-        $response = ($this->subject)($this->request);
-        $this->assertNotNull($this->userRepository->findByUsername("js"));
-        $this->assertStringContainsString(
-            "You have been registered successfully. An email has been sent to you containing a link to activate your new account.",
-            $response->output()
-        );
+        $response = $this->sut()($this->request);
+        $this->assertStringContainsString("Saving CSV file failed.", $response->output());
     }
 
-    public function testSendsEmailOnSuccess(): void
+    public function testRegisterRedirectsOnSuccess(): void
     {
         $this->request->method("registerAction")->willReturn("register");
         $this->request->method("registerUserPost")->willReturn([
@@ -164,52 +155,65 @@ class HandleUserRegistrationTest extends TestCase
         ]);
         $this->request->method("serverName")->willReturn("example.com");
         $this->request->method("remoteAddress")->willReturn("127.0.0.1");
-        ($this->subject)($this->request);
+        $response = $this->sut()($this->request);
         $this->assertNotNull($this->userRepository->findByUsername("js"));
+        $this->assertEquals("http://example.com/", $response->location());
         Approvals::verifyList($this->mailer->lastMail());
     }
 
-    public function testActivateUserActionNoUser(): void
+    public function testActivateReportsMissingNonce(): void
+    {
+        $this->request->method("registerAction")->willReturn("activate");
+        $this->request->method("activationParams")->willReturn([
+            "username" => "js",
+            "nonce" => "",
+        ]);
+        $response = $this->sut()($this->request);
+        $this->assertStringContainsString("No validation code supplied!", $response->output());
+    }
+
+    public function testActivateReportsNonExistentUser(): void
     {
         $this->request->method("registerAction")->willReturn("activate");
         $this->request->method("activationParams")->willReturn([
             "username" => "js",
             "nonce" => "12345",
         ]);
-        $response = ($this->subject)($this->request);
+        $response = $this->sut()($this->request);
         $this->assertStringContainsString("The Username 'js' could not be found!", $response->output());
     }
 
-    public function testActivateUserEmptyState(): void
-    {
-        $this->request->method("registerAction")->willReturn("activate");
-        $this->request->method("activationParams")->willReturn([
-            "username" => "john",
-            "nonce" => "12345",
-        ]);
-        $response = ($this->subject)($this->request);
-        $this->assertStringContainsString("The status of your username is empty.", $response->output());
-    }
-
-    public function testActivateUserInvalidState(): void
+    public function testActivateReportsInvalidNonce(): void
     {
         $this->request->method("registerAction")->willReturn("activate");
         $this->request->method("activationParams")->willReturn([
             "username" => "jane",
             "nonce" => "54321",
         ]);
-        $response = ($this->subject)($this->request);
+        $response = $this->sut()($this->request);
         $this->assertStringContainsString("The entered validation code is invalid.", $response->output());
     }
 
-    public function testActivateUserSuccess(): void
+    public function testActivateReportsFailureToSave(): void
+    {
+        $this->dbService->options(["writeUsers" => false]);
+        $this->request->method("registerAction")->willReturn("activate");
+        $this->request->method("activationParams")->willReturn([
+            "username" => "jane",
+            "nonce" => "12345",
+        ]);
+        $response = $this->sut()($this->request);
+        $this->assertStringContainsString("Saving CSV file failed.", $response->output());
+    }
+
+    public function testActivateReportsSuccess(): void
     {
         $this->request->method("registerAction")->willReturn("activate");
         $this->request->method("activationParams")->willReturn([
             "username" => "jane",
             "nonce" => "12345",
         ]);
-        $response = ($this->subject)($this->request);
+        $response = $this->sut()($this->request);
         $this->assertTrue($this->userRepository->findByUsername("jane")->isActivated());
         $this->assertStringContainsString("You have successfully activated your new account.", $response->output());
     }

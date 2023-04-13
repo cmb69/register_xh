@@ -1,12 +1,13 @@
-/* registration form styles */
+/* registration form */
+div.register_register label span {
+    display: inline-block;
+    width: 10em;
+}
+div.register_register label input {
+    width: 20em;
+}
 
-div.regi_register {background: #eee; text-align: center; border: 1px solid #999; padding: 15px;}
-.regi_register td {color: black; text-align: left; font-weight: normal;}
-.regi_register td .text {background: #fff; text-align:left; border: 1px solid #999; margin: 2px 6px;}
-.regi_register td .submit {border: 3px solid #ccc; background-color: #678; color: #eee; padding: 0px; padding: 0 6px 0 6px; margin: 8px 0;}
-
-
-/* settings */
+/* settings form */
 div.register_settings fieldset {
     padding: 0.35em 0.625em;
 }

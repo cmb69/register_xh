@@ -52,7 +52,6 @@ $plugin_tx['register']['err_email_exists']="En bruger med den angivne email-adre
 // $plugin_tx['register']['err_colon']="må ikke indeholde et kolon.";
 // $plugin_tx['register']['err_group_does_not_exist']="Gruppe findes ikke.";
 $plugin_tx['register']['err_cannot_write_csv']="Saving CSV file failed.";
-$plugin_tx['register']['err_status_empty']="Status for dit brugernavn er tom.";
 $plugin_tx['register']['err_status_invalid']="Den indtastede bekræftelseskode er ugyldig.";
 $plugin_tx['register']['err_group_illegal']="Gruppen Navnet må kun indeholde følgende tegn: A-Z, a-z, 0-9, '_', '-'.";
 $plugin_tx['register']['registered']="Du er blevet registreret korrekt. En e-mail er blevet sendt til dig med et link til at aktivere din nye konto.";

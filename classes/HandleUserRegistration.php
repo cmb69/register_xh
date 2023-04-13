@@ -14,6 +14,7 @@ use Register\Infra\Mailer;
 use Register\Infra\Password;
 use Register\Infra\Random;
 use Register\Infra\Request;
+use Register\Infra\Url;
 use Register\Infra\UserRepository;
 use Register\Infra\View;
 use Register\Logic\Util;
@@ -73,7 +74,7 @@ class HandleUserRegistration
         }
         switch ($request->registerAction()) {
             default:
-                return $this->showForm($request);
+                return $this->showForm();
             case "register":
                 return $this->registerUser($request);
             case "activate":
@@ -81,105 +82,119 @@ class HandleUserRegistration
         }
     }
 
-    private function showForm(Request $request): Response
+    private function showForm(): Response
     {
-        return Response::create($this->view->render('registerform', [
-            'actionUrl' => $request->url()->relative(),
-            "errors" => [],
-            'name' => "",
-            'username' => "",
-            'password1' => "",
-            'password2' => "",
-            'email' => "",
-        ]));
+        $user = new User("", "", [], "", "", "", "");
+        return Response::create($this->renderForm($user, ""));
     }
 
     private function registerUser(Request $request): Response
     {
         $post = $request->registerUserPost();
-        $errors = (new Validator)->validateUser(
-            $post["name"],
+        $user = $this->userFromPost($post);
+        if (($errors = Util::validateUser($user, $post["password2"]))) {
+            return Response::create($this->renderForm($user, $post["password2"], $errors));
+        }
+        if ($this->userRepository->findByUsername($post["username"])) {
+            return Response::create($this->renderForm($user, $post["password2"], [["err_username_exists"]]));
+        }
+        if ($this->userRepository->hasDuplicateEmail($user)) {
+            $this->sendDuplicateEmailNotification($user, $request);
+            return Response::redirect($request->url()->withPage("")->absolute());
+        }
+        $newUser = $this->registeredUser($post);
+        if (!$this->userRepository->save($newUser)) {
+            return Response::create($this->renderForm($user, $post["password2"], [["err_cannot_write_csv"]]));
+        }
+        $this->sendSuccessNotification($newUser, $request);
+        return Response::redirect($request->url()->withPage("")->absolute());
+    }
+
+    /** @param list<array{string}> $errors */
+    private function renderForm(User $user, string $password2, array $errors = []): string
+    {
+        return $this->view->render("registerform", [
+            "errors" => $errors,
+            "name" => $user->getName(),
+            "username" => $user->getUsername(),
+            "password1" => $user->getPassword(),
+            "password2" => $password2,
+            "email" => $user->getEmail(),
+        ]);
+    }
+
+    /** @param array{name:string,username:string,password1:string,password2:string,email:string} $post */
+    private function userFromPost(array $post): User
+    {
+        return new User(
             $post["username"],
             $post["password1"],
-            $post["password2"],
-            $post["email"]
+            ["guest"],
+            $post["name"],
+            $post["email"],
+            "activated",
+            ""
         );
-        if ($errors) {
-            return Response::create($this->view->render('registerform', [
-                'actionUrl' => $request->url()->relative(),
-                "errors" => $errors,
-                'name' => $post["name"],
-                'username' => $post["username"],
-                'password1' => $post["password1"],
-                'password2' => $post["password2"],
-                'email' => $post["email"],
-            ]));
-        }
+    }
 
-        if ($this->userRepository->findByUsername($post["username"])) {
-            return Response::create($this->view->message("fail", 'err_username_exists'));
-        }
-        $user = $this->userRepository->findByEmail($post["email"]);
+    /** @param array{name:string,username:string,password1:string,password2:string,email:string} $post */
+    private function registeredUser(array $post): User
+    {
+        return new User(
+            $post["username"],
+            $this->password->hash($post["password1"]),
+            array($this->conf["group_default"]),
+            $post["name"],
+            $post["email"],
+            Util::base64url($this->random->bytes(15)),
+            base64_encode($this->random->bytes(15))
+        );
+    }
 
-        // generate a nonce for the user activation
-        $nonce = Util::base64url($this->random->bytes(15));
-        if (!$user) {
-            $newUser = new User(
-                $post["username"],
-                $this->password->hash($post["password1"]),
-                array($this->conf['group_default']),
-                $post["name"],
-                $post["email"],
-                $nonce,
-                base64_encode($this->random->bytes(15))
-            );
+    private function sendDuplicateEmailNotification(User $user, Request $request): bool
+    {
+        $url = $request->url()->withPage($this->text["forgot_password"]);
+        return $this->sendNotification($user, "emailtext4", $url, $request);
+    }
 
-            if (!$this->userRepository->save($newUser)) {
-                return Response::create($this->view->message("fail", 'err_cannot_write_csv'));
-            }
-        }
+    private function sendSuccessNotification(User $user, Request $request): bool
+    {
+        $url = $request->url()->withParams([
+            "register_action" => "activate",
+            "username" => $user->getUsername(),
+            "nonce" => $user->getStatus(),
+        ]);
+        return $this->sendNotification($user, "emailtext2", $url, $request);
+    }
 
-        // prepare email content for registration activation
-        if (!$user) {
-            $key = "emailtext2";
-            $url = $request->url()->withParams([
-                "register_action" => "activate",
-                "username" => $post["username"],
-                "nonce" => $nonce,
-            ]);
-        } else {
-            $key = "emailtext4";
-            $url = $request->url()->withPage($this->text['forgot_password']);
-        }
-        $this->mailer->notifyActivation(
-            new User($post["username"], "", [], $post["name"], $post["email"], "", ""),
-            $this->conf['senderemail'],
+    private function sendNotification(User $user, string $key, Url $url, Request $request): bool
+    {
+        return $this->mailer->notifyActivation(
+            $user,
+            $this->conf["senderemail"],
             $url->absolute(),
             $key,
             $request->serverName(),
             $request->remoteAddress()
         );
-        return Response::create($this->view->message('success', 'registered'));
     }
 
     private function activateUser(Request $request): Response
     {
         $params = $request->activationParams();
-        if ($params["username"] === "" || $params["nonce"] === "") {
-            return Response::create();
+        if (!$params["nonce"]) {
+            return Response::create($this->view->error("err_status_empty"));
         }
-        $user = $this->userRepository->findByUsername($params["username"]);
-        if ($user === null) {
-            return Response::create($this->view->message("fail", 'err_username_notfound', $params["username"]));
-        }
-        if ($user->getStatus() === "") {
-            return Response::create($this->view->message("fail", 'err_status_empty'));
+        if (!($user = $this->userRepository->findByUsername($params["username"]))) {
+            return Response::create($this->view->error("err_username_notfound", $params["username"]));
         }
         if (!hash_equals($user->getStatus(), $params["nonce"])) {
-            return Response::create($this->view->message("fail", 'err_status_invalid'));
+            return Response::create($this->view->error("err_status_invalid"));
         }
-        $user = $user->activate()->withAccessgroups([$this->conf['group_activated']]);
-        $this->userRepository->save($user);
-        return Response::create($this->view->message('success', 'activated'));
+        $user = $user->activate()->withAccessgroups([$this->conf["group_activated"]]);
+        if (!$this->userRepository->save($user)) {
+            return Response::create($this->view->error("err_cannot_write_csv"));
+        }
+        return Response::create($this->view->message("success", "activated"));
     }
 }
