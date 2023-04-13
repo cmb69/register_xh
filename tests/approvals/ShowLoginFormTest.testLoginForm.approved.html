@@ -1,26 +1,28 @@
 <!-- register login form -->
-<div class="regi_regloginarea">
-  <form action="/?Foo" method="post">
+<div class="register_login">
+  <form method="post">
     <input type="hidden" name="function" value="registerlogin">
-    <div class="regi_user">Username</div>
-    <div class="regi_userfield"><input class="regi_userfield" type="text" name="username"></div>
-    <div class="regi_password">Password</div>
-    <div class="regi_forgotpw">
-      <a href="/?Password-forgotten" title="Password forgotten">
-        Password forgotten      </a>
-    </div>
-    <div class="regi_passwordfield">
-      <input type="password" name="password">
-    </div>
-    <div class="regi_loginbutton">
-      <button class="regi_loginbutton" name="login">Login</button>
-    </div>
-    <div class="regi_remember">
-      <label><input type="checkbox" name="remember" class="regi_remember">Remember User</label>
-    </div>
-    <div class="regi_register">
+    <p class="register_field">
+      <label>
+        <span>Username</span>
+        <input name="username">
+    </p>
+    <p class="register_field">
+      <label>
+        <span>Password</span>
+        <input type="password" name="password">
+      </label>
+    </p>
+    <p class="register_buttons">
+      <button name="login">Login</button>
+      <label>
+        <input type="checkbox" name="remember">
+        <span>Remember User</span>
+      </label>
+    </p>
+    <p class="register_links">
+      <a href="/?Password-forgotten">Password forgotten</a>
       <a href="/?Register">Register</a>
-    </div>
+    </p>
   </form>
-  <div style="clear: both;"></div>
 </div>

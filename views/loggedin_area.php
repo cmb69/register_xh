@@ -13,20 +13,12 @@ if (!defined("CMSIMPLE_XH_VERSION")) {header("HTTP/1.1 403 Forbidden"); exit;}
  */
 ?>
 <!-- register logged in area -->
-<div class="regi_loggedin_loggedinarea">
-  <div class="regi_loggedin_user"><?=$this->text('loggedin_welcometext', $fullName)?></div>
-  <div class="regi_loggedin_loggedin"><?=$this->text('loggedin')?></div>
-  <div class="regi_loggedin_settings">
+<div class="register_loggedin">
+  <p class="register_welcome"><?=$this->text('loggedin_welcometext', $fullName)?></p>
+  <p class="register_links">
 <?if ($hasUserPrefs):?>
-    <a href="<?=$userPrefUrl?>" title="<?=$this->text('user_prefs')?>">
-      <?=$this->text('user_prefs')?>
-    </a>
+    <a href="<?=$userPrefUrl?>"><?=$this->text('user_prefs')?></a>
 <?endif?>
-  </div>
-  <div class="regi_loggedin_logout">
-    <a href="<?=$logoutUrl?>" title="<?=$this->text('logout')?>">
-      <?=$this->text('logout')?>
-    </a>
-  </div>
-  <div style="clear: both;"></div>
+    <a href="<?=$logoutUrl?>"><?=$this->text('logout')?></a>
+  </p>
 </div>

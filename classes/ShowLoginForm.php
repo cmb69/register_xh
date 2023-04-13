@@ -61,7 +61,6 @@ class ShowLoginForm
     {
         $forgotPasswordPage = $this->text['forgot_password'];
         return $this->view->render('loginform', [
-            'actionUrl' => $request->url()->relative(),
             'hasForgotPasswordLink' => $this->conf['password_forgotten']
                 && !$request->url()->pageMatches($forgotPasswordPage),
             'forgotPasswordUrl' => $request->url()->withPage($forgotPasswordPage)->relative(),
@@ -73,8 +72,9 @@ class ShowLoginForm
 
     private function renderLoggedInForm(Request $request): string
     {
-        $user = $this->userRepository->findByUsername($request->username());
-        assert($user instanceof User);
+        if (!($user = $this->userRepository->findByUsername($request->username()))) {
+            return $this->view->error("err_user_does_not_exist", $request->username());
+        }
         $userPrefPage = $this->text['user_prefs'];
         return $this->view->render('loggedin_area', [
             'fullName' => $user->getName(),

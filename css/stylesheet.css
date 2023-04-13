@@ -22,59 +22,26 @@ div.register_settings label input {
     width: 20em;
 }
 
-/* login form for horizontal login-area */
-/*
-div.regi_regloginarea {font-size: 94%; text-align: left;}
-div.regi_user {float: left; padding: 0 10px 0 0;}
-div.regi_userfield {float: left; margin: 0 16px 0 0;}
-div.regi_userfield input {float: left; width: 120px;}
-div.regi_password {float: left; margin: 0 8px 0 0;}
-div.regi_forgotpw {float: left; margin: 3px 8px 0 0;}
-div.regi_passwordfield {float: left; margin: 0 10px 0 0;}
-div.regi_passwordfield input {float: left; width: 120px;}
-div.regi_loginbutton {float: left; margin: 2px 10px 0 0;}
-div.regi_loginbutton input {border: 0;}
-div.regi_remember {float: left; text-align: left; line-height: 1.2em; margin: 0 6px 0 0;}
-div.regi_remember input {float: left; text-align: left; margin: 3px 8px 0 0;}
-div.regi_register {float: left;}
-*/
+/* login form */
+div.register_login p.register_field span {
+    display: block;
+}
+div.register_login p.register_field input {
+    width: 100%;
+}
+div.register_login p.register_buttons,
+div.register_login p.register_links {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
 
-/* login form for vertical login-area */
-
-div.regi_regloginarea {font-family: arial, sans-serif; font-size: 94%; color: #333; text-align: left;}
-div.regi_user {text-align: left;}
-div.regi_userfield {clear: both; width: 100%; float: left; width: 98%; margin: 0;}
-div.regi_userfield input {float: left; width: 100%; margin: 0;}
-div.regi_password {clear: both; width: 120px; float: left; margin: 4px 8px 0 0;}
-div.regi_forgotpw {float: right; margin: 2px 0 0 20px;}
-div.regi_passwordfield {clear: both; float: left; width: 98%; margin: 0;}
-div.regi_passwordfield input {float: left; width: 100%; margin: 0;}
-div.regi_loginbutton {clear: both; float: left; margin: 3px 10px 10px 0;}
-div.regi_loginbutton input {border: 0;}
-div.regi_remember {clear: both; width: 100%; float: left; text-align: left; line-height: 1em; margin: 4px 0;}
-div.regi_remember input {float: left; margin: 2px 6px 6px 0;}
-div.regi_register {clear: left; float: left; text-align: right; margin: 2px 0 0 0;}
-
-/* loggedin form images */
-
-.regi_forgotpwimage {float: left; border: 0;}
-
-/* loggedin form for horizontal loggedin-area */
-/*
-div.regi_loggedin_loggedinarea {background: #eee url(../images/loginhorizontal.jpg); font-size: 94%; text-align: left; border: 1px solid #aba; padding: 6px 12px; margin: 0 10px;}
-div.regi_loggedin_user {float: left; }
-div.regi_loggedin_loggedin {float: left; font-family: arial, sans-serif; font-weight: 600; color: #930; padding: 0 20px 0 0;}
-div.regi_loggedin_settings {float: left; padding: 0 12px 0 0;}
-div.regi_loggedin_logout {float: right;}
-*/
-
-/* loggedin form for vertical loggedin-area */
-
-div.regi_loggedin_loggedinarea {font-family: arial, sans-serif; font-size: 94%; color: #333; text-align: left; margin: 10px auto 0 auto;}
-div.regi_loggedin_user {float: left; width: 100%;}
-div.regi_loggedin_loggedin {float: left; width: 100%; font-family: arial, sans-serif; font-weight: 600; color: #930; padding: 6px 0;}
-div.regi_loggedin_settings {float: left; width: 100%; padding: 0;}
-div.regi_loggedin_logout {float: left; width: 100%; padding: 2px 0;}
+/* logged in form */
+div.register_loggedin p.register_links {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
 
 /* password forgotten form */
 div.register_password_forgotten label span {
