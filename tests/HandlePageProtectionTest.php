@@ -51,7 +51,7 @@ class HandlePageProtectionTest extends TestCase
     public function testProtectsPages(): void
     {
         $this->pages->expects($this->once())->method("setContentOf")->with(
-            2, "#CMSimple hide# {{{register_access('admin')}}}"
+            2, "{{{register_access('admin')}}}#CMSimple hide#"
         );
         ($this->sut)($this->request);
     }

@@ -37,14 +37,18 @@ class HandlePageProtection
 
     public function __invoke(Request $request): Response
     {
-        if ($request->editMode() || !$this->conf["hide_pages"]) {
+        if ($request->editMode()) {
             return Response::create();
         }
         $user = $this->userRepository->findByUsername($request->username());
         foreach ($this->pages->data() as $i => $pd) {
             $arg = $pd["register_access"] ?? "";
             if (!Util::isAuthorized($user, $arg)) {
-                $this->pages->setContentOf($i, "#CMSimple hide# {{{register_access('$arg')}}}");
+                $content = "{{{register_access('$arg')}}}";
+                if ($this->conf["hide_pages"]) {
+                    $content .= "#CMSimple hide#";
+                }
+                $this->pages->setContentOf($i, $content);
             }
         }
         return Response::create();
