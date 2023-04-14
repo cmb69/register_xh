@@ -25,16 +25,13 @@ class Dic
 {
     public static function makeLoginController(): LoginController
     {
-        global $plugin_cf, $plugin_tx;
+        global $plugin_cf;
 
         return new LoginController(
             $plugin_cf["register"],
-            $plugin_tx["register"],
             self::makeUserRepository(),
-            self::makeUserGroupRepository(),
             new Logger(),
-            new LoginManager(),
-            new Password()
+            new LoginManager()
         );
     }
 
@@ -139,7 +136,11 @@ class Dic
         return new ShowLoginForm(
             $plugin_cf["register"],
             $plugin_tx["register"],
-            Dic::makeUserRepository(),
+            self::makeUserRepository(),
+            self::makeUserGroupRepository(),
+            new LoginManager(),
+            new Logger(),
+            new Password(),
             self::makeView()
         );
     }

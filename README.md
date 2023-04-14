@@ -149,15 +149,6 @@ pages should contain the respective plugin call, if applicable:
 
       {{{registerUserPrefs()}}}`
 
-- `login_error`:
-  the page where a user is informed about an invalid login attempt
-
-- `loggedout`:
-  the page that is displayed after a user has logged out
-
-- `loggedin`:
-  the page that is displayed after a user has logged in
-
 - `access_error`:
   the page that is displayed when a user browses to a page he is not allowed to access
 

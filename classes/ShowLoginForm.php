@@ -10,9 +10,14 @@
 
 namespace Register;
 
+use Register\Infra\Logger;
+use Register\Infra\LoginManager;
+use Register\Infra\Password;
 use Register\Infra\Request;
+use Register\Infra\UserGroupRepository;
 use Register\Infra\UserRepository;
 use Register\Infra\View;
+use Register\Logic\Util;
 use Register\Value\Response;
 use Register\Value\User;
 
@@ -27,6 +32,18 @@ class ShowLoginForm
     /** @var UserRepository */
     private $userRepository;
 
+    /** @var UserGroupRepository */
+    private $userGroupRepository;
+
+    /** @var LoginManager */
+    private $loginManager;
+
+    /** @var Logger */
+    private $logger;
+
+    /** @var Password */
+    private $password;
+
     /** @var View */
     private $view;
 
@@ -38,35 +55,85 @@ class ShowLoginForm
         array $conf,
         array $text,
         UserRepository $userRepository,
+        UserGroupRepository $userGroupRepository,
+        LoginManager $loginManager,
+        Logger $logger,
+        Password $password,
         View $view
     ) {
         $this->conf = $conf;
         $this->text = $text;
         $this->userRepository = $userRepository;
+        $this->userGroupRepository = $userGroupRepository;
+        $this->loginManager = $loginManager;
+        $this->logger = $logger;
+        $this->password = $password;
         $this->view = $view;
     }
 
     public function __invoke(Request $request, bool $loggedInOnly = false): Response
     {
+        if (!$loggedInOnly && !$request->username() && $request->function() === "registerlogin") {
+            return $this->loginAction($request);
+        }
         if ($request->username() !== "") {
             return Response::create($this->renderLoggedInForm($request));
         }
         if (!$loggedInOnly) {
-            return Response::create($this->renderLoginForm($request));
+            $login = ["username" => "", "password" => "", "remember" => ""];
+            return Response::create($this->renderLoginForm($request, $login));
         }
         return Response::create("");
     }
 
-    private function renderLoginForm(Request $request): string
+    private function loginAction(Request $request): Response
     {
-        $forgotPasswordPage = $this->text['forgot_password'];
-        return $this->view->render('loginform', [
-            'hasForgotPasswordLink' => $this->conf['password_forgotten']
+        $post = $request->registerLoginPost();
+        if (!($user = $this->userRepository->findByUsername($post["username"]))) {
+            $this->logger->logError("login", "Unknown user '$post[username]'");
+            return Response::create($this->renderLoginForm($request, $post, [["login_error_text"]]));
+        }
+        if (!$user->isActivated() && !$user->isLocked()) {
+            $this->logger->logError("login", "User '$post[username]' is not allowed to login");
+            return Response::create($this->renderLoginForm($request, $post, [["login_error_text"]]));
+        }
+        if (!$this->password->verify($post["password"], $user->getPassword())) {
+            $this->logger->logError("login", "User '$post[username]' submitted wrong password");
+            return Response::create($this->renderLoginForm($request, $post, [["login_error_text"]]));
+        }
+        if ($this->password->needsRehash($user->getPassword())) {
+            $this->userRepository->save($user->withPassword($this->password->hash($post["password"])));
+        }
+        $this->loginManager->login($user);
+        $this->logger->logInfo("login", "User '$post[username]' logged in");
+        if ($this->conf["remember_user"] && $post["remember"]) {
+            return Response::redirect($this->loginUrl($request, $user))->withCookie(
+                "register_remember",
+                $user->getUsername() . "." . Util::hmac($user->getUsername(), $user->secret()),
+                $request->time() + (100 * 24 * 60 * 60)
+            );
+        }
+        return Response::redirect($this->loginUrl($request, $user));
+    }
+
+    /**
+     * @param array{username:string,password:string,remember:string} $login
+     * @param list<array{string}> $errors
+     */
+    private function renderLoginForm(Request $request, array $login, array $errors = []): string
+    {
+        $forgotPasswordPage = $this->text["forgot_password"];
+        return $this->view->render("loginform", [
+            "errors" => $errors,
+            "username" => $login["username"],
+            "password" => $login["password"],
+            "checked" => $login["remember"] ? "checked" : "",
+            "hasForgotPasswordLink" => $this->conf["password_forgotten"]
                 && !$request->url()->pageMatches($forgotPasswordPage),
-            'forgotPasswordUrl' => $request->url()->withPage($forgotPasswordPage)->relative(),
-            'hasRememberMe' => (bool) $this->conf['remember_user'],
-            'isRegisterAllowed' => (bool) $this->conf['allowed_register'],
-            'registerUrl' => $request->url()->withPage($this->text['register'])->relative(),
+            "forgotPasswordUrl" => $request->url()->withPage($forgotPasswordPage)->relative(),
+            "hasRememberMe" => (bool) $this->conf["remember_user"],
+            "isRegisterAllowed" => (bool) $this->conf["allowed_register"],
+            "registerUrl" => $request->url()->withPage($this->text["register"])->relative(),
         ]);
     }
 
@@ -75,13 +142,24 @@ class ShowLoginForm
         if (!($user = $this->userRepository->findByUsername($request->username()))) {
             return $this->view->error("err_user_does_not_exist", $request->username());
         }
-        $userPrefPage = $this->text['user_prefs'];
-        return $this->view->render('loggedin_area', [
-            'fullName' => $user->getName(),
-            'hasUserPrefs' => $user->isActivated() &&
+        $userPrefPage = $this->text["user_prefs"];
+        return $this->view->render("loggedin_area", [
+            "fullName" => $user->getName(),
+            "hasUserPrefs" => $user->isActivated() &&
                 !$request->url()->pageMatches($userPrefPage),
-            'userPrefUrl' => $request->url()->withPage($userPrefPage)->relative(),
-            'logoutUrl' => $request->url()->withPage("")->withParams(["function" => "registerlogout"])->relative(),
+            "userPrefUrl" => $request->url()->withPage($userPrefPage)->relative(),
+            "logoutUrl" => $request->url()->withParams(["function" => "registerlogout"])->relative(),
         ]);
+    }
+
+    private function loginUrl(Request $request, User $user): string
+    {
+        if (!($group = $this->userGroupRepository->findByGroupname($user->getAccessgroups()[0]))) {
+            return $request->url()->absolute();
+        }
+        if (!$group->getLoginpage()) {
+            return $request->url()->absolute();
+        }
+        return $request->url()->withEncodedPage($group->getLoginpage())->absolute();
     }
 }

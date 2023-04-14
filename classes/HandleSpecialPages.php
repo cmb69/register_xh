@@ -52,12 +52,6 @@ class HandleSpecialPages
             return $this->passwordForgottenPageAction();
         } elseif ($request->url()->pageMatches($this->text["user_prefs"])) {
             return $this->userPrefsPageAction();
-        } elseif ($request->url()->pageMatches($this->text["login_error"])) {
-            return $this->loginErrorPageAction();
-        } elseif ($request->url()->pageMatches($this->text["loggedout"])) {
-            return $this->logoutPageAction();
-        } elseif ($request->url()->pageMatches($this->text["loggedin"])) {
-            return $this->loginPageAction();
         } elseif ($request->url()->pageMatches($this->text["access_error"])) {
             return $this->accessErrorPageAction();
         } else {
@@ -97,39 +91,6 @@ class HandleSpecialPages
                 $this->text['changeexplanation'],
                 "registerUserPrefs()"
             ))->withTitle($this->text['user_prefs']);
-        }
-        return Response::create();
-    }
-
-    private function loginErrorPageAction(): Response
-    {
-        if (!$this->pages->has($this->text['login_error'])) {
-            return Response::forbid($this->renderPageView(
-                $this->text['login_error'],
-                $this->text['login_error_text']
-            ))->withTitle($this->text['login_error']);
-        }
-        return Response::forbid();
-    }
-
-    private function logoutPageAction(): Response
-    {
-        if (!$this->pages->has($this->text['loggedout'])) {
-            return Response::create($this->renderPageView(
-                $this->text['loggedout'],
-                $this->text['loggedout_text']
-            ))->withTitle($this->text['loggedout']);
-        }
-        return Response::create();
-    }
-
-    private function loginPageAction(): Response
-    {
-        if (!$this->pages->has($this->text['loggedin'])) {
-            return Response::create($this->renderPageView(
-                $this->text['loggedin'],
-                $this->text['loggedin_text']
-            ))->withTitle($this->text['loggedin']);
         }
         return Response::create();
     }

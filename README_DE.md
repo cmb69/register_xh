@@ -158,15 +158,6 @@ und die Seiten sollten den entsprechenden Pluginaufruf enthalten:
 
       {{{registerUserPrefs()}}}
 
-- `login_error`:
-  die Seite, auf der Anwender über ein fehl geschlagenes Login informiert werden
-
-- `loggedout`:
-  die Seite, die angezeigt wird nachdem sich ein Anwender ausgeloggt hat
-
-- `loggedin`:
-  die Seite, die angezeigt wird nachchdem sich ein Anwender eingeloggt hat
-
 - `access_error`:
   die Seite, die angezeigt wird, wenn Anwender eine Seite aufrufen, für die sie kein Zugriffsrecht haben
 

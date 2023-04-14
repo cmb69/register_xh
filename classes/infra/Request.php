@@ -37,6 +37,16 @@ class Request
         return $_POST["action"] ?? $_GET["action"] ?? "";
     }
 
+    /** @return array{username:string,password:string,remember:string} */
+    public function registerLoginPost(): array
+    {
+        return [
+            "username" => $this->trimmedPostString("username"),
+            "password" => $this->trimmedPostString("password"),
+            "remember" => $this->trimmedPostString("remember"),
+        ];
+    }
+
     /** @return array{name:string,username:string,password1:string,password2:string,email:string} */
     public function registerUserPost(): array
     {

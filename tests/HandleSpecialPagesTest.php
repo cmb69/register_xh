@@ -75,37 +75,6 @@ class HandleSpecialPagesTest extends TestCase
         Approvals::verifyHtml($response->output());
     }
 
-    public function testLoginErrorPage(): void
-    {
-        $this->url->method("pageMatches")->willReturnCallback(function (string $other) {
-            return $other === $this->text["login_error"];
-        });
-        $response = ($this->sut)($this->request);
-        $this->assertTrue($response->isForbidden());
-        $this->assertEquals($this->text["login_error"], $response->title());
-        Approvals::verifyHtml($response->output());
-    }
-
-    public function testLogoutPage(): void
-    {
-        $this->url->method("pageMatches")->willReturnCallback(function (string $other) {
-            return $other === $this->text["loggedout"];
-        });
-        $response = ($this->sut)($this->request);
-        $this->assertEquals($this->text["loggedout"], $response->title());
-        Approvals::verifyHtml($response->output());
-    }
-
-    public function testLoginPage(): void
-    {
-        $this->url->method("pageMatches")->willReturnCallback(function (string $other) {
-            return $other === $this->text["loggedin"];
-        });
-        $response = ($this->sut)($this->request);
-        $this->assertEquals($this->text["loggedin"], $response->title());
-        Approvals::verifyHtml($response->output());
-    }
-
     public function testAccessErrorPage(): void
     {
         $this->url->method("pageMatches")->willReturnCallback(function (string $other) {
