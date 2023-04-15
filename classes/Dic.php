@@ -35,18 +35,6 @@ class Dic
         );
     }
 
-    public static function makeHandleSpecialPages(): HandleSpecialPages
-    {
-        global $plugin_cf, $plugin_tx;
-
-        return new HandleSpecialPages(
-            $plugin_cf['register'],
-            $plugin_tx['register'],
-            self::makeView(),
-            new Pages
-        );
-    }
-
     public static function makeUserAdmin(): UserAdmin
     {
         global $plugin_cf;
@@ -74,11 +62,10 @@ class Dic
 
     public static function makeHandleUserRegistration(): HandleUserRegistration
     {
-        global $plugin_cf, $plugin_tx;
+        global $plugin_cf;
 
         return new HandleUserRegistration(
             $plugin_cf["register"],
-            $plugin_tx["register"],
             new Random,
             self::makeView(),
             self::makeUserRepository(),
@@ -129,11 +116,10 @@ class Dic
 
     public static function makeShowLoginForm(): ShowLoginForm
     {
-        global $plugin_cf, $plugin_tx;
+        global $plugin_cf;
 
         return new ShowLoginForm(
             $plugin_cf["register"],
-            $plugin_tx["register"],
             self::makeUserRepository(),
             self::makeUserGroupRepository(),
             new LoginManager(),

@@ -15,7 +15,6 @@ per email. It is used by some other plugins to add user management (e.g.
   - [User and Group Administration](#user-and-group-administration)
   - [Login Form](#login-form)
   - [Access to Pages](#access-to-pages)
-  - [Special Pages](#special-pages)
 - [Limitations](#limitations)
 - [Troubleshooting](#troubleshooting)
 - [License](#license)
@@ -129,44 +128,6 @@ Note that the `access()` and `register_access()` calls of former versions
 of the plugin are still supported, but these do not automatically protect
 subpages as well.
 Using these functions for page protection is highly discouraged.
-
-### Special Pages
-
-Register_XH dynamically adds some special pages to CMSimple_XH, if these do
-not already exist. Usually you do not have to care about this, but you can
-use the feature to create your own pages with the respective heading, if you
-want to customize any of these pages beyond what is possible with adjusting
-the related language strings. The headings of these pages are specified by
-the *actual values* of the following language strings and the
-pages should contain the respective plugin call, if applicable:
-
-- `register`:
-  the page where users can register for a new account
-
-        {{{registerUser()}}}
-
-- `forgot_password`:
-  the page where a user can request an email which allows to reset his password
-
-      {{{registerForgotPassword()}}}
-
-- `user_prefs`:
-  the page where a user can change his account setting
-
-      {{{registerUserPrefs()}}}`
-
-- `access_error`:
-  the page that is displayed when a user browses to a page he is not allowed to access
-
-Please note that the handling and recognition of these pages is a bit sloppy
-currently (e.g. it does not matter on which menu level they are defined), but
-this is likely to change in the future.
-
-## Limitations
-
-If any CMSimple_XH page inadvertently has a heading that is used for one of
-the [special Register_XH pages](#special-pages), the plugin might
-not work as expected.
 
 ## Troubleshooting
 

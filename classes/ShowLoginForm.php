@@ -26,9 +26,6 @@ class ShowLoginForm
     /** @var array<string,string> */
     private $conf;
 
-    /** @var array<string,string> */
-    private $text;
-
     /** @var UserRepository */
     private $userRepository;
 
@@ -47,13 +44,9 @@ class ShowLoginForm
     /** @var View */
     private $view;
 
-    /**
-     * @param array<string,string> $conf
-     * @param array<string,string> $text
-     */
+    /** @param array<string,string> $conf */
     public function __construct(
         array $conf,
-        array $text,
         UserRepository $userRepository,
         UserGroupRepository $userGroupRepository,
         LoginManager $loginManager,
@@ -62,7 +55,6 @@ class ShowLoginForm
         View $view
     ) {
         $this->conf = $conf;
-        $this->text = $text;
         $this->userRepository = $userRepository;
         $this->userGroupRepository = $userGroupRepository;
         $this->loginManager = $loginManager;
@@ -122,18 +114,16 @@ class ShowLoginForm
      */
     private function renderLoginForm(Request $request, array $login, array $errors = []): string
     {
-        $forgotPasswordPage = $this->text["forgot_password"];
         return $this->view->render("loginform", [
             "errors" => $errors,
             "username" => $login["username"],
             "password" => $login["password"],
             "checked" => $login["remember"] ? "checked" : "",
-            "hasForgotPasswordLink" => $this->conf["password_forgotten"]
-                && !$request->url()->pageMatches($forgotPasswordPage),
-            "forgotPasswordUrl" => $request->url()->withPage($forgotPasswordPage)->relative(),
+            "hasForgotPasswordLink" => $this->conf["password_forgotten"] && $request->su() !== "register+password",
+            "forgotPasswordUrl" => $request->url()->withPage("register+password")->relative(),
             "hasRememberMe" => (bool) $this->conf["remember_user"],
             "isRegisterAllowed" => (bool) $this->conf["allowed_register"],
-            "registerUrl" => $request->url()->withPage($this->text["register"])->relative(),
+            "registerUrl" => $request->url()->withPage("register+user")->relative(),
         ]);
     }
 
@@ -142,12 +132,10 @@ class ShowLoginForm
         if (!($user = $this->userRepository->findByUsername($request->username()))) {
             return $this->view->error("err_user_does_not_exist", $request->username());
         }
-        $userPrefPage = $this->text["user_prefs"];
         return $this->view->render("loggedin_area", [
             "fullName" => $user->getName(),
-            "hasUserPrefs" => $user->isActivated() &&
-                !$request->url()->pageMatches($userPrefPage),
-            "userPrefUrl" => $request->url()->withPage($userPrefPage)->relative(),
+            "hasUserPrefs" => $user->isActivated() && $request->su() !== "register+settings",
+            "userPrefUrl" => $request->url()->withPage("register+settings")->relative(),
             "logoutUrl" => $request->url()->withParams(["function" => "registerlogout"])->relative(),
         ]);
     }
@@ -160,6 +148,6 @@ class ShowLoginForm
         if (!$group->getLoginpage()) {
             return $request->url()->absolute();
         }
-        return $request->url()->withEncodedPage($group->getLoginpage())->absolute();
+        return $request->url()->withPage($group->getLoginpage())->absolute();
     }
 }

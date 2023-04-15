@@ -26,11 +26,6 @@ class DicTest extends TestCase
         $this->assertInstanceOf(LoginController::class, Dic::makeLoginController());
     }
 
-    public function testMakesHandleSpecialPages(): void
-    {
-        $this->assertInstanceOf(HandleSpecialPages::class, Dic::makeHandleSpecialPages());
-    }
-
     public function testMakesUserAdmin(): void
     {
         $this->assertInstanceOf(UserAdmin::class, Dic::makeUserAdmin());

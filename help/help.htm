@@ -41,7 +41,6 @@
 <li><a href="#user-and-group-administration">User and Group Administration</a></li>
 <li><a href="#login-form">Login Form</a></li>
 <li><a href="#access-to-pages">Access to Pages</a></li>
-<li><a href="#special-pages">Special Pages</a></li>
 </ul></li>
 <li><a href="#limitations">Limitations</a></li>
 <li><a href="#troubleshooting">Troubleshooting</a></li>
@@ -90,20 +89,6 @@
 <h3 id="access-to-pages">Access to Pages</h3>
 <p>To restrict the access to a CMSimple_XH page to certain user groups, you have to enter the group names as comma separated list in the <code>Access</code> page data tab above the editor. If the field is empty, the page is accessible to everybody. If a page is protected this way, all its subpages are protected as well.</p>
 <p>Note that the <code>access()</code> and <code>register_access()</code> calls of former versions of the plugin are still supported, but these do not automatically protect subpages as well. Using these functions for page protection is highly discouraged.</p>
-<h3 id="special-pages">Special Pages</h3>
-<p>Register_XH dynamically adds some special pages to CMSimple_XH, if these do not already exist. Usually you do not have to care about this, but you can use the feature to create your own pages with the respective heading, if you want to customize any of these pages beyond what is possible with adjusting the related language strings. The headings of these pages are specified by the <em>actual values</em> of the following language strings and the pages should contain the respective plugin call, if applicable:</p>
-<ul>
-<li><p><code>register</code>: the page where users can register for a new account</p>
-<pre><code>  {{{registerUser()}}}</code></pre></li>
-<li><p><code>forgot_password</code>: the page where a user can request an email which allows to reset his password</p>
-<pre><code>{{{registerForgotPassword()}}}</code></pre></li>
-<li><p><code>user_prefs</code>: the page where a user can change his account setting</p>
-<pre><code>{{{registerUserPrefs()}}}`</code></pre></li>
-<li><p><code>access_error</code>: the page that is displayed when a user browses to a page he is not allowed to access</p></li>
-</ul>
-<p>Please note that the handling and recognition of these pages is a bit sloppy currently (e.g. it does not matter on which menu level they are defined), but this is likely to change in the future.</p>
-<h2 id="limitations">Limitations</h2>
-<p>If any CMSimple_XH page inadvertently has a heading that is used for one of the <a href="#special-pages">special Register_XH pages</a>, the plugin might not work as expected.</p>
 <h2 id="troubleshooting">Troubleshooting</h2>
 <p>Report bugs and ask for support either on <a href="https://github.com/cmb69/register_xh/issues">Github</a> or in the <a href="https://cmsimpleforum.com/">CMSimple_XH Forum</a>.</p>
 <h2 id="license">License</h2>

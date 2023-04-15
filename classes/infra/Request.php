@@ -225,6 +225,12 @@ class Request
         return new Url($sn, $su);
     }
 
+    public function su(): string
+    {
+        global $su;
+        return $su;
+    }
+
     /** @codeCoverageIgnore */
     public function editMode(): bool
     {

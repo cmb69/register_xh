@@ -27,9 +27,6 @@ class HandleUserRegistration
     /** @var array<string,string> */
     private $conf;
 
-    /** @var array<string,string> */
-    private $text;
-
     /** @var Random */
     private $random;
 
@@ -45,13 +42,9 @@ class HandleUserRegistration
     /** @var Password */
     private $password;
 
-    /**
-     * @param array<string,string> $conf
-     * @param array<string,string> $text
-     */
+    /** @param array<string,string> $conf */
     public function __construct(
         array $conf,
-        array $text,
         Random $random,
         View $view,
         UserRepository $userRepository,
@@ -59,7 +52,6 @@ class HandleUserRegistration
         Password $password
     ) {
         $this->conf = $conf;
-        $this->text = $text;
         $this->random = $random;
         $this->view = $view;
         $this->userRepository = $userRepository;
@@ -69,8 +61,8 @@ class HandleUserRegistration
 
     public function __invoke(Request $request): Response
     {
-        if ($request->username()) {
-            return Response::redirect(CMSIMPLE_URL);
+        if (!$this->conf["allowed_register"] || $request->username() || $request->editMode()) {
+            return Response::create();
         }
         switch ($request->registerAction()) {
             default:
@@ -85,7 +77,7 @@ class HandleUserRegistration
     private function showForm(): Response
     {
         $user = new User("", "", [], "", "", "", "");
-        return Response::create($this->renderForm($user, ""));
+        return $this->respondWith($this->renderForm($user, ""));
     }
 
     private function registerUser(Request $request): Response
@@ -93,10 +85,10 @@ class HandleUserRegistration
         $post = $request->registerUserPost();
         $user = $this->userFromPost($post);
         if (($errors = Util::validateUser($user, $post["password2"]))) {
-            return Response::create($this->renderForm($user, $post["password2"], $errors));
+            return $this->respondWith($this->renderForm($user, $post["password2"], $errors));
         }
         if ($this->userRepository->findByUsername($post["username"])) {
-            return Response::create($this->renderForm($user, $post["password2"], [["err_username_exists"]]));
+            return $this->respondWith($this->renderForm($user, $post["password2"], [["err_username_exists"]]));
         }
         if ($this->userRepository->hasDuplicateEmail($user)) {
             $this->sendDuplicateEmailNotification($user, $request);
@@ -104,7 +96,7 @@ class HandleUserRegistration
         }
         $newUser = $this->registeredUser($post);
         if (!$this->userRepository->save($newUser)) {
-            return Response::create($this->renderForm($user, $post["password2"], [["err_cannot_write_csv"]]));
+            return $this->respondWith($this->renderForm($user, $post["password2"], [["err_cannot_write_csv"]]));
         }
         $this->sendSuccessNotification($newUser, $request);
         return Response::redirect($request->url()->withPage("")->absolute());
@@ -153,7 +145,7 @@ class HandleUserRegistration
 
     private function sendDuplicateEmailNotification(User $user, Request $request): bool
     {
-        $url = $request->url()->withPage($this->text["forgot_password"]);
+        $url = $request->url()->withPage("register+password");
         return $this->sendNotification($user, "emailtext4", $url, $request);
     }
 
@@ -183,18 +175,25 @@ class HandleUserRegistration
     {
         $params = $request->activationParams();
         if (!$params["nonce"]) {
-            return Response::create($this->view->error("err_status_empty"));
+            return $this->respondWith($this->view->error("err_status_empty"));
         }
         if (!($user = $this->userRepository->findByUsername($params["username"]))) {
-            return Response::create($this->view->error("err_username_notfound", $params["username"]));
+            return $this->respondWith($this->view->error("err_username_notfound", $params["username"]));
         }
         if (!hash_equals($user->getStatus(), $params["nonce"])) {
-            return Response::create($this->view->error("err_status_invalid"));
+            return $this->respondWith($this->view->error("err_status_invalid"));
         }
         $user = $user->activate()->withAccessgroups([$this->conf["group_activated"]]);
         if (!$this->userRepository->save($user)) {
-            return Response::create($this->view->error("err_cannot_write_csv"));
+            return $this->respondWith($this->view->error("err_cannot_write_csv"));
         }
-        return Response::create($this->view->message("success", "activated"));
+        return $this->respondWith($this->view->message("success", "activated"));
+    }
+
+    private function respondWith(string $output): Response
+    {
+        return Response::create("<h1>" . $this->view->text("register") . "</h1>\n"
+            . "<p>" . $this->view->text("register_form1") . "</p>\n"
+            . $output)->withTitle($this->view->text("register"));
     }
 }

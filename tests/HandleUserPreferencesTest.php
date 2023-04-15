@@ -72,9 +72,9 @@ class HandleUserPreferencesTest extends TestCase
     public function testReportsNonExistentUser(): void
     {
         $this->request->method("registerAction")->willReturn("");
-        $this->request->method("username")->willReturn("");
+        $this->request->method("username")->willReturn("colt");
         $response = ($this->subject)($this->request);
-        $this->assertStringContainsString("User '' does not exist!", $response->output());
+        $this->assertStringContainsString("User 'colt' does not exist!", $response->output());
     }
 
     public function testReportsIfUserIsLocked(): void
@@ -105,9 +105,9 @@ class HandleUserPreferencesTest extends TestCase
     public function testChangePrefsReportsNonExistentUser(): void
     {
         $this->request->method("registerAction")->willReturn("change_prefs");
-        $this->request->method("username")->willReturn("");
+        $this->request->method("username")->willReturn("colt");
         $response = ($this->subject)($this->request);
-        $this->assertStringContainsString("User '' does not exist!", $response->output());
+        $this->assertStringContainsString("User 'colt' does not exist!", $response->output());
     }
 
     public function testChangePrefsReportsLockedUser(): void
@@ -196,9 +196,9 @@ class HandleUserPreferencesTest extends TestCase
     {
         $_POST = ["action" => "edit_user_prefs", "delete" => ""];
         $this->request->method("registerAction")->willReturn("unregister");
-        $this->request->method("username")->willReturn("");
+        $this->request->method("username")->willReturn("colt");
         $response = ($this->subject)($this->request);
-        $this->assertStringContainsString("User '' does not exist!", $response->output());
+        $this->assertStringContainsString("User 'colt' does not exist!", $response->output());
     }
 
     public function testUnregisterReportsLockedUser(): void

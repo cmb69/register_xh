@@ -13,7 +13,6 @@ namespace Register;
 use Register\Infra\Mailer;
 use Register\Infra\Password;
 use Register\Infra\Request;
-use Register\Infra\Url;
 use Register\Infra\UserRepository;
 use Register\Infra\View;
 use Register\Logic\Util;
@@ -57,8 +56,8 @@ class HandlePasswordForgotten
 
     public function __invoke(Request $request): Response
     {
-        if ($request->username()) {
-            return Response::redirect(CMSIMPLE_URL);
+        if (!$this->conf["password_forgotten"] || $request->username() || $request->editMode()) {
+            return Response::create();
         }
         switch ($request->registerAction()) {
             default:
@@ -74,20 +73,20 @@ class HandlePasswordForgotten
 
     private function showForm(): Response
     {
-        return Response::create($this->renderForm(""));
+        return $this->respondWith($this->renderForm(""));
     }
 
     private function passwordForgotten(Request $request): Response
     {
         $post = $request->forgotPasswordPost();
         if (($errors = (new Validator)->validateEmail($post["email"]))) {
-            return Response::create($this->renderForm($post["email"], $errors));
+            return $this->respondWith($this->renderForm($post["email"], $errors));
         }
         if (!($user = $this->userRepository->findByEmail($post["email"]))) {
-            return Response::create($this->view->message('success', 'remindersent_reset'));
+            return $this->respondWith($this->view->message('success', 'remindersent_reset'));
         }
         $this->sendNotification($user, $request);
-        return Response::create($this->view->message('success', 'remindersent_reset'));
+        return $this->respondWith($this->view->message('success', 'remindersent_reset'));
     }
 
     private function sendNotification(User $user, Request $request): bool
@@ -111,39 +110,39 @@ class HandlePasswordForgotten
     {
         $params = $request->resetPasswordParams();
         if (!($user = $this->userRepository->findByUsername($params["username"]))) {
-            return Response::create($this->view->error("err_user_does_not_exist", $params["username"]));
+            return $this->respondWith($this->view->error("err_user_does_not_exist", $params["username"]));
         }
         if (!$this->verifyMac($user, $params)) {
-            return Response::create($this->view->message("fail", 'err_status_invalid'));
+            return $this->respondWith($this->view->message("fail", 'err_status_invalid'));
         }
         if ($this->isExpired((int) $params["time"], $request)) {
-            return Response::create($this->view->message("fail", "forgotten_expired"));
+            return $this->respondWith($this->view->message("fail", "forgotten_expired"));
         }
-        return Response::create($this->renderChangePasswordForm(["password1" => "", "password2" => ""]));
+        return $this->respondWith($this->renderChangePasswordForm(["password1" => "", "password2" => ""]));
     }
 
     private function changePassword(Request $request): Response
     {
         $params = $request->resetPasswordParams();
         if (!($user = $this->userRepository->findByUsername($params["username"]))) {
-            return Response::create($this->view->error("err_user_does_not_exist", $params["username"]));
+            return $this->respondWith($this->view->error("err_user_does_not_exist", $params["username"]));
         }
         if (!$this->verifyMac($user, $params)) {
-            return Response::create($this->view->message("fail", 'err_status_invalid'));
+            return $this->respondWith($this->view->message("fail", 'err_status_invalid'));
         }
         if ($this->isExpired((int) $params["time"], $request)) {
-            return Response::create($this->view->message("fail", "forgotten_expired"));
+            return $this->respondWith($this->view->message("fail", "forgotten_expired"));
         }
         $post = $request->changePasswordPost();
         if (($errors = (new Validator)->validatePassword($post["password1"], $post["password2"]))) {
-            return Response::create($this->renderChangePasswordForm($post, $errors));
+            return $this->respondWith($this->renderChangePasswordForm($post, $errors));
         }
         $user = $user->withPassword($this->password->hash($post["password1"]));
         if (!$this->userRepository->save($user)) {
-            return Response::create($this->view->message("fail", 'err_cannot_write_csv'));
+            return $this->respondWith($this->view->message("fail", 'err_cannot_write_csv'));
         }
         $this->mailer->notifyPasswordReset($user, $this->conf['senderemail'], $request->serverName());
-        return Response::create($this->view->message('success', 'remindersent'));
+        return $this->respondWith($this->view->message('success', 'remindersent'));
     }
 
     /** @param array{username:string,time:string,mac:string} $params */
@@ -177,5 +176,12 @@ class HandlePasswordForgotten
             "password1" => $passwords["password1"],
             "password2" => $passwords["password2"],
         ]);
+    }
+
+    private function respondWith(string $output): Response
+    {
+        return Response::create("<h1>" . $this->view->text("forgot_password") . "</h1>\n"
+            . "<p>" . $this->view->text("reminderexplanation") . "</p>\n"
+            . $output)->withTitle($this->view->text("forgot_password"));
     }
 }

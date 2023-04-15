@@ -67,6 +67,9 @@ class HandleUserPreferences
 
     public function __invoke(Request $request): Response
     {
+        if (!$request->username() || $request->editMode()) {
+            return Response::create();
+        }
         switch ($request->registerAction()) {
             default:
                 return $this->showForm($request);
@@ -80,37 +83,37 @@ class HandleUserPreferences
     private function showForm(Request $request): Response
     {
         if (!($user = $this->userRepository->findByUsername($request->username()))) {
-            return Response::create($this->view->error("err_user_does_not_exist", $request->username()));
+            return $this->respondWith($this->view->error("err_user_does_not_exist", $request->username()));
         }
         if ($user->isLocked()) {
-            return Response::create($this->view->error("user_locked", $user->getUsername()));
+            return $this->respondWith($this->view->error("user_locked", $user->getUsername()));
         }
-        return Response::create($this->renderForm($user));
+        return $this->respondWith($this->renderForm($user));
     }
 
     private function saveUser(Request $request): Response
     {
         if (!$this->csrfProtector->check()) {
-            return Response::create($this->view->error("err_unauthorized"));
+            return $this->respondWith($this->view->error("err_unauthorized"));
         }
         if (!($user = $this->userRepository->findByUsername($request->username()))) {
-            return Response::create($this->view->error("err_user_does_not_exist", $request->username()));
+            return $this->respondWith($this->view->error("err_user_does_not_exist", $request->username()));
         }
         if ($user->isLocked()) {
-            return Response::create($this->view->error("user_locked", $user->getUsername()));
+            return $this->respondWith($this->view->error("user_locked", $user->getUsername()));
         }
         $post = $request->changePrefsPost();
         $changedUser = $user->withName($post["name"])->withEmail($post["email"]);
         if (!$this->password->verify($post["oldpassword"], $user->getPassword())) {
-            return Response::create($this->renderForm($changedUser, [["err_old_password_wrong"]]));
+            return $this->respondWith($this->renderForm($changedUser, [["err_old_password_wrong"]]));
         }
         $changedUser = $changedUser->withPassword($post["password1"]);
         if (($errors = Util::validateUser($changedUser, $post["password2"]))) {
-            return Response::create($this->renderForm($changedUser, $errors));
+            return $this->respondWith($this->renderForm($changedUser, $errors));
         }
         $changedUser = $changedUser->withPassword($this->password->hash($changedUser->getPassword()));
         if (!$this->userRepository->save($changedUser)) {
-            return Response::create($this->renderForm($changedUser, [["err_cannot_write_csv"]]));
+            return $this->respondWith($this->renderForm($changedUser, [["err_cannot_write_csv"]]));
         }
         $this->sendNotification($changedUser, $user->getEmail(), $request);
         return Response::redirect($request->url()->absolute());
@@ -130,20 +133,20 @@ class HandleUserPreferences
     private function unregisterUser(Request $request): Response
     {
         if (!$this->csrfProtector->check()) {
-            return Response::create($this->view->error("err_unauthorized"));
+            return $this->respondWith($this->view->error("err_unauthorized"));
         }
         if (!($user = $this->userRepository->findByUsername($request->username()))) {
-            return Response::create($this->view->error("err_user_does_not_exist", $request->username()));
+            return $this->respondWith($this->view->error("err_user_does_not_exist", $request->username()));
         }
         if ($user->isLocked()) {
-            return Response::create($this->view->error("user_locked", $user->getUsername()));
+            return $this->respondWith($this->view->error("user_locked", $user->getUsername()));
         }
         $post = $request->unregisterPost();
         if (!$this->password->verify($post["oldpassword"], $user->getPassword())) {
-            return Response::create($this->renderForm($user, [["err_old_password_wrong"]]));
+            return $this->respondWith($this->renderForm($user, [["err_old_password_wrong"]]));
         }
         if (!$this->userRepository->delete($user)) {
-            return Response::create($this->renderForm($user, [["err_cannot_write_csv"]]));
+            return $this->respondWith($this->renderForm($user, [["err_cannot_write_csv"]]));
         }
         $this->logger->logInfo("logout", "{$user->getUsername()} deleted and logged out");
         return Response::redirect($request->url()->absolute());
@@ -158,5 +161,12 @@ class HandleUserPreferences
             "name" => $user->getName(),
             "email" => $user->getEmail(),
         ]);
+    }
+
+    private function respondWith(string $output): Response
+    {
+        return Response::create("<h1>" . $this->view->text("user_prefs") . "</h1>\n"
+            . "<p>" . $this->view->text("changeexplanation") . "</p>\n"
+            . $output)->withTitle($this->view->text("user_prefs"));
     }
 }

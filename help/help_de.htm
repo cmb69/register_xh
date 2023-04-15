@@ -41,7 +41,6 @@
 <li><a href="#benutzer--und-gruppenverwaltung">Benutzer- und Gruppenverwaltung</a></li>
 <li><a href="#login-formular">Login-Formular</a></li>
 <li><a href="#zugriff-auf-seiten">Zugriff auf Seiten</a></li>
-<li><a href="#spezialseiten">Spezialseiten</a></li>
 </ul></li>
 <li><a href="#einschränkungen">Einschränkungen</a></li>
 <li><a href="#problembehebung">Problembehebung</a></li>
@@ -90,20 +89,6 @@
 <h3 id="zugriff-auf-seiten">Zugriff auf Seiten</h3>
 <p>Um den Zugriff auf eine CMSimple_XH-Seite auf bestimmte Benutzergruppen zu beschränken, müssen die Namen dieser Gruppen durch Komma getrennt im <code>Zugriff</code> Page-Data-Reiter oberhalb des Editors eingegeben werden. Ist das Feld leer, kann jeder auf die Seite zugreifen. Ist eine Seite auf diese Weise geschützt, dann sind alle ihre Unterseiten ebenso geschützt.</p>
 <p>Beachten Sie, dass die <code>access()</code> und <code>register_access()</code> Aufrufe früherer Versionen des Plugins noch immer unterstützt werden, aber diese Aufrufe schützen nicht automatisch Unterseiten. Von der Verwendung dieser Funktionen wird unbedingt abgeraten.</p>
-<h3 id="spezialseiten">Spezialseiten</h3>
-<p>Register_XH fügt dynamisch ein paar Spezialseiten zu CMSimple_XH hinzu, falls diese nicht bereits existieren. Normalerweise müssen Sie sich darüber keine Gedanken machen, aber Sie können das Feature nutzen, um eigene Seiten mit der entsprechenden Überschrift anzulegen, wenn Sie eine dieser Seiten weitergehend anpassen möchten, als es durch Anpassen der entsprechenden Sprachtexte möglich ist. Die Überschriften dieser Spezialseiten werden durch die <em>tatsächlichen Werte</em> der folgenden Sprachtexte bestimmt, und die Seiten sollten den entsprechenden Pluginaufruf enthalten:</p>
-<ul>
-<li><p><code>register</code>: die Seite, auf der Anwender ein neues Benutzerkonto registrieren können</p>
-<pre><code>{{{registerUser()}}}</code></pre></li>
-<li><p><code>forgot_password</code>: die Seite, auf der Anwender eine E-Mail anfordern können, die ihnen erlaubt ihr Kennwort zurück zu setzen</p>
-<pre><code>{{{registerForgotPassword()}}}</code></pre></li>
-<li><p><code>user_prefs</code>: die Seite, auf der Anwender ihr Benutzerprofil ändern können</p>
-<pre><code>{{{registerUserPrefs()}}}</code></pre></li>
-<li><p><code>access_error</code>: die Seite, die angezeigt wird, wenn Anwender eine Seite aufrufen, für die sie kein Zugriffsrecht haben</p></li>
-</ul>
-<p>Bitte beachten Sie, dass die Behandlung und Erkennung dieser Seiten derzeit etwas locker gehandhabt wird (so spielt es z.B. keine Rolle, auf welcher Menüebene sich diese befinden), was sich vermutlich in Zukunft ändern wird.</p>
-<h2 id="einschränkungen">Einschränkungen</h2>
-<p>Wenn irgend eine CMSimple_XH-Seite unbeabsichtigt eine Überschrift hat, die für eine der <a href="#spezialseiten">Register_XH-Spezialseiten</a> reserviert ist, könnte das Plugin nicht richtig funktionieren.</p>
 <h2 id="problembehebung">Problembehebung</h2>
 <p>Melden Sie Programmfehler und stellen Sie Supportanfragen entweder auf <a href="https://github.com/cmb69/register_xh/issues">Github</a> oder im <a href="https://cmsimpleforum.com/">CMSimple_XH Forum</a>.</p>
 <h2 id="lizenz">Lizenz</h2>

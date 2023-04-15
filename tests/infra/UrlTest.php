@@ -53,33 +53,4 @@ class UrlTest extends TestCase
             "space" => ["Page", ["foo" => "bar baz"], "http://example.com/?Page&foo=bar%20baz"],
         ];
     }
-
-    public function testWithPageAppliesUencWhileConstructorDoesNot(): void
-    {
-        global $tx;
-
-        $tx = ["urichar" => ["org" => "ä", "new" => "ae"]];
-        $url = new Url("/", "A Päge");
-        $this->assertEquals("/?A Päge", $url->relative());
-        $this->assertEquals("/?A-Paege", $url->withPage("A Päge")->relative());
-    }
-
-    public function testWithEncodedPageDoesNotApplyUenc(): void
-    {
-        global $tx;
-
-        $tx = ["urichar" => ["org" => "ä", "new" => "ae"]];
-        $url = (new Url("/", ""))->withEncodedPage("A Päge");
-        $this->assertEquals("/?A Päge", $url->relative());
-    }
-
-    public function testPageMatchesAppliesUenc(): void
-    {
-        global $tx;
-
-        $tx = ["urichar" => ["org" => "ä|U|X", "new" => "ae|u|U"]];
-        $url = (new Url("/", ""))->withPage("Päge X");
-        $this->assertTrue($url->pageMatches("Päge X"));
-        $this->assertFalse($url->pageMatches("Paege U"));
-    }
 }

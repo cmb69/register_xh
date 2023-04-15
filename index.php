@@ -16,6 +16,7 @@ use XH\PageDataRouter;
 const REGISTER_VERSION = "2.0-dev";
 
 /**
+ * @var string $su
  * @var PageDataRouter $pd_router
  * @var string $o
  */
@@ -23,30 +24,35 @@ const REGISTER_VERSION = "2.0-dev";
 $pd_router->add_interest("register_access");
 Responder::respond(Dic::makeLoginController()(Request::current()));
 Responder::respond(Dic::makeHandlePageProtection()(Request::current()));
-$o .= Responder::respond(Dic::makeHandleSpecialPages()(Request::current()));
 
-/**
- * Create and handle register form
- */
+switch ($su) {
+    case "register+user":
+        $o .= Responder::respond(Dic::makeHandleUserRegistration()(Request::current()));
+        break;
+    case "register+password":
+        $o .= Responder::respond(Dic::makeHandlePasswordForgotten()(Request::current()));
+        break;
+    case "register+settings":
+        $o .= Responder::respond(Dic::makeHandleUserPreferences()(Request::current()));
+        break;
+}
+
 function registerUser(): string
 {
-    return Responder::respond(Dic::makeHandleUserRegistration()(Request::current()));
+    trigger_error("registerUser() no longer has any effect", E_USER_DEPRECATED);
+    return "";
 }
 
-/**
- * Create and handle forgotten password form
- */
 function registerForgotPassword(): string
 {
-    return Responder::respond(Dic::makeHandlePasswordForgotten()(Request::current()));
+    trigger_error("registerForgotPassword() no longer has any effect", E_USER_DEPRECATED);
+    return "";
 }
 
-/*
- * Create and handle user preferences form
- */
 function registerUserPrefs(): string
 {
-    return Responder::respond(Dic::makeHandleUserPreferences()(Request::current()));
+    trigger_error("registerUserPrefs() no longer has any effect", E_USER_DEPRECATED);
+    return "";
 }
 
 /*

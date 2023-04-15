@@ -16,7 +16,6 @@ und [Forum_XH](https://github.com/cmb69/forum_xh)).
   - [Benutzer- und Gruppenverwaltung](#benutzer--und-gruppenverwaltung)
   - [Login-Formular](#login-formular)
   - [Zugriff auf Seiten](#zugriff-auf-seiten)
-  - [Spezialseiten](#spezialseiten)
 - [Einschränkungen](#einschränkungen)
 - [Problembehebung](#problembehebung)
 - [Lizenz](#lizenz)
@@ -138,45 +137,6 @@ Beachten Sie, dass die `access()` und `register_access()` Aufrufe früherer
 Versionen des Plugins noch immer unterstützt werden, aber diese Aufrufe
 schützen nicht automatisch Unterseiten.
 Von der Verwendung dieser Funktionen wird unbedingt abgeraten.
-
-### Spezialseiten
-
-Register_XH fügt dynamisch ein paar Spezialseiten zu CMSimple_XH hinzu,
-falls diese nicht bereits existieren. Normalerweise müssen Sie sich darüber
-keine Gedanken machen, aber Sie können das Feature nutzen, um eigene Seiten
-mit der entsprechenden Überschrift anzulegen, wenn Sie eine dieser Seiten
-weitergehend anpassen möchten, als es durch Anpassen der entsprechenden
-Sprachtexte möglich ist. Die Überschriften dieser Spezialseiten werden durch
-die *tatsächlichen Werte* der folgenden Sprachtexte bestimmt,
-und die Seiten sollten den entsprechenden Pluginaufruf enthalten:
-
-- `register`:
-  die Seite, auf der Anwender ein neues Benutzerkonto registrieren können
-
-      {{{registerUser()}}}
-
-- `forgot_password`:
-  die Seite, auf der Anwender eine E-Mail anfordern können, die ihnen erlaubt ihr Kennwort zurück zu setzen
-
-      {{{registerForgotPassword()}}}
-
-- `user_prefs`:
-  die Seite, auf der Anwender ihr Benutzerprofil ändern können
-
-      {{{registerUserPrefs()}}}
-
-- `access_error`:
-  die Seite, die angezeigt wird, wenn Anwender eine Seite aufrufen, für die sie kein Zugriffsrecht haben
-
-Bitte beachten Sie, dass die Behandlung und Erkennung dieser Seiten derzeit
-etwas locker gehandhabt wird (so spielt es z.B. keine Rolle, auf welcher
-Menüebene sich diese befinden), was sich vermutlich in Zukunft ändern wird.
-
-## Einschränkungen
-
-Wenn irgend eine CMSimple_XH-Seite unbeabsichtigt eine Überschrift hat, die
-für eine der [Register_XH-Spezialseiten](#spezialseiten) reserviert
-ist, könnte das Plugin nicht richtig funktionieren.
 
 ## Problembehebung
 

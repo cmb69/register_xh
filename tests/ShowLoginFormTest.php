@@ -26,7 +26,6 @@ use Register\Value\UserGroup;
 
 class ShowLoginFormTest extends TestCase
 {
-    private $text;
     private $userRepository;
     private $userGroupRepository;
     private $loginManager;
@@ -36,7 +35,6 @@ class ShowLoginFormTest extends TestCase
     public function setUp(): void
     {
         vfsStream::setup("root");
-        $this->text = XH_includeVar("./languages/en.php", "plugin_tx")["register"];
         $dbService = new FakeDbService("vfs://root/register/", "guest", $this->createMock(Random::class));
         $dbService->writeUsers(array_values($this->users()));
         $dbService->writeGroups([new UserGroup("guest", ""), new UserGroup("admin", "Admin")]);
@@ -44,14 +42,13 @@ class ShowLoginFormTest extends TestCase
         $this->userGroupRepository = new UserGroupRepository($dbService, "guest", $this->createMock(Random::class));
         $this->loginManager = $this->createMock(LoginManager::class);
         $this->logger = $this->createMock(Logger::class);
-        $this->view = new View("./views/", $this->text);
+        $this->view = new View("./views/", XH_includeVar("./languages/en.php", "plugin_tx")["register"]);
     }
 
     private function sut()
     {
         return new ShowLoginForm(
             XH_includeVar("./config/config.php", "plugin_cf")["register"],
-            $this->text,
             $this->userRepository,
             $this->userGroupRepository,
             $this->loginManager,

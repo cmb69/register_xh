@@ -61,11 +61,11 @@ class HandlePasswordForgottenTest extends TestCase
         return $request;
     }
 
-    public function testRedirectsLoggedInUser(): void
+    public function testDoesNothingIfUserIsLoggedIn(): void
     {
         $this->request->method("username")->willReturn("cmb");
         $response = $this->sut()($this->request);
-        $this->assertEquals("http://example.com/", $response->location());
+        $this->assertEquals("", $response->output());
     }
 
     public function testRendersForm(): void

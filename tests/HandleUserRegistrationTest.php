@@ -49,7 +49,6 @@ class HandleUserRegistrationTest extends TestCase
         $password = new FakePassword;
         return new HandleUserRegistration(
             XH_includeVar("./config/config.php", "plugin_cf")["register"],
-            XH_includeVar("./languages/en.php", "plugin_tx")["register"],
             $this->random,
             $this->view,
             $this->userRepository,
