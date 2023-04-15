@@ -18,6 +18,8 @@ use Register\Value\Response;
 
 class HandlePageProtection
 {
+    private const PATTERN = '/(?:#CMSimple\s+|{{{.*?)access\((.*?)\)\s*;?\s*(?:#|}}})/isu';
+
     /** @var array<string,string> */
     private $conf;
 
@@ -47,13 +49,27 @@ class HandlePageProtection
         }
         foreach (Util::accessAuthorization($user, $data) as $i => $auth) {
             if (!$auth) {
-                $content = "{{{register_access('!')}}}";
-                if ($this->conf["hide_pages"]) {
-                    $content .= "#CMSimple hide#";
+                $this->pages->setContentOf($i, $this->content());
+            }
+        }
+        for ($i = 0; $i < $this->pages->count(); $i++) {
+            if (preg_match(self::PATTERN, $this->pages->content($i), $matches)) {
+                if ($arg = trim($matches[1], "\"'")) {
+                    if (!Util::isAuthorized($user, $arg)) {
+                        $this->pages->setContentOf($i, $this->content());
+                    }
                 }
-                $this->pages->setContentOf($i, $content);
             }
         }
         return Response::create();
+    }
+
+    private function content(): string
+    {
+        $content = "{{{register_forbidden()}}}";
+        if ($this->conf["hide_pages"]) {
+            $content .= "#CMSimple hide#";
+        }
+        return $content;
     }
 }

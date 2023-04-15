@@ -75,17 +75,6 @@ class HandleSpecialPagesTest extends TestCase
         Approvals::verifyHtml($response->output());
     }
 
-    public function testAccessErrorPage(): void
-    {
-        $this->url->method("pageMatches")->willReturnCallback(function (string $other) {
-            return $other === $this->text["access_error"];
-        });
-        $response = ($this->sut)($this->request);
-        $this->assertTrue($response->isForbidden());
-        $this->assertEquals($this->text["access_error"], $response->title());
-        Approvals::verifyHtml($response->output());
-    }
-
     public function testNonSpecialPage(): void
     {
         $this->url->method("pageMatches")->willReturn(false);

@@ -87,11 +87,9 @@ class Dic
         );
     }
 
-    public static function makeHandlePageAccess(): HandlePageAccess
+    public static function makeForbidden(): Forbidden
     {
-        global $plugin_tx;
-
-        return new HandlePageAccess($plugin_tx["register"], Dic::makeUserRepository());
+        return new Forbidden(self::makeView());
     }
 
     public static function makeHandlePageProtection(): HandlePageProtection

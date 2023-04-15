@@ -67,17 +67,7 @@ function Register_loggedInForm(): string
     return Responder::respond(Dic::makeShowLoginForm()(Request::current(), true));
 }
 
-function register_access(string $groupString): string
+function register_forbidden(): string
 {
-    return Responder::respond(Dic::makeHandlePageAccess()(Request::current(), $groupString));
-}
-
-function access(string $groupString): string
-{
-    trigger_error(
-        "access() is deprecated; use register_access() instead,"
-        . " or better define the access groups via the page data tab.",
-        E_USER_DEPRECATED
-    );
-    return Responder::respond(Dic::makeHandlePageAccess()(Request::current(), $groupString));
+    return Responder::respond(Dic::makeForbidden()());
 }

@@ -58,6 +58,12 @@ class Pages
         return evaluate_plugincall($content);
     }
 
+    public function content(int $pageNum): string
+    {
+        global $c;
+        return $c[$pageNum];
+    }
+
     /** @return void */
     public function setContentOf(int $pageNum, string $content)
     {

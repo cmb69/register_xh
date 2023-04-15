@@ -52,8 +52,6 @@ class HandleSpecialPages
             return $this->passwordForgottenPageAction();
         } elseif ($request->url()->pageMatches($this->text["user_prefs"])) {
             return $this->userPrefsPageAction();
-        } elseif ($request->url()->pageMatches($this->text["access_error"])) {
-            return $this->accessErrorPageAction();
         } else {
             return new Response;
         }
@@ -93,17 +91,6 @@ class HandleSpecialPages
             ))->withTitle($this->text['user_prefs']);
         }
         return Response::create();
-    }
-
-    private function accessErrorPageAction(): Response
-    {
-        if (!$this->pages->has($this->text['access_error'])) {
-            return Response::forbid($this->renderPageView(
-                $this->text['access_error'],
-                $this->text['access_error_text']
-            ))->withTitle($this->text['access_error']);
-        }
-        return Response::forbid();
     }
 
     /**
