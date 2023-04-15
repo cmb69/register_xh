@@ -123,6 +123,12 @@ To restrict the access to a CMSimple_XH page to certain user groups,
 you have to enter the group names as comma separated list in the `Access`
 page data tab above the editor.
 If the field is empty, the page is accessible to everybody.
+If a page is protected this way, all its subpages are protected as well.
+
+Note that the `access()` and `register_access()` calls of former versions
+of the plugin are still supported, but these do not automatically protect
+subpages as well.
+Using these functions for page protection is highly discouraged.
 
 ### Special Pages
 

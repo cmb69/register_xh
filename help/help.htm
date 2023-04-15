@@ -88,7 +88,8 @@
 <p>After successful login users can edit their user preferences, i.e. name, email address and password. Unregistering, i.e. deleting the account, is also possible via the preferences screen.</p>
 <p>Note that all login and logout attempts will be logged in the logfile of CMSimple_XH.</p>
 <h3 id="access-to-pages">Access to Pages</h3>
-<p>To restrict the access to a CMSimple_XH page to certain user groups, you have to enter the group names as comma separated list in the <code>Access</code> page data tab above the editor. If the field is empty, the page is accessible to everybody.</p>
+<p>To restrict the access to a CMSimple_XH page to certain user groups, you have to enter the group names as comma separated list in the <code>Access</code> page data tab above the editor. If the field is empty, the page is accessible to everybody. If a page is protected this way, all its subpages are protected as well.</p>
+<p>Note that the <code>access()</code> and <code>register_access()</code> calls of former versions of the plugin are still supported, but these do not automatically protect subpages as well. Using these functions for page protection is highly discouraged.</p>
 <h3 id="special-pages">Special Pages</h3>
 <p>Register_XH dynamically adds some special pages to CMSimple_XH, if these do not already exist. Usually you do not have to care about this, but you can use the feature to create your own pages with the respective heading, if you want to customize any of these pages beyond what is possible with adjusting the related language strings. The headings of these pages are specified by the <em>actual values</em> of the following language strings and the pages should contain the respective plugin call, if applicable:</p>
 <ul>

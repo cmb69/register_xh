@@ -88,7 +88,8 @@
 <p>Nach erfolgreichen Einloggen können Benutzer ihre Einstellungen bearbeiten, also Name, E-Mail-Adresse und Kennwort. Unregistrieren, d.h. Löschen des Kontos, ist ebenso in der Einstellungsmaske möglich.</p>
 <p>Beachten Sie, dass alle Login- und Logoutversuche in der Protokolldatei von CMSimple_XH festgehalten werden.</p>
 <h3 id="zugriff-auf-seiten">Zugriff auf Seiten</h3>
-<p>Um den Zugriff auf eine CMSimple_XH-Seite auf bestimmte Benutzergruppen zu beschränken, müssen die Namen dieser Gruppen durch Komma getrennt im <code>Zugriff</code> Page-Data-Reiter oberhalb des Editors eingegeben werden. Ist das Feld leer, kann jeder auf die Seite zugreifen.</p>
+<p>Um den Zugriff auf eine CMSimple_XH-Seite auf bestimmte Benutzergruppen zu beschränken, müssen die Namen dieser Gruppen durch Komma getrennt im <code>Zugriff</code> Page-Data-Reiter oberhalb des Editors eingegeben werden. Ist das Feld leer, kann jeder auf die Seite zugreifen. Ist eine Seite auf diese Weise geschützt, dann sind alle ihre Unterseiten ebenso geschützt.</p>
+<p>Beachten Sie, dass die <code>access()</code> und <code>register_access()</code> Aufrufe früherer Versionen des Plugins noch immer unterstützt werden, aber diese Aufrufe schützen nicht automatisch Unterseiten. Von der Verwendung dieser Funktionen wird unbedingt abgeraten.</p>
 <h3 id="spezialseiten">Spezialseiten</h3>
 <p>Register_XH fügt dynamisch ein paar Spezialseiten zu CMSimple_XH hinzu, falls diese nicht bereits existieren. Normalerweise müssen Sie sich darüber keine Gedanken machen, aber Sie können das Feature nutzen, um eigene Seiten mit der entsprechenden Überschrift anzulegen, wenn Sie eine dieser Seiten weitergehend anpassen möchten, als es durch Anpassen der entsprechenden Sprachtexte möglich ist. Die Überschriften dieser Spezialseiten werden durch die <em>tatsächlichen Werte</em> der folgenden Sprachtexte bestimmt, und die Seiten sollten den entsprechenden Pluginaufruf enthalten:</p>
 <ul>

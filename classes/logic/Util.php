@@ -27,6 +27,32 @@ class Util
         return self::base64url(hash_hmac("sha1", $data, $key, true));
     }
 
+    /**
+     * @param list<array{int,string}> $data
+     * @return list<bool>
+     */
+    public static function accessAuthorization(?User $user, array $data): array
+    {
+        $authorizations = [];
+        $parents = [[0, true]];
+        foreach ($data as [$level, $access]) {
+            $parent = end($parents);
+            assert(is_array($parent));
+            [$parentLevel, $parentAuth] = $parent;
+            while ($level <= $parentLevel) {
+                array_pop($parents);
+                $parent = end($parents);
+                if (!is_array($parent)) {
+                    break;
+                }
+                [$parentLevel, $parentAuth] = $parent;
+            }
+            $authorizations[] = $auth = $parentAuth && self::isAuthorized($user, $access);
+            array_push($parents, [$level, $auth]);
+        }
+        return $authorizations;
+    }
+
     public static function isAuthorized(?User $user, string $groups): bool
     {
         $groups = (string) preg_replace("/[ \t\r\n]*/", "", $groups);

@@ -131,6 +131,13 @@ Um den Zugriff auf eine CMSimple_XH-Seite auf bestimmte Benutzergruppen zu
 beschränken, müssen die Namen dieser Gruppen durch Komma getrennt im
 `Zugriff` Page-Data-Reiter oberhalb des Editors eingegeben werden.
 Ist das Feld leer, kann jeder auf die Seite zugreifen.
+Ist eine Seite auf diese Weise geschützt, dann sind alle ihre Unterseiten
+ebenso geschützt.
+
+Beachten Sie, dass die `access()` und `register_access()` Aufrufe früherer
+Versionen des Plugins noch immer unterstützt werden, aber diese Aufrufe
+schützen nicht automatisch Unterseiten.
+Von der Verwendung dieser Funktionen wird unbedingt abgeraten.
 
 ### Spezialseiten
 

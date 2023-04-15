@@ -41,10 +41,13 @@ class HandlePageProtection
             return Response::create();
         }
         $user = $this->userRepository->findByUsername($request->username());
+        $data = [];
         foreach ($this->pages->data() as $i => $pd) {
-            $arg = $pd["register_access"] ?? "";
-            if (!Util::isAuthorized($user, $arg)) {
-                $content = "{{{register_access('$arg')}}}";
+            $data[] = [$this->pages->level($i), $pd["register_access"] ?? ""];
+        }
+        foreach (Util::accessAuthorization($user, $data) as $i => $auth) {
+            if (!$auth) {
+                $content = "{{{register_access('!')}}}";
                 if ($this->conf["hide_pages"]) {
                     $content .= "#CMSimple hide#";
                 }
