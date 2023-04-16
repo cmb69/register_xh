@@ -181,12 +181,16 @@ class UserAdmin
             return $this->respondWith($this->renderCreateForm($user, $request->postedPassword(), $errors));
         }
         if ($this->userRepository->hasDuplicateEmail($user)) {
-            return $this->respondWith($this->renderCreateForm($user, $request->postedPassword(), [["err_email_exists"]]));
+            return $this->respondWith(
+                $this->renderCreateForm($user, $request->postedPassword(), [["err_email_exists"]])
+            );
         }
         $newUser = $user->withPassword($this->password->hash($user->getPassword()))
             ->withSecret(base64_encode($this->random->bytes(15)));
         if (!$this->userRepository->save($newUser)) {
-            return $this->respondWith($this->renderCreateForm($user, $request->postedPassword(), [["err_cannot_write_csv"]]));
+            return $this->respondWith(
+                $this->renderCreateForm($user, $request->postedPassword(), [["err_cannot_write_csv"]])
+            );
         }
         return Response::redirect($request->url()->withPage("register")->with("admin", "users")->absolute());
     }

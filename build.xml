@@ -9,14 +9,9 @@
     <echo>${help}</echo>
   </target>
 
-  <target name="sniff" description="checks adherence to PSR-2 CS">
+  <target name="sniff" description="checks adherence to coding standards">
     <exec executable="phpcs" passthru="true" checkreturn="true">
-      <arg value="--standard=PSR2"/>
-      <arg line="--runtime-set ignore_warnings_on_exit true"/>
-      <arg file="classes"/>
-      <arg file="admin.php"/>
-      <arg file="index.php"/>
-      <arg file="register_pd_view.php"/>
+      <arg line="--standard=PSR12 --runtime-set classes admin.php index.php register_pd_view.php"/>
     </exec>
   </target>
 
@@ -28,7 +23,7 @@
     <exec executable="phpunit" passthru="true" checkreturn="true"/>
   </target>
 
-  <target name="sat" description="runs all checks" depends="sniff,stan,test"/>
+  <target name="check" description="runs all checks" depends="sniff,stan,test"/>
 
   <target name="coverage" description="generates coverage report">
     <exec executable="phpunit" passthru="true" checkreturn="true">
@@ -67,7 +62,6 @@
         <exclude name=".phive/**"/>
         <exclude name="help/template.htm"/>
         <exclude name="tests/**"/>
-        <exclude name="README*.md"/>
         <exclude name="build.xml"/>
         <exclude name="composer.*"/>
         <exclude name="phpunit.xml"/>
@@ -98,8 +92,7 @@
         <include name="css/stylesheet.css"/>
       </fileset>
     </delete>
-    <zip destfile="Register_XH-2.0-dev-PATCH.zip" basedir="dist"
-       includeemptydirs="false"/>
+    <zip destfile="Register_XH-2.0-dev-PATCH.zip" basedir="dist" includeemptydirs="false"/>
     <delete dir="patchee" quiet="true"/>
     <delete dir="current" quiet="true"/>
     <delete dir="dist" quiet="true"/>

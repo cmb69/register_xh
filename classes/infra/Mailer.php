@@ -130,7 +130,12 @@ MAIL;
         $headers[] = 'MIME-Version: 1.0';
         $headers[] = 'Content-type: text/plain; charset=UTF-8';
         $sep = $this->fixMailHeaders ? "\n" : "\r\n";
-        return $this->mail($to, '=?UTF-8?Q?'.quoted_printable_encode($subject).'?=', $message, implode($sep, $headers));
+        return $this->mail(
+            $to,
+            '=?UTF-8?Q?' . quoted_printable_encode($subject) . '?=',
+            $message,
+            implode($sep, $headers)
+        );
     }
 
     /** @codeCoverageIgnore */

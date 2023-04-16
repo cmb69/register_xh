@@ -12,7 +12,7 @@ class Html
 {
     public static function from(string $string): self
     {
-        $that = new self;
+        $that = new self();
         $that->string = $string;
         return $that;
     }

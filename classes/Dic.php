@@ -32,7 +32,7 @@ class Dic
             $plugin_cf["register"],
             self::makeUserRepository(),
             self::makeActivityRepository(),
-            new Pages,
+            new Pages(),
             new Logger(),
             new LoginManager()
         );
@@ -40,7 +40,7 @@ class Dic
 
     public static function makePagesAdmin(): PagesAdmin
     {
-        return new PagesAdmin(new Pages, self::makeView());
+        return new PagesAdmin(new Pages(), self::makeView());
     }
 
     public static function makeUserAdmin(): UserAdmin
@@ -48,11 +48,11 @@ class Dic
         global $plugin_cf;
         return new UserAdmin(
             $plugin_cf["register"],
-            new CsrfProtector,
+            new CsrfProtector(),
             self::makeUserRepository(),
             self::makeUserGroupRepository(),
-            new Password,
-            new Random,
+            new Password(),
+            new Random(),
             self::makeMailer(),
             self::makeView()
         );
@@ -61,9 +61,9 @@ class Dic
     public static function makeGroupAdmin(): GroupAdmin
     {
         return new GroupAdmin(
-            new CsrfProtector,
+            new CsrfProtector(),
             self::makeUserGroupRepository(),
-            new Pages,
+            new Pages(),
             self::makeView(),
         );
     }
@@ -74,11 +74,11 @@ class Dic
 
         return new HandleUserRegistration(
             $plugin_cf["register"],
-            new Random,
+            new Random(),
             self::makeView(),
             self::makeUserRepository(),
             self::makeMailer(),
-            new Password
+            new Password()
         );
     }
 
@@ -95,7 +95,7 @@ class Dic
             $plugin_cf["register"],
             self::makeView(),
             self::makeUserRepository(),
-            new Password,
+            new Password(),
             self::makeMailer()
         );
     }
@@ -106,12 +106,12 @@ class Dic
 
         return new HandleUserPreferences(
             $plugin_cf["register"],
-            new CsrfProtector,
+            new CsrfProtector(),
             self::makeUserRepository(),
             self::makeView(),
             self::makeMailer(),
             new Logger(),
-            new Password
+            new Password()
         );
     }
 
@@ -147,7 +147,7 @@ class Dic
         );
     }
 
-    public static function makeActiveUsers():ActiveUsers
+    public static function makeActiveUsers(): ActiveUsers
     {
         global $plugin_cf;
         return new ActiveUsers(
@@ -183,7 +183,7 @@ class Dic
                 $folder = dirname($folder) . "/";
             }
             $folder .= "register/";
-            $instance = new DbService($folder, $plugin_cf['register']['group_default'], new Random);
+            $instance = new DbService($folder, $plugin_cf['register']['group_default'], new Random());
         }
         return $instance;
     }

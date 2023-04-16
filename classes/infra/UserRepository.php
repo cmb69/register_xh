@@ -70,7 +70,8 @@ class UserRepository
         $users = $this->dbService->readUsers();
         $this->dbService->unlock($lock);
         return array_reduce($users, function (bool $carry, User $aUser) use ($user) {
-            return $carry || ($aUser->getEmail() === $user->getEmail() && $aUser->getUsername() !== $user->getUsername());
+            return $carry
+                || ($aUser->getEmail() === $user->getEmail() && $aUser->getUsername() !== $user->getUsername());
         }, false);
     }
 

@@ -12,14 +12,14 @@ class Response
 {
     public static function create(string $output = ""): self
     {
-        $that = new self;
+        $that = new self();
         $that->output = $output;
         return $that;
     }
 
     public static function forbid(string $output = ""): self
     {
-        $that = new self;
+        $that = new self();
         $that->output = $output;
         $that->forbidden = true;
         return $that;
@@ -27,7 +27,7 @@ class Response
 
     public static function redirect(string $location): self
     {
-        $that = new self;
+        $that = new self();
         $that->location = $location;
         return $that;
     }
