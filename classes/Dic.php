@@ -8,6 +8,7 @@
 
 namespace Register;
 
+use Register\Infra\ActivityRepository;
 use Register\Infra\CsrfProtector;
 use Register\Infra\DbService;
 use Register\Infra\Logger;
@@ -30,6 +31,7 @@ class Dic
         return new LoginController(
             $plugin_cf["register"],
             self::makeUserRepository(),
+            self::makeActivityRepository(),
             new Logger(),
             new LoginManager()
         );
@@ -151,6 +153,16 @@ class Dic
         );
     }
 
+    public static function makeActiveUsers():ActiveUsers
+    {
+        global $plugin_cf;
+        return new ActiveUsers(
+            $plugin_cf["register"],
+            self::makeActivityRepository(),
+            self::makeView()
+        );
+    }
+
     private static function makeUserRepository(): UserRepository
     {
         return new UserRepository(self::makeDbService());
@@ -159,6 +171,11 @@ class Dic
     private static function makeUserGroupRepository(): UserGroupRepository
     {
         return new UserGroupRepository(self::makeDbService());
+    }
+
+    private static function makeActivityRepository(): ActivityRepository
+    {
+        return new ActivityRepository(self::makeDbService());
     }
 
     private static function makeDbService(): DbService

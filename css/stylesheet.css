@@ -61,6 +61,17 @@ div.register_change_password label input {
     width: 20em;
 }
 
+/* active users */
+section.register_active_users p:first-child {
+    font-weight: bold;
+}
+section.register_active_users span:after {
+    content: ",";
+}
+section.register_active_users span:last-child:after {
+    content: "";
+}
+
 /* adminstration */
 section.register_admin div.register_table_wrapper {
     overflow-x: auto;

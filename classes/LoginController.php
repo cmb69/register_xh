@@ -10,6 +10,7 @@
 
 namespace Register;
 
+use Register\Infra\ActivityRepository;
 use Register\Infra\Logger;
 use Register\Infra\LoginManager;
 use Register\Infra\Request;
@@ -25,6 +26,9 @@ class LoginController
     /** @var UserRepository */
     private $userRepository;
 
+    /** @var ActivityRepository */
+    private $activityRepository;
+
     /** @var Logger */
     private $logger;
 
@@ -35,17 +39,22 @@ class LoginController
     public function __construct(
         array $conf,
         UserRepository $userRepository,
+        ActivityRepository $activityRepository,
         Logger $logger,
         LoginManager $loginManager
     ) {
         $this->conf = $conf;
         $this->userRepository = $userRepository;
+        $this->activityRepository = $activityRepository;
         $this->logger = $logger;
         $this->loginManager = $loginManager;
     }
 
     public function __invoke(Request $request): Response
     {
+        if ($request->username()) {
+            $this->activityRepository->update($request->username(), $request->time());
+        }
         if ($this->conf["remember_user"] && $request->cookie("register_remember")
                 && !$request->username()) {
             return $this->autoLogin($request);
@@ -54,7 +63,7 @@ class LoginController
             return $this->logoutAction($request);
         }
         if ($request->username() && !$this->userRepository->findByUsername($request->username())) {
-            return $this->forcedLogout();
+            return $this->forcedLogout($request);
         }
         return new Response();
     }
@@ -85,6 +94,7 @@ class LoginController
     private function logoutAction(Request $request): Response
     {
         $this->loginManager->logout();
+        $this->activityRepository->update($request->username(), 0);
         $this->logger->logInfo('logout', "{$request->username()} logged out");
         if ($this->conf['remember_user'] && $request->cookie("register_remember")) {
             return Response::create()->withCookie("register_remember", "", 0);
@@ -92,9 +102,10 @@ class LoginController
         return Response::create();
     }
 
-    private function forcedLogout(): Response
+    private function forcedLogout(Request $request): Response
     {
         $this->loginManager->logout();
+        $this->activityRepository->update($request->username(), 0);
         return Response::create();
     }
 }

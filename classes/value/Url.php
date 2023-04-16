@@ -17,7 +17,7 @@ class Url
         assert(isset($parts["scheme"], $parts["host"], $parts["path"]));
         $that->base = $parts["scheme"] . "://" . $parts["host"];
         $that->path = (string) preg_replace('/index\.php$/', "", $parts["path"]);
-        $match = preg_match('/^([^=&]*)(?:&|$)(.*)/', $parts["query"] ?? "", $matches);
+        $match = preg_match('/^(?:([^=&]*)(?=&|$))?(.*)/', $parts["query"] ?? "", $matches);
         assert($match !== false);
         $that->page = $matches[1];
         parse_str($matches[2], $that->params);

@@ -77,3 +77,8 @@ function register_forbidden(): string
 {
     return Responder::respond(Dic::makeForbidden()());
 }
+
+function register_active_users(): string
+{
+    return Responder::respond(Dic::makeActiveUsers()(Request::current()));
+}

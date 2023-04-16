@@ -16,6 +16,7 @@ und [Forum_XH](https://github.com/cmb69/forum_xh)).
   - [Benutzer- und Gruppenverwaltung](#benutzer--und-gruppenverwaltung)
   - [Login-Formular](#login-formular)
   - [Zugriff auf Seiten](#zugriff-auf-seiten)
+  - [Aktive Nutzer](#aktive-nutzer)
 - [Einschränkungen](#einschränkungen)
 - [Problembehebung](#problembehebung)
 - [Lizenz](#lizenz)
@@ -140,6 +141,17 @@ Beachten Sie, dass die `access()` und `register_access()` Aufrufe früherer
 Versionen des Plugins noch immer unterstützt werden, aber diese Aufrufe
 schützen nicht automatisch Unterseiten.
 Von der Verwendung dieser Funktionen wird unbedingt abgeraten.
+
+### Aktive Nutzer
+
+Sie können eine Liste der zur Zeit aktiven Nutzer anzeigen, indem Sie auf
+einer Seite schreiben:
+
+    {{{register_active_users()}}}
+
+Oder im Template:
+
+    <?=register_active_users()?>
 
 ## Problembehebung
 

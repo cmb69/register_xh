@@ -8,5 +8,6 @@ $plugin_cf['register']['hide_pages']="true";
 $plugin_cf['register']['remember_user']="true";
 $plugin_cf['register']['password_forgotten']="true";
 $plugin_cf['register']['senderemail']="postmaster@example.com";
+$plugin_cf['register']['activity_period']="300";
 
 ?>

@@ -15,6 +15,7 @@ per email. It is used by some other plugins to add user management (e.g.
   - [User and Group Administration](#user-and-group-administration)
   - [Login Form](#login-form)
   - [Access to Pages](#access-to-pages)
+  - [Active Users](#active-users)
 - [Limitations](#limitations)
 - [Troubleshooting](#troubleshooting)
 - [License](#license)
@@ -131,6 +132,16 @@ Note that the `access()` and `register_access()` calls of former versions
 of the plugin are still supported, but these do not automatically protect
 subpages as well.
 Using these functions for page protection is highly discouraged.
+
+### Active Users
+
+You can present a list of currently active users, by writing in a page:
+
+    {{{register_active_users()}}}
+
+Or in the template:
+
+    <?=register_active_users()?>
 
 ## Troubleshooting
 

@@ -41,6 +41,7 @@
 <li><a href="#user-and-group-administration">User and Group Administration</a></li>
 <li><a href="#login-form">Login Form</a></li>
 <li><a href="#access-to-pages">Access to Pages</a></li>
+<li><a href="#active-users">Active Users</a></li>
 </ul></li>
 <li><a href="#limitations">Limitations</a></li>
 <li><a href="#troubleshooting">Troubleshooting</a></li>
@@ -90,6 +91,11 @@
 <p>To restrict the access to a CMSimple_XH page to certain user groups, you have to enter the group names as comma separated list in the <code>Access</code> page data tab above the editor. If the field is empty, the page is accessible to everybody. If a page is protected this way, all its subpages are protected as well.</p>
 <p>Under <code>Plugins</code> → <code>Register</code> → <code>Pages</code>, an overview over the protections assigned via page data is available.</p>
 <p>Note that the <code>access()</code> and <code>register_access()</code> calls of former versions of the plugin are still supported, but these do not automatically protect subpages as well. Using these functions for page protection is highly discouraged.</p>
+<h3 id="active-users">Active Users</h3>
+<p>You can present a list of currently active users, by writing in a page:</p>
+<pre><code>{{{register_active_users()}}}</code></pre>
+<p>Or in the template:</p>
+<pre><code>&lt;?=register_active_users()?&gt;</code></pre>
 <h2 id="troubleshooting">Troubleshooting</h2>
 <p>Report bugs and ask for support either on <a href="https://github.com/cmb69/register_xh/issues">Github</a> or in the <a href="https://cmsimpleforum.com/">CMSimple_XH Forum</a>.</p>
 <h2 id="license">License</h2>

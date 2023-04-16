@@ -124,5 +124,6 @@ $plugin_tx['register']['cf_hide_pages']="Ob versteckt Seiten, zu denen das Mitgl
 $plugin_tx['register']['cf_remember_user']="Ob die \"Benutzer merken\" Checkbox unterhalb des Login Formulars angezeigt werden soll.";
 $plugin_tx['register']['cf_senderemail']="Die E-Mail-Adresse des Administrators";
 $plugin_tx['register']['cf_password_forgotten']="Ob der \"Kennwort vergessen\" Link im Login Formular angezeigt werden soll.";
+$plugin_tx['register']['cf_activity_period']="Die Zeit in Sekunden, nach der ein angemeldeter Nutzer als inaktiv eingestuft wird.";
 
 ?>

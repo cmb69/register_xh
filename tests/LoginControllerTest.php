@@ -10,6 +10,7 @@ namespace Register;
 
 use org\bovigo\vfs\vfsStream;
 use PHPUnit\Framework\TestCase;
+use Register\Infra\ActivityRepository;
 use Register\Infra\FakeDbService;
 use Register\Infra\FakeRequest;
 use Register\Value\User;
@@ -22,6 +23,7 @@ class LoginControllerTest extends TestCase
 {
     private $conf;
     private $userRepository;
+    private $activityRepository;
     private $logger;
     private $loginManager;
 
@@ -33,6 +35,7 @@ class LoginControllerTest extends TestCase
         $dbService = new FakeDbService("vfs://root/register/", "guest", $this->createMock(Random::class));
         $dbService->writeUsers([$this->jane(), $this->john()]);
         $this->userRepository = new UserRepository($dbService);
+        $this->activityRepository = new ActivityRepository($dbService);
         $this->logger = $this->createStub(Logger::class);
         $this->loginManager = $this->createStub(LoginManager::class);
     }
@@ -42,6 +45,7 @@ class LoginControllerTest extends TestCase
         return new LoginController(
             $this->conf,
             $this->userRepository,
+            $this->activityRepository,
             $this->logger,
             $this->loginManager
         );

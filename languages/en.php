@@ -124,5 +124,5 @@ $plugin_tx['register']['cf_hide_pages']="Whether to hide pages in the table of c
 $plugin_tx['register']['cf_remember_user']="Whether the remember user checkbox shall be shown below the login form.";
 $plugin_tx['register']['cf_senderemail']="The e-mail account of the administrator";
 $plugin_tx['register']['cf_password_forgotten']="Whether the password forgotten link shall be shown in the login form.";
-
+$plugin_tx['register']['cf_activity_period']="The time in seconds after which a logged in user is considered inactive.";
 ?>
