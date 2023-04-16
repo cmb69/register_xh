@@ -55,7 +55,7 @@ class LoginController
         if ($request->username()) {
             $this->activityRepository->update($request->username(), $request->time());
         }
-        if ($this->conf["remember_user"] && $request->cookie("register_remember")
+        if ($this->conf["allowed_remember"] && $request->cookie("register_remember")
                 && !$request->username()) {
             return $this->autoLogin($request);
         }
@@ -70,7 +70,7 @@ class LoginController
 
     private function autoLogin(Request $request): Response
     {
-        assert($this->conf['remember_user'] && $request->cookie("register_remember"));
+        assert($this->conf["allowed_remember"] && $request->cookie("register_remember"));
         $parts = explode(".", $request->cookie("register_remember"));
         if (count($parts) !== 2) {
             return Response::create()->withCookie("register_remember", "", 0);
@@ -96,7 +96,7 @@ class LoginController
         $this->loginManager->logout();
         $this->activityRepository->update($request->username(), 0);
         $this->logger->logInfo('logout', "{$request->username()} logged out");
-        if ($this->conf['remember_user'] && $request->cookie("register_remember")) {
+        if ($this->conf["allowed_remember"] && $request->cookie("register_remember")) {
             return Response::create()->withCookie("register_remember", "", 0);
         }
         return Response::create();

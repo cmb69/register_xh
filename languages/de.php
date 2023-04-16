@@ -116,14 +116,14 @@ $plugin_tx['register']['syscheck_warning']="Warnung";
 $plugin_tx['register']['syscheck_writable']="'%s' ist schreibbar: ";
 $plugin_tx['register']['syscheck_xhversion']="CMSimple_XH-Version ≥ %s: ";
 
-$plugin_tx['register']['cf_allowed_register']="Ob sich neue Mitglieder selbst registrieren können.";
+$plugin_tx['register']['cf_allowed_register']="Ob sich neue Nutzer selbst registrieren können.";
+$plugin_tx['register']['cf_allowed_remember']="Ob Nutzer die \"Benutzer merken\" Funktionalität nutzen können.";
+$plugin_tx['register']['cf_allowed_password_forgotten']="Ob Nutzer die \"Kennwort vergessen\" Funktionalität nutzen können.";
 $plugin_tx['register']['cf_fix_mail_headers']="Ob Probleme mit einigen fehlerhaften Mail Transfer Agents behoben werden sollen. Aktivieren Sie diese Option, wenn Sie die E-Mails nicht empfangen oder wenn ein Teil der Header-Informationen (z.B. \"MIME-Version: 1.0\") im Rumpf der E-Mail erscheint.";
 $plugin_tx['register']['cf_group_activated']="Der Status neuer Mitglieder (Gruppe nach Registrierung und Account Aktivierung).";
 $plugin_tx['register']['cf_group_default']="Der Status neuer Mitglieder (Gruppe nach Registrierung, aber vor der Account Aktivierung).";
 $plugin_tx['register']['cf_hide_pages']="Ob versteckt Seiten, zu denen das Mitglied keinen Zugang hat, in der Navigation angezeigt werden sollen.";
-$plugin_tx['register']['cf_remember_user']="Ob die \"Benutzer merken\" Checkbox unterhalb des Login Formulars angezeigt werden soll.";
 $plugin_tx['register']['cf_senderemail']="Die E-Mail-Adresse des Administrators";
-$plugin_tx['register']['cf_password_forgotten']="Ob der \"Kennwort vergessen\" Link im Login Formular angezeigt werden soll.";
 $plugin_tx['register']['cf_activity_period']="Die Zeit in Sekunden, nach der ein angemeldeter Nutzer als inaktiv eingestuft wird.";
 
 ?>

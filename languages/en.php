@@ -116,13 +116,13 @@ $plugin_tx['register']['syscheck_warning']="warning";
 $plugin_tx['register']['syscheck_writable']="'%s' is writable: ";
 $plugin_tx['register']['syscheck_xhversion']="CMSimple_XH version ≥ %s: ";
 
-$plugin_tx['register']['cf_allowed_register']="Whether new members may register themselves.";
+$plugin_tx['register']['cf_allowed_register']="Whether new users may register themselves.";
+$plugin_tx['register']['cf_allowed_remember']="Whether users are allowed to use the remember me feature.";
+$plugin_tx['register']['cf_allowed_password_forgotten']="Whether users are allowed to use the password forgotten feature.";
 $plugin_tx['register']['cf_fix_mail_headers']="Whether to fix problems with some buggy mail transfer agents. Enable it, if you don't receive the emails or if some header information (e.g. \"MIME-Version: 1.0\") is visible in the body of the mail.";
 $plugin_tx['register']['cf_group_activated']="The status of new members (group after registration and account activation).";
 $plugin_tx['register']['cf_group_default']="The status of new members (default group for user after registration, but before account activation).";
 $plugin_tx['register']['cf_hide_pages']="Whether to hide pages in the table of contents to which the user does not have access.";
-$plugin_tx['register']['cf_remember_user']="Whether the remember user checkbox shall be shown below the login form.";
 $plugin_tx['register']['cf_senderemail']="The e-mail account of the administrator";
-$plugin_tx['register']['cf_password_forgotten']="Whether the password forgotten link shall be shown in the login form.";
 $plugin_tx['register']['cf_activity_period']="The time in seconds after which a logged in user is considered inactive.";
 ?>

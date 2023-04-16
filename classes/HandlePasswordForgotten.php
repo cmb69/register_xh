@@ -56,7 +56,7 @@ class HandlePasswordForgotten
 
     public function __invoke(Request $request): Response
     {
-        if (!$this->conf["password_forgotten"] || $request->username() || $request->editMode()) {
+        if (!$this->conf["allowed_password_forgotten"] || $request->username() || $request->editMode()) {
             return Response::create();
         }
         switch ($request->registerAction()) {

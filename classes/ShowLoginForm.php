@@ -98,7 +98,7 @@ class ShowLoginForm
         }
         $this->loginManager->login($user);
         $this->logger->logInfo("login", "User '$post[username]' logged in");
-        if ($this->conf["remember_user"] && $post["remember"]) {
+        if ($this->conf["allowed_remember"] && $post["remember"]) {
             return Response::redirect($this->loginUrl($request, $user))->withCookie(
                 "register_remember",
                 $user->getUsername() . "." . Util::hmac($user->getUsername(), $user->secret()),
@@ -119,10 +119,10 @@ class ShowLoginForm
             "username" => $login["username"],
             "password" => $login["password"],
             "checked" => $login["remember"] ? "checked" : "",
-            "hasForgotPasswordLink" => $this->conf["password_forgotten"]
+            "hasForgotPasswordLink" => $this->conf["allowed_password_forgotten"]
                 && $request->url()->page() !== "register+password",
             "forgotPasswordUrl" => $request->url()->withPage("register+password")->relative(),
-            "hasRememberMe" => (bool) $this->conf["remember_user"],
+            "hasRememberMe" => (bool) $this->conf["allowed_remember"],
             "isRegisterAllowed" => (bool) $this->conf["allowed_register"],
             "registerUrl" => $request->url()->withPage("register+user")->relative(),
         ]);
