@@ -2,6 +2,7 @@
 
 $plugin_cf['register']['allowed_register']="true";
 $plugin_cf['register']['allowed_remember']="true";
+$plugin_cf['register']['allowed_settings']="true";
 $plugin_cf['register']['allowed_password_forgotten']="true";
 $plugin_cf['register']['fix_mail_headers']="";
 $plugin_cf['register']['group_activated']="guest";

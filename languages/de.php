@@ -118,6 +118,7 @@ $plugin_tx['register']['syscheck_xhversion']="CMSimple_XH-Version ≥ %s: ";
 
 $plugin_tx['register']['cf_allowed_register']="Ob sich neue Nutzer selbst registrieren können.";
 $plugin_tx['register']['cf_allowed_remember']="Ob Nutzer die \"Benutzer merken\" Funktionalität nutzen können.";
+$plugin_tx['register']['cf_allowed_settings']="Ob Nutzer ihre Kontoeinstellungen selbst ändern dürfen.";
 $plugin_tx['register']['cf_allowed_password_forgotten']="Ob Nutzer die \"Kennwort vergessen\" Funktionalität nutzen können.";
 $plugin_tx['register']['cf_fix_mail_headers']="Ob Probleme mit einigen fehlerhaften Mail Transfer Agents behoben werden sollen. Aktivieren Sie diese Option, wenn Sie die E-Mails nicht empfangen oder wenn ein Teil der Header-Informationen (z.B. \"MIME-Version: 1.0\") im Rumpf der E-Mail erscheint.";
 $plugin_tx['register']['cf_group_activated']="Der Status neuer Mitglieder (Gruppe nach Registrierung und Account Aktivierung).";

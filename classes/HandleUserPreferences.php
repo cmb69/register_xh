@@ -67,7 +67,7 @@ class HandleUserPreferences
 
     public function __invoke(Request $request): Response
     {
-        if (!$request->username() || $request->editMode()) {
+        if (!$this->conf["allowed_settings"] || !$request->username() || $request->editMode()) {
             return Response::create();
         }
         switch ($request->registerAction()) {

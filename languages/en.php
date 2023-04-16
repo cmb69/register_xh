@@ -118,6 +118,7 @@ $plugin_tx['register']['syscheck_xhversion']="CMSimple_XH version ≥ %s: ";
 
 $plugin_tx['register']['cf_allowed_register']="Whether new users may register themselves.";
 $plugin_tx['register']['cf_allowed_remember']="Whether users are allowed to use the remember me feature.";
+$plugin_tx['register']['cf_allowed_settings']="Whether users are allowed to change their account settings.";
 $plugin_tx['register']['cf_allowed_password_forgotten']="Whether users are allowed to use the password forgotten feature.";
 $plugin_tx['register']['cf_fix_mail_headers']="Whether to fix problems with some buggy mail transfer agents. Enable it, if you don't receive the emails or if some header information (e.g. \"MIME-Version: 1.0\") is visible in the body of the mail.";
 $plugin_tx['register']['cf_group_activated']="The status of new members (group after registration and account activation).";

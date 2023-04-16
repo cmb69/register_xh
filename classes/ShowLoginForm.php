@@ -135,7 +135,8 @@ class ShowLoginForm
         }
         return $this->view->render("loggedin_area", [
             "fullName" => $user->getName(),
-            "hasUserPrefs" => $user->isActivated() && $request->url()->page() !== "register+settings",
+            "hasUserPrefs" => $this->conf["allowed_settings"] && $user->isActivated()
+                && $request->url()->page() !== "register+settings",
             "userPrefUrl" => $request->url()->withPage("register+settings")->relative(),
             "logoutUrl" => $request->url()->with("function", "registerlogout")->relative(),
         ]);
