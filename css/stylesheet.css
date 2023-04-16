@@ -83,6 +83,24 @@ section.register_admin textarea {
     vertical-align: top;
 }
 
+section.register_admin fieldset.register_groups {
+    display: flex;
+    flex-wrap: wrap;
+    padding: 0.35em 0.625em;
+}
+section.register_admin fieldset.register_groups legend {
+    padding: 2px;
+}
+section.register_admin fieldset.register_groups p {
+    flex: 10em;
+}
+section.register_admin fieldset.register_groups span {
+    display: inline;
+}
+section.register_admin p.register_buttons {
+    margin: 1em 0;
+}
+
 /* page data tab */
 #xh_view_register_pd_view .pl_tooltip {
     float: none;

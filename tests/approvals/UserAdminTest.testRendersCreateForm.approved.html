@@ -22,14 +22,6 @@
     </label>
   </p>
   <p>
-    <label><span>Access Groups</span>
-      <select name="groups[]" multiple required>
-        <option >admin</option>
-        <option selected>guest</option>
-      </select>
-    </label>
-  </p>
-  <p>
     <label><span>Status</span>
       <select name="status">
         <option value="activated" selected>activated</option>
@@ -50,7 +42,22 @@
       <input type="password" name="password2" value="" required>
     </label>
   </p>
-  <p>
+  <fieldset class="register_groups">
+    <legend>Access Groups</legend>
+    <p>
+      <label>
+        <input type="checkbox" name="groups[]" value="admin" >
+        <span>admin</span>
+      </label>
+    </p>
+    <p>
+      <label>
+        <input type="checkbox" name="groups[]" value="guest" checked>
+        <span>guest</span>
+      </label>
+    </p>
+  </fieldset>
+  <p class="register_buttons">
     <button name="action" value="do_create">Create</button>
   </p>
 </form>

@@ -38,15 +38,6 @@ use Register\Infra\View;
     </label>
   </p>
   <p>
-    <label><span><?=$this->text('accessgroups')?></span>
-      <select name="groups[]" multiple required>
-<?foreach ($groups as [$group, $selected]):?>
-        <option <?=$selected?>><?=$group?></option>
-<?endforeach?>
-      </select>
-    </label>
-  </p>
-  <p>
     <label><span><?=$this->text('status')?></span>
       <select name="status">
 <?foreach ($states as [$status, $label, $selected]):?>
@@ -55,7 +46,18 @@ use Register\Infra\View;
       </select>
     </label>
   </p>
-  <p>
+  <fieldset class="register_groups">
+    <legend><?=$this->text('accessgroups')?></legend>
+<?foreach ($groups as [$group, $checked]):?>
+    <p>
+      <label>
+        <input type="checkbox" name="groups[]" value="<?=$group?>" <?=$checked?>>
+        <span><?=$group?></span>
+      </label>
+    </p>
+<?endforeach?>
+  </fieldset>
+  <p class="register_buttons">
     <button name="action" value="do_update"><?=$this->text('label_update')?></button>
   </p>
 </form>

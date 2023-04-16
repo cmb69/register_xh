@@ -272,7 +272,7 @@ class UserAdmin
         return array_map(function (UserGroup $group) use ($user) {
             return [
                 $group->getGroupname(),
-                in_array($group->getGroupname(), $user->getAccessgroups(), true) ? "selected" : "",
+                in_array($group->getGroupname(), $user->getAccessgroups(), true) ? "checked" : "",
             ];
         }, $groups);
     }

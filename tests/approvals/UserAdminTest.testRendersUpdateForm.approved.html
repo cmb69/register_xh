@@ -22,13 +22,6 @@
     </label>
   </p>
   <p>
-    <label><span>Access Groups</span>
-      <select name="groups[]" multiple required>
-        <option >guest</option>
-      </select>
-    </label>
-  </p>
-  <p>
     <label><span>Status</span>
       <select name="status">
         <option value="activated" selected>activated</option>
@@ -37,7 +30,16 @@
       </select>
     </label>
   </p>
-  <p>
+  <fieldset class="register_groups">
+    <legend>Access Groups</legend>
+    <p>
+      <label>
+        <input type="checkbox" name="groups[]" value="guest" >
+        <span>guest</span>
+      </label>
+    </p>
+  </fieldset>
+  <p class="register_buttons">
     <button name="action" value="do_update">Update</button>
   </p>
 </form>
