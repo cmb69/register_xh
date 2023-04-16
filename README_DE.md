@@ -133,6 +133,9 @@ Ist das Feld leer, kann jeder auf die Seite zugreifen.
 Ist eine Seite auf diese Weise geschützt, dann sind alle ihre Unterseiten
 ebenso geschützt.
 
+Unter `Plugins` → `Register` → `Seiten` ist eine Übersicht über die
+Zugriffsbeschränkungen, die über die Page-Data vergeben wurden, verfügbar.
+
 Beachten Sie, dass die `access()` und `register_access()` Aufrufe früherer
 Versionen des Plugins noch immer unterstützt werden, aber diese Aufrufe
 schützen nicht automatisch Unterseiten.

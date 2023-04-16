@@ -35,6 +35,11 @@ class Dic
         );
     }
 
+    public static function makePagesAdmin(): PagesAdmin
+    {
+        return new PagesAdmin(new Pages, self::makeView());
+    }
+
     public static function makeUserAdmin(): UserAdmin
     {
         global $plugin_cf;

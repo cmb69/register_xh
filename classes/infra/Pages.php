@@ -17,13 +17,6 @@ class Pages
         return $cl;
     }
 
-    public function has(string $heading): bool
-    {
-        global $h;
-
-        return in_array($heading, $h, true);
-    }
-
     public function heading(int $pageNum): string
     {
         global $h;
