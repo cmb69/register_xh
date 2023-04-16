@@ -59,7 +59,7 @@ use Register\Infra\View;
       </tbody>
     </table>
   </div>
-  <p>
+  <p class="register_buttons">
     <button><?=$this->text('label_refresh')?></button>
     <button name="action" value="create"><?=$this->text('label_new')?></button>
     <button name="action" value="update"><?=$this->text('label_edit')?></button>

@@ -32,15 +32,11 @@ use Register\Infra\View;
       </tr>
 <?endforeach?>
     </tbody>
-    <tfoot>
-      <tr>
-        <td colspan="2">
-          <button name="action" value="create"><?=$this->text('label_new')?></button>
-          <button name="action" value="update"><?=$this->text('label_edit')?></button>
-          <button name="action" value="delete"><?=$this->text('label_delete')?></button>
-          <button name="admin" value="users"><?=$this->text('label_users')?></button>
-        </td>
-      </tr>
-    </tfoot>
   </table>
+  <p class="register_buttons">
+    <button name="action" value="create"><?=$this->text('label_new')?></button>
+    <button name="action" value="update"><?=$this->text('label_edit')?></button>
+    <button name="action" value="delete"><?=$this->text('label_delete')?></button>
+    <button name="admin" value="users"><?=$this->text('label_users')?></button>
+    </p>
 </form>
