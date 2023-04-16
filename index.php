@@ -22,8 +22,7 @@ const REGISTER_VERSION = "2.0-dev";
  */
 
 $pd_router->add_interest("register_access");
-Responder::respond(Dic::makeLoginController()(Request::current()));
-Responder::respond(Dic::makeHandlePageProtection()(Request::current()));
+Responder::respond(Dic::makeMain()(Request::current()));
 
 switch ($su) {
     case "register+user":

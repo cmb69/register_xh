@@ -21,9 +21,9 @@ class DicTest extends TestCase
         $plugin_tx = XH_includeVar("./languages/en.php", "plugin_tx");
     }
 
-    public function testMakesLoginController(): void
+    public function testMakesMain(): void
     {
-        $this->assertInstanceOf(LoginController::class, Dic::makeLoginController());
+        $this->assertInstanceOf(Main::class, Dic::makeMain());
     }
 
     public function testMakesPagesAdmin(): void
@@ -49,11 +49,6 @@ class DicTest extends TestCase
     public function testMakesForbidden(): void
     {
         $this->assertInstanceOf(Forbidden::class, Dic::makeForbidden());
-    }
-
-    public function testMakesHandlePageProtection(): void
-    {
-        $this->assertInstanceOf(HandlePageProtection::class, Dic::makeHandlePageProtection());
     }
 
     public function testMakesHandlePasswordForgotten(): void

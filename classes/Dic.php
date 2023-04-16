@@ -24,14 +24,15 @@ use Register\Infra\View;
 
 class Dic
 {
-    public static function makeLoginController(): LoginController
+    public static function makeMain(): Main
     {
         global $plugin_cf;
 
-        return new LoginController(
+        return new Main(
             $plugin_cf["register"],
             self::makeUserRepository(),
             self::makeActivityRepository(),
+            new Pages,
             new Logger(),
             new LoginManager()
         );
@@ -84,13 +85,6 @@ class Dic
     public static function makeForbidden(): Forbidden
     {
         return new Forbidden(self::makeView());
-    }
-
-    public static function makeHandlePageProtection(): HandlePageProtection
-    {
-        global $plugin_cf;
-
-        return new HandlePageProtection($plugin_cf["register"], Dic::makeUserRepository(), new Pages);
     }
 
     public static function makeHandlePasswordForgotten(): HandlePasswordForgotten

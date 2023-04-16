@@ -17,6 +17,8 @@ class Util
     private const EMAIL_PATTERN = '/^[a-zA-Z0-9.!#$%&\'*+\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?'
         . '(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/';
 
+    private const ACCESS_PATTERN = '/(?:#CMSimple\s+|{{{.*?)access\((.*?)\)\s*;?\s*(?:#|}}})/isu';
+
     public static function base64url(string $string): string
     {
         return rtrim(strtr(base64_encode($string), "+/", "-_"), "=");
@@ -29,7 +31,7 @@ class Util
 
     /**
      * @param list<array{int,string}> $data
-     * @return list<bool>
+     * @return array<int,bool>
      */
     public static function accessAuthorization(?User $user, array $data): array
     {
@@ -51,6 +53,19 @@ class Util
             array_push($parents, [$level, $auth]);
         }
         return $authorizations;
+    }
+
+    /**
+     * @param list<string> $contents
+     * @return list<bool>
+     */
+    public static function accessAuthorizationLegacy(?User $user, array $contents)
+    {
+        return array_map(function (string $content) use ($user) {
+            return preg_match(self::ACCESS_PATTERN, $content, $matches)
+                && ($arg = trim($matches[1], "\"'"))
+                && self::isAuthorized($user, $arg);
+        }, $contents);
     }
 
     public static function isAuthorized(?User $user, string $groups): bool

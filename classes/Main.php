@@ -13,12 +13,14 @@ namespace Register;
 use Register\Infra\ActivityRepository;
 use Register\Infra\Logger;
 use Register\Infra\LoginManager;
+use Register\Infra\Pages;
 use Register\Infra\Request;
 use Register\Infra\UserRepository;
 use Register\Logic\Util;
 use Register\Value\Response;
+use Register\Value\User;
 
-class LoginController
+class Main
 {
     /** @var array<string,string> */
     private $conf;
@@ -28,6 +30,9 @@ class LoginController
 
     /** @var ActivityRepository */
     private $activityRepository;
+
+    /** @var Pages */
+    private $pages;
 
     /** @var Logger */
     private $logger;
@@ -40,12 +45,14 @@ class LoginController
         array $conf,
         UserRepository $userRepository,
         ActivityRepository $activityRepository,
+        Pages $pages,
         Logger $logger,
         LoginManager $loginManager
     ) {
         $this->conf = $conf;
         $this->userRepository = $userRepository;
         $this->activityRepository = $activityRepository;
+        $this->pages = $pages;
         $this->logger = $logger;
         $this->loginManager = $loginManager;
     }
@@ -55,8 +62,10 @@ class LoginController
         if ($request->username()) {
             $this->activityRepository->update($request->username(), $request->time());
         }
-        if ($this->conf["allowed_remember"] && $request->cookie("register_remember")
-                && !$request->username()) {
+        if (!$request->editMode()) {
+            $this->protectPages($request);
+        }
+        if ($this->conf["allowed_remember"] && $request->cookie("register_remember") && !$request->username()) {
             return $this->autoLogin($request);
         }
         if ($request->username() && $request->function() === "registerlogout") {
@@ -65,7 +74,51 @@ class LoginController
         if ($request->username() && !$this->userRepository->findByUsername($request->username())) {
             return $this->forcedLogout($request);
         }
-        return new Response();
+        return Response::create();
+    }
+
+    /** @return void */
+    private function protectPages(Request $request)
+    {
+        $user = $this->userRepository->findByUsername($request->username());
+        $this->protectPagesNew($user);
+        $this->protectedPagesLegacy($user);
+    }
+
+    /** @return void */
+    private function protectPagesNew(?User $user)
+    {
+        $data = array_map(function (int $i, array $pd) {
+            return [$this->pages->level($i), $pd["register_access"] ?? ""];
+        }, array_keys($this->pages->data()), array_values($this->pages->data()));
+        foreach (Util::accessAuthorization($user, $data) as $i => $auth) {
+            if (!$auth) {
+                $this->pages->setContentOf($i, $this->content());
+            }
+        }
+    }
+
+    /** @return void */
+    private function protectedPagesLegacy(?User $user)
+    {
+        $contents = [];
+        for ($i = 0; $i < $this->pages->count(); $i++) {
+            $contents[] = $this->pages->content($i);
+        }
+        foreach (Util::accessAuthorizationLegacy($user, $contents) as $i => $auth) {
+            if (!$auth) {
+                $this->pages->setContentOf($i, $this->content());
+            }
+        }
+    }
+
+    private function content(): string
+    {
+        $content = "{{{register_forbidden()}}}";
+        if ($this->conf["hide_pages"]) {
+            $content .= "#CMSimple hide#";
+        }
+        return $content;
     }
 
     private function autoLogin(Request $request): Response

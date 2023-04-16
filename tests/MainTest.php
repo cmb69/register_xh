@@ -16,14 +16,16 @@ use Register\Infra\FakeRequest;
 use Register\Value\User;
 use Register\Infra\Logger;
 use Register\Infra\LoginManager;
+use Register\Infra\Pages;
 use Register\Infra\Random;
 use Register\Infra\UserRepository;
 
-class LoginControllerTest extends TestCase
+class MainTest extends TestCase
 {
     private $conf;
     private $userRepository;
     private $activityRepository;
+    private $pages;
     private $logger;
     private $loginManager;
 
@@ -36,19 +38,42 @@ class LoginControllerTest extends TestCase
         $dbService->writeUsers([$this->jane(), $this->john()]);
         $this->userRepository = new UserRepository($dbService);
         $this->activityRepository = new ActivityRepository($dbService);
+        $this->pages = $this->createMock(Pages::class);
+        $this->pages->method("data")->willReturn([
+            ["register_access" => ""],
+            ["register_access" => "guest"],
+            ["register_access" => "admin"],
+        ]);
         $this->logger = $this->createStub(Logger::class);
         $this->loginManager = $this->createStub(LoginManager::class);
     }
 
     private function sut()
     {
-        return new LoginController(
+        return new Main(
             $this->conf,
             $this->userRepository,
             $this->activityRepository,
+            $this->pages,
             $this->logger,
             $this->loginManager
         );
+    }
+
+    public function testProtectsPages(): void
+    {
+        $this->pages->expects($this->once())->method("setContentOf")->with(
+            2, "{{{register_forbidden()}}}#CMSimple hide#"
+        );
+        $request = new FakeRequest(["username" => "john"]);
+        $this->sut()($request);
+    }
+
+    public function testDoesNotProtectPagesInEditMode(): void
+    {
+        $this->pages->expects($this->never())->method("setContentOf");
+        $request = new FakeRequest(["username" => "john", "editMode" => true]);
+        $this->sut()($request);
     }
 
     public function testAutoLoginFailsOnBorkedCookie(): void
