@@ -27,8 +27,8 @@ if (!defined("CMSIMPLE_XH_VERSION")) {
  */
 
 $temp = [
-    "users_url" => Request::current()->url()->withPage("register")->withParams(["admin" => "users"])->relative(),
-    "groups_url" => Request::current()->url()->withPage("register")->withParams(["admin" => "groups"])->relative(),
+    "users_url" => Request::current()->url()->withPage("register")->with("admin", "users")->relative(),
+    "groups_url" => Request::current()->url()->withPage("register")->with("admin", "groups")->relative(),
 ];
 
 XH_registerPluginMenuItem("register", $plugin_tx["register"]["mnu_user_admin"], $temp["users_url"]);

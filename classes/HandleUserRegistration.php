@@ -14,12 +14,11 @@ use Register\Infra\Mailer;
 use Register\Infra\Password;
 use Register\Infra\Random;
 use Register\Infra\Request;
-use Register\Infra\Url;
 use Register\Infra\UserRepository;
 use Register\Infra\View;
 use Register\Logic\Util;
-use Register\Logic\Validator;
 use Register\Value\Response;
+use Register\Value\Url;
 use Register\Value\User;
 
 class HandleUserRegistration
@@ -151,11 +150,9 @@ class HandleUserRegistration
 
     private function sendSuccessNotification(User $user, Request $request): bool
     {
-        $url = $request->url()->withParams([
-            "register_action" => "activate",
-            "username" => $user->getUsername(),
-            "nonce" => $user->getStatus(),
-        ]);
+        $url = $request->url()->with("register_action", "activate")
+            ->with("username", $user->getUsername())
+            ->with("nonce", $user->getStatus());
         return $this->sendNotification($user, "emailtext2", $url, $request);
     }
 

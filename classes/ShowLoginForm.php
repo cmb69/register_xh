@@ -119,7 +119,8 @@ class ShowLoginForm
             "username" => $login["username"],
             "password" => $login["password"],
             "checked" => $login["remember"] ? "checked" : "",
-            "hasForgotPasswordLink" => $this->conf["password_forgotten"] && $request->su() !== "register+password",
+            "hasForgotPasswordLink" => $this->conf["password_forgotten"]
+                && $request->url()->page() !== "register+password",
             "forgotPasswordUrl" => $request->url()->withPage("register+password")->relative(),
             "hasRememberMe" => (bool) $this->conf["remember_user"],
             "isRegisterAllowed" => (bool) $this->conf["allowed_register"],
@@ -134,9 +135,9 @@ class ShowLoginForm
         }
         return $this->view->render("loggedin_area", [
             "fullName" => $user->getName(),
-            "hasUserPrefs" => $user->isActivated() && $request->su() !== "register+settings",
+            "hasUserPrefs" => $user->isActivated() && $request->url()->page() !== "register+settings",
             "userPrefUrl" => $request->url()->withPage("register+settings")->relative(),
-            "logoutUrl" => $request->url()->withParams(["function" => "registerlogout"])->relative(),
+            "logoutUrl" => $request->url()->with("function", "registerlogout")->relative(),
         ]);
     }
 

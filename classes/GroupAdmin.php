@@ -100,7 +100,7 @@ class GroupAdmin
         if (!$this->userGroupRepository->save($group)) {
             return $this->respondWith($this->renderCreateForm($group, [["err_cannot_write_csv"]]));
         }
-        return Response::redirect($request->url()->withPage("register")->withParams(["admin" => "groups"])->absolute());
+        return Response::redirect($request->url()->withPage("register")->with("admin", "groups")->absolute());
     }
 
     /** @param list<array{string}> $errors */
@@ -137,7 +137,7 @@ class GroupAdmin
         if (!$this->userGroupRepository->save($group)) {
             return $this->respondWith($this->renderUpdateForm($group, [["err_cannot_write_csv"]]));
         }
-        return Response::redirect($request->url()->withPage("register")->withParams(["admin" => "groups"])->absolute());
+        return Response::redirect($request->url()->withPage("register")->with("admin", "groups")->absolute());
     }
 
     /** @param list<array{string}> $errors */
@@ -172,7 +172,7 @@ class GroupAdmin
         if (!$this->userGroupRepository->delete($group)) {
             return $this->respondWith($this->renderDeleteForm($group, [["err_cannot_write_csv"]]));
         }
-        return Response::redirect($request->url()->withPage("register")->withParams(["admin" => "groups"])->absolute());
+        return Response::redirect($request->url()->withPage("register")->with("admin", "groups")->absolute());
     }
 
     /** @param list<array{string}> $errors */

@@ -13,11 +13,10 @@ use org\bovigo\vfs\vfsStream;
 use PHPUnit\Framework\TestCase;
 use Register\Infra\FakeDbService;
 use Register\Infra\FakePassword;
+use Register\Infra\FakeRequest;
 use Register\Infra\Logger;
 use Register\Infra\LoginManager;
 use Register\Infra\Random;
-use Register\Infra\Request;
-use Register\Infra\Url;
 use Register\Infra\UserGroupRepository;
 use Register\Infra\UserRepository;
 use Register\Infra\View;
@@ -58,37 +57,30 @@ class ShowLoginFormTest extends TestCase
         );
     }
 
-    private function request(): Request
-    {
-        $request = $this->createMock(Request::class);
-        $request->method("url")->willReturn(new Url("/", "Foo"));
-        return $request;
-    }
-
     public function testRendersLoginForm(): void
     {
-        $response = $this->sut()($this->request());
+        $request = new FakeRequest();
+        $response = $this->sut()($request);
         Approvals::verifyHtml($response->output());
     }
 
     public function testRendersNoLoggedInFormForVisitors(): void
     {
-        $response = $this->sut()($this->request(), true);
+        $request = new FakeRequest();
+        $response = $this->sut()($request, true);
         $this->assertEquals("", $response->output());
     }
 
     public function testLoggedInFormReportsMissingUser(): void
     {
-        $request = $this->request();
-        $request->method("username")->willReturn("colt");
+        $request = new FakeRequest(["username" => "colt"]);
         $response = $this->sut()($request);
         $this->assertStringContainsString("User 'colt' does not exist!", $response->output());
     }
 
     public function testRendersLoggedInForm(): void
     {
-        $request = $this->request();
-        $request->method("username")->willReturn("jane");
+        $request = new FakeRequest(["query" => "Foo", "username" => "jane"]);
         $response = $this->sut()($request);
         Approvals::verifyHtml($response->output());
     }
@@ -96,9 +88,10 @@ class ShowLoginFormTest extends TestCase
     public function testLoginReportsMissingUser(): void
     {
         $this->logger->expects($this->once())->method("logError")->with("login", "Unknown user 'colt'");
-        $request = $this->request();
-        $request->method("function")->willReturn("registerlogin");
-        $request->method("registerLoginPost")->willReturn(["username" => "colt", "password" => "", "remember" => ""]);
+        $request = new FakeRequest([
+            "query" => "&function=registerlogin",
+            "post" => ["username" => "colt", "password" => "", "remember" => ""],
+        ]);
         $response = $this->sut()($request);
         $this->assertStringContainsString(
             "You entered a wrong username or password, or your account still is not activated.",
@@ -109,9 +102,10 @@ class ShowLoginFormTest extends TestCase
     public function testLoginReportsDeactivatedUser(): void
     {
         $this->logger->expects($this->once())->method("logError")->with("login", "User 'john' is not allowed to login");
-        $request = $this->request();
-        $request->method("function")->willReturn("registerlogin");
-        $request->method("registerLoginPost")->willReturn(["username" => "john", "password" => "", "remember" => ""]);
+        $request = new FakeRequest([
+            "query" => "&function=registerlogin",
+            "post" => ["username" => "john", "password" => "", "remember" => ""],
+        ]);
         $response = $this->sut()($request);
         $this->assertStringContainsString(
             "You entered a wrong username or password, or your account still is not activated.",
@@ -122,9 +116,10 @@ class ShowLoginFormTest extends TestCase
     public function testLoginReportsWrongPassword(): void
     {
         $this->logger->expects($this->once())->method("logError")->with("login", "User 'jane' submitted wrong password");
-        $request = $this->request();
-        $request->method("function")->willReturn("registerlogin");
-        $request->method("registerLoginPost")->willReturn(["username" => "jane", "password" => "", "remember" => ""]);
+        $request = new FakeRequest([
+            "query" => "&function=registerlogin",
+            "post" => ["username" => "jane", "password" => "", "remember" => ""],
+        ]);
         $response = $this->sut()($request);
         $this->assertStringContainsString(
             "You entered a wrong username or password, or your account still is not activated.",
@@ -136,9 +131,10 @@ class ShowLoginFormTest extends TestCase
     {
         $this->loginManager->expects($this->once())->method("login")->with($this->users()["james"]);
         $this->logger->expects($this->once())->method("logInfo")->with("login", "User 'james' logged in");
-        $request = $this->request();
-        $request->method("function")->willReturn("registerlogin");
-        $request->method("registerLoginPost")->willReturn(["username" => "james", "password" => "test", "remember" => "on"]);
+        $request = new FakeRequest([
+            "query" => "Foo",
+            "post" => ["function" => "registerlogin", "username" => "james", "password" => "test", "remember" => "on"],
+        ]);
         $response = $this->sut()($request);
         $this->assertEquals("http://example.com/?Foo", $response->location());
         $this->assertEquals(
@@ -151,9 +147,9 @@ class ShowLoginFormTest extends TestCase
     {
         $this->loginManager->expects($this->once())->method("login")->with($this->users()["jane"]);
         $this->logger->expects($this->once())->method("logInfo")->with("login", "User 'jane' logged in");
-        $request = $this->request();
-        $request->method("function")->willReturn("registerlogin");
-        $request->method("registerLoginPost")->willReturn(["username" => "jane", "password" => "12345", "remember" => ""]);
+        $request = new FakeRequest([
+            "post" => ["function" => "registerlogin", "username" => "jane", "password" => "12345", "remember" => ""],
+        ]);
         $response = $this->sut()($request);
         $this->assertEquals("http://example.com/?Admin", $response->location());
     }
@@ -162,9 +158,10 @@ class ShowLoginFormTest extends TestCase
     {
         $this->loginManager->expects($this->once())->method("login")->with($this->users()["joan"]);
         $this->logger->expects($this->once())->method("logInfo")->with("login", "User 'joan' logged in");
-        $request = $this->request();
-        $request->method("function")->willReturn("registerlogin");
-        $request->method("registerLoginPost")->willReturn(["username" => "joan", "password" => "test", "remember" => ""]);
+        $request = new FakeRequest([
+            "query" => "Foo",
+            "post" => ["function" => "registerlogin", "username" => "joan", "password" => "test", "remember" => ""],
+        ]);
         $response = $this->sut()($request);
         $this->assertEquals("http://example.com/?Foo", $response->location());
     }

@@ -188,7 +188,7 @@ class UserAdmin
         if (!$this->userRepository->save($newUser)) {
             return $this->respondWith($this->renderCreateForm($user, $request->postedPassword(), [["err_cannot_write_csv"]]));
         }
-        return Response::redirect($request->url()->withPage("register")->withParams(["admin" => "users"])->absolute());
+        return Response::redirect($request->url()->withPage("register")->with("admin", "users")->absolute());
     }
 
     /** @param list<array{string}> $errors */
@@ -237,7 +237,7 @@ class UserAdmin
         if (!$this->userRepository->save($user)) {
             return $this->respondWith($this->renderUpdateForm($user, [["err_cannot_write_csv"]]));
         }
-        return Response::redirect($request->url()->withPage("register")->withParams(["admin" => "users"])->absolute());
+        return Response::redirect($request->url()->withPage("register")->with("admin", "users")->absolute());
     }
 
     /** @param list<array{string}> $errors */
@@ -305,7 +305,7 @@ class UserAdmin
         if (!$this->userRepository->save($newUser)) {
             return $this->respondWith($this->renderPasswordForm($user, $post["password2"], [["err_cannot_write_csv"]]));
         }
-        return Response::redirect($request->url()->withPage("register")->withParams(["admin" => "users"])->absolute());
+        return Response::redirect($request->url()->withPage("register")->with("admin", "users")->absolute());
     }
 
     /** @param list<array{string}> $errors */
@@ -346,7 +346,7 @@ class UserAdmin
         if (!$this->mailer->adHocMail($user, $mail, $this->conf["senderemail"])) {
             return $this->respondWith($this->renderMailForm($user, $mail, [["err_send_mail"]]));
         }
-        return Response::redirect($request->url()->withPage("register")->withParams(["admin" => "users"])->absolute());
+        return Response::redirect($request->url()->withPage("register")->with("admin", "users")->absolute());
     }
 
     /** @param list<array{string}> $errors */
@@ -382,7 +382,7 @@ class UserAdmin
         if (!$this->userRepository->delete($user)) {
             return $this->respondWith($this->renderDeleteForm($user, [["err_cannot_write_csv"]]));
         }
-        return Response::redirect($request->url()->withPage("register")->withParams(["admin" => "users"])->absolute());
+        return Response::redirect($request->url()->withPage("register")->with("admin", "users")->absolute());
     }
 
     /** @param list<array{string}> $errors */

@@ -11,9 +11,9 @@ namespace Register;
 use org\bovigo\vfs\vfsStream;
 use PHPUnit\Framework\TestCase;
 use Register\Infra\FakeDbService;
+use Register\Infra\FakeRequest;
 use Register\Infra\Pages;
 use Register\Infra\Random;
-use Register\Infra\Request;
 use Register\Infra\UserRepository;
 use Register\Value\User;
 
@@ -26,9 +26,6 @@ class HandlePageProtectionTest extends TestCase
 
     /** @var Pages&MockObject */
     private $pages;
-
-    /** @var Request */
-    private $request;
 
     public function setUp(): void
     {
@@ -44,8 +41,6 @@ class HandlePageProtectionTest extends TestCase
             ["register_access" => "admin"],
         ]);
         $this->sut = new HandlePageProtection($conf, $this->userRepository, $this->pages);
-        $this->request = $this->createStub(Request::class);
-        $this->request->method("username")->willReturn("john");
     }
 
     public function testProtectsPages(): void
@@ -53,14 +48,15 @@ class HandlePageProtectionTest extends TestCase
         $this->pages->expects($this->once())->method("setContentOf")->with(
             2, "{{{register_forbidden()}}}#CMSimple hide#"
         );
-        ($this->sut)($this->request);
+        $request = new FakeRequest(["username" => "john"]);
+        ($this->sut)($request);
     }
 
     public function testDoesNotProtectPagesInEditMode(): void
     {
         $this->pages->expects($this->never())->method("setContentOf");
-        $this->request->method("editMode")->willReturn(true);
-        ($this->sut)($this->request);
+        $request = new FakeRequest(["username" => "john", "editMode" => true]);
+        ($this->sut)($request);
 
     }
 

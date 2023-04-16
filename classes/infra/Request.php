@@ -9,6 +9,7 @@
 namespace Register\Infra;
 
 use Register\Value\Mail;
+use Register\Value\Url;
 use Register\Value\User;
 use Register\Value\UserGroup;
 
@@ -26,15 +27,30 @@ class Request
         return $_SESSION["username"] ?? "";
     }
 
-    /** @codeCoverageIgnore */
     public function registerAction(): string
     {
-        return $_POST["register_action"] ?? $_GET["register_action"] ?? "";
+        $post = $this->post();
+        if (isset($post["register_action"]) && is_string($post["register_action"])) {
+            return $post["register_action"];
+        }
+        $action = $this->url()->param("register_action");
+        if (is_string($action)) {
+            return $action;
+        }
+        return "";
     }
 
     public function action(): string
     {
-        return $_POST["action"] ?? $_GET["action"] ?? "";
+        $post = $this->post();
+        if (isset($post["action"]) && is_string($post["action"])) {
+            return $post["action"];
+        }
+        $action = $this->url()->param("action");
+        if (is_string($action)) {
+            return $action;
+        }
+        return "";
     }
 
     /** @return array{username:string,password:string,remember:string} */
@@ -129,7 +145,8 @@ class Request
 
     public function selectedUser(): string
     {
-        return isset($_GET["user"]) && is_string($_GET["user"]) ? $_GET["user"] : "";
+        $user = $this->url()->param("user");
+        return is_string($user) ? $user : "";
     }
 
     /** @return array{name:string,email:string,groups:list<string>,status:string} */
@@ -168,7 +185,8 @@ class Request
 
     public function selectedGroup(): string
     {
-        return isset($_GET["group"]) && is_string($_GET["group"]) ? $_GET["group"] : "";
+        $group = $this->url()->param("group");
+        return is_string($group) ? $group : "";
     }
 
     public function postedGroup(): UserGroup
@@ -196,17 +214,8 @@ class Request
 
     private function trimmedGetString(string $param): string
     {
-        $get = $this->get();
-        return (isset($get[$param]) && is_string($get[$param])) ? trim($get[$param]) : "";
-    }
-
-    /**
-     * @return array<string,string|array<string>>
-     * @codeCoverageIgnore
-     */
-    protected function get(): array
-    {
-        return $_GET;
+        $param = $this->url()->param($param);
+        return is_string($param) ? $param : "";
     }
 
     /**
@@ -220,15 +229,11 @@ class Request
 
     public function url(): Url
     {
-        global $sn, $su;
-
-        return new Url($sn, $su);
-    }
-
-    public function su(): string
-    {
-        global $su;
-        return $su;
+        $rest = $this->query();
+        if ($rest !== "") {
+            $rest = "?" . $rest;
+        }
+        return Url::from(CMSIMPLE_URL . $rest);
     }
 
     /** @codeCoverageIgnore */
@@ -238,17 +243,29 @@ class Request
         return defined("XH_ADM") && XH_ADM && $edit;
     }
 
-    /** @codeCoverageIgnore */
     public function function(): string
     {
-        global $function;
-        return $function;
+        $function = $this->url()->param("function");
+        if (is_string($function)) {
+            return $function;
+        }
+        $post = $this->post();
+        if (isset($post["function"]) && is_string($post["function"])) {
+            return $post["function"];
+        }
+        return "";
+    }
+
+    /** @codeCoverageIgnore */
+    protected function query(): string
+    {
+        return $_SERVER["QUERY_STRING"];
     }
 
     /** @codeCoverageIgnore */
     public function time(): int
     {
-        return $_SERVER["REQUEST_TIME"];
+        return (int) $_SERVER["REQUEST_TIME"];
     }
 
     /** @codeCoverageIgnore */
@@ -263,9 +280,17 @@ class Request
         return $_SERVER["REMOTE_ADDR"];
     }
 
-    /** @codeCoverageIgnore */
     public function cookie(string $name): ?string
     {
-        return $_COOKIE[$name] ?? null;
+        return $this->cookies()[$name] ?? null;
+    }
+
+    /**
+     * @return array<string,string>
+     * @codeCoverageIgnore
+     */
+    protected function cookies(): array
+    {
+        return $_COOKIE;
     }
 }

@@ -92,12 +92,10 @@ class HandlePasswordForgotten
     private function sendNotification(User $user, Request $request): bool
     {
         $mac = Util::hmac($user->getUsername() .  $request->time(), $user->secret());
-        $url = $request->url()->withParams([
-            "register_action" => "reset_password",
-            "username" => $user->getUsername(),
-            "time" => (string) $request->time(),
-            "mac" => $mac,
-        ]);
+        $url = $request->url()->with("register_action", "reset_password")
+            ->with("username", $user->getUsername())
+            ->with("time", (string) $request->time())
+            ->with("mac", $mac);
         return $this->mailer->notifyPasswordForgotten(
             $user,
             $this->conf['senderemail'],
