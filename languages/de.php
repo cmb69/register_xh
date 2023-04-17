@@ -116,6 +116,14 @@ $plugin_tx['register']['syscheck_warning']="Warnung";
 $plugin_tx['register']['syscheck_writable']="'%s' ist schreibbar: ";
 $plugin_tx['register']['syscheck_xhversion']="CMSimple_XH-Version ≥ %s: ";
 
+$plugin_tx['register']['log_login']="Nutzer „%s“ angemeldet";
+$plugin_tx['register']['log_login_user']="Nutzer „%s“ existiert nicht";
+$plugin_tx['register']['log_login_forbidden']="Nutzer „%s“ darf sich nicht anmelden";
+$plugin_tx['register']['log_login_password']="Nutzer „%s“ gab falsches Kennwort an";
+$plugin_tx['register']['log_autologin']="Nutzer„%s“ automatisch angemeldet";
+$plugin_tx['register']['log_logout']="Nutzer „%s“ abgemeldet";
+$plugin_tx['register']['log_unregister']="Nutzer „%s“ Konto gelöscht";
+
 $plugin_tx['register']['cf_allowed_register']="Ob sich neue Nutzer selbst registrieren können.";
 $plugin_tx['register']['cf_allowed_remember']="Ob Nutzer die \"Benutzer merken\" Funktionalität nutzen können.";
 $plugin_tx['register']['cf_allowed_settings']="Ob Nutzer ihre Kontoeinstellungen selbst ändern dürfen.";

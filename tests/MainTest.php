@@ -12,13 +12,14 @@ use org\bovigo\vfs\vfsStream;
 use PHPUnit\Framework\TestCase;
 use Register\Infra\ActivityRepository;
 use Register\Infra\FakeDbService;
+use Register\Infra\FakeLogger;
 use Register\Infra\FakeRequest;
 use Register\Value\User;
-use Register\Infra\Logger;
 use Register\Infra\LoginManager;
 use Register\Infra\Pages;
 use Register\Infra\Random;
 use Register\Infra\UserRepository;
+use Register\Infra\View;
 
 class MainTest extends TestCase
 {
@@ -28,6 +29,7 @@ class MainTest extends TestCase
     private $pages;
     private $logger;
     private $loginManager;
+    private $view;
 
     public function setUp(): void
     {
@@ -44,8 +46,9 @@ class MainTest extends TestCase
             ["register_access" => "guest"],
             ["register_access" => "admin"],
         ]);
-        $this->logger = $this->createStub(Logger::class);
+        $this->logger = new FakeLogger;
         $this->loginManager = $this->createStub(LoginManager::class);
+        $this->view = new View("./views/", XH_includeVar("./languages/en.php", "plugin_tx")["register"]);
     }
 
     private function sut()
@@ -56,7 +59,8 @@ class MainTest extends TestCase
             $this->activityRepository,
             $this->pages,
             $this->logger,
-            $this->loginManager
+            $this->loginManager,
+            $this->view
         );
     }
 
@@ -107,9 +111,12 @@ class MainTest extends TestCase
     public function testAutoLoginSucceeds(): void
     {
         $this->loginManager->expects($this->once())->method("login")->with($this->jane());
-        $this->logger->expects($this->once())->method("logInfo")->with("login", "jane automatically logged in");
         $request = new FakeRequest(["cookies" => ["register_remember" => "jane.i5ixPyjRJ6iPuDjTEwBwpxSg6H0"]]);
         $this->sut()($request);
+        $this->assertEquals(
+            ["info", "register", "login", "User “jane” automatically logged in"],
+            $this->logger->lastEntry()
+        );
     }
 
     public function testLogoutSucceeds(): void
@@ -129,6 +136,7 @@ class MainTest extends TestCase
         $response = $this->sut()($request);
         $this->assertEquals([["register_remember", "", 0]], $response->cookies());
         $this->assertEquals("http://example.com/?&function=registerlogout", $response->location());
+        $this->assertEquals(["info", "register", "logout", "User “jane” logged out"], $this->logger->lastEntry());
     }
 
     public function testForcesLogoutForUnknownUser(): void

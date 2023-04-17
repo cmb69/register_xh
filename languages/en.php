@@ -116,6 +116,14 @@ $plugin_tx['register']['syscheck_warning']="warning";
 $plugin_tx['register']['syscheck_writable']="'%s' is writable: ";
 $plugin_tx['register']['syscheck_xhversion']="CMSimple_XH version ≥ %s: ";
 
+$plugin_tx['register']['log_login']="User “%s” logged in";
+$plugin_tx['register']['log_login_user']="User “%s” does not exist";
+$plugin_tx['register']['log_login_forbidden']="User “%s” is not allowed to log in";
+$plugin_tx['register']['log_login_password']="User “%s” submitted wrong password";
+$plugin_tx['register']['log_autologin']="User “%s” automatically logged in";
+$plugin_tx['register']['log_logout']="User “%s” logged out";
+$plugin_tx['register']['log_unregister']="User “%s” deleted account";
+
 $plugin_tx['register']['cf_allowed_register']="Whether new users may register themselves.";
 $plugin_tx['register']['cf_allowed_remember']="Whether users are allowed to use the remember me feature.";
 $plugin_tx['register']['cf_allowed_settings']="Whether users are allowed to change their account settings.";

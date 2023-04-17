@@ -82,22 +82,22 @@ class ShowLoginForm
     {
         $post = $request->registerLoginPost();
         if (!($user = $this->userRepository->findByUsername($post["username"]))) {
-            $this->logger->logError("login", "Unknown user '$post[username]'");
+            $this->logger->logInfo("login", $this->view->plain("log_login_user", $post["username"]));
             return Response::create($this->renderLoginForm($request, $post, [["login_error_text"]]));
         }
         if (!$user->isActivated() && !$user->isLocked()) {
-            $this->logger->logError("login", "User '$post[username]' is not allowed to login");
+            $this->logger->logInfo("login", $this->view->plain("log_login_forbidden", $post["username"]));
             return Response::create($this->renderLoginForm($request, $post, [["login_error_text"]]));
         }
         if (!$this->password->verify($post["password"], $user->getPassword())) {
-            $this->logger->logError("login", "User '$post[username]' submitted wrong password");
+            $this->logger->logInfo("login", $this->view->plain("log_login_password", $post["username"]));
             return Response::create($this->renderLoginForm($request, $post, [["login_error_text"]]));
         }
         if ($this->password->needsRehash($user->getPassword())) {
             $this->userRepository->save($user->withPassword($this->password->hash($post["password"])));
         }
         $this->loginManager->login($user);
-        $this->logger->logInfo("login", "User '$post[username]' logged in");
+        $this->logger->logInfo("login", $this->view->plain("log_login", $post["username"]));
         if ($this->conf["allowed_remember"] && $post["remember"]) {
             return Response::redirect($this->loginUrl($request, $user))->withCookie(
                 "register_remember",

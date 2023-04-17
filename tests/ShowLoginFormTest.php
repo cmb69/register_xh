@@ -12,9 +12,9 @@ use ApprovalTests\Approvals;
 use org\bovigo\vfs\vfsStream;
 use PHPUnit\Framework\TestCase;
 use Register\Infra\FakeDbService;
+use Register\Infra\FakeLogger;
 use Register\Infra\FakePassword;
 use Register\Infra\FakeRequest;
-use Register\Infra\Logger;
 use Register\Infra\LoginManager;
 use Register\Infra\Random;
 use Register\Infra\UserGroupRepository;
@@ -40,7 +40,7 @@ class ShowLoginFormTest extends TestCase
         $this->userRepository = new UserRepository($dbService);
         $this->userGroupRepository = new UserGroupRepository($dbService, "guest", $this->createMock(Random::class));
         $this->loginManager = $this->createMock(LoginManager::class);
-        $this->logger = $this->createMock(Logger::class);
+        $this->logger = new FakeLogger;
         $this->view = new View("./views/", XH_includeVar("./languages/en.php", "plugin_tx")["register"]);
     }
 
@@ -87,7 +87,6 @@ class ShowLoginFormTest extends TestCase
 
     public function testLoginReportsMissingUser(): void
     {
-        $this->logger->expects($this->once())->method("logError")->with("login", "Unknown user 'colt'");
         $request = new FakeRequest([
             "query" => "&function=registerlogin",
             "post" => ["username" => "colt", "password" => "", "remember" => ""],
@@ -97,11 +96,11 @@ class ShowLoginFormTest extends TestCase
             "You entered a wrong username or password, or your account still is not activated.",
             $response->output()
         );
+        $this->assertEquals(["info", "register", "login", "User “colt” does not exist"], $this->logger->lastEntry());
     }
 
     public function testLoginReportsDeactivatedUser(): void
     {
-        $this->logger->expects($this->once())->method("logError")->with("login", "User 'john' is not allowed to login");
         $request = new FakeRequest([
             "query" => "&function=registerlogin",
             "post" => ["username" => "john", "password" => "", "remember" => ""],
@@ -111,11 +110,14 @@ class ShowLoginFormTest extends TestCase
             "You entered a wrong username or password, or your account still is not activated.",
             $response->output()
         );
+        $this->assertEquals(
+            ["info", "register", "login", "User “john” is not allowed to log in"],
+            $this->logger->lastEntry()
+        );
     }
 
     public function testLoginReportsWrongPassword(): void
     {
-        $this->logger->expects($this->once())->method("logError")->with("login", "User 'jane' submitted wrong password");
         $request = new FakeRequest([
             "query" => "&function=registerlogin",
             "post" => ["username" => "jane", "password" => "", "remember" => ""],
@@ -125,12 +127,15 @@ class ShowLoginFormTest extends TestCase
             "You entered a wrong username or password, or your account still is not activated.",
             $response->output()
         );
+        $this->assertEquals(
+            ["info", "register", "login", "User “jane” submitted wrong password"],
+            $this->logger->lastEntry()
+        );
     }
 
     public function testLoginRedirectsWithCookieOnSuccess(): void
     {
         $this->loginManager->expects($this->once())->method("login")->with($this->users()["james"]);
-        $this->logger->expects($this->once())->method("logInfo")->with("login", "User 'james' logged in");
         $request = new FakeRequest([
             "query" => "Foo",
             "post" => ["function" => "registerlogin", "username" => "james", "password" => "test", "remember" => "on"],
@@ -141,29 +146,30 @@ class ShowLoginFormTest extends TestCase
             [["register_remember", "james.6M5brgkTOP4AaQ9ZGLss7MZYyG4", "8640000"]],
             $response->cookies()
         );
+        $this->assertEquals(["info", "register", "login", "User “james” logged in"], $this->logger->lastEntry());
     }
 
     public function testLoginRedirectsToGroupPageOnSuccess(): void
     {
         $this->loginManager->expects($this->once())->method("login")->with($this->users()["jane"]);
-        $this->logger->expects($this->once())->method("logInfo")->with("login", "User 'jane' logged in");
         $request = new FakeRequest([
             "post" => ["function" => "registerlogin", "username" => "jane", "password" => "12345", "remember" => ""],
         ]);
         $response = $this->sut()($request);
         $this->assertEquals("http://example.com/?Admin", $response->location());
+        $this->assertEquals(["info", "register", "login", "User “jane” logged in"], $this->logger->lastEntry());
     }
 
     public function testLoginRedirectsToSamePageOnSuccess(): void
     {
         $this->loginManager->expects($this->once())->method("login")->with($this->users()["joan"]);
-        $this->logger->expects($this->once())->method("logInfo")->with("login", "User 'joan' logged in");
         $request = new FakeRequest([
             "query" => "Foo",
             "post" => ["function" => "registerlogin", "username" => "joan", "password" => "test", "remember" => ""],
         ]);
         $response = $this->sut()($request);
         $this->assertEquals("http://example.com/?Foo", $response->location());
+        $this->assertEquals(["info", "register", "login", "User “joan” logged in"], $this->logger->lastEntry());
     }
 
     private function users(): array

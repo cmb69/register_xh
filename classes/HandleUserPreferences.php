@@ -148,7 +148,7 @@ class HandleUserPreferences
         if (!$this->userRepository->delete($user)) {
             return $this->respondWith($this->renderForm($user, [["err_cannot_write_csv"]]));
         }
-        $this->logger->logInfo("logout", "{$user->getUsername()} deleted and logged out");
+        $this->logger->logInfo("logout", $this->view->plain("log_unregister", $user->getUsername()));
         return Response::redirect($request->url()->absolute());
     }
 

@@ -13,12 +13,11 @@ use org\bovigo\vfs\vfsStream;
 use PHPUnit\Framework\TestCase;
 use Register\Infra\FakeCsrfProtector;
 use Register\Infra\FakeDbService;
+use Register\Infra\FakeLogger;
 use Register\Infra\FakeMailer;
 use Register\Infra\FakePassword;
 use Register\Infra\FakeRequest;
-use Register\Infra\Logger;
 use Register\Infra\Random;
-use Register\Infra\Request;
 use Register\Infra\UserRepository;
 use Register\Infra\View;
 use Register\Value\User;
@@ -52,7 +51,7 @@ class HandleUserPreferencesTest extends TestCase
         $this->userRepository = new UserRepository($this->dbService);
         $this->view = new View("./views/", $text);
         $this->mailer = new FakeMailer(false, $text);
-        $this->logger = $this->createMock(Logger::class);
+        $this->logger = new FakeLogger;
         $password = new FakePassword;
         $this->subject = new HandleUserPreferences(
             $conf,
@@ -240,7 +239,7 @@ class HandleUserPreferencesTest extends TestCase
         ]);
         $response = ($this->subject)($request);
         $this->assertNull($this->userRepository->findByUsername("john"));
-        // todo logging
+        $this->assertEquals(["info", "register", "logout", "User “john” deleted account"], $this->logger->lastEntry());
         $this->assertEquals("http://example.com/?User-Preferences&register_action=unregister", $response->location());
     }
 }

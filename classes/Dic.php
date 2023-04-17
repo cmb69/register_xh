@@ -34,7 +34,8 @@ class Dic
             self::makeActivityRepository(),
             new Pages(),
             new Logger(),
-            new LoginManager()
+            new LoginManager(),
+            self::makeView()
         );
     }
 

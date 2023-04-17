@@ -16,6 +16,7 @@ use Register\Infra\LoginManager;
 use Register\Infra\Pages;
 use Register\Infra\Request;
 use Register\Infra\UserRepository;
+use Register\Infra\View;
 use Register\Logic\Util;
 use Register\Value\Response;
 use Register\Value\User;
@@ -40,6 +41,9 @@ class Main
     /** @var LoginManager */
     private $loginManager;
 
+    /** @var View */
+    private $view;
+
     /** @param array<string,string> $conf */
     public function __construct(
         array $conf,
@@ -47,7 +51,8 @@ class Main
         ActivityRepository $activityRepository,
         Pages $pages,
         Logger $logger,
-        LoginManager $loginManager
+        LoginManager $loginManager,
+        View $view
     ) {
         $this->conf = $conf;
         $this->userRepository = $userRepository;
@@ -55,6 +60,7 @@ class Main
         $this->pages = $pages;
         $this->logger = $logger;
         $this->loginManager = $loginManager;
+        $this->view = $view;
     }
 
     public function __invoke(Request $request): Response
@@ -139,7 +145,7 @@ class Main
             return Response::create()->withCookie("register_remember", "", 0);
         }
         $this->loginManager->login($user);
-        $this->logger->logInfo("login", "$username automatically logged in");
+        $this->logger->logInfo("login", $this->view->plain("log_autologin", $username));
         return Response::create();
     }
 
@@ -148,7 +154,7 @@ class Main
     {
         $this->loginManager->logout();
         $this->activityRepository->update($request->username(), 0);
-        $this->logger->logInfo('logout', "{$request->username()} logged out");
+        $this->logger->logInfo("logout", $this->view->plain("log_logout", $request->username()));
         if ($this->conf["allowed_remember"] && $request->cookie("register_remember")) {
             return Response::redirect($request->url()->absolute())->withCookie("register_remember", "", 0);
         }

@@ -12,27 +12,18 @@ namespace Register\Infra;
 
 class Logger
 {
-    /**
-     * @return void
-     */
-    public function logInfo(string $category, string $description)
+    /** @return void */
+    public function logInfo(string $category, string $message)
     {
-        XH_logMessage("info", "register", $category, $description);
+        $this->logMessage("info", "register", $category, $message);
     }
 
     /**
      * @return void
+     * @codeCoverageIgnore
      */
-    public function logWarning(string $category, string $description)
+    protected function logMessage(string $type, string $module, string $category, string $message)
     {
-        XH_logMessage("warning", "register", $category, $description);
-    }
-
-    /**
-     * @return void
-     */
-    public function logError(string $category, string $description)
-    {
-        XH_logMessage("error", "register", $category, $description);
+        XH_logMessage($type, $module, $category, $message);
     }
 }
