@@ -115,7 +115,8 @@ class MainTest extends TestCase
     public function testLogoutSucceeds(): void
     {
         $request = new FakeRequest(["query" => "&function=registerlogout", "username" => "jane"]);
-        $this->sut()($request);
+        $response = $this->sut()($request);
+        $this->assertEquals("http://example.com/?&function=registerlogout", $response->location());
     }
 
     public function testSuccessfulLogoutDeletesCookie(): void
@@ -127,13 +128,15 @@ class MainTest extends TestCase
         ]);
         $response = $this->sut()($request);
         $this->assertEquals([["register_remember", "", 0]], $response->cookies());
+        $this->assertEquals("http://example.com/?&function=registerlogout", $response->location());
     }
 
     public function testForcesLogoutForUnknownUser(): void
     {
         $this->loginManager->expects($this->once())->method("logout");
         $request = new FakeRequest(["username" => "colt"]);
-        $this->sut()($request);
+        $response = $this->sut()($request);
+        $this->assertEquals("http://example.com/", $response->location());
     }
 
     public function testDoesNothing(): void

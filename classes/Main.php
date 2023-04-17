@@ -150,15 +150,15 @@ class Main
         $this->activityRepository->update($request->username(), 0);
         $this->logger->logInfo('logout', "{$request->username()} logged out");
         if ($this->conf["allowed_remember"] && $request->cookie("register_remember")) {
-            return Response::create()->withCookie("register_remember", "", 0);
+            return Response::redirect($request->url()->absolute())->withCookie("register_remember", "", 0);
         }
-        return Response::create();
+        return Response::redirect($request->url()->absolute());
     }
 
     private function forcedLogout(Request $request): Response
     {
         $this->loginManager->logout();
         $this->activityRepository->update($request->username(), 0);
-        return Response::create();
+        return Response::redirect($request->url()->absolute());
     }
 }
