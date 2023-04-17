@@ -14,9 +14,6 @@ use Register\Value\UserGroup;
 
 class Util
 {
-    private const EMAIL_PATTERN = '/^[a-zA-Z0-9.!#$%&\'*+\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?'
-        . '(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/';
-
     private const ACCESS_PATTERN = '/(?:#CMSimple\s+|{{{.*?)access\((.*?)\)\s*;?\s*(?:#|}}})/isu';
 
     public static function base64url(string $string): string
@@ -68,7 +65,7 @@ class Util
         }, $contents);
     }
 
-    public static function isAuthorized(?User $user, string $groups): bool
+    private static function isAuthorized(?User $user, string $groups): bool
     {
         $groups = (string) preg_replace("/[ \t\r\n]*/", "", $groups);
         $groups = array_filter(explode(",", $groups));
@@ -98,15 +95,38 @@ class Util
         if (!in_array($user->getStatus(), User::STATUSES, true)) {
             $errors[] = ["err_status"];
         }
-        if ($user->getPassword() === "") {
-            $errors[] = ["err_password"];
-        } elseif ($user->getPassword() !== $password2) {
-            $errors[] = ["err_password2"];
+        $errors = array_merge($errors, self::validatePasswords($user->getPassword(), $password2));
+        $errors = array_merge($errors, self::validateEmail($user->getEmail()));
+        return $errors;
+    }
+
+    /**
+     * @return list<array{string}>
+     */
+    public static function validatePasswords(string $password1, string $password2): array
+    {
+        $errors = [];
+        if ($password1 === "") {
+            $errors[] = ['err_password'];
+        } elseif ($password1 !== $password2) {
+            $errors[] = ['err_password2'];
         }
-        if ($user->getEmail() === "") {
-            $errors[] = ["err_email"];
-        } elseif (!preg_match(self::EMAIL_PATTERN, $user->getEmail())) {
-            $errors[] = ["err_email_invalid"];
+        return $errors;
+    }
+
+    /**
+     * @return list<array{string}>
+     */
+    public static function validateEmail(string $email): array
+    {
+        $local = "[a-zA-Z0-9.!#$%&\'*+\/=?^_`{|}~-]+";
+        $label = "[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?";
+        $pattern = "/^$local@$label(?:\.$label)*$/u";
+        $errors = [];
+        if ($email === "") {
+            $errors[] = ['err_email'];
+        } elseif (!preg_match($pattern, $email)) {
+            $errors[] = ['err_email_invalid'];
         }
         return $errors;
     }

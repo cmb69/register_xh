@@ -79,7 +79,7 @@ class HandlePasswordForgotten
     private function passwordForgotten(Request $request): Response
     {
         $post = $request->forgotPasswordPost();
-        if (($errors = (new Validator())->validateEmail($post["email"]))) {
+        if (($errors = Util::validateEmail($post["email"]))) {
             return $this->respondWith($this->renderForm($post["email"], $errors));
         }
         if (!($user = $this->userRepository->findByEmail($post["email"]))) {
@@ -132,7 +132,7 @@ class HandlePasswordForgotten
             return $this->respondWith($this->view->message("fail", "forgotten_expired"));
         }
         $post = $request->changePasswordPost();
-        if (($errors = (new Validator())->validatePassword($post["password1"], $post["password2"]))) {
+        if (($errors = Util::validatePasswords($post["password1"], $post["password2"]))) {
             return $this->respondWith($this->renderChangePasswordForm($post, $errors));
         }
         $user = $user->withPassword($this->password->hash($post["password1"]));
