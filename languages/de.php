@@ -104,14 +104,15 @@ $plugin_tx['register']['log_autologin']="Nutzer„%s“ automatisch angemeldet";
 $plugin_tx['register']['log_logout']="Nutzer „%s“ abgemeldet";
 $plugin_tx['register']['log_unregister']="Nutzer „%s“ Konto gelöscht";
 
-$plugin_tx['register']['syscheck_extension']="PHP-Erweiterung '%s'ist  geladen: ";
-$plugin_tx['register']['syscheck_fail']="Fehler";
-$plugin_tx['register']['syscheck_phpversion']="PHP-Version ≥ %s: ";
-$plugin_tx['register']['syscheck_success']="OK";
+$plugin_tx['register']['syscheck_extension']="PHP-Erweiterung %s ist geladen";
+$plugin_tx['register']['syscheck_extension_no']="PHP-Erweiterung %s ist nicht geladen";
+$plugin_tx['register']['syscheck_phpversion']="PHP-Version ist wenigstens %s";
+$plugin_tx['register']['syscheck_phpversion_no']="PHP-Version ist nicht wenigstens %s";
 $plugin_tx['register']['syscheck_title']="System-Prüfung";
-$plugin_tx['register']['syscheck_warning']="Warnung";
-$plugin_tx['register']['syscheck_writable']="'%s' ist schreibbar: ";
-$plugin_tx['register']['syscheck_xhversion']="CMSimple_XH-Version ≥ %s: ";
+$plugin_tx['register']['syscheck_writable']="%s ist schreibbar";
+$plugin_tx['register']['syscheck_writable_no']="%s ist nicht schreibbar";
+$plugin_tx['register']['syscheck_xhversion']="CMSimple_XH-Version ist wenigstens %s";
+$plugin_tx['register']['syscheck_xhversion_no']="CMSimple_XH-Version ist wenigstens %s";
 
 $plugin_tx['register']['hint_accessgroups']="Eine durch Kommas getrennte Liste von Benutzergruppen, die Zugriff zu dieser Seite haben. Leer lassen, um jedem, einschließlich Besuchern, Zugriff zu gewähren.";
 

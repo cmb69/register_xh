@@ -104,14 +104,15 @@ $plugin_tx['register']['log_autologin']="User “%s” automatically logged in";
 $plugin_tx['register']['log_logout']="User “%s” logged out";
 $plugin_tx['register']['log_unregister']="User “%s” deleted account";
 
-$plugin_tx['register']['syscheck_extension']="PHP extension '%s' is loaded: ";
-$plugin_tx['register']['syscheck_fail']="failure";
-$plugin_tx['register']['syscheck_phpversion']="PHP version ≥ %s: ";
-$plugin_tx['register']['syscheck_success']="okay";
+$plugin_tx['register']['syscheck_extension']="PHP extension %s is loaded";
+$plugin_tx['register']['syscheck_extension_no']="PHP extension %s is not loaded";
+$plugin_tx['register']['syscheck_phpversion']="PHP version is at least %s";
+$plugin_tx['register']['syscheck_phpversion_no']="PHP version is not at least %s";
 $plugin_tx['register']['syscheck_title']="System check";
-$plugin_tx['register']['syscheck_warning']="warning";
-$plugin_tx['register']['syscheck_writable']="'%s' is writable: ";
-$plugin_tx['register']['syscheck_xhversion']="CMSimple_XH version ≥ %s: ";
+$plugin_tx['register']['syscheck_writable']="%s is writable";
+$plugin_tx['register']['syscheck_writable_no']="%s is not writable";
+$plugin_tx['register']['syscheck_xhversion']="CMSimple_XH version is at least %s";
+$plugin_tx['register']['syscheck_xhversion_no']="CMSimple_XH version is not at least %s";
 
 $plugin_tx['register']['hint_accessgroups']="A comma separated list of user groups which have access to this page. Leave empty to grant access to everybody, including visitors.";
 

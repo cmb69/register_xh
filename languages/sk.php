@@ -56,8 +56,5 @@ $plugin_tx['register']['error_login']="Uviedli ste nesprávne meno alebo heslo. 
 $plugin_tx['register']['error_access']="Prístup na túto stránku majú iba užívatelia s osobitnými právami.";
 
 $plugin_tx['register']['syscheck_title']="Kontrola systému";
-$plugin_tx['register']['syscheck_phpversion']="PHP verzia ≥ %s: ";
-$plugin_tx['register']['syscheck_extension']="Rozšírenie '%s' načítané: ";
-$plugin_tx['register']['syscheck_writable']="Adresár '%s' umožňuje zápis: ";
 
 ?>

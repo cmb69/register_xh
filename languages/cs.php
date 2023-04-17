@@ -57,9 +57,6 @@ $plugin_tx['register']['error_login']="Uvedli jste nesprávné jméno nebo heslo
 $plugin_tx['register']['error_access']="Přístup na tuto stránku mají jen užívatelé s přidělenými právy.";
 
 $plugin_tx['register']['syscheck_title']="Kontrola systému";
-$plugin_tx['register']['syscheck_phpversion']="PHP verze ≥ %s: ";
-$plugin_tx['register']['syscheck_extension']="Rozšíření '%s' načteno: ";
-$plugin_tx['register']['syscheck_writable']="Adresář '%s' umožňuje zápis: ";
 
 $plugin_tx['register']['cf_group_activated']="Status nových členů (skupina po registraci a aktivaci účtu).";
 $plugin_tx['register']['cf_group_default']="Stav nových členů (výchozí skupina uživatele po registraci, ale před aktivací účtu).";

@@ -41,22 +41,19 @@ class ShowPluginInfo
 
     public function __invoke(): Response
     {
-        return Response::create($this->view->render('info', [
-            'version' => REGISTER_VERSION,
-            'checks' => $this->getChecks($this->pluginFolder),
+        return Response::create($this->view->render("info", [
+            "version" => REGISTER_VERSION,
+            "checks" => $this->getChecks($this->pluginFolder),
         ]));
     }
 
-    /**
-     * @return list<array{class:string,key:string,arg:string,statekey:string}>
-     */
-    public function getChecks(string $pluginFolder)
+    /** @return list<array{class:string,key:string,arg:string}> */
+    public function getChecks(string $pluginFolder): array
     {
         return [
-            $this->checkPhpVersion('7.1.0'),
-            $this->checkExtension('hash'),
-            $this->checkExtension('session'),
-            $this->checkXhVersion('1.7.0'),
+            $this->checkPhpVersion("7.1.0"),
+            $this->checkExtension("hash"),
+            $this->checkXhVersion("1.7.0"),
             $this->checkWritability($pluginFolder . "css/"),
             $this->checkWritability($pluginFolder . "config/"),
             $this->checkWritability($pluginFolder . "languages/"),
@@ -64,64 +61,47 @@ class ShowPluginInfo
         ];
     }
 
-    /**
-     * @param string $version
-     * @return array{class:string,key:string,arg:string,statekey:string}
-     */
-    private function checkPhpVersion($version)
+    /** @return array{class:string,key:string,arg:string} */
+    private function checkPhpVersion(string $version): array
     {
-        $state = $this->systemChecker->checkVersion(PHP_VERSION, $version) ? 'success' : 'fail';
+        $state = $this->systemChecker->checkVersion(PHP_VERSION, $version);
         return [
-            "class" => "xh_$state",
-            "key" => "syscheck_phpversion",
+            "class" => $state ? "xh_success" : "xh_fail",
+            "key" => $state ? "syscheck_phpversion" : "syscheck_phpversion_no",
             "arg" => $version,
-            "statekey" => "syscheck_$state",
         ];
     }
 
-    /**
-     * @param string $extension
-     * @param bool $isMandatory
-     * @return array{class:string,key:string,arg:string,statekey:string}
-     */
-    private function checkExtension($extension, $isMandatory = true)
+    /** @return array{class:string,key:string,arg:string} */
+    private function checkExtension(string $extension): array
     {
-        $state = $this->systemChecker->checkExtension($extension) ? 'success' : ($isMandatory ? 'fail' : 'warning');
+        $state = $this->systemChecker->checkExtension($extension);
         return [
-            "class" => "xh_$state",
-            "key" => "syscheck_extension",
+            "class" => $state ? "xh_success" : "xh_fail",
+            "key" => $state ? "syscheck_extension" : "syscheck_extension_no",
             "arg" => $extension,
-            "statekey" => "syscheck_$state",
         ];
     }
 
-    /**
-     * @param string $version
-     * @return array{class:string,key:string,arg:string,statekey:string}
-     */
-    private function checkXhVersion($version)
+    /** @return array{class:string,key:string,arg:string} */
+    private function checkXhVersion(string $version): array
     {
-        $state = $this->systemChecker->checkVersion(CMSIMPLE_XH_VERSION, "CMSimple_XH $version") ? 'success' : 'fail';
+        $state = $this->systemChecker->checkVersion(CMSIMPLE_XH_VERSION, "CMSimple_XH $version");
         return [
-            "class" => "xh_$state",
-            "key" => "syscheck_xhversion",
+            "class" => $state ? "xh_success" : "xh_fail",
+            "key" => $state ? "syscheck_xhversion" : "syscheck_xhversion_no",
             "arg" => $version,
-            "statekey" => "syscheck_$state",
         ];
     }
 
-    /**
-     * @param string $folder
-     * @return array{class:string,key:string,arg:string,statekey:string}
-     */
-    private function checkWritability($folder)
+    /** @return array{class:string,key:string,arg:string} */
+    private function checkWritability(string $folder): array
     {
-        $state = $this->systemChecker->checkWritability($folder) ? 'success' : 'warning';
+        $state = $this->systemChecker->checkWritability($folder);
         return [
-            "class" => "xh_$state",
-            "key" => "syscheck_writable",
+            "class" => $state ? "xh_success" : "xh_warning",
+            "key" => $state ? "syscheck_writable" : "syscheck_writable_no",
             "arg" => $folder,
-            "statekey" => "syscheck_$state",
         ];
     }
 }

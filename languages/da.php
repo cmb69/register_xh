@@ -63,9 +63,6 @@ $plugin_tx['register']['error_login']="Du har indtastet et forkert brugernavn el
 $plugin_tx['register']['error_access']="Denne side er kun tilgængelig for medlemmer med godkendt tilladelser.";
 
 $plugin_tx['register']['syscheck_title']="System check";
-$plugin_tx['register']['syscheck_phpversion']="PHP version ≥ %s: ";
-$plugin_tx['register']['syscheck_extension']="Extension '%s' loaded: ";
-$plugin_tx['register']['syscheck_writable']="Mappen '%s' skrivebar: ";
 
 $plugin_tx['register']['cf_group_activated']="Status for nye medlemmer (gruppe efter registrering og konto aktivering).";
 $plugin_tx['register']['cf_group_default']="Status for nye medlemmer (standard gruppe for brugeren efter registrering, men før konto aktivering).";
