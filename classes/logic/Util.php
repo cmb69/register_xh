@@ -59,9 +59,8 @@ class Util
     public static function accessAuthorizationLegacy(?User $user, array $contents)
     {
         return array_map(function (string $content) use ($user) {
-            return preg_match(self::ACCESS_PATTERN, $content, $matches)
-                && ($arg = trim($matches[1], "\"'"))
-                && self::isAuthorized($user, $arg);
+            return !preg_match(self::ACCESS_PATTERN, $content, $matches)
+                || self::isAuthorized($user, trim($matches[1], "\"'"));
         }, $contents);
     }
 

@@ -14,6 +14,23 @@ use Register\Value\User;
 
 class UtilTest extends TestCase
 {
+    /** @dataProvider accessAuthorizationLegacyData */
+    public function testAccessAuthorizationLegacy(?User $user, array $contents, array $expected): void
+    {
+        $actual = Util::accessAuthorizationLegacy($user, $contents);
+        $this->assertEquals($expected, $actual);
+    }
+
+    public function accessAuthorizationLegacyData(): array
+    {
+        $user = new User("", "", ["guest"], "", "", "", "");
+        return [
+            "no call" => [$user, [""], [true]],
+            "no groups" => [$user, ["{{{access('')}}}"], [true]],
+            "admin only" => [$user, ["{{{access('admin')}}}"], [false]],
+        ];
+    }
+
     /**
      * @param list<array{string}> $expected
      * @dataProvider validateUserData
