@@ -32,8 +32,8 @@ $temp = [
         ->relative(),
 ];
 
-XH_registerPluginMenuItem("register", $plugin_tx["register"]["mnu_user_admin"], $temp["users_url"]);
-XH_registerPluginMenuItem("register", $plugin_tx["register"]["mnu_group_admin"], $temp["groups_url"]);
+XH_registerPluginMenuItem("register", $plugin_tx["register"]["menu_user_admin"], $temp["users_url"]);
+XH_registerPluginMenuItem("register", $plugin_tx["register"]["menu_group_admin"], $temp["groups_url"]);
 XH_registerStandardPluginMenuItems(true);
 
 $pd_router->add_tab(
@@ -44,8 +44,8 @@ $pd_router->add_tab(
 if (XH_wantsPluginAdministration("register")) {
     $o .= print_plugin_admin("on");
     pluginmenu("ROW");
-    pluginmenu("TAB", XH_hsc($temp["users_url"]), "", XH_hsc($plugin_tx["register"]["mnu_user_admin"]));
-    pluginmenu("TAB", XH_hsc($temp["groups_url"]), "", XH_hsc($plugin_tx["register"]["mnu_group_admin"]));
+    pluginmenu("TAB", XH_hsc($temp["users_url"]), "", XH_hsc($plugin_tx["register"]["menu_user_admin"]));
+    pluginmenu("TAB", XH_hsc($temp["groups_url"]), "", XH_hsc($plugin_tx["register"]["menu_group_admin"]));
     $o .= pluginmenu("SHOW");
     switch ($admin) {
         case "":

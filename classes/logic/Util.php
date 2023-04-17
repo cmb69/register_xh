@@ -79,20 +79,20 @@ class Util
     {
         $errors = [];
         if ($user->getUsername() === "") {
-            $errors[] = ["err_username"];
+            $errors[] = ["error_username"];
         } elseif (!preg_match('/^[A-Za-z0-9_]+$/u', $user->getUsername())) {
-            $errors[] = ["err_username_illegal"];
+            $errors[] = ["error_username_illegal"];
         }
         if ($user->getName() === "") {
-            $errors[] = ["err_name"];
+            $errors[] = ["error_name"];
         } elseif (strpos($user->getName(), ":") !== false) {
-            $errors[] = ["err_colon"];
+            $errors[] = ["error_colon"];
         }
         if ($user->getAccessgroups() === []) {
-            $errors[] = ["err_group_missing"];
+            $errors[] = ["error_group_missing"];
         }
         if (!in_array($user->getStatus(), User::STATUSES, true)) {
-            $errors[] = ["err_status"];
+            $errors[] = ["error_status"];
         }
         $errors = array_merge($errors, self::validatePasswords($user->getPassword(), $password2));
         $errors = array_merge($errors, self::validateEmail($user->getEmail()));
@@ -106,9 +106,9 @@ class Util
     {
         $errors = [];
         if ($password1 === "") {
-            $errors[] = ['err_password'];
+            $errors[] = ['error_password'];
         } elseif ($password1 !== $password2) {
-            $errors[] = ['err_password2'];
+            $errors[] = ['error_password2'];
         }
         return $errors;
     }
@@ -123,9 +123,9 @@ class Util
         $pattern = "/^$local@$label(?:\.$label)*$/u";
         $errors = [];
         if ($email === "") {
-            $errors[] = ['err_email'];
+            $errors[] = ['error_email'];
         } elseif (!preg_match($pattern, $email)) {
-            $errors[] = ['err_email_invalid'];
+            $errors[] = ['error_email_invalid'];
         }
         return $errors;
     }
@@ -135,7 +135,7 @@ class Util
     {
         $errors = [];
         if (!preg_match('/^[A-Za-z0-9_-]+$/u', $group->getGroupname())) {
-            $errors[] = ["err_group_illegal"];
+            $errors[] = ["error_group_illegal"];
         }
         return $errors;
     }
@@ -145,10 +145,10 @@ class Util
     {
         $errors = [];
         if (!preg_match('/.+/u', $mail->subject())) {
-            $errors[] = ["err_subject"];
+            $errors[] = ["error_subject"];
         }
         if (!preg_match('/.+/u', $mail->message())) {
-            $errors[] = ["err_message"];
+            $errors[] = ["error_message"];
         }
         return $errors;
     }

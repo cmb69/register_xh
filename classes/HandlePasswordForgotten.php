@@ -83,10 +83,10 @@ class HandlePasswordForgotten
             return $this->respondWith($this->renderForm($post["email"], $errors));
         }
         if (!($user = $this->userRepository->findByEmail($post["email"]))) {
-            return $this->respondWith($this->view->message('success', 'remindersent_reset'));
+            return $this->respondWith($this->view->message('success', 'message_remindersent_reset'));
         }
         $this->sendNotification($user, $request);
-        return $this->respondWith($this->view->message('success', 'remindersent_reset'));
+        return $this->respondWith($this->view->message('success', 'message_remindersent_reset'));
     }
 
     private function sendNotification(User $user, Request $request): bool
@@ -108,13 +108,13 @@ class HandlePasswordForgotten
     {
         $params = $request->resetPasswordParams();
         if (!($user = $this->userRepository->findByUsername($params["username"]))) {
-            return $this->respondWith($this->view->error("err_user_does_not_exist", $params["username"]));
+            return $this->respondWith($this->view->error("error_user_does_not_exist", $params["username"]));
         }
         if (!$this->verifyMac($user, $params)) {
-            return $this->respondWith($this->view->message("fail", 'err_status_invalid'));
+            return $this->respondWith($this->view->message("fail", 'error_status_invalid'));
         }
         if ($this->isExpired((int) $params["time"], $request)) {
-            return $this->respondWith($this->view->message("fail", "forgotten_expired"));
+            return $this->respondWith($this->view->message("fail", "error_expired"));
         }
         return $this->respondWith($this->renderChangePasswordForm(["password1" => "", "password2" => ""]));
     }
@@ -123,13 +123,13 @@ class HandlePasswordForgotten
     {
         $params = $request->resetPasswordParams();
         if (!($user = $this->userRepository->findByUsername($params["username"]))) {
-            return $this->respondWith($this->view->error("err_user_does_not_exist", $params["username"]));
+            return $this->respondWith($this->view->error("error_user_does_not_exist", $params["username"]));
         }
         if (!$this->verifyMac($user, $params)) {
-            return $this->respondWith($this->view->message("fail", 'err_status_invalid'));
+            return $this->respondWith($this->view->message("fail", 'error_status_invalid'));
         }
         if ($this->isExpired((int) $params["time"], $request)) {
-            return $this->respondWith($this->view->message("fail", "forgotten_expired"));
+            return $this->respondWith($this->view->message("fail", "error_expired"));
         }
         $post = $request->changePasswordPost();
         if (($errors = Util::validatePasswords($post["password1"], $post["password2"]))) {
@@ -137,10 +137,10 @@ class HandlePasswordForgotten
         }
         $user = $user->withPassword($this->password->hash($post["password1"]));
         if (!$this->userRepository->save($user)) {
-            return $this->respondWith($this->view->message("fail", 'err_cannot_write_csv'));
+            return $this->respondWith($this->view->message("fail", 'error_cannot_write_csv'));
         }
         $this->mailer->notifyPasswordReset($user, $this->conf['senderemail'], $request->serverName());
-        return $this->respondWith($this->view->message('success', 'remindersent'));
+        return $this->respondWith($this->view->message('success', 'message_remindersent'));
     }
 
     /** @param array{username:string,time:string,mac:string} $params */
@@ -178,8 +178,8 @@ class HandlePasswordForgotten
 
     private function respondWith(string $output): Response
     {
-        return Response::create("<h1>" . $this->view->text("forgot_password") . "</h1>\n"
-            . "<p>" . $this->view->text("reminderexplanation") . "</p>\n"
-            . $output)->withTitle($this->view->text("forgot_password"));
+        return Response::create("<h1>" . $this->view->text("label_forgot_password") . "</h1>\n"
+            . "<p>" . $this->view->text("message_reminderexplanation") . "</p>\n"
+            . $output)->withTitle($this->view->text("label_forgot_password"));
     }
 }

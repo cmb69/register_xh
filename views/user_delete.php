@@ -17,7 +17,7 @@ use Register\Infra\View;
   <input type="hidden" name="register_token" value="<?=$token?>">
   <p>
     <label>
-      <span><?=$this->text('username')?></span>
+      <span><?=$this->text('label_username')?></span>
       <input value="<?=$username?>" disabled>
     </label>
   </p>

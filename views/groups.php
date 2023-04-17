@@ -18,8 +18,8 @@ use Register\Infra\View;
   <table>
     <thead>
       <tr>
-        <th><?=$this->text('groupname')?></th>
-        <th><?=$this->text('login')?></th>
+        <th><?=$this->text('label_groupname')?></th>
+        <th><?=$this->text('label_login')?></th>
       </tr>
     </thead>
     <tbody>

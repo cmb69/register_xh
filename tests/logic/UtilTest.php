@@ -52,22 +52,22 @@ class UtilTest extends TestCase
             "illegal username" => [
                 new User("john doe", "12345", ["guest"], "John Doe", "john@example.com", "activated", "secret"),
                 "12345",
-                [["err_username_illegal"]],
+                [["error_username_illegal"]],
             ],
             "name with colon" => [
                 new User("john", "12345", ["guest"], "John:Doe", "john@example.com", "activated", "secret"),
                 "12345",
-                [["err_colon"]],
+                [["error_colon"]],
             ],
             "no group" => [
                 new User("john", "12345", [], "John Doe", "john@example.com", "activated", "secret"),
                 "12345",
-                [["err_group_missing"]],
+                [["error_group_missing"]],
             ],
             "illegal status" => [
                 new User("john", "12345", ["guest"], "John Doe", "john@example.com", "illegal", "secret"),
                 "12345",
-                [["err_status"]],
+                [["error_status"]],
             ],
         ];
     }
@@ -85,7 +85,7 @@ class UtilTest extends TestCase
     public function validateMailData(): array
     {
         return [
-            "empty message" => [new Mail("subject", ""), [["err_message"]]],
+            "empty message" => [new Mail("subject", ""), [["error_message"]]],
         ];
     }
 }

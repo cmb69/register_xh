@@ -36,17 +36,17 @@ class Mailer
         string $remoteAddress
     ): bool {
         $content = <<<MAIL
-{$this->text["emailprefsupdated"]}
+{$this->text["email_prefs_updated"]}
 
- {$this->text["name"]}: {$user->getName()}
- {$this->text["username"]}: {$user->getUsername()}
- {$this->text["email"]}: {$user->getEmail()}
- {$this->text["fromip"]}: {$remoteAddress}
+ {$this->text["label_name"]}: {$user->getName()}
+ {$this->text["label_username"]}: {$user->getUsername()}
+ {$this->text["label_email"]}: {$user->getEmail()}
+ {$this->text["label_fromip"]}: {$remoteAddress}
 
 MAIL;
         return $this->sendMail(
             $user->getEmail(),
-            sprintf($this->text['prefsemailsubject'], $serverName),
+            sprintf($this->text['email_prefs_subject'], $serverName),
             $content,
             ["From: $from", "Cc: $oldemail, $from"]
         );
@@ -55,19 +55,19 @@ MAIL;
     public function notifyPasswordForgotten(User $user, string $from, string $url, string $serverName): bool
     {
         $content = <<<MAIL
-{$this->text["emailtext1"]}
+{$this->text["email_text1"]}
 
- {$this->text["name"]}: {$user->getName()}
- {$this->text["username"]}: {$user->getUsername()}
- {$this->text["email"]}: {$user->getEmail()}
+ {$this->text["label_name"]}: {$user->getName()}
+ {$this->text["label_username"]}: {$user->getUsername()}
+ {$this->text["label_email"]}: {$user->getEmail()}
 
-{$this->text["emailtext3"]}
+{$this->text["email_text3"]}
 
 <{$url}>
 MAIL;
         return $this->sendMail(
             $user->getEmail(),
-            sprintf($this->text['reminderemailsubject'], $serverName),
+            sprintf($this->text['email_reminder_subject'], $serverName),
             $content,
             ["From: $from"]
         );
@@ -76,16 +76,16 @@ MAIL;
     public function notifyPasswordReset(User $user, string $from, string $serverName): bool
     {
         $content = <<<MAIL
-{$this->text["emailtext1"]}
+{$this->text["email_text1"]}
 
- {$this->text["name"]}: {$user->getName()}
- {$this->text["username"]}: {$user->getUsername()}
- {$this->text["email"]}: {$user->getEmail()}
+ {$this->text["label_name"]}: {$user->getName()}
+ {$this->text["label_username"]}: {$user->getUsername()}
+ {$this->text["label_email"]}: {$user->getEmail()}
 
 MAIL;
         return $this->sendMail(
             $user->getEmail(),
-            sprintf($this->text['reminderemailsubject'], $serverName),
+            sprintf($this->text['email_reminder_subject'], $serverName),
             $content,
             ["From: $from"]
         );
@@ -100,12 +100,12 @@ MAIL;
         string $remoteAddress
     ): bool {
         $content = <<<MAIL
-{$this->text["emailtext1"]}
+{$this->text["email_text1"]}
 
- {$this->text['name']}: {$user->getName()}
- {$this->text['username']}: {$user->getUsername()}
- {$this->text['email']}: {$user->getEmail()}
- {$this->text['fromip']}: {$remoteAddress}
+ {$this->text['label_name']}: {$user->getName()}
+ {$this->text['label_username']}: {$user->getUsername()}
+ {$this->text['label_email']}: {$user->getEmail()}
+ {$this->text['label_fromip']}: {$remoteAddress}
 
 {$this->text[$key]}
 
@@ -113,7 +113,7 @@ MAIL;
 MAIL;
         return $this->sendMail(
             $user->getEmail(),
-            sprintf($this->text['emailsubject'], $serverName),
+            sprintf($this->text['email_subject'], $serverName),
             $content,
             ["From: $from", "Cc: $from"]
         );

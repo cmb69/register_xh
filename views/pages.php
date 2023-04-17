@@ -14,7 +14,7 @@ use Register\Infra\View;
     <thead>
       <tr>
         <th><?=$this->text('label_pages')?></th>
-        <th><?=$this->text('accessgroups')?></th>
+        <th><?=$this->text('label_accessgroups')?></th>
       </tr>
     </thead>
     <tbody>

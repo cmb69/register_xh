@@ -170,11 +170,11 @@ class UserAdmin
     private function doCreate(Request $request): Response
     {
         if (!$this->csrfProtector->check()) {
-            return $this->respondWith($this->view->error("err_unauthorized"));
+            return $this->respondWith($this->view->error("error_unauthorized"));
         }
         $username = $request->selectedUser();
         if ($this->userRepository->findByUsername($username)) {
-            return $this->respondWith($this->view->error("err_username_exists"));
+            return $this->respondWith($this->view->error("error_username_exists"));
         }
         $user = $request->postedUser();
         if (($errors = Util::validateUser($user, $request->postedPassword()))) {
@@ -182,14 +182,14 @@ class UserAdmin
         }
         if ($this->userRepository->hasDuplicateEmail($user)) {
             return $this->respondWith(
-                $this->renderCreateForm($user, $request->postedPassword(), [["err_email_exists"]])
+                $this->renderCreateForm($user, $request->postedPassword(), [["error_email_exists"]])
             );
         }
         $newUser = $user->withPassword($this->password->hash($user->getPassword()))
             ->withSecret(base64_encode($this->random->bytes(15)));
         if (!$this->userRepository->save($newUser)) {
             return $this->respondWith(
-                $this->renderCreateForm($user, $request->postedPassword(), [["err_cannot_write_csv"]])
+                $this->renderCreateForm($user, $request->postedPassword(), [["error_cannot_write_csv"]])
             );
         }
         return Response::redirect($request->url()->withPage("register")->with("admin", "users")->absolute());
@@ -216,7 +216,7 @@ class UserAdmin
     {
         $username = $request->selectedUser();
         if (!($user = $this->userRepository->findByUsername($username))) {
-            return $this->overview($request, [["err_user_does_not_exist", $username]]);
+            return $this->overview($request, [["error_user_does_not_exist", $username]]);
         }
         return $this->respondWith($this->renderUpdateForm($user));
     }
@@ -224,11 +224,11 @@ class UserAdmin
     private function doUpdate(Request $request): Response
     {
         if (!$this->csrfProtector->check()) {
-            return $this->respondWith($this->view->error("err_unauthorized"));
+            return $this->respondWith($this->view->error("error_unauthorized"));
         }
         $username = $request->selectedUser();
         if (!($user = $this->userRepository->findByUsername($username))) {
-            return $this->respondWith($this->view->error("err_user_does_not_exist", $username));
+            return $this->respondWith($this->view->error("error_user_does_not_exist", $username));
         }
         $post = $request->userPost();
         $user = $user->with($post["name"], $post["email"], $post["groups"], $post["status"]);
@@ -236,10 +236,10 @@ class UserAdmin
             return $this->respondWith($this->renderUpdateForm($user, $errors));
         }
         if ($this->userRepository->hasDuplicateEmail($user)) {
-            return $this->respondWith($this->renderUpdateForm($user, [["err_email_exists"]]));
+            return $this->respondWith($this->renderUpdateForm($user, [["error_email_exists"]]));
         }
         if (!$this->userRepository->save($user)) {
-            return $this->respondWith($this->renderUpdateForm($user, [["err_cannot_write_csv"]]));
+            return $this->respondWith($this->renderUpdateForm($user, [["error_cannot_write_csv"]]));
         }
         return Response::redirect($request->url()->withPage("register")->with("admin", "users")->absolute());
     }
@@ -285,7 +285,7 @@ class UserAdmin
     {
         $username = $request->selectedUser();
         if (!($user = $this->userRepository->findByUsername($username))) {
-            return $this->overview($request, [["err_user_does_not_exist", $username]]);
+            return $this->overview($request, [["error_user_does_not_exist", $username]]);
         }
         $user = $user->withPassword("");
         return $this->respondWith($this->renderPasswordForm($user, ""));
@@ -294,11 +294,11 @@ class UserAdmin
     private function doChangePassword(Request $request): Response
     {
         if (!$this->csrfProtector->check()) {
-            return $this->respondWith($this->view->error("err_unauthorized"));
+            return $this->respondWith($this->view->error("error_unauthorized"));
         }
         $username = $request->selectedUser();
         if (!($user = $this->userRepository->findByUsername($username))) {
-            return $this->respondWith($this->view->error("err_user_does_not_exist", $username));
+            return $this->respondWith($this->view->error("error_user_does_not_exist", $username));
         }
         $post = $request->changePasswordPost();
         $user = $user->withPassword($post["password1"]);
@@ -307,7 +307,7 @@ class UserAdmin
         }
         $newUser = $user->withPassword($this->password->hash($post["password1"]));
         if (!$this->userRepository->save($newUser)) {
-            return $this->respondWith($this->renderPasswordForm($user, $post["password2"], [["err_cannot_write_csv"]]));
+            return $this->respondWith($this->renderPasswordForm($user, $post["password2"], [["error_cannot_write_csv"]]));
         }
         return Response::redirect($request->url()->withPage("register")->with("admin", "users")->absolute());
     }
@@ -328,7 +328,7 @@ class UserAdmin
     {
         $username = $request->selectedUser();
         if (!($user = $this->userRepository->findByUsername($username))) {
-            return $this->overview($request, [["err_user_does_not_exist", $username]]);
+            return $this->overview($request, [["error_user_does_not_exist", $username]]);
         }
         $mail = new Mail("", "");
         return $this->respondWith($this->renderMailForm($user, $mail));
@@ -337,18 +337,18 @@ class UserAdmin
     private function doMail(Request $request): Response
     {
         if (!$this->csrfProtector->check()) {
-            return $this->respondWith($this->view->error("err_unauthorized"));
+            return $this->respondWith($this->view->error("error_unauthorized"));
         }
         $username = $request->selectedUser();
         if (!($user = $this->userRepository->findByUsername($username))) {
-            return $this->respondWith($this->view->error("err_user_does_not_exist", $username));
+            return $this->respondWith($this->view->error("error_user_does_not_exist", $username));
         }
         $mail = $request->postedMail();
         if (($errors = Util::validateMail($mail))) {
             return $this->respondWith($this->renderMailForm($user, $mail, $errors));
         }
         if (!$this->mailer->adHocMail($user, $mail, $this->conf["senderemail"])) {
-            return $this->respondWith($this->renderMailForm($user, $mail, [["err_send_mail"]]));
+            return $this->respondWith($this->renderMailForm($user, $mail, [["error_send_mail"]]));
         }
         return Response::redirect($request->url()->withPage("register")->with("admin", "users")->absolute());
     }
@@ -369,7 +369,7 @@ class UserAdmin
     {
         $username = $request->selectedUser();
         if (!($user = $this->userRepository->findByUsername($username))) {
-            return $this->overview($request, [["err_user_does_not_exist", $username]]);
+            return $this->overview($request, [["error_user_does_not_exist", $username]]);
         }
         return $this->respondWith($this->renderDeleteForm($user));
     }
@@ -377,14 +377,14 @@ class UserAdmin
     private function doDelete(Request $request): Response
     {
         if (!$this->csrfProtector->check()) {
-            return $this->respondWith($this->view->error("err_unauthorized"));
+            return $this->respondWith($this->view->error("error_unauthorized"));
         }
         $username = $request->selectedUser();
         if (!($user = $this->userRepository->findByUsername($username))) {
-            return $this->respondWith($this->view->error("err_user_does_not_exist", $username));
+            return $this->respondWith($this->view->error("error_user_does_not_exist", $username));
         }
         if (!$this->userRepository->delete($user)) {
-            return $this->respondWith($this->renderDeleteForm($user, [["err_cannot_write_csv"]]));
+            return $this->respondWith($this->renderDeleteForm($user, [["error_cannot_write_csv"]]));
         }
         return Response::redirect($request->url()->withPage("register")->with("admin", "users")->absolute());
     }
@@ -401,7 +401,7 @@ class UserAdmin
 
     private function respondWith(string $output): Response
     {
-        $title = "Register – " . $this->view->text("mnu_user_admin");
+        $title = "Register – " . $this->view->text("menu_user_admin");
         return Response::create("<section class=\"register_admin\">\n<h1>$title</h1>\n$output</section>\n")
             ->withTitle($title);
     }

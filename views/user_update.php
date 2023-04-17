@@ -21,24 +21,24 @@ use Register\Infra\View;
   <input type="hidden" name="register_token" value="<?=$token?>">
   <p>
     <label>
-      <span><?=$this->text('username')?></span>
+      <span><?=$this->text('label_username')?></span>
       <input name="username" value="<?=$username?>" disabled>
     </label>
   </p>
   <p>
     <label>
-      <span><?=$this->text('name')?></span>
+      <span><?=$this->text('label_name')?></span>
       <input name="name" value="<?=$name?>" required>
     </label>
   </p>
   <p>
     <label>
-      <span><?=$this->text('email')?></span>
+      <span><?=$this->text('label_email')?></span>
       <input type="email" name="email" value="<?=$email?>" required>
     </label>
   </p>
   <p>
-    <label><span><?=$this->text('status')?></span>
+    <label><span><?=$this->text('label_status')?></span>
       <select name="status">
 <?foreach ($states as [$status, $label, $selected]):?>
         <option value="<?=$status?>" <?=$selected?>><?=$this->text($label)?></option>
@@ -47,7 +47,7 @@ use Register\Infra\View;
     </label>
   </p>
   <fieldset class="register_groups">
-    <legend><?=$this->text('accessgroups')?></legend>
+    <legend><?=$this->text('label_accessgroups')?></legend>
 <?foreach ($groups as [$group, $checked]):?>
     <p>
       <label>

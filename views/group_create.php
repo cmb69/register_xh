@@ -18,13 +18,13 @@ use Register\Infra\View;
   <input type="hidden" name="register_token" value="<?=$token?>">
   <p>
     <label>
-      <span><?=$this->text('groupname')?></span>
+      <span><?=$this->text('label_groupname')?></span>
       <input name="groupname" value="<?=$group?>">
     </label>
   </p>
   <p>
     <label>
-      <span><?=$this->text('login')?></span>
+      <span><?=$this->text('label_login')?></span>
       <select name="loginpage">
         <option value=""><?=$this->text('label_none')?></option>
 <?foreach ($options as $option):?>

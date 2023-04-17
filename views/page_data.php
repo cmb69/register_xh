@@ -19,7 +19,7 @@ if (!defined("CMSIMPLE_XH_VERSION")) {header("HTTP/1.1 403 Forbidden"); exit;}
       <div><?=$this->text("hint_accessgroups")?></div>
     </div>
     <label>
-      <?=$this->text("accessgroups")?><br/>
+      <?=$this->text("label_accessgroups")?><br/>
       <input name="register_access" value="<?=$accessGroups?>">
     </label>
   </p>

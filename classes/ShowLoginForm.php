@@ -83,15 +83,15 @@ class ShowLoginForm
         $post = $request->registerLoginPost();
         if (!($user = $this->userRepository->findByUsername($post["username"]))) {
             $this->logger->logInfo("login", $this->view->plain("log_login_user", $post["username"]));
-            return Response::create($this->renderLoginForm($request, $post, [["login_error_text"]]));
+            return Response::create($this->renderLoginForm($request, $post, [["error_login"]]));
         }
         if (!$user->isActivated() && !$user->isLocked()) {
             $this->logger->logInfo("login", $this->view->plain("log_login_forbidden", $post["username"]));
-            return Response::create($this->renderLoginForm($request, $post, [["login_error_text"]]));
+            return Response::create($this->renderLoginForm($request, $post, [["error_login"]]));
         }
         if (!$this->password->verify($post["password"], $user->getPassword())) {
             $this->logger->logInfo("login", $this->view->plain("log_login_password", $post["username"]));
-            return Response::create($this->renderLoginForm($request, $post, [["login_error_text"]]));
+            return Response::create($this->renderLoginForm($request, $post, [["error_login"]]));
         }
         if ($this->password->needsRehash($user->getPassword())) {
             $this->userRepository->save($user->withPassword($this->password->hash($post["password"])));
@@ -131,7 +131,7 @@ class ShowLoginForm
     private function renderLoggedInForm(Request $request): string
     {
         if (!($user = $this->userRepository->findByUsername($request->username()))) {
-            return $this->view->error("err_user_does_not_exist", $request->username());
+            return $this->view->error("error_user_does_not_exist", $request->username());
         }
         return $this->view->render("loggedin_area", [
             "fullName" => $user->getName(),

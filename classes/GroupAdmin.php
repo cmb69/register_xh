@@ -87,18 +87,18 @@ class GroupAdmin
     private function doCreate(Request $request): Response
     {
         if (!$this->csrfProtector->check()) {
-            return $this->respondWith($this->view->error("err_unauthorized"));
+            return $this->respondWith($this->view->error("error_unauthorized"));
         }
         $groupname = $request->selectedGroup();
         if ($this->userGroupRepository->findByGroupname($groupname)) {
-            return $this->respondWith($this->view->error("err_groupname_exists"));
+            return $this->respondWith($this->view->error("error_groupname_exists"));
         }
         $group = $request->postedGroup();
         if (($errors = Util::validateGroup($group))) {
             return $this->respondWith($this->renderCreateForm($group, $errors));
         }
         if (!$this->userGroupRepository->save($group)) {
-            return $this->respondWith($this->renderCreateForm($group, [["err_cannot_write_csv"]]));
+            return $this->respondWith($this->renderCreateForm($group, [["error_cannot_write_csv"]]));
         }
         return Response::redirect($request->url()->withPage("register")->with("admin", "groups")->absolute());
     }
@@ -118,7 +118,7 @@ class GroupAdmin
     {
         $groupname = $request->selectedGroup();
         if (!($group = $this->userGroupRepository->findByGroupname($groupname))) {
-            return $this->overview([["err_group_does_not_exist", $groupname]]);
+            return $this->overview([["error_group_does_not_exist", $groupname]]);
         }
         return $this->respondWith($this->renderUpdateForm($group));
     }
@@ -126,16 +126,16 @@ class GroupAdmin
     private function doUpdate(Request $request): Response
     {
         if (!$this->csrfProtector->check()) {
-            return $this->respondWith($this->view->error("err_unauthorized"));
+            return $this->respondWith($this->view->error("error_unauthorized"));
         }
         $groupname = $request->selectedGroup();
         if (!($group = $this->userGroupRepository->findByGroupname($groupname))) {
-            return $this->respondWith($this->view->error("err_group_does_not_exist", $groupname));
+            return $this->respondWith($this->view->error("error_group_does_not_exist", $groupname));
         }
         $group = $request->postedGroup();
         assert(!Util::validateGroup($group));
         if (!$this->userGroupRepository->save($group)) {
-            return $this->respondWith($this->renderUpdateForm($group, [["err_cannot_write_csv"]]));
+            return $this->respondWith($this->renderUpdateForm($group, [["error_cannot_write_csv"]]));
         }
         return Response::redirect($request->url()->withPage("register")->with("admin", "groups")->absolute());
     }
@@ -155,7 +155,7 @@ class GroupAdmin
     {
         $groupname = $request->selectedGroup();
         if (!($group = $this->userGroupRepository->findByGroupname($groupname))) {
-            return $this->overview([["err_group_does_not_exist", $groupname]]);
+            return $this->overview([["error_group_does_not_exist", $groupname]]);
         }
         return $this->respondWith($this->renderDeleteForm($group));
     }
@@ -163,14 +163,14 @@ class GroupAdmin
     private function doDelete(Request $request): Response
     {
         if (!$this->csrfProtector->check()) {
-            return $this->respondWith($this->view->error("err_unauthorized"));
+            return $this->respondWith($this->view->error("error_unauthorized"));
         }
         $groupname = $request->selectedGroup();
         if (!($group = $this->userGroupRepository->findByGroupname($groupname))) {
-            return $this->respondWith($this->view->error("err_group_does_not_exist", $groupname));
+            return $this->respondWith($this->view->error("error_group_does_not_exist", $groupname));
         }
         if (!$this->userGroupRepository->delete($group)) {
-            return $this->respondWith($this->renderDeleteForm($group, [["err_cannot_write_csv"]]));
+            return $this->respondWith($this->renderDeleteForm($group, [["error_cannot_write_csv"]]));
         }
         return Response::redirect($request->url()->withPage("register")->with("admin", "groups")->absolute());
     }
@@ -201,7 +201,7 @@ class GroupAdmin
 
     private function respondWith(string $output): Response
     {
-        $title = "Register – " . $this->view->text("mnu_group_admin");
+        $title = "Register – " . $this->view->text("menu_group_admin");
         return Response::create("<section class=\"register_admin\">\n<h1>$title</h1>\n$output</section>\n")
             ->withTitle($title);
     }

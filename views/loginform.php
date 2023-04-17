@@ -26,30 +26,30 @@ if (!defined("CMSIMPLE_XH_VERSION")) {header("HTTP/1.1 403 Forbidden"); exit;}
     <input type="hidden" name="function" value="registerlogin">
     <p class="register_field">
       <label>
-        <span><?=$this->text('username')?></span>
+        <span><?=$this->text('label_username')?></span>
         <input name="username" value="<?=$username?>">
     </p>
     <p class="register_field">
       <label>
-        <span><?=$this->text('password')?></span>
+        <span><?=$this->text('label_password')?></span>
         <input type="password" name="password" value="<?=$password?>">
       </label>
     </p>
     <p class="register_buttons">
-      <button name="login"><?=$this->text('login')?></button>
+      <button name="login"><?=$this->text('label_login')?></button>
 <?if ($hasRememberMe):?>
       <label>
         <input type="checkbox" name="remember" <?=$checked?>>
-        <span><?=$this->text('remember')?></span>
+        <span><?=$this->text('label_remember')?></span>
       </label>
 <?endif?>
     </p>
     <p class="register_links">
 <?if ($hasForgotPasswordLink):?>
-      <a href="<?=$forgotPasswordUrl?>"><?=$this->text('forgot_password')?></a>
+      <a href="<?=$forgotPasswordUrl?>"><?=$this->text('label_forgot_password')?></a>
 <?endif?>
 <?if ($isRegisterAllowed):?>
-      <a href="<?=$registerUrl?>"><?=$this->text('register')?></a>
+      <a href="<?=$registerUrl?>"><?=$this->text('label_register')?></a>
 <?endif?>
     </p>
   </form>

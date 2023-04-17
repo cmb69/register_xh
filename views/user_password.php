@@ -19,23 +19,23 @@ use Register\Infra\View;
   <input type="hidden" name="register_token" value="<?=$token?>">
   <p>
     <label>
-      <span><?=$this->text('username')?></span>
+      <span><?=$this->text('label_username')?></span>
       <input value="<?=$username?>" disabled>
     </label>
   </p>
   <p>
     <label>
-      <span><?=$this->text('password')?></span>
+      <span><?=$this->text('label_password')?></span>
       <input type="password" autocomplete="new-password" name="password1" value="<?=$password1?>" required>
     </label>
   </p>
   <p>
     <label>
-      <span><?=$this->text('password2')?></span>
+      <span><?=$this->text('label_password2')?></span>
       <input type="password" name="password2" value="<?=$password2?>" required>
     </label>
   </p>
   <p>
-    <button name="action" value="do_change_password"><?=$this->text('change_password')?></button>
+    <button name="action" value="do_change_password"><?=$this->text('label_change_password')?></button>
   </p>
 </form>

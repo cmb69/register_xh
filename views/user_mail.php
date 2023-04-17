@@ -19,7 +19,7 @@ use Register\Infra\View;
   <input type="hidden" name="register_token" value="<?=$token?>">
   <p>
     <label>
-      <span><?=$this->text('email')?></span>
+      <span><?=$this->text('label_email')?></span>
       <input type="email" value="<?=$email?>" disabled>
     </label>
   </p>
@@ -36,6 +36,6 @@ use Register\Infra\View;
     </label>
   </p>
   <p>
-    <button name="action" value="do_mail"><?=$this->text('send')?></button>
+    <button name="action" value="do_mail"><?=$this->text('label_send')?></button>
   </p>
 </form>

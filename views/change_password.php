@@ -19,18 +19,18 @@ if (!defined("CMSIMPLE_XH_VERSION")) {header("HTTP/1.1 403 Forbidden"); exit;}
 <?endforeach?>
     <p>
       <label>
-        <span><?=$this->text('password')?></span>
+        <span><?=$this->text('label_password')?></span>
         <input name="password1" type="password" value="<?=$password1?>" required>
       </label>
     </p>
     <p>
       <label>
-        <span><?=$this->text('password2')?></span>
+        <span><?=$this->text('label_password2')?></span>
         <input name="password2" type="password" value="<?=$password2?>" required>
       </label>
     </p>
     <p>
-      <button name="register_action" value="change_password"><?=$this->text('change')?></button>
+      <button name="register_action" value="change_password"><?=$this->text('label_change')?></button>
     </p>
   </form>
 </div>

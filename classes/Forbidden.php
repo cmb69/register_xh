@@ -22,8 +22,8 @@ class Forbidden
     }
     public function __invoke(): Response
     {
-        return Response::forbid("<h1>" . $this->view->text("access_error") . "</h1>\n"
-            . "<p>" . $this->view->text("access_error_text") . "</p>\n")
-            ->withTitle($this->view->text("access_error"));
+        return Response::forbid("<h1>" . $this->view->text("label_access_error") . "</h1>\n"
+            . "<p>" . $this->view->text("error_access") . "</p>\n")
+            ->withTitle($this->view->text("label_access_error"));
     }
 }

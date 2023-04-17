@@ -24,11 +24,11 @@ use Register\Infra\View;
     <table>
       <thead>
         <tr>
-          <th><?=$this->text('username')?></th>
-          <th><?=$this->text('name')?></th>
-          <th><?=$this->text('email')?></th>
-          <th><?=$this->text('accessgroups')?></th>
-          <th><?=$this->text('status')?></th>
+          <th><?=$this->text('label_username')?></th>
+          <th><?=$this->text('label_name')?></th>
+          <th><?=$this->text('label_email')?></th>
+          <th><?=$this->text('label_accessgroups')?></th>
+          <th><?=$this->text('label_status')?></th>
         </tr>
         <tr>
           <td><input type="search" name="username" value="<?=$username?>" placeholder="<?=$this->text('label_filter')?>"></td>
@@ -64,7 +64,7 @@ use Register\Infra\View;
     <button name="action" value="create"><?=$this->text('label_new')?></button>
     <button name="action" value="update"><?=$this->text('label_edit')?></button>
     <button name="action" value="delete"><?=$this->text('label_delete')?></button>
-    <button name="action" value="change_password"><?=$this->text('change_password')?></button>
+    <button name="action" value="change_password"><?=$this->text('label_change_password')?></button>
     <button name="action" value="mail"><?=$this->text('label_mail')?></button>
   </p>
 </form>
