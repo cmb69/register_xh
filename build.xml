@@ -11,7 +11,7 @@
 
   <target name="sniff" description="checks adherence to coding standards">
     <exec executable="phpcs" passthru="true" checkreturn="true">
-      <arg line="--standard=PSR12 --runtime-set classes admin.php index.php register_pd_view.php"/>
+      <arg line="--standard=PSR12 classes admin.php index.php register_pd_view.php"/>
     </exec>
   </target>
 
