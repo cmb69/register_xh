@@ -95,25 +95,58 @@ MAIL;
         User $user,
         string $from,
         string $url,
-        string $key,
         string $serverName,
         string $remoteAddress
     ): bool {
         $content = <<<MAIL
-{$this->text["email_text1"]}
+{$this->text["email_register_text1"]}
 
  {$this->text['label_name']}: {$user->getName()}
  {$this->text['label_username']}: {$user->getUsername()}
  {$this->text['label_email']}: {$user->getEmail()}
  {$this->text['label_fromip']}: {$remoteAddress}
 
-{$this->text[$key]}
+{$this->text['email_register_text2']}
 
 <{$url}>
 MAIL;
         return $this->sendMail(
             $user->getEmail(),
-            sprintf($this->text['email_subject'], $serverName),
+            sprintf($this->text['email_register_subject'], $serverName),
+            $content,
+            ["From: $from", "Cc: $from"]
+        );
+    }
+
+    public function notifyDuplicateActivation(
+        User $user,
+        User $olduser,
+        string $from,
+        string $url,
+        string $serverName,
+        string $remoteAddress
+    ): bool {
+        $content = <<<MAIL
+{$this->text["email_register_text1"]}
+
+  {$this->text['label_name']}: {$user->getName()}
+  {$this->text['label_username']}: {$user->getUsername()}
+  {$this->text['label_email']}: {$user->getEmail()}
+  {$this->text['label_fromip']}: {$remoteAddress}
+
+{$this->text['email_register_text3']}
+
+  {$this->text['label_name']}: {$olduser->getName()}
+  {$this->text['label_username']}: {$olduser->getUsername()}
+  {$this->text['label_email']}: {$olduser->getEmail()}
+
+{$this->text['email_register_text4']}
+
+<{$url}>
+MAIL;
+        return $this->sendMail(
+            $user->getEmail(),
+            sprintf($this->text['email_register_subject'], $serverName),
             $content,
             ["From: $from", "Cc: $from"]
         );

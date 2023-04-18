@@ -1,13 +1,20 @@
 [0] -> john@example.com
-[1] -> =?UTF-8?Q?Account activation for example.com?=
-[2] -> A user account with your email has been registered with following information:
+[1] -> =?UTF-8?Q?Your user account at example.com?=
+[2] -> A user account with your email address has been registered with following information:
 
- Full Name: John Smith
- Username: js
- Email: john@example.com
- From IP-Address: 127.0.0.1
+  Full Name: John Smith
+  Username: js
+  Email: john@example.com
+  From IP-Address: 127.0.0.1
 
-However, a user account for this email already exists. Please click the following link if you forgot your account settings:
+However, a user account for this email address exists already:
+
+  Full Name: John Doe
+  Username: john
+  Email: john@example.com
+
+If you forgot your password, click the following link to reset it.
+Otherwise ignore this mail.
 
 <http://example.com/?&register_action=register&function=register_password>
 [3] -> From: postmaster@example.com

@@ -91,9 +91,9 @@ class HandleUserRegistration
                 $this->renderForm($request->url(), $user, $post["password2"], [["error_username_exists"]])
             );
         }
-        if ($this->userRepository->hasDuplicateEmail($user)) {
-            $this->sendDuplicateEmailNotification($user, $request);
-            return Response::redirect($request->url()->withPage("")->absolute());
+        if (($olduser = $this->userRepository->findByEmail($user->getEmail()))) {
+            $this->sendDuplicateEmailNotification($user, $olduser, $request);
+            return Response::redirect($request->url()->without("function")->without("register_action")->absolute());
         }
         $newUser = $this->registeredUser($post);
         if (!$this->userRepository->save($newUser)) {
@@ -147,27 +147,28 @@ class HandleUserRegistration
         );
     }
 
-    private function sendDuplicateEmailNotification(User $user, Request $request): bool
+    private function sendDuplicateEmailNotification(User $user, User $olduser, Request $request): bool
     {
         $url = $request->url()->with("function", "register_password");
-        return $this->sendNotification($user, "email_text4", $url, $request);
+        return $this->mailer->notifyDuplicateActivation(
+            $user,
+            $olduser,
+            $this->conf["senderemail"],
+            $url->absolute(),
+            $request->serverName(),
+            $request->remoteAddress()
+        );
     }
 
     private function sendSuccessNotification(User $user, Request $request): bool
     {
         $url = $request->url()->with("register_action", "activate")
-            ->with("username", $user->getUsername())
-            ->with("nonce", $user->getStatus());
-        return $this->sendNotification($user, "email_text2", $url, $request);
-    }
-
-    private function sendNotification(User $user, string $key, Url $url, Request $request): bool
-    {
+            ->with("register_username", $user->getUsername())
+            ->with("register_nonce", $user->getStatus());
         return $this->mailer->notifyActivation(
             $user,
             $this->conf["senderemail"],
             $url->absolute(),
-            $key,
             $request->serverName(),
             $request->remoteAddress()
         );
@@ -177,18 +178,20 @@ class HandleUserRegistration
     {
         $params = $request->activationParams();
         if (!$params["nonce"]) {
-            return Response::create($this->view->error("error_status_empty"));
+            return Response::create($this->view->error("error_code_missing"));
         }
         if (!($user = $this->userRepository->findByUsername($params["username"]))) {
             return Response::create($this->view->error("error_username_notfound", $params["username"]));
         }
         if (!hash_equals($user->getStatus(), $params["nonce"])) {
-            return Response::create($this->view->error("error_status_invalid"));
+            return Response::create($this->view->error("error_code_invalid"));
         }
         $user = $user->activate()->withAccessgroups([$this->conf["group_activated"]]);
         if (!$this->userRepository->save($user)) {
             return Response::create($this->view->error("error_cannot_write_csv"));
         }
-        return Response::create($this->view->message("success", "message_activated"));
+        return Response::create($this->view->render("activation", [
+            "url" => $request->url()->withoutParams()->relative(),
+        ]));
     }
 }

@@ -41,13 +41,11 @@ $plugin_tx['register']['label_username']="Имя пользователя";
 $plugin_tx['register']['message_activated']="Ваша учетная запись активирована.";
 $plugin_tx['register']['message_changeexplanation']="На этой странице вы можете изменить данные вашей учетной записи. Для изменения данных нужен ваш старый пароль.";
 $plugin_tx['register']['message_loggedin_welcometext']="Хорошего настроения, %s!";
-$plugin_tx['register']['message_register_form1']="Новый пользователь получает статус \"Гость\" и имеет те же права, что и прежде. Статус может быть изменен администратором.";
-$plugin_tx['register']['message_register_form2']="Для регистрации может понадобиться несколько секунд, пожалуйста, подождите сообщения о успешной регистрации.";
 $plugin_tx['register']['message_reminderexplanation']="На этой странице вы можете указать ваш электронный адрес для получения сообщения с данными вашей учетной записи.";
 $plugin_tx['register']['message_remindersent']="Сообщение с вашими учетными данными отослано.";
 
+$plugin_tx['register']['email_register_text1']="Учетная запись пользователя, указавшего этот электронный адрес, зарегистрирована на основании данных:";
 $plugin_tx['register']['email_text1']="Учетная запись пользователя, указавшего этот электронный адрес, зарегистрирована на основании данных:";
-$plugin_tx['register']['email_text2']="Пожалуйста, для активации вашей учетной записи нажмите ссылку:";
 $plugin_tx['register']['email_prefs_updated']="Данные вашей учетной записи обновлены.";
 
 $plugin_tx['register']['error_name']="Введите, пожалуйста, имя и фамилию.";
@@ -61,7 +59,7 @@ $plugin_tx['register']['error_email']="Пожалуйста, укажите ад
 $plugin_tx['register']['error_email_invalid']="Указан недействительный адрес электронной почты.";
 $plugin_tx['register']['error_email_exists']="Пользователь с таким электронным адресом уже зарегистрирован.";
 $plugin_tx['register']['error_cannot_write_csv']="Файл CSV не сохранен.";
-$plugin_tx['register']['err_status_error_status_invalidinvalid']="Введен неправильный код подтверждения.";
+$plugin_tx['register']['error_code_invalid']="Введен неправильный код подтверждения.";
 $plugin_tx['register']['error_group_illegal']="Имя группы должно содержать только символы: A-Z, a-z, 0-9, _, -";
 $plugin_tx['register']['error_login']="Вы указали неправильное имя пользователя или пароль, или ваша учетная запись еще не активирована.";
 $plugin_tx['register']['error_access']="Эта страница доступна только пользователям с соответствующими правами.";

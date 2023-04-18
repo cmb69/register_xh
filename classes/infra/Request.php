@@ -80,8 +80,8 @@ class Request
     public function activationParams(): array
     {
         return [
-            "username" => $this->trimmedGetString("username"),
-            "nonce" => $this->trimmedGetString("nonce"),
+            "username" => $this->trimmedGetString("register_username"),
+            "nonce" => $this->trimmedGetString("register_nonce"),
         ];
     }
 

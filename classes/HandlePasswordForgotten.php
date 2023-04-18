@@ -113,7 +113,7 @@ class HandlePasswordForgotten
             return Response::create($this->view->error("error_user_does_not_exist", $params["username"]));
         }
         if (!$this->verifyMac($user, $params)) {
-            return Response::create($this->view->message("fail", 'error_status_invalid'));
+            return Response::create($this->view->message("fail", 'error_code_invalid'));
         }
         if ($this->isExpired((int) $params["time"], $request)) {
             return Response::create($this->view->message("fail", "error_expired"));
@@ -130,7 +130,7 @@ class HandlePasswordForgotten
             return Response::create($this->view->error("error_user_does_not_exist", $params["username"]));
         }
         if (!$this->verifyMac($user, $params)) {
-            return Response::create($this->view->message("fail", 'error_status_invalid'));
+            return Response::create($this->view->message("fail", 'error_code_invalid'));
         }
         if ($this->isExpired((int) $params["time"], $request)) {
             return Response::create($this->view->message("fail", "error_expired"));

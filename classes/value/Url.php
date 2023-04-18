@@ -69,6 +69,13 @@ class Url
         return $that;
     }
 
+    public function withoutParams(): self
+    {
+        $that = clone $this;
+        $that->params = [];
+        return $that;
+    }
+
     public function relative(): string
     {
         $query = $this->queryString();

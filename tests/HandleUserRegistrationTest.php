@@ -66,6 +66,13 @@ class HandleUserRegistrationTest extends TestCase
         return $dbService;
     }
 
+    public function testReportsUnauthorizedAccessToLoggedInUsers(): void
+    {
+        $request = new FakeRequest(["username" => "cmb"]);
+        $response = $this->sut()($request);
+        $this->assertStringContainsString("You are not authorized for this action!", $response->output());
+    }
+
     public function testDefaultRendersRegistrationForm(): void
     {
         $request = new FakeRequest();
@@ -163,21 +170,21 @@ class HandleUserRegistrationTest extends TestCase
 
     public function testActivateReportsMissingNonce(): void
     {
-        $request = new FakeRequest(["query" => "&register_action=activate&username=js&nonce="]);
+        $request = new FakeRequest(["query" => "&register_action=activate&register_username=js&register_nonce="]);
         $response = $this->sut()($request);
         $this->assertStringContainsString("No validation code supplied!", $response->output());
     }
 
     public function testActivateReportsNonExistentUser(): void
     {
-        $request = new FakeRequest(["query" => "&register_action=activate&username=js&nonce=12345"]);
+        $request = new FakeRequest(["query" => "&register_action=activate&register_username=js&register_nonce=12345"]);
         $response = $this->sut()($request);
         $this->assertStringContainsString("The Username 'js' could not be found!", $response->output());
     }
 
     public function testActivateReportsInvalidNonce(): void
     {
-        $request = new FakeRequest(["query" => "&register_action=activate&username=jane&nonce=54321"]);
+        $request = new FakeRequest(["query" => "&register_action=activate&register_username=jane&register_nonce=54321"]);
         $response = $this->sut()($request);
         $this->assertStringContainsString("The entered validation code is invalid.", $response->output());
     }
@@ -185,14 +192,14 @@ class HandleUserRegistrationTest extends TestCase
     public function testActivateReportsFailureToSave(): void
     {
         $this->dbService->options(["writeUsers" => false]);
-        $request = new FakeRequest(["query" => "&register_action=activate&username=jane&nonce=12345"]);
+        $request = new FakeRequest(["query" => "&register_action=activate&register_username=jane&register_nonce=12345"]);
         $response = $this->sut()($request);
         $this->assertStringContainsString("Saving CSV file failed.", $response->output());
     }
 
     public function testActivateReportsSuccess(): void
     {
-        $request = new FakeRequest(["query" => "&register_action=activate&username=jane&nonce=12345"]);
+        $request = new FakeRequest(["query" => "&register_action=activate&register_username=jane&register_nonce=12345"]);
         $response = $this->sut()($request);
         $this->assertTrue($this->userRepository->findByUsername("jane")->isActivated());
         $this->assertStringContainsString("You have successfully activated your new account.", $response->output());

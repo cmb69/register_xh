@@ -19,10 +19,10 @@ if (!defined("CMSIMPLE_XH_VERSION")) {header("HTTP/1.1 403 Forbidden"); exit;}
 <!-- register registration form -->
 <div class="register_register">
   <form method="post">
+    <p><?=$this->text('message_register')?></p>
 <?foreach ($errors as $error):?>
     <p class="xh_fail"><?=$this->text(...$error)?></p>
 <?endforeach?>
-    <p><?=$this->text('message_register_form1')?></p>
     <p class="register_field">
       <label>
         <span><?=$this->text('label_name')?></span>
@@ -57,6 +57,5 @@ if (!defined("CMSIMPLE_XH_VERSION")) {header("HTTP/1.1 403 Forbidden"); exit;}
       <button name="register_action" value="register"><?=$this->text('label_register')?></button>
       <a href="<?=$cancel?>">Cancel</a>
     </p>
-    <p><?=$this->text('message_register_form2')?></p>
   </form>
 </div>
