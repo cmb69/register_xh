@@ -9,6 +9,7 @@
 namespace Register\Infra;
 
 use Register\Value\Mail;
+use Register\Value\Passwords;
 use Register\Value\Url;
 use Register\Value\User;
 use Register\Value\UserGroup;
@@ -102,33 +103,27 @@ class Request
         ];
     }
 
-    /** @return array{password1:string,password2:string} */
-    public function changePasswordPost(): array
+    public function postedPasswords(): Passwords
     {
-        return [
-            "password1" => $this->trimmedPostString("password1"),
-            "password2" => $this->trimmedPostString("password2"),
-        ];
+        return new Passwords(
+            $this->trimmedPostString("password1"),
+            $this->trimmedPostString("password2")
+        );
     }
 
-    /** @return array{oldpassword:string,name:string,password1:string,password2:string,email:string} */
+    /** @return array{oldpassword:string,name:string,email:string} */
     public function changePrefsPost(): array
     {
         return [
             "oldpassword" => $this->trimmedPostString("oldpassword"),
             "name" => $this->trimmedPostString("name"),
-            "password1" => $this->trimmedPostString("password1"),
-            "password2" => $this->trimmedPostString("password2"),
             "email" => $this->trimmedPostString("email"),
         ];
     }
 
-    /** @return array{oldpassword:string} */
-    public function unregisterPost(): array
+    public function postedPassword(): string
     {
-        return [
-            "oldpassword" => $this->trimmedPostString("oldpassword"),
-        ];
+        return $this->trimmedPostString("oldpassword");
     }
 
     /** @return array{username:string,name:string,group:string,email:string,status:string} */
@@ -173,7 +168,7 @@ class Request
         );
     }
 
-    public function postedPassword(): string
+    public function postedConfirmation(): string
     {
         return $this->trimmedPostString("password2");
     }

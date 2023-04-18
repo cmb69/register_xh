@@ -9,6 +9,7 @@
 namespace Register\Logic;
 
 use Register\Value\Mail;
+use Register\Value\Passwords;
 use Register\Value\User;
 use Register\Value\UserGroup;
 
@@ -94,7 +95,7 @@ class Util
         if (!in_array($user->getStatus(), User::STATUSES, true)) {
             $errors[] = ["error_status"];
         }
-        $errors = array_merge($errors, self::validatePasswords($user->getPassword(), $password2));
+        $errors = array_merge($errors, self::validatePasswords(new Passwords($user->getPassword(), $password2)));
         $errors = array_merge($errors, self::validateEmail($user->getEmail()));
         return $errors;
     }
@@ -102,12 +103,12 @@ class Util
     /**
      * @return list<array{string}>
      */
-    public static function validatePasswords(string $password1, string $password2): array
+    public static function validatePasswords(Passwords $passwords): array
     {
         $errors = [];
-        if ($password1 === "") {
+        if ($passwords->password() === "") {
             $errors[] = ['error_password'];
-        } elseif ($password1 !== $password2) {
+        } elseif ($passwords->password() !== $passwords->confirmation()) {
             $errors[] = ['error_password2'];
         }
         return $errors;

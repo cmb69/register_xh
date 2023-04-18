@@ -17,6 +17,7 @@ use Register\Infra\UserRepository;
 use Register\Infra\View;
 use Register\Logic\Util;
 use Register\Logic\Validator;
+use Register\Value\Passwords;
 use Register\Value\Response;
 use Register\Value\Url;
 use Register\Value\User;
@@ -118,7 +119,7 @@ class HandlePasswordForgotten
             return Response::create($this->view->message("fail", "error_expired"));
         }
         return Response::create(
-            $this->renderChangePasswordForm($request->url(), ["password1" => "", "password2" => ""])
+            $this->renderResetPasswordForm($request->url(), new Passwords("", ""))
         );
     }
 
@@ -134,11 +135,11 @@ class HandlePasswordForgotten
         if ($this->isExpired((int) $params["time"], $request)) {
             return Response::create($this->view->message("fail", "error_expired"));
         }
-        $post = $request->changePasswordPost();
-        if (($errors = Util::validatePasswords($post["password1"], $post["password2"]))) {
-            return Response::create($this->renderChangePasswordForm($request->url(), $post, $errors));
+        $passwords = $request->postedPasswords();
+        if (($errors = Util::validatePasswords($passwords))) {
+            return Response::create($this->renderResetPasswordForm($request->url(), $passwords, $errors));
         }
-        $user = $user->withPassword($this->password->hash($post["password1"]));
+        $user = $user->withPassword($this->password->hash($passwords->password()));
         if (!$this->userRepository->save($user)) {
             return Response::create($this->view->message("fail", 'error_cannot_write_csv'));
         }
@@ -167,16 +168,13 @@ class HandlePasswordForgotten
         ]);
     }
 
-    /**
-     * @param array{password1:string,password2:string} $passwords
-     * @param list<array{string}> $errors
-     */
-    private function renderChangePasswordForm(Url $url, array $passwords, array $errors = []): string
+    /** @param list<array{string}> $errors */
+    private function renderResetPasswordForm(Url $url, Passwords $passwords, array $errors = []): string
     {
-        return $this->view->render("change_password", [
+        return $this->view->render("reset_password", [
             "errors" => $errors,
-            "password1" => $passwords["password1"],
-            "password2" => $passwords["password2"],
+            "password1" => $passwords->password(),
+            "password2" => $passwords->confirmation(),
             "cancel" => $url->withPage($url->page())->relative(),
         ]);
     }

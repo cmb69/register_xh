@@ -17,12 +17,7 @@ p.register_links {
 div.register_register {}
 
 /* settings form */
-div.register_settings fieldset {
-    padding: 0.35em 0.625em;
-}
-div.register_settings legend {
-    padding: 2px;
-}
+div.register_settings {}
 
 /* login form */
 div.register_login {}

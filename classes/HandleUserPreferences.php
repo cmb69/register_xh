@@ -18,6 +18,7 @@ use Register\Infra\Request;
 use Register\Infra\UserRepository;
 use Register\Infra\View;
 use Register\Logic\Util;
+use Register\Value\Passwords;
 use Register\Value\Response;
 use Register\Value\Url;
 use Register\Value\User;
@@ -73,15 +74,21 @@ class HandleUserPreferences
         }
         switch ($request->registerAction()) {
             default:
-                return $this->showForm($request);
+                return $this->showSettingsForm($request);
             case "change_prefs":
                 return $this->saveUser($request);
+            case "password":
+                return $this->showPasswordForm($request);
+            case "change_password":
+                return $this->changePassword($request);
+            case "delete":
+                return $this->showDeleteForm($request);
             case "unregister":
                 return $this->unregisterUser($request);
         }
     }
 
-    private function showForm(Request $request): Response
+    private function showSettingsForm(Request $request): Response
     {
         if (!($user = $this->userRepository->findByUsername($request->username()))) {
             return Response::create($this->view->error("error_user_does_not_exist", $request->username()));
@@ -89,7 +96,7 @@ class HandleUserPreferences
         if ($user->isLocked()) {
             return Response::create($this->view->error("error_user_locked", $user->getUsername()));
         }
-        return Response::create($this->renderForm($request->url(), $user));
+        return Response::create($this->renderSettingsForm($request->url(), $user));
     }
 
     private function saveUser(Request $request): Response
@@ -106,18 +113,88 @@ class HandleUserPreferences
         $post = $request->changePrefsPost();
         $changedUser = $user->withName($post["name"])->withEmail($post["email"]);
         if (!$this->password->verify($post["oldpassword"], $user->getPassword())) {
-            return Response::create($this->renderForm($request->url(), $changedUser, [["error_old_password_wrong"]]));
+            return Response::create(
+                $this->renderSettingsForm($request->url(), $changedUser, [["error_old_password_wrong"]])
+            );
         }
-        $changedUser = $changedUser->withPassword($post["password1"]);
-        if (($errors = Util::validateUser($changedUser, $post["password2"]))) {
-            return Response::create($this->renderForm($request->url(), $changedUser, $errors));
+        if (($errors = Util::validateUser($changedUser, $changedUser->getPassword()))) {
+            return Response::create($this->renderSettingsForm($request->url(), $changedUser, $errors));
+        }
+        if (!$this->userRepository->save($changedUser)) {
+            return Response::create(
+                $this->renderSettingsForm($request->url(), $changedUser, [["error_cannot_write_csv"]])
+            );
+        }
+        $this->sendNotification($changedUser, $user->getEmail(), $request);
+        return Response::redirect($request->url()->without("function")->without("register_action")->absolute());
+    }
+
+    /** @param list<array{string}> $errors */
+    private function renderSettingsForm(Url $url, User $user, array $errors = []): string
+    {
+        return $this->view->render("userprefs_form", [
+            "token" => $this->csrfProtector->token(),
+            "errors" => $errors,
+            "name" => $user->getName(),
+            "email" => $user->getEmail(),
+            "cancel" => $url->without("function")->without("register_action")->relative(),
+        ]);
+    }
+
+    private function showPasswordForm(Request $request): Response
+    {
+        if (!($user = $this->userRepository->findByUsername($request->username()))) {
+            return Response::create($this->view->error("error_user_does_not_exist", $request->username()));
+        }
+        if ($user->isLocked()) {
+            return Response::create($this->view->error("error_user_locked", $user->getUsername()));
+        }
+        return Response::create($this->renderPasswordForm($request->url(), new Passwords("", "")));
+    }
+
+    private function changePassword(Request $request): Response
+    {
+        if (!$this->csrfProtector->check()) {
+            return Response::create($this->view->error("error_unauthorized"));
+        }
+        if (!($user = $this->userRepository->findByUsername($request->username()))) {
+            return Response::create($this->view->error("error_user_does_not_exist", $request->username()));
+        }
+        if ($user->isLocked()) {
+            return Response::create($this->view->error("error_user_locked", $user->getUsername()));
+        }
+        $password = $request->postedPassword();
+        $passwords = $request->postedPasswords();
+        if (!$this->password->verify($password, $user->getPassword())) {
+            return Response::create(
+                $this->renderPasswordForm($request->url(), $passwords, [["error_old_password_wrong"]])
+            );
+        }
+        $changedUser = $user->withPassword($passwords->password());
+        if (($errors = Util::validateUser($changedUser, $passwords->confirmation()))) {
+            return Response::create($this->renderPasswordForm($request->url(), $passwords, $errors));
         }
         $changedUser = $changedUser->withPassword($this->password->hash($changedUser->getPassword()));
         if (!$this->userRepository->save($changedUser)) {
-            return Response::create($this->renderForm($request->url(), $changedUser, [["error_cannot_write_csv"]]));
+            return Response::create(
+                $this->renderPasswordForm($request->url(), $passwords, [["error_cannot_write_csv"]])
+            );
         }
         $this->sendNotification($changedUser, $user->getEmail(), $request);
-        return Response::redirect($request->url()->without("function")->absolute());
+        return Response::redirect($request->url()->without("function")->without("register_action")->absolute());
+    }
+
+    /** @param list<array{string}> $errors */
+    private function renderPasswordForm(Url $url, Passwords $passwords, array $errors = []): string
+    {
+        return $this->view->render("change_password", [
+            "action" => $url->with("register_action", "change_password")->relative(),
+            "token" => $this->csrfProtector->token(),
+            "errors" => $errors,
+            "password1" => $passwords->password(),
+            "password2" => $passwords->confirmation(),
+            "cancel" => $url->without("function")->without("register_action")->relative(),
+        ]);
     }
 
     private function sendNotification(User $user, string $email, Request $request): bool
@@ -131,6 +208,17 @@ class HandleUserPreferences
         );
     }
 
+    private function showDeleteForm(Request $request): Response
+    {
+        if (!($user = $this->userRepository->findByUsername($request->username()))) {
+            return Response::create($this->view->error("error_user_does_not_exist", $request->username()));
+        }
+        if ($user->isLocked()) {
+            return Response::create($this->view->error("error_user_locked", $user->getUsername()));
+        }
+        return Response::create($this->renderDeleteForm($request->url()));
+    }
+
     private function unregisterUser(Request $request): Response
     {
         if (!$this->csrfProtector->check()) {
@@ -142,26 +230,25 @@ class HandleUserPreferences
         if ($user->isLocked()) {
             return Response::create($this->view->error("error_user_locked", $user->getUsername()));
         }
-        $post = $request->unregisterPost();
-        if (!$this->password->verify($post["oldpassword"], $user->getPassword())) {
-            return Response::create($this->renderForm($request->url(), $user, [["error_old_password_wrong"]]));
+        $password = $request->postedPassword();
+        if (!$this->password->verify($password, $user->getPassword())) {
+            return Response::create($this->renderDeleteForm($request->url(), [["error_old_password_wrong"]]));
         }
         if (!$this->userRepository->delete($user)) {
-            return Response::create($this->renderForm($request->url(), $user, [["error_cannot_write_csv"]]));
+            return Response::create($this->renderDeleteForm($request->url(), [["error_cannot_write_csv"]]));
         }
         $this->logger->logInfo("logout", $this->view->plain("log_unregister", $user->getUsername()));
-        return Response::redirect($request->url()->absolute());
+        return Response::redirect($request->url()->without("function")->without("register_action")->absolute());
     }
 
     /** @param list<array{string}> $errors */
-    private function renderForm(Url $url, User $user, array $errors = []): string
+    private function renderDeleteForm(Url $url, array $errors = []): string
     {
-        return $this->view->render("userprefs_form", [
+        return $this->view->render("delete_account", [
+            "action" => $url->with("register_action", "unregister")->relative(),
             "token" => $this->csrfProtector->token(),
             "errors" => $errors,
-            "name" => $user->getName(),
-            "email" => $user->getEmail(),
-            "cancel" => $url->without("function")->relative(),
+            "cancel" => $url->without("function")->without("register_action")->relative(),
         ]);
     }
 }

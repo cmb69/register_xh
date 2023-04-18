@@ -51,6 +51,14 @@ class UserInfo
             "fullName" => $user->getName(),
             "hasUserPrefs" => $this->conf["allowed_settings"] && $user->isActivated(),
             "userPrefUrl" => $url->with("function", "register_settings")->relative(),
+            "password_url" => $this->conf["allowed_settings"] && $user->isActivated()
+                ? $url->with("function", "register_settings")
+                    ->with("register_action", "password")->relative()
+                : null,
+            "delete_url" => $this->conf["allowed_settings"]  && $user->isActivated()
+                ? $url->with("function", "register_settings")
+                    ->with("register_action", "delete")->relative()
+                : null,
             "logoutUrl" => $url->with("register_action", "logout")->relative(),
         ]);
     }

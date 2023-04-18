@@ -152,6 +152,14 @@ class ShowLoginForm
             "fullName" => $user->getName(),
             "hasUserPrefs" => $this->conf["allowed_settings"] && $user->isActivated(),
             "userPrefUrl" => $request->url()->with("function", "register_settings")->relative(),
+            "password_url" => $this->conf["allowed_settings"] && $user->isActivated()
+                ? $request->url()->with("function", "register_settings")
+                    ->with("register_action", "password")->relative()
+                : null,
+            "delete_url" => $this->conf["allowed_settings"]  && $user->isActivated()
+                ? $request->url()->with("function", "register_settings")
+                    ->with("register_action", "delete")->relative()
+                : null,
             "logoutUrl" => $request->url()->with("register_action", "logout")->relative(),
         ]);
     }

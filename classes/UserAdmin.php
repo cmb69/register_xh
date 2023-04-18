@@ -18,6 +18,7 @@ use Register\Infra\UserRepository;
 use Register\Infra\View;
 use Register\Logic\Util;
 use Register\Value\Mail;
+use Register\Value\Passwords;
 use Register\Value\Response;
 use Register\Value\User;
 use Register\Value\UserGroup;
@@ -177,19 +178,19 @@ class UserAdmin
             return $this->respondWith($this->view->error("error_username_exists"));
         }
         $user = $request->postedUser();
-        if (($errors = Util::validateUser($user, $request->postedPassword()))) {
-            return $this->respondWith($this->renderCreateForm($user, $request->postedPassword(), $errors));
+        if (($errors = Util::validateUser($user, $request->postedConfirmation()))) {
+            return $this->respondWith($this->renderCreateForm($user, $request->postedConfirmation(), $errors));
         }
         if ($this->userRepository->hasDuplicateEmail($user)) {
             return $this->respondWith(
-                $this->renderCreateForm($user, $request->postedPassword(), [["error_email_exists"]])
+                $this->renderCreateForm($user, $request->postedConfirmation(), [["error_email_exists"]])
             );
         }
         $newUser = $user->withPassword($this->password->hash($user->getPassword()))
             ->withSecret(base64_encode($this->random->bytes(15)));
         if (!$this->userRepository->save($newUser)) {
             return $this->respondWith(
-                $this->renderCreateForm($user, $request->postedPassword(), [["error_cannot_write_csv"]])
+                $this->renderCreateForm($user, $request->postedConfirmation(), [["error_cannot_write_csv"]])
             );
         }
         return Response::redirect($request->url()->withPage("register")->with("admin", "users")->absolute());
@@ -287,8 +288,7 @@ class UserAdmin
         if (!($user = $this->userRepository->findByUsername($username))) {
             return $this->overview($request, [["error_user_does_not_exist", $username]]);
         }
-        $user = $user->withPassword("");
-        return $this->respondWith($this->renderPasswordForm($user, ""));
+        return $this->respondWith($this->renderPasswordForm($user, new Passwords("", "")));
     }
 
     private function doChangePassword(Request $request): Response
@@ -300,29 +300,28 @@ class UserAdmin
         if (!($user = $this->userRepository->findByUsername($username))) {
             return $this->respondWith($this->view->error("error_user_does_not_exist", $username));
         }
-        $post = $request->changePasswordPost();
-        $user = $user->withPassword($post["password1"]);
-        if (($errors = Util::validateUser($user, $post["password2"]))) {
-            return $this->respondWith($this->renderPasswordForm($user, $post["password2"], $errors));
+        $passwords = $request->postedPasswords();
+        if (($errors = Util::validatePasswords($passwords))) {
+            return $this->respondWith($this->renderPasswordForm($user, $passwords, $errors));
         }
-        $newUser = $user->withPassword($this->password->hash($post["password1"]));
+        $newUser = $user->withPassword($this->password->hash($passwords->password()));
         if (!$this->userRepository->save($newUser)) {
             return $this->respondWith(
-                $this->renderPasswordForm($user, $post["password2"], [["error_cannot_write_csv"]])
+                $this->renderPasswordForm($user, $passwords, [["error_cannot_write_csv"]])
             );
         }
         return Response::redirect($request->url()->withPage("register")->with("admin", "users")->absolute());
     }
 
     /** @param list<array{string}> $errors */
-    private function renderPasswordForm(User $user, string $password2, array $errors = []): string
+    private function renderPasswordForm(User $user, Passwords $passwords, array $errors = []): string
     {
         return $this->view->render("user_password", [
             "errors" => $errors,
             "token" => $this->csrfProtector->token(),
             "username" => $user->getUsername(),
-            "password1" => $user->getPassword(),
-            "password2" => $password2,
+            "password1" => $passwords->password(),
+            "password2" => $passwords->confirmation(),
         ]);
     }
 
