@@ -9,7 +9,7 @@
 
 However, a user account for this email already exists. Please click the following link if you forgot your account settings:
 
-<http://example.com/?register+password>
+<http://example.com/?&register_action=register&function=register_password>
 [3] -> From: postmaster@example.com
 Cc: postmaster@example.com
 MIME-Version: 1.0

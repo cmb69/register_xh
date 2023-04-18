@@ -50,11 +50,11 @@ class HandlePasswordForgottenTest extends TestCase
         );
     }
 
-    public function testDoesNothingIfUserIsLoggedIn(): void
+    public function testReportsIfUserIsAlreadyLoggedIn(): void
     {
         $request = new FakeRequest(["query" => "", "time" => 1637449200, "username" => "cmb"]);
         $response = $this->sut()($request);
-        $this->assertEquals("", $response->output());
+        $this->assertStringContainsString("You are not authorized for this action!", $response->output());
     }
 
     public function testRendersForm(): void

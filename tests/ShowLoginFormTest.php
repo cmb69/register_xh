@@ -11,6 +11,7 @@ namespace Register;
 use ApprovalTests\Approvals;
 use org\bovigo\vfs\vfsStream;
 use PHPUnit\Framework\TestCase;
+use Register\Infra\ActivityRepository;
 use Register\Infra\FakeDbService;
 use Register\Infra\FakeLogger;
 use Register\Infra\FakePassword;
@@ -27,6 +28,7 @@ class ShowLoginFormTest extends TestCase
 {
     private $userRepository;
     private $userGroupRepository;
+    private $activityRepository;
     private $loginManager;
     private $logger;
     private $view;
@@ -39,6 +41,7 @@ class ShowLoginFormTest extends TestCase
         $dbService->writeGroups([new UserGroup("guest", ""), new UserGroup("admin", "Admin")]);
         $this->userRepository = new UserRepository($dbService);
         $this->userGroupRepository = new UserGroupRepository($dbService, "guest", $this->createMock(Random::class));
+        $this->activityRepository = $this->createMock(ActivityRepository::class);
         $this->loginManager = $this->createMock(LoginManager::class);
         $this->logger = new FakeLogger;
         $this->view = new View("./views/", XH_includeVar("./languages/en.php", "plugin_tx")["register"]);
@@ -50,6 +53,7 @@ class ShowLoginFormTest extends TestCase
             XH_includeVar("./config/config.php", "plugin_cf")["register"],
             $this->userRepository,
             $this->userGroupRepository,
+            $this->activityRepository,
             $this->loginManager,
             $this->logger,
             new FakePassword,
@@ -62,13 +66,6 @@ class ShowLoginFormTest extends TestCase
         $request = new FakeRequest();
         $response = $this->sut()($request);
         Approvals::verifyHtml($response->output());
-    }
-
-    public function testRendersNoLoggedInFormForVisitors(): void
-    {
-        $request = new FakeRequest();
-        $response = $this->sut()($request, true);
-        $this->assertEquals("", $response->output());
     }
 
     public function testLoggedInFormReportsMissingUser(): void
@@ -85,10 +82,17 @@ class ShowLoginFormTest extends TestCase
         Approvals::verifyHtml($response->output());
     }
 
+    public function testLoginReportsMissingAuthorization(): void
+    {
+        $request = new FakeRequest(["query" => "&register_action=login", "username" => "cmb"]);
+        $response = $this->sut()($request);
+        $this->assertStringContainsString("You are not authorized for this action!", $response->output());
+    }
+
     public function testLoginReportsMissingUser(): void
     {
         $request = new FakeRequest([
-            "query" => "&function=registerlogin",
+            "query" => "&register_action=login",
             "post" => ["username" => "colt", "password" => "", "remember" => ""],
         ]);
         $response = $this->sut()($request);
@@ -102,7 +106,7 @@ class ShowLoginFormTest extends TestCase
     public function testLoginReportsDeactivatedUser(): void
     {
         $request = new FakeRequest([
-            "query" => "&function=registerlogin",
+            "query" => "&register_action=login",
             "post" => ["username" => "john", "password" => "", "remember" => ""],
         ]);
         $response = $this->sut()($request);
@@ -119,7 +123,7 @@ class ShowLoginFormTest extends TestCase
     public function testLoginReportsWrongPassword(): void
     {
         $request = new FakeRequest([
-            "query" => "&function=registerlogin",
+            "query" => "&register_action=login",
             "post" => ["username" => "jane", "password" => "", "remember" => ""],
         ]);
         $response = $this->sut()($request);
@@ -138,7 +142,7 @@ class ShowLoginFormTest extends TestCase
         $this->loginManager->expects($this->once())->method("login")->with($this->users()["james"]);
         $request = new FakeRequest([
             "query" => "Foo",
-            "post" => ["function" => "registerlogin", "username" => "james", "password" => "test", "remember" => "on"],
+            "post" => ["register_action" => "login", "username" => "james", "password" => "test", "remember" => "on"],
         ]);
         $response = $this->sut()($request);
         $this->assertEquals("http://example.com/?Foo", $response->location());
@@ -153,7 +157,7 @@ class ShowLoginFormTest extends TestCase
     {
         $this->loginManager->expects($this->once())->method("login")->with($this->users()["jane"]);
         $request = new FakeRequest([
-            "post" => ["function" => "registerlogin", "username" => "jane", "password" => "12345", "remember" => ""],
+            "post" => ["register_action" => "login", "username" => "jane", "password" => "12345", "remember" => ""],
         ]);
         $response = $this->sut()($request);
         $this->assertEquals("http://example.com/?Admin", $response->location());
@@ -165,11 +169,40 @@ class ShowLoginFormTest extends TestCase
         $this->loginManager->expects($this->once())->method("login")->with($this->users()["joan"]);
         $request = new FakeRequest([
             "query" => "Foo",
-            "post" => ["function" => "registerlogin", "username" => "joan", "password" => "test", "remember" => ""],
+            "post" => ["register_action" => "login", "username" => "joan", "password" => "test", "remember" => ""],
         ]);
         $response = $this->sut()($request);
         $this->assertEquals("http://example.com/?Foo", $response->location());
         $this->assertEquals(["info", "register", "login", "User “joan” logged in"], $this->logger->lastEntry());
+    }
+
+    public function testLogoutReportsMissingAuthorization(): void
+    {
+        $request = new FakeRequest(["query" => "&register_action=logout"]);
+        $response = $this->sut()($request);
+        $this->assertStringContainsString("You are not authorized for this action!", $response->output());
+    }
+
+    public function testLogoutSucceeds(): void
+    {
+        $this->activityRepository->expects($this->once())->method("update")->with("jane", 0);
+        $request = new FakeRequest(["query" => "&register_action=logout", "username" => "jane"]);
+        $response = $this->sut()($request);
+        $this->assertEquals("http://example.com/", $response->location());
+    }
+
+    public function testSuccessfulLogoutDeletesCookie(): void
+    {
+        $this->activityRepository->expects($this->once())->method("update")->with("jane", 0);
+        $request = new FakeRequest([
+            "query" => "&register_action=logout",
+            "username" => "jane",
+            "cookies" => ["register_remember" => "jane.i5ixPyjRJ6iPuDjTEwBwpxSg6H0"],
+        ]);
+        $response = $this->sut()($request);
+        $this->assertEquals([["register_remember", "", 0]], $response->cookies());
+        $this->assertEquals("http://example.com/", $response->location());
+        $this->assertEquals(["info", "register", "logout", "User “jane” logged out"], $this->logger->lastEntry());
     }
 
     private function users(): array

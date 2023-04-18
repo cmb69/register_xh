@@ -1,11 +1,20 @@
-/* registration form */
-div.register_register label span {
+/* general */
+p.register_field label span {
     display: inline-block;
     width: 10em;
 }
-div.register_register label input {
-    width: 20em;
+p.register_field label input {
+    width: 100%;
 }
+p.register_buttons,
+p.register_links {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* registration form */
+div.register_register {}
 
 /* settings form */
 div.register_settings fieldset {
@@ -14,52 +23,18 @@ div.register_settings fieldset {
 div.register_settings legend {
     padding: 2px;
 }
-div.register_settings label span {
-    display: inline-block;
-    width: 10em;
-}
-div.register_settings label input {
-    width: 20em;
-}
 
 /* login form */
-div.register_login p.register_field span {
-    display: block;
-}
-div.register_login p.register_field input {
-    width: 100%;
-}
-div.register_login p.register_buttons,
-div.register_login p.register_links {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
+div.register_login {}
 
 /* logged in form */
-div.register_loggedin p.register_links {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
+div.register_loggedin {}
 
 /* password forgotten form */
-div.register_password_forgotten label span {
-    display: inline-block;
-    width: 10em;
-}
-div.register_password_forgotten label input {
-    width: 20em;
-}
+div.register_password_forgotten {}
 
 /* change password form */
-div.register_change_password label span {
-    display: inline-block;
-    width: 10em
-}
-div.register_change_password label input {
-    width: 20em;
-}
+div.register_change_password {}
 
 /* active users */
 section.register_active_users p:first-child {

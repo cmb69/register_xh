@@ -124,9 +124,20 @@ class Dic
             $plugin_cf["register"],
             self::makeUserRepository(),
             self::makeUserGroupRepository(),
+            self::makeActivityRepository(),
             new LoginManager(),
             new Logger(),
             new Password(),
+            self::makeView()
+        );
+    }
+
+    public static function makeUserInfo(): UserInfo
+    {
+        global $plugin_cf;
+        return new UserInfo(
+            $plugin_cf["register"],
+            self::makeUserRepository(),
             self::makeView()
         );
     }

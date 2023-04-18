@@ -66,6 +66,11 @@ class DicTest extends TestCase
         $this->assertInstanceOf(ShowLoginForm::class, Dic::makeShowLoginForm());
     }
 
+    public function testMakesUserInfo(): void
+    {
+        $this->assertInstanceOf(UserInfo::class, Dic::makeUserInfo());
+    }
+
     public function testMakesShowPageDataTab(): void
     {
         $this->assertInstanceOf(ShowPageDataTab::class, Dic::makeShowPageDataTab());

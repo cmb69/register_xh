@@ -307,7 +307,9 @@ class UserAdmin
         }
         $newUser = $user->withPassword($this->password->hash($post["password1"]));
         if (!$this->userRepository->save($newUser)) {
-            return $this->respondWith($this->renderPasswordForm($user, $post["password2"], [["error_cannot_write_csv"]]));
+            return $this->respondWith(
+                $this->renderPasswordForm($user, $post["password2"], [["error_cannot_write_csv"]])
+            );
         }
         return Response::redirect($request->url()->withPage("register")->with("admin", "users")->absolute());
     }

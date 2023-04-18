@@ -1,36 +1,35 @@
-<h1>User Preferences</h1>
-<p>On this page you can change your account settings. For changing your data you will need your old password.</p>
 <!-- register user preferences -->
 <div class="register_settings">
+  <p>On this page you can change your account settings. For changing your data you will need your old password.</p>
   <form method="post">
     <fieldset>
       <legend>User Preferences</legend>
       <input type="hidden" name="register_token" value="0+pVtDm4xXAxUmA3/mrL">
-      <p>
+      <p class="register_field">
         <label>
           <span>Full Name</span>
           <input class="text" name="name" type="text" value="John Doe" required>
         </label>
       </p>
-      <p>
+      <p class="register_field">
         <label>
           <span>Old Password</span>
           <input class="text" name="oldpassword" type="password" value="" required>
         </label>
       </p>
-      <p>
+      <p class="register_field">
         <label>
           <span>Password</span>
           <input class="text" name="password1" type="password" value="" required>
         </label>
       </p>
-      <p>
+      <p class="register_field">
         <label>
           <span>Confirm Password</span>
           <input class="text" name="password2" type="password" value="" required>
         </label>
       </p>
-      <p>
+      <p class="register_field">
         <label>
           <span>Email</span>
           <input class="text" name="email" type="email" value="john@example.com" required>
@@ -38,6 +37,7 @@
       </p>
       <p class="register_buttons">
         <button name="register_action" value="change_prefs">Change</button>
+        <a href="/?User-Preferences">Cancel</a>
       </p>
     </fieldset>
   </form>
@@ -53,6 +53,7 @@
       </p>
       <p class="register_buttons">
         <button name="register_action" value="unregister">Delete User</button>
+        <a href="/?User-Preferences">Cancel</a>
       </p>
     </fieldset>
   </form>

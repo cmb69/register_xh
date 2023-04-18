@@ -99,16 +99,22 @@ zunächst zu registrieren, muss das *Login-Formular* angezeigt werden.
 Sie können es im Template aufrufen, so dass es auf allen Seiten angezeigt
 wird:
 
-    <?=registerloginform()?>
+    <?=register()?>
 
-Alternativ können Sie es auf einer oder mehreren CMSimple_XH-Seiten aufrufen:
+*Alternativ* können Sie es auf einer oder mehreren CMSimple_XH-Seiten aufrufen:
 
-    {{{registerloginform()}}}
+    {{{register()}}}
 
-In diesem Fall werden Sie vermutlich das Formular für eingeloggte Benutzer
-zum Template hinzufügen wollen. Dies ist mit dem folgenden Aufruf möglich:
+In diesem Fall werden Sie vermutlich relevante Information für eingeloggte Benutzer
+im Template anzeigen wollen. Dies ist mit dem folgenden Aufruf möglich:
 
-    <?=Register_loggedInForm()?>
+    <?=register_user_info('%SEITEN_URL%')?>
+
+`%SEITEN_URL%` ist die „Seiten-URL“ der Seite, auf der Sie den `register()`
+Aufruf eingetragen haben. Besuchen Sie diese Seite und kopieren Sie den
+abschließenden Teil der URL (alles nach dem Fragezeichen).
+Falls Sie den `register()` Aufruf auf mehreren Seiten eingetragen haben,
+wählen Sie irgendeine dieser Seiten.
 
 Falls Benutzer ihr Kennwort vergessen haben, können sie eine E-Mail mit
 Anweisungen zum Zurücksetzen des Kennworts anfordern. Falls die

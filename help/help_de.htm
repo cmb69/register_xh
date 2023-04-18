@@ -79,11 +79,12 @@
 <p>Bitte beachten Sie, dass die Möglichkeit nach dem Login als registrierter Benutzer der Admingruppe in den Administrationsmodus zu wechseln, entfernt wurde. Der Aufruf von <code>registeradminmodelink()</code> ist nun missbilligt und gibt den Link nicht mehr zurück. Plugins sollten keine Hintertür anbieten, um die Login-Sicherheit von CMSimple_XH zu umgehen.</p>
 <h3 id="login-formular">Login-Formular</h3>
 <p>Um dem Benutzer die Möglichkeit zu bieten sich einzuloggen und sich optional zunächst zu registrieren, muss das <em>Login-Formular</em> angezeigt werden. Sie können es im Template aufrufen, so dass es auf allen Seiten angezeigt wird:</p>
-<pre><code>&lt;?=registerloginform()?&gt;</code></pre>
-<p>Alternativ können Sie es auf einer oder mehreren CMSimple_XH-Seiten aufrufen:</p>
-<pre><code>{{{registerloginform()}}}</code></pre>
-<p>In diesem Fall werden Sie vermutlich das Formular für eingeloggte Benutzer zum Template hinzufügen wollen. Dies ist mit dem folgenden Aufruf möglich:</p>
-<pre><code>&lt;?=Register_loggedInForm()?&gt;</code></pre>
+<pre><code>&lt;?=register()?&gt;</code></pre>
+<p><em>Alternativ</em> können Sie es auf einer oder mehreren CMSimple_XH-Seiten aufrufen:</p>
+<pre><code>{{{register()}}}</code></pre>
+<p>In diesem Fall werden Sie vermutlich relevante Information für eingeloggte Benutzer im Template anzeigen wollen. Dies ist mit dem folgenden Aufruf möglich:</p>
+<pre><code>&lt;?=register_user_info(&#39;%SEITEN_URL%&#39;)?&gt;</code></pre>
+<p><code>%SEITEN_URL%</code> ist die „Seiten-URL“ der Seite, auf der Sie den <code>register()</code> Aufruf eingetragen haben. Besuchen Sie diese Seite und kopieren Sie den abschließenden Teil der URL (alles nach dem Fragezeichen). Falls Sie den <code>register()</code> Aufruf auf mehreren Seiten eingetragen haben, wählen Sie irgendeine dieser Seiten.</p>
 <p>Falls Benutzer ihr Kennwort vergessen haben, können sie eine E-Mail mit Anweisungen zum Zurücksetzen des Kennworts anfordern. Falls die Registrierung neuer Benutzer erlaubt ist, können sich diese selbst registrieren, und eine E-Mail mit dem Aktivierungslink wird ihnen zugesandt, so dass sie ihr Konto aktivieren und sich nahezu sofort einloggen können. All dies geschieht ohne dass der Administrator etwas unternehmen muss, der aber Kopien der E-Mails zu seiner Information erhält.</p>
 <p>Nach erfolgreichen Einloggen können Benutzer ihre Einstellungen bearbeiten, also Name, E-Mail-Adresse und Kennwort. Unregistrieren, d.h. Löschen des Kontos, ist ebenso in der Einstellungsmaske möglich.</p>
 <p>Beachten Sie, dass alle Login- und Logoutversuche in der Protokolldatei von CMSimple_XH festgehalten werden.</p>

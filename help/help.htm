@@ -79,11 +79,12 @@
 <p>Please note that the possibility to switch to admin mode after being logged in as registered admin has been removed. The call to <code>registeradminmodelink()</code> is now deprecated and does not return the link anymore. Plugins should not offer any backdoor to circumvent the login security of CMSimple_XH.</p>
 <h3 id="login-form">Login Form</h3>
 <p>To offer the user the possibility to log in and optionally register first, the <em>login form</em> must be displayed. You can put it in the template, so it is shown on all pages:</p>
-<pre><code>&lt;?=registerloginform()?&gt;</code></pre>
-<p>Alternatively you can put it on one or several CMSimple_XH pages:</p>
-<pre><code>{{{registerloginform()}}}</code></pre>
-<p>In this case you might want to add the <em>logged in</em> form to the template. You can do so with the following call:</p>
-<pre><code>&lt;?=Register_loggedInForm()?&gt;</code></pre>
+<pre><code>&lt;?=register()?&gt;</code></pre>
+<p><em>Alternatively</em> you can put it on one or several CMSimple_XH pages:</p>
+<pre><code>{{{register()}}}</code></pre>
+<p>In this case you might want to relevant info to the logged in user in the template. You can do so with the following call:</p>
+<pre><code>&lt;?=register_user_info(&#39;%PAGE_URL%&#39;)?&gt;</code></pre>
+<p><code>%PAGE_URL%</code> is the “page URL” of the page where you put the <code>register()</code> call. Visit that page, and copy the trailing part of the URL (after the question mark). In case that you have placed the <code>register()</code> call on multiple pages, choose any of these.</p>
 <p>If users forgot their password, they can request an email with intructions to reset their password. If registration of new users is allowed, they can register themselves, and an email with the activation link will be sent to them, so they can activate their account and log in nearly immediately. All this happens without requiring any actions from the admin, who will still receive copies of the emails to be informed.</p>
 <p>After successful login users can edit their user preferences, i.e. name, email address and password. Unregistering, i.e. deleting the account, is also possible via the preferences screen.</p>
 <p>Note that all login and logout attempts will be logged in the logfile of CMSimple_XH.</p>

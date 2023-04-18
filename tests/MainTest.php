@@ -119,26 +119,6 @@ class MainTest extends TestCase
         );
     }
 
-    public function testLogoutSucceeds(): void
-    {
-        $request = new FakeRequest(["query" => "&function=registerlogout", "username" => "jane"]);
-        $response = $this->sut()($request);
-        $this->assertEquals("http://example.com/?&function=registerlogout", $response->location());
-    }
-
-    public function testSuccessfulLogoutDeletesCookie(): void
-    {
-        $request = new FakeRequest([
-            "query" => "&function=registerlogout",
-            "username" => "jane",
-            "cookies" => ["register_remember" => "jane.i5ixPyjRJ6iPuDjTEwBwpxSg6H0"],
-        ]);
-        $response = $this->sut()($request);
-        $this->assertEquals([["register_remember", "", 0]], $response->cookies());
-        $this->assertEquals("http://example.com/?&function=registerlogout", $response->location());
-        $this->assertEquals(["info", "register", "logout", "User “jane” logged out"], $this->logger->lastEntry());
-    }
-
     public function testForcesLogoutForUnknownUser(): void
     {
         $this->loginManager->expects($this->once())->method("logout");

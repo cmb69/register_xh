@@ -15,6 +15,7 @@ if (!defined("CMSIMPLE_XH_VERSION")) {header("HTTP/1.1 403 Forbidden"); exit;}
  * @var bool $hasRememberMe
  * @var bool $isRegisterAllowed
  * @var string $registerUrl
+ * @var string $action
  */
 ?>
 <!-- register login form -->
@@ -22,8 +23,7 @@ if (!defined("CMSIMPLE_XH_VERSION")) {header("HTTP/1.1 403 Forbidden"); exit;}
 <?foreach ($errors as $error):?>
   <p class="xh_fail"><?=$this->text(...$error)?></p>
 <?endforeach?>
-  <form method="post">
-    <input type="hidden" name="function" value="registerlogin">
+  <form action="<?=$action?>" method="post">
     <p class="register_field">
       <label>
         <span><?=$this->text('label_username')?></span>

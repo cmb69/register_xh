@@ -22,61 +22,29 @@ if (!defined("CMSIMPLE_XH_VERSION")) {
 
 const REGISTER_VERSION = "2.0-dev";
 
-/**
- * @var string $su
- * @var PageDataRouter $pd_router
- * @var string $o
- */
-
-$pd_router->add_interest("register_access");
-Responder::respond(Dic::makeMain()(Request::current()));
-
-switch ($su) {
-    case "register+user":
-        $o .= Responder::respond(Dic::makeHandleUserRegistration()(Request::current()));
-        break;
-    case "register+password":
-        $o .= Responder::respond(Dic::makeHandlePasswordForgotten()(Request::current()));
-        break;
-    case "register+settings":
-        $o .= Responder::respond(Dic::makeHandleUserPreferences()(Request::current()));
-        break;
+function register(): string
+{
+    global $function;
+    switch ($function) {
+        default:
+            return Responder::respond(Dic::makeShowLoginForm()(Request::current()));
+        case "register_user":
+            return Responder::respond(Dic::makeHandleUserRegistration()(Request::current()));
+        case "register_password":
+            return Responder::respond(Dic::makeHandlePasswordForgotten()(Request::current()));
+        case "register_settings":
+            return Responder::respond(Dic::makeHandleUserPreferences()(Request::current()));
+    }
 }
 
-function registerUser(): string
+function register_user_info(string $pageUrl): string
 {
-    trigger_error("registerUser() no longer has any effect", E_USER_DEPRECATED);
-    return "";
+    return Responder::respond(Dic::makeUserInfo()(Request::current(), $pageUrl));
 }
 
-function registerForgotPassword(): string
+function register_active_users(): string
 {
-    trigger_error("registerForgotPassword() no longer has any effect", E_USER_DEPRECATED);
-    return "";
-}
-
-function registerUserPrefs(): string
-{
-    trigger_error("registerUserPrefs() no longer has any effect", E_USER_DEPRECATED);
-    return "";
-}
-
-/*
- * Show the login or logged in form
- */
-function registerloginform(): string
-{
-    return Responder::respond(Dic::makeShowLoginForm()(Request::current()));
-}
-
-/**
- * Show the logged in form, if user is logged in
- *
- * @since 1.5rc1
- */
-function Register_loggedInForm(): string
-{
-    return Responder::respond(Dic::makeShowLoginForm()(Request::current(), true));
+    return Responder::respond(Dic::makeActiveUsers()(Request::current()));
 }
 
 function register_forbidden(): string
@@ -84,7 +52,45 @@ function register_forbidden(): string
     return Responder::respond(Dic::makeForbidden()());
 }
 
-function register_active_users(): string
+/** @deprecated */
+function registerUser(): string
 {
-    return Responder::respond(Dic::makeActiveUsers()(Request::current()));
+    trigger_error("registerUser() no longer has any effect", E_USER_DEPRECATED);
+    return "";
 }
+
+/** @deprecated */
+function registerForgotPassword(): string
+{
+    trigger_error("registerForgotPassword() no longer has any effect", E_USER_DEPRECATED);
+    return "";
+}
+
+/** @deprecated */
+function registerUserPrefs(): string
+{
+    trigger_error("registerUserPrefs() no longer has any effect", E_USER_DEPRECATED);
+    return "";
+}
+
+/** @deprecated */
+function registerloginform(): string
+{
+    trigger_error("registerloginform() is deprecated; use register() instead", E_USER_DEPRECATED);
+    return register();
+}
+
+/** @deprecated */
+function Register_loggedInForm(string $pageUrl): string
+{
+    trigger_error(
+        "Register_loggedInForm() no longer has any effect; use register_user_info() instead",
+        E_USER_DEPRECATED
+    );
+    return "";
+}
+
+/** @var PageDataRouter $pd_router */
+
+$pd_router->add_interest("register_access");
+Responder::respond(Dic::makeMain()(Request::current()));

@@ -7,6 +7,7 @@ $plugin_tx['register']['menu_user_admin']="Benutzer";
 $plugin_tx['register']['label_access']="Zugriff";
 $plugin_tx['register']['label_access_error']="Beschränkter Zugriff";
 $plugin_tx['register']['label_accessgroups']="Benutzergruppen";
+$plugin_tx['register']['label_cancel']="Abbrechen";
 $plugin_tx['register']['label_change']="Ändern";
 $plugin_tx['register']['label_change_password']="Kennwort ändern...";
 $plugin_tx['register']['label_create']="Erstellen";

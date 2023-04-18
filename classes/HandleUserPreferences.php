@@ -19,6 +19,7 @@ use Register\Infra\UserRepository;
 use Register\Infra\View;
 use Register\Logic\Util;
 use Register\Value\Response;
+use Register\Value\Url;
 use Register\Value\User;
 
 class HandleUserPreferences
@@ -67,8 +68,8 @@ class HandleUserPreferences
 
     public function __invoke(Request $request): Response
     {
-        if (!$this->conf["allowed_settings"] || !$request->username() || $request->editMode()) {
-            return Response::create();
+        if (!$this->conf["allowed_settings"] || !$request->username()) {
+            return Response::create($this->view->error("error_unauthorized"));
         }
         switch ($request->registerAction()) {
             default:
@@ -83,40 +84,40 @@ class HandleUserPreferences
     private function showForm(Request $request): Response
     {
         if (!($user = $this->userRepository->findByUsername($request->username()))) {
-            return $this->respondWith($this->view->error("error_user_does_not_exist", $request->username()));
+            return Response::create($this->view->error("error_user_does_not_exist", $request->username()));
         }
         if ($user->isLocked()) {
-            return $this->respondWith($this->view->error("error_user_locked", $user->getUsername()));
+            return Response::create($this->view->error("error_user_locked", $user->getUsername()));
         }
-        return $this->respondWith($this->renderForm($user));
+        return Response::create($this->renderForm($request->url(), $user));
     }
 
     private function saveUser(Request $request): Response
     {
         if (!$this->csrfProtector->check()) {
-            return $this->respondWith($this->view->error("error_unauthorized"));
+            return Response::create($this->view->error("error_unauthorized"));
         }
         if (!($user = $this->userRepository->findByUsername($request->username()))) {
-            return $this->respondWith($this->view->error("error_user_does_not_exist", $request->username()));
+            return Response::create($this->view->error("error_user_does_not_exist", $request->username()));
         }
         if ($user->isLocked()) {
-            return $this->respondWith($this->view->error("error_user_locked", $user->getUsername()));
+            return Response::create($this->view->error("error_user_locked", $user->getUsername()));
         }
         $post = $request->changePrefsPost();
         $changedUser = $user->withName($post["name"])->withEmail($post["email"]);
         if (!$this->password->verify($post["oldpassword"], $user->getPassword())) {
-            return $this->respondWith($this->renderForm($changedUser, [["error_old_password_wrong"]]));
+            return Response::create($this->renderForm($request->url(), $changedUser, [["error_old_password_wrong"]]));
         }
         $changedUser = $changedUser->withPassword($post["password1"]);
         if (($errors = Util::validateUser($changedUser, $post["password2"]))) {
-            return $this->respondWith($this->renderForm($changedUser, $errors));
+            return Response::create($this->renderForm($request->url(), $changedUser, $errors));
         }
         $changedUser = $changedUser->withPassword($this->password->hash($changedUser->getPassword()));
         if (!$this->userRepository->save($changedUser)) {
-            return $this->respondWith($this->renderForm($changedUser, [["error_cannot_write_csv"]]));
+            return Response::create($this->renderForm($request->url(), $changedUser, [["error_cannot_write_csv"]]));
         }
         $this->sendNotification($changedUser, $user->getEmail(), $request);
-        return Response::redirect($request->url()->absolute());
+        return Response::redirect($request->url()->without("function")->absolute());
     }
 
     private function sendNotification(User $user, string $email, Request $request): bool
@@ -133,40 +134,34 @@ class HandleUserPreferences
     private function unregisterUser(Request $request): Response
     {
         if (!$this->csrfProtector->check()) {
-            return $this->respondWith($this->view->error("error_unauthorized"));
+            return Response::create($this->view->error("error_unauthorized"));
         }
         if (!($user = $this->userRepository->findByUsername($request->username()))) {
-            return $this->respondWith($this->view->error("error_user_does_not_exist", $request->username()));
+            return Response::create($this->view->error("error_user_does_not_exist", $request->username()));
         }
         if ($user->isLocked()) {
-            return $this->respondWith($this->view->error("error_user_locked", $user->getUsername()));
+            return Response::create($this->view->error("error_user_locked", $user->getUsername()));
         }
         $post = $request->unregisterPost();
         if (!$this->password->verify($post["oldpassword"], $user->getPassword())) {
-            return $this->respondWith($this->renderForm($user, [["error_old_password_wrong"]]));
+            return Response::create($this->renderForm($request->url(), $user, [["error_old_password_wrong"]]));
         }
         if (!$this->userRepository->delete($user)) {
-            return $this->respondWith($this->renderForm($user, [["error_cannot_write_csv"]]));
+            return Response::create($this->renderForm($request->url(), $user, [["error_cannot_write_csv"]]));
         }
         $this->logger->logInfo("logout", $this->view->plain("log_unregister", $user->getUsername()));
         return Response::redirect($request->url()->absolute());
     }
 
     /** @param list<array{string}> $errors */
-    private function renderForm(User $user, array $errors = []): string
+    private function renderForm(Url $url, User $user, array $errors = []): string
     {
         return $this->view->render("userprefs_form", [
             "token" => $this->csrfProtector->token(),
             "errors" => $errors,
             "name" => $user->getName(),
             "email" => $user->getEmail(),
+            "cancel" => $url->without("function")->relative(),
         ]);
-    }
-
-    private function respondWith(string $output): Response
-    {
-        return Response::create("<h1>" . $this->view->text("label_user_prefs") . "</h1>\n"
-            . "<p>" . $this->view->text("message_changeexplanation") . "</p>\n"
-            . $output)->withTitle($this->view->text("label_user_prefs"));
     }
 }

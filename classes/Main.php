@@ -74,9 +74,6 @@ class Main
         if ($this->conf["allowed_remember"] && $request->cookie("register_remember") && !$request->username()) {
             return $this->autoLogin($request);
         }
-        if ($request->username() && $request->function() === "registerlogout") {
-            return $this->logoutAction($request);
-        }
         if ($request->username() && !$this->userRepository->findByUsername($request->username())) {
             return $this->forcedLogout($request);
         }
@@ -149,17 +146,6 @@ class Main
         return Response::create();
     }
 
-
-    private function logoutAction(Request $request): Response
-    {
-        $this->loginManager->logout();
-        $this->activityRepository->update($request->username(), 0);
-        $this->logger->logInfo("logout", $this->view->plain("log_logout", $request->username()));
-        if ($this->conf["allowed_remember"] && $request->cookie("register_remember")) {
-            return Response::redirect($request->url()->absolute())->withCookie("register_remember", "", 0);
-        }
-        return Response::redirect($request->url()->absolute());
-    }
 
     private function forcedLogout(Request $request): Response
     {

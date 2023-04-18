@@ -92,16 +92,21 @@ To offer the user the possibility to log in and optionally register first,
 the *login form* must be displayed. You can put it in the template, so it is
 shown on all pages:
 
-    <?=registerloginform()?>
+    <?=register()?>
 
-Alternatively you can put it on one or several CMSimple_XH pages:
+*Alternatively* you can put it on one or several CMSimple_XH pages:
 
-    {{{registerloginform()}}}
+    {{{register()}}}
 
-In this case you might want to add the *logged in* form to the
+In this case you might want to relevant info to the logged in user in the
 template. You can do so with the following call:
 
-    <?=Register_loggedInForm()?>
+    <?=register_user_info('%PAGE_URL%')?>
+
+`%PAGE_URL%` is the “page URL” of the page where you put the `register()` call.
+Visit that page, and copy the trailing part of the URL (after the question mark).
+In case that you have placed the `register()` call on multiple pages,
+choose any of these.
 
 If users forgot their password, they can request an email with intructions
 to reset their password. If registration of new users is allowed, they can

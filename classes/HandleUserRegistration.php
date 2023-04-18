@@ -60,12 +60,12 @@ class HandleUserRegistration
 
     public function __invoke(Request $request): Response
     {
-        if (!$this->conf["allowed_register"] || $request->username() || $request->editMode()) {
-            return Response::create();
+        if (!$this->conf["allowed_register"] || $request->username()) {
+            return Response::create($this->view->error("error_unauthorized"));
         }
         switch ($request->registerAction()) {
             default:
-                return $this->showForm();
+                return $this->showForm($request);
             case "register":
                 return $this->registerUser($request);
             case "activate":
@@ -73,10 +73,10 @@ class HandleUserRegistration
         }
     }
 
-    private function showForm(): Response
+    private function showForm(Request $request): Response
     {
         $user = new User("", "", [], "", "", "", "");
-        return $this->respondWith($this->renderForm($user, ""));
+        return Response::create($this->renderForm($request->url(), $user, ""));
     }
 
     private function registerUser(Request $request): Response
@@ -84,10 +84,12 @@ class HandleUserRegistration
         $post = $request->registerUserPost();
         $user = $this->userFromPost($post);
         if (($errors = Util::validateUser($user, $post["password2"]))) {
-            return $this->respondWith($this->renderForm($user, $post["password2"], $errors));
+            return Response::create($this->renderForm($request->url(), $user, $post["password2"], $errors));
         }
         if ($this->userRepository->findByUsername($post["username"])) {
-            return $this->respondWith($this->renderForm($user, $post["password2"], [["error_username_exists"]]));
+            return Response::create(
+                $this->renderForm($request->url(), $user, $post["password2"], [["error_username_exists"]])
+            );
         }
         if ($this->userRepository->hasDuplicateEmail($user)) {
             $this->sendDuplicateEmailNotification($user, $request);
@@ -95,14 +97,16 @@ class HandleUserRegistration
         }
         $newUser = $this->registeredUser($post);
         if (!$this->userRepository->save($newUser)) {
-            return $this->respondWith($this->renderForm($user, $post["password2"], [["error_cannot_write_csv"]]));
+            return Response::create(
+                $this->renderForm($request->url(), $user, $post["password2"], [["error_cannot_write_csv"]])
+            );
         }
         $this->sendSuccessNotification($newUser, $request);
-        return Response::redirect($request->url()->withPage("")->absolute());
+        return Response::redirect($request->url()->without("function")->without("register_action")->absolute());
     }
 
     /** @param list<array{string}> $errors */
-    private function renderForm(User $user, string $password2, array $errors = []): string
+    private function renderForm(Url $url, User $user, string $password2, array $errors = []): string
     {
         return $this->view->render("registerform", [
             "errors" => $errors,
@@ -111,6 +115,7 @@ class HandleUserRegistration
             "password1" => $user->getPassword(),
             "password2" => $password2,
             "email" => $user->getEmail(),
+            "cancel" => $url->without("function")->relative(),
         ]);
     }
 
@@ -144,7 +149,7 @@ class HandleUserRegistration
 
     private function sendDuplicateEmailNotification(User $user, Request $request): bool
     {
-        $url = $request->url()->withPage("register+password");
+        $url = $request->url()->with("function", "register_password");
         return $this->sendNotification($user, "email_text4", $url, $request);
     }
 
@@ -172,25 +177,18 @@ class HandleUserRegistration
     {
         $params = $request->activationParams();
         if (!$params["nonce"]) {
-            return $this->respondWith($this->view->error("error_status_empty"));
+            return Response::create($this->view->error("error_status_empty"));
         }
         if (!($user = $this->userRepository->findByUsername($params["username"]))) {
-            return $this->respondWith($this->view->error("error_username_notfound", $params["username"]));
+            return Response::create($this->view->error("error_username_notfound", $params["username"]));
         }
         if (!hash_equals($user->getStatus(), $params["nonce"])) {
-            return $this->respondWith($this->view->error("error_status_invalid"));
+            return Response::create($this->view->error("error_status_invalid"));
         }
         $user = $user->activate()->withAccessgroups([$this->conf["group_activated"]]);
         if (!$this->userRepository->save($user)) {
-            return $this->respondWith($this->view->error("error_cannot_write_csv"));
+            return Response::create($this->view->error("error_cannot_write_csv"));
         }
-        return $this->respondWith($this->view->message("success", "message_activated"));
-    }
-
-    private function respondWith(string $output): Response
-    {
-        return Response::create("<h1>" . $this->view->text("label_register") . "</h1>\n"
-            . "<p>" . $this->view->text("message_register_form1") . "</p>\n"
-            . $output)->withTitle($this->view->text("label_register"));
+        return Response::create($this->view->message("success", "message_activated"));
     }
 }
