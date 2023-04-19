@@ -8,33 +8,30 @@
 
 namespace Register\Infra;
 
+/** @codeCoverageIgnore */
 class Pages
 {
     public function count(): int
     {
         global $cl;
-
         return $cl;
     }
 
     public function heading(int $pageNum): string
     {
         global $h;
-
         return $h[$pageNum];
     }
 
     public function url(int $pageNum): string
     {
         global $u;
-
         return $u[$pageNum];
     }
 
     public function level(int $pageNum): int
     {
         global $l;
-
         return $l[$pageNum];
     }
 
@@ -42,7 +39,6 @@ class Pages
     public function data(): array
     {
         global $pd_router;
-
         return $pd_router->find_all();
     }
 
@@ -61,7 +57,6 @@ class Pages
     public function setContentOf(int $pageNum, string $content)
     {
         global $c;
-
         $c[$pageNum] = $content;
     }
 }
