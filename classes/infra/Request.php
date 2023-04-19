@@ -158,7 +158,7 @@ class Request
     public function postedUser(): User
     {
         return new User(
-            $this->trimmedPostString("username") ?: $this->selectedUser(),
+            $this->trimmedPostString("username"),
             $this->trimmedPostString("password1"),
             $this->trimmedPostArray("groups"),
             $this->trimmedPostString("name"),
@@ -187,9 +187,17 @@ class Request
     public function postedGroup(): UserGroup
     {
         return new UserGroup(
-            $this->trimmedPostString("groupname") ?: $this->selectedGroup(),
+            $this->trimmedPostString("groupname"),
             $this->trimmedPostString("loginpage")
         );
+    }
+
+    /** @return array{loginpage:string} */
+    public function groupPost(): array
+    {
+        return [
+            "loginpage" => $this->trimmedPostString("loginpage")
+        ];
     }
 
     private function trimmedPostString(string $param): string

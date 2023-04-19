@@ -157,7 +157,7 @@ class GroupAdminTest extends TestCase
         $this->dbService->options(["writeGroups" => false]);
         $request = new FakeRequest([
             "query" => "&group=guest",
-            "post" => ["action" => "do_update", "groupname" => "guest", "loginpage" => "Login"],
+            "post" => ["action" => "do_update", "loginpage" => "Login"],
         ]);
         $response = $this->sut()($request);
         $this->assertEquals("Register – Groups", $response->title());
@@ -168,7 +168,7 @@ class GroupAdminTest extends TestCase
     {
         $request = new FakeRequest([
             "query" => "&group=guest",
-            "post" => ["action" => "do_update", "groupname" => "guest", "loginpage" => "Login"],
+            "post" => ["action" => "do_update", "loginpage" => "Login"],
         ]);
         $response = $this->sut()($request);
         $this->assertEquals(new UserGroup("guest", "Login"), $this->userGroupRepository->findByGroupName("guest"));

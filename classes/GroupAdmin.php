@@ -132,7 +132,8 @@ class GroupAdmin
         if (!($group = $this->userGroupRepository->findByGroupname($groupname))) {
             return $this->respondWith($this->view->error("error_group_does_not_exist", $groupname));
         }
-        $group = $request->postedGroup();
+        $post = $request->groupPost();
+        $group = $group->with($post["loginpage"]);
         assert(!Util::validateGroup($group));
         if (!$this->userGroupRepository->save($group)) {
             return $this->respondWith($this->renderUpdateForm($group, [["error_cannot_write_csv"]]));
