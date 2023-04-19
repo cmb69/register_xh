@@ -199,13 +199,17 @@ class HandleUserPreferences
 
     private function sendNotification(User $user, string $key, string $email, Request $request): bool
     {
-        return $this->mailer->notifyUpdate(
-            $user,
-            $key,
-            $email,
-            $this->conf["senderemail"],
-            $request->serverName(),
-            $request->remoteAddress()
+        return $this->mailer->sendMail(
+            $user->getEmail(),
+            $this->view->plain("email_subject", $request->serverName()),
+            $this->view->renderPlain("mail_update", [
+                "key" => $key,
+                "fullname" => $user->getName(),
+                "username" => $user->getUsername(),
+                "email" => $user->getEmail(),
+                "remoteAddress" => $request->remoteAddress(),
+            ]),
+            ["From: {$this->conf["senderemail"]}", "Cc: $email, {$this->conf["senderemail"]}"]
         );
     }
 

@@ -204,9 +204,8 @@ class Dic
 
     private static function makeMailer(): Mailer
     {
-        global $plugin_cf, $plugin_tx;
-
-        return new Mailer($plugin_cf["register"]["fix_mail_headers"], $plugin_tx["register"]);
+        global $plugin_cf;
+        return new Mailer($plugin_cf["register"]["fix_mail_headers"]);
     }
 
     private static function makeView(): View

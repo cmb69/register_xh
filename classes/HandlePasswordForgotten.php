@@ -109,11 +109,16 @@ class HandlePasswordForgotten
             ->with("register_username", $user->getUsername())
             ->with("register_time", (string) $request->time())
             ->with("register_mac", $mac);
-        return $this->mailer->notifyPasswordForgotten(
-            $user,
-            $this->conf['senderemail'],
-            $url->absolute(),
-            $request->serverName()
+        return $this->mailer->sendMail(
+            $user->getEmail(),
+            $this->view->plain("email_subject", $request->serverName()),
+            $this->view->renderPlain("mail_reset", [
+                "fullname" => $user->getName(),
+                "username" => $user->getUsername(),
+                "email" => $user->getEmail(),
+                "url" => $url->absolute(),
+            ]),
+            ["From: {$this->conf["senderemail"]}"]
         );
     }
 

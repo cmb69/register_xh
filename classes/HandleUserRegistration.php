@@ -150,13 +150,20 @@ class HandleUserRegistration
     private function sendDuplicateEmailNotification(User $user, User $olduser, Request $request): bool
     {
         $url = $request->url()->with("function", "register_password");
-        return $this->mailer->notifyDuplicateActivation(
-            $user,
-            $olduser,
-            $this->conf["senderemail"],
-            $url->absolute(),
-            $request->serverName(),
-            $request->remoteAddress()
+        return  $this->mailer->sendMail(
+            $user->getEmail(),
+            $this->view->plain("email_subject", $request->serverName()),
+            $this->view->renderPlain("mail_duplicate", [
+                "fullname" => $user->getName(),
+                "username" => $user->getUsername(),
+                "email" => $user->getEmail(),
+                "remoteAddress" => $request->remoteAddress(),
+                "other_fullname" => $olduser->getName(),
+                "other_username" => $olduser->getUsername(),
+                "other_email" => $olduser->getEmail(),
+                "url" => $url->absolute(),
+            ]),
+            ["From: {$this->conf["senderemail"]}", "Cc: {$this->conf["senderemail"]}"]
         );
     }
 
@@ -165,12 +172,17 @@ class HandleUserRegistration
         $url = $request->url()->with("register_action", "activate")
             ->with("register_username", $user->getUsername())
             ->with("register_nonce", $user->getStatus());
-        return $this->mailer->notifyActivation(
-            $user,
-            $this->conf["senderemail"],
-            $url->absolute(),
-            $request->serverName(),
-            $request->remoteAddress()
+        return $this->mailer->sendMail(
+            $user->getEmail(),
+            $this->view->plain("email_subject", $request->serverName()),
+            $this->view->renderPlain("mail_activation", [
+                "fullname" => $user->getName(),
+                "username" => $user->getUsername(),
+                "email" => $user->getEmail(),
+                "remoteAddress" => $request->remoteAddress(),
+                "url" => $url->absolute(),
+            ]),
+            ["From: {$this->conf["senderemail"]}", "Cc: {$this->conf["senderemail"]}"]
         );
     }
 

@@ -11,6 +11,7 @@ If you did not register a user account, just ignore this email.
 Otherwise click the following link to activate your new user account:
 
 <http://example.com/?&register_action=activate&register_username=js&register_nonce=MDEyMzQ1Njc4OUFCQ0RF>
+
 [3] -> From: postmaster@example.com
 Cc: postmaster@example.com
 MIME-Version: 1.0

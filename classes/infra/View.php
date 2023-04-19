@@ -62,6 +62,13 @@ class View
         return (string) ob_get_clean();
     }
 
+    /** @param array<string,mixed> $data */
+    public function renderPlain(string $template, array $data): string
+    {
+        $html = $this->render($template, $data);
+        return html_entity_decode(strip_tags($html), ENT_COMPAT | ENT_SUBSTITUTE, "UTF-8");
+    }
+
     /** @param scalar $value */
     public function esc($value): string
     {
