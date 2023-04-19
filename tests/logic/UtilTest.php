@@ -88,4 +88,23 @@ class UtilTest extends TestCase
             "empty message" => [new Mail("subject", ""), [["error_message"]]],
         ];
     }
+
+    /** @dataProvider encodeWordsData */
+    public function testEncodeWords(string $text, string $expected): void
+    {
+        $actual = Util::encodeWords($text);
+        $this->assertEquals($actual, $expected);
+    }
+
+    public function encodeWordsData(): array
+    {
+        return [
+            "question mark" => ["foo?bar", "=?UTF-8?Q?foo=3Fbar?="],
+            "equals sign" => ["foo=bar", "=?UTF-8?Q?foo=3Dbar?="],
+            "space" => ["foo bar", "=?UTF-8?Q?foo_bar?="],
+            "underscore" => ["foo_bar", "=?UTF-8?Q?foo=5Fbar?="],
+            "long" => [str_repeat("ä", 11), "=?UTF-8?B?w6TDpMOkw6TDpMOkw6TDpMOkw6TDpA==?="],
+            "very long" => [str_repeat("ä", 23), "=?UTF-8?B?w6TDpMOkw6TDpMOkw6TDpMOkw6TDpMOkw6TDpMOkw6TDpMOkw6TDpMOkw6TD?=\r\n =?UTF-8?B?pA==?="],
+        ];
+    }
 }

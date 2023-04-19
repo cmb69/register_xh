@@ -152,7 +152,7 @@ class HandleUserRegistration
         $url = $request->url()->with("function", "register_password");
         return  $this->mailer->sendMail(
             $user->getEmail(),
-            $this->view->plain("email_subject", $request->serverName()),
+            Util::encodeWords($this->view->plain("email_subject", $request->serverName())),
             $this->view->renderPlain("mail_duplicate", [
                 "fullname" => $user->getName(),
                 "username" => $user->getUsername(),
@@ -174,7 +174,7 @@ class HandleUserRegistration
             ->with("register_nonce", $user->getStatus());
         return $this->mailer->sendMail(
             $user->getEmail(),
-            $this->view->plain("email_subject", $request->serverName()),
+            Util::encodeWords($this->view->plain("email_subject", $request->serverName())),
             $this->view->renderPlain("mail_activation", [
                 "fullname" => $user->getName(),
                 "username" => $user->getUsername(),

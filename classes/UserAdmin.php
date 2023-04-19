@@ -348,7 +348,7 @@ class UserAdmin
         if (($errors = Util::validateMail($mail))) {
             return $this->respondWith($this->renderMailForm($user, $mail, $errors));
         }
-        if (!$this->mailer->adHocMail($user, $mail, $this->conf["senderemail"])) {
+        if (!$this->sendMail($user, $mail, $this->conf["senderemail"])) {
             return $this->respondWith($this->renderMailForm($user, $mail, [["error_send_mail"]]));
         }
         return Response::redirect($request->url()->withPage("register")->with("admin", "users")->absolute());
@@ -364,6 +364,16 @@ class UserAdmin
             "subject" => $mail->subject(),
             "message" => $mail->message(),
         ]);
+    }
+
+    private function sendMail(User $user, Mail $mail, string $from): bool
+    {
+        return $this->mailer->sendMail(
+            $user->getEmail(),
+            Util::encodeWords($mail->subject()),
+            $mail->message(),
+            ["From: $from"]
+        );
     }
 
     private function delete(Request $request): Response

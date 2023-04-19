@@ -111,7 +111,7 @@ class HandlePasswordForgotten
             ->with("register_mac", $mac);
         return $this->mailer->sendMail(
             $user->getEmail(),
-            $this->view->plain("email_subject", $request->serverName()),
+            Util::encodeWords($this->view->plain("email_subject", $request->serverName())),
             $this->view->renderPlain("mail_reset", [
                 "fullname" => $user->getName(),
                 "username" => $user->getUsername(),

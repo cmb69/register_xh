@@ -10,9 +10,6 @@
 
 namespace Register\Infra;
 
-use Register\Value\Mail;
-use Register\Value\User;
-
 class Mailer
 {
     /** @var bool */
@@ -23,20 +20,15 @@ class Mailer
         $this->$fixMailHeaders = $fixMailHeaders;
     }
 
-    public function adHocMail(User $user, Mail $mail, string $from): bool
-    {
-        return $this->sendMail($user->getEmail(), $mail->subject(), $mail->message(), ["From: $from"]);
-    }
-
     /** @param list<string> $headers */
-    public function sendMail(string $to, string $subject, string $message, array $headers): bool
+    public function sendMail(string $to, string $encodedSubject, string $message, array $headers): bool
     {
         $headers[] = 'MIME-Version: 1.0';
         $headers[] = 'Content-type: text/plain; charset=UTF-8';
         $sep = $this->fixMailHeaders ? "\n" : "\r\n";
         return $this->mail(
             $to,
-            '=?UTF-8?Q?' . quoted_printable_encode($subject) . '?=',
+            (string) preg_replace('/\R/', $sep, $encodedSubject),
             (string) preg_replace('/\R/u', $sep, $message),
             implode($sep, $headers)
         );

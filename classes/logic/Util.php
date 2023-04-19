@@ -153,4 +153,17 @@ class Util
         }
         return $errors;
     }
+
+    public static function encodeWords(string $text): string
+    {
+        $quotedPrintable = quoted_printable_encode($text);
+        $qEncoded = str_replace(["?", "_", " "], ["=3F", "=5F", "_"], $quotedPrintable);
+        if (strlen($qEncoded) <= 63) {
+            return "=?UTF-8?Q?$qEncoded?=";
+        }
+        $encodedWords = array_map(function (string $word) {
+            return "=?UTF-8?B?" . base64_encode($word) . "?=";
+        }, str_split($text, 45));
+        return implode("\r\n ", $encodedWords);
+    }
 }

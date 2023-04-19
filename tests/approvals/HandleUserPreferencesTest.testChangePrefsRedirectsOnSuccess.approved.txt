@@ -1,5 +1,5 @@
 [0] -> new@example.com
-[1] -> =?UTF-8?Q?Your user account at example.com?=
+[1] -> =?UTF-8?Q?Your_user_account_at_example.com?=
 [2] -> Your account information has been updated as follows:
 
  Full Name: John Doe
