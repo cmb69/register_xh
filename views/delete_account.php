@@ -16,10 +16,10 @@ if (!defined("CMSIMPLE_XH_VERSION")) {header("HTTP/1.1 403 Forbidden"); exit;}
 ?>
 <!-- register delete account -->
 <div class="register_settings">
+  <p><?=$this->text('message_delete_account')?></p>
 <?foreach ($errors as $error):?>
   <p class="xh_fail"><?=$this->text(...$error)?></p>
 <?endforeach?>
-  <p><?=$this->text('message_changeexplanation')?></p>
   <form action="<?=$action?>" method="post">
     <input type="hidden" name="register_token" value="<?=$token?>">
     <p class="register_field">

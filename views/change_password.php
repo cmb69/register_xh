@@ -16,10 +16,10 @@ if (!defined("CMSIMPLE_XH_VERSION")) {header("HTTP/1.1 403 Forbidden"); exit;}
 ?>
 <!-- register user preferences -->
 <div class="register_settings">
+  <p><?=$this->text('message_change_password')?></p>
 <?foreach ($errors as $error):?>
   <p class="xh_fail"><?=$this->text(...$error)?></p>
 <?endforeach?>
-  <p><?=$this->text('message_changeexplanation')?></p>
   <form action="<?=$action?>" method="post">
     <input type="hidden" name="register_token" value="<?=$token?>">
     <p class="register_field">
@@ -41,7 +41,7 @@ if (!defined("CMSIMPLE_XH_VERSION")) {header("HTTP/1.1 403 Forbidden"); exit;}
       </label>
     </p>
     <p class="register_buttons">
-      <button><?=$this->text('label_change')?></button>
+      <button><?=$this->text('label_change_password')?></button>
       <a href="<?=$cancel?>"><?=$this->text('label_cancel')?></a>
     </p>
   </form>

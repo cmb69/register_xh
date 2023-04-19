@@ -31,7 +31,7 @@ if (!defined("CMSIMPLE_XH_VERSION")) {header("HTTP/1.1 403 Forbidden"); exit;}
       </label>
     </p>
     <p class="register_buttons">
-      <button name="register_action" value="change_password"><?=$this->text('label_change')?></button>
+      <button name="register_action" value="change_password"><?=$this->text('label_change_password')?></button>
       <a href="<?=$cancel?>"><?=$this->text('label_cancel')?></a>
     </p>
   </form>

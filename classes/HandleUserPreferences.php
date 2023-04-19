@@ -125,7 +125,7 @@ class HandleUserPreferences
                 $this->renderSettingsForm($request->url(), $changedUser, [["error_cannot_write_csv"]])
             );
         }
-        $this->sendNotification($changedUser, $user->getEmail(), $request);
+        $this->sendNotification($changedUser, "email_prefs_updated", $user->getEmail(), $request);
         return Response::redirect($request->url()->without("function")->without("register_action")->absolute());
     }
 
@@ -180,7 +180,7 @@ class HandleUserPreferences
                 $this->renderPasswordForm($request->url(), $passwords, [["error_cannot_write_csv"]])
             );
         }
-        $this->sendNotification($changedUser, $user->getEmail(), $request);
+        $this->sendNotification($changedUser, "email_password_updated", $user->getEmail(), $request);
         return Response::redirect($request->url()->without("function")->without("register_action")->absolute());
     }
 
@@ -197,10 +197,11 @@ class HandleUserPreferences
         ]);
     }
 
-    private function sendNotification(User $user, string $email, Request $request): bool
+    private function sendNotification(User $user, string $key, string $email, Request $request): bool
     {
         return $this->mailer->notifyUpdate(
             $user,
+            $key,
             $email,
             $this->conf["senderemail"],
             $request->serverName(),

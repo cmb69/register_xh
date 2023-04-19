@@ -30,23 +30,26 @@ class Mailer
 
     public function notifyUpdate(
         User $user,
+        string $key,
         string $oldemail,
         string $from,
         string $serverName,
         string $remoteAddress
     ): bool {
         $content = <<<MAIL
-{$this->text["email_prefs_updated"]}
+{$this->text[$key]}
 
  {$this->text["label_name"]}: {$user->getName()}
  {$this->text["label_username"]}: {$user->getUsername()}
  {$this->text["label_email"]}: {$user->getEmail()}
  {$this->text["label_fromip"]}: {$remoteAddress}
 
+{$this->text["email_updated_text"]}
+
 MAIL;
         return $this->sendMail(
             $user->getEmail(),
-            sprintf($this->text['email_prefs_subject'], $serverName),
+            sprintf($this->text['email_subject'], $serverName),
             $content,
             ["From: $from", "Cc: $oldemail, $from"]
         );
@@ -67,7 +70,7 @@ MAIL;
 MAIL;
         return $this->sendMail(
             $user->getEmail(),
-            sprintf($this->text['email_register_subject'], $serverName),
+            sprintf($this->text['email_subject'], $serverName),
             $content,
             ["From: $from"]
         );
@@ -94,7 +97,7 @@ MAIL;
 MAIL;
         return $this->sendMail(
             $user->getEmail(),
-            sprintf($this->text['email_register_subject'], $serverName),
+            sprintf($this->text['email_subject'], $serverName),
             $content,
             ["From: $from", "Cc: $from"]
         );
@@ -128,7 +131,7 @@ MAIL;
 MAIL;
         return $this->sendMail(
             $user->getEmail(),
-            sprintf($this->text['email_register_subject'], $serverName),
+            sprintf($this->text['email_subject'], $serverName),
             $content,
             ["From: $from", "Cc: $from"]
         );

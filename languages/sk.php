@@ -25,12 +25,10 @@ $plugin_tx['register']['label_user_prefs']="Údaje užívateľa";
 $plugin_tx['register']['label_username']="Užívateľské meno";
 
 $plugin_tx['register']['message_activated']="Úspešne ste aktivovali Váš účet.";
-$plugin_tx['register']['message_changeexplanation']="Na tejto stránke môžete upravovať Vaše registračné detaily. Potrebujete Vaše pôvodné heslo.";
-$plugin_tx['register']['message_loggedin_welcometext']="Vitajte %s!";
+$plugin_tx['register']['message_welcometext']="Vitajte %s!";
 
-$plugin_tx['register']['email_register_text1']="S Vašou emailovou adresou bol registrovaný užívateľ\r\n s týmito detailami:";
-$plugin_tx['register']['email_prefs_subject']="Zmena registračných údajov pre %s";
 $plugin_tx['register']['email_prefs_updated']="Vaše registračné detaily boli zmenené nasledovne.";
+$plugin_tx['register']['email_register_text1']="S Vašou emailovou adresou bol registrovaný užívateľ\r\n s týmito detailami:";
 
 $plugin_tx['register']['error_name']="Uveďte meno a priezvisko.";
 $plugin_tx['register']['error_username']="Zvoľte si prihlasovacie meno.";

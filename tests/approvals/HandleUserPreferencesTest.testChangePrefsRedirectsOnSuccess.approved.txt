@@ -1,11 +1,13 @@
 [0] -> new@example.com
-[1] -> =?UTF-8?Q?Account data changed for example.com?=
-[2] -> Your account information has been updated as follows.
+[1] -> =?UTF-8?Q?Your user account at example.com?=
+[2] -> Your account information has been updated as follows:
 
  Full Name: John Doe
  Username: john
  Email: new@example.com
  From IP-Address: 127.0.0.1
+
+If you did not do this yourself, please inform us immediately.
 
 [3] -> From: postmaster@example.com
 Cc: john@example.com, postmaster@example.com
