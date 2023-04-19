@@ -1,6 +1,8 @@
 [0] -> js@example.com
 [1] -> =?UTF-8?Q?Your_user_account_at_example.com?=
-[2] -> A user account with your email address has been registered with following information:
+[2] -> Hello John Smith!
+
+A user account with your email address has been registered with following information:
 
  Full Name: John Smith
  Username: js
@@ -11,6 +13,9 @@ If you did not register a user account, just ignore this email.
 Otherwise click the following link to activate your new user account:
 
 <http://example.com/?&register_action=activate&register_username=js&register_nonce=MDEyMzQ1Njc4OUFCQ0RF>
+
+Sincerely,
+The Webmaster
 
 [3] -> From: postmaster@example.com
 Cc: postmaster@example.com

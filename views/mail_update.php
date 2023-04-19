@@ -11,6 +11,8 @@ use Register\Infra\View;
  * @var string $remoteAddress
  */
 ?>
+<?=$this->text('email_salutation', $fullname)?><br>
+
 <?=$this->text($key)?><br>
 
  <?=$this->text('label_name')?>: <?=$fullname?><br>
@@ -19,3 +21,5 @@ use Register\Infra\View;
  <?=$this->text('label_fromip')?>: <?=$remoteAddress?><br>
 
 <?=$this->text('email_updated_text')?><br>
+
+<?=$this->text('email_closing')?><br>

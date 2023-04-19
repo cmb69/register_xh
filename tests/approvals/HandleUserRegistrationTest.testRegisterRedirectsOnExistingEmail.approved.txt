@@ -1,6 +1,8 @@
 [0] -> john@example.com
 [1] -> =?UTF-8?Q?Your_user_account_at_example.com?=
-[2] -> A user account with your email address has been registered with following information:
+[2] -> Hello John Doe!
+
+A user account with your email address has been registered with following information:
 
   Full Name: John Smith
   Username: js
@@ -17,6 +19,9 @@ If you forgot your password, click the following link to reset it.
 Otherwise ignore this mail.
 
 <http://example.com/?&register_action=register&function=register_password>
+
+Sincerely,
+The Webmaster
 
 [3] -> From: postmaster@example.com
 Cc: postmaster@example.com

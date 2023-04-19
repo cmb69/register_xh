@@ -11,7 +11,9 @@ use Register\Infra\View;
  * @var string $url
  */
 ?>
-<?=$this->text("email_register_text1")?><br>
+<?=$this->text('email_salutation', $fullname)?><br>
+
+<?=$this->text('email_register_text1')?><br>
 
  <?=$this->text('label_name')?>: <?=$fullname?><br>
  <?=$this->text('label_username')?>: <?=$username?><br>
@@ -21,3 +23,5 @@ use Register\Infra\View;
 <?=$this->text('email_register_text2')?><br>
 
 &lt;<?=$url?>&gt;
+
+<?=$this->text('email_closing')?><br>
