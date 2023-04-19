@@ -55,37 +55,19 @@ MAIL;
     public function notifyPasswordForgotten(User $user, string $from, string $url, string $serverName): bool
     {
         $content = <<<MAIL
-{$this->text["email_text1"]}
+{$this->text["email_forgot_text1"]}
 
  {$this->text["label_name"]}: {$user->getName()}
  {$this->text["label_username"]}: {$user->getUsername()}
  {$this->text["label_email"]}: {$user->getEmail()}
 
-{$this->text["email_text3"]}
+{$this->text["email_forgot_text2"]}
 
 <{$url}>
 MAIL;
         return $this->sendMail(
             $user->getEmail(),
-            sprintf($this->text['email_reminder_subject'], $serverName),
-            $content,
-            ["From: $from"]
-        );
-    }
-
-    public function notifyPasswordReset(User $user, string $from, string $serverName): bool
-    {
-        $content = <<<MAIL
-{$this->text["email_text1"]}
-
- {$this->text["label_name"]}: {$user->getName()}
- {$this->text["label_username"]}: {$user->getUsername()}
- {$this->text["label_email"]}: {$user->getEmail()}
-
-MAIL;
-        return $this->sendMail(
-            $user->getEmail(),
-            sprintf($this->text['email_reminder_subject'], $serverName),
+            sprintf($this->text['email_register_subject'], $serverName),
             $content,
             ["From: $from"]
         );

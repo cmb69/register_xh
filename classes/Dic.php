@@ -97,7 +97,9 @@ class Dic
             self::makeView(),
             self::makeUserRepository(),
             new Password(),
-            self::makeMailer()
+            self::makeMailer(),
+            new LoginManager(),
+            new Logger()
         );
     }
 

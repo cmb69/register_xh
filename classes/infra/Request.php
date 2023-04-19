@@ -97,9 +97,9 @@ class Request
     public function resetPasswordParams(): array
     {
         return [
-            "username" => $this->trimmedGetString("username"),
-            "time" => $this->trimmedGetString("time"),
-            "mac" => $this->trimmedGetString("mac"),
+            "username" => $this->trimmedGetString("register_username"),
+            "time" => $this->trimmedGetString("register_time"),
+            "mac" => $this->trimmedGetString("register_mac"),
         ];
     }
 

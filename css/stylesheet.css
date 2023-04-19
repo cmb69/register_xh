@@ -11,6 +11,7 @@ p.register_links {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    flex-wrap: wrap;
 }
 
 /* registration form */

@@ -41,11 +41,8 @@ $plugin_tx['register']['label_username']="Имя пользователя";
 $plugin_tx['register']['message_activated']="Ваша учетная запись активирована.";
 $plugin_tx['register']['message_changeexplanation']="На этой странице вы можете изменить данные вашей учетной записи. Для изменения данных нужен ваш старый пароль.";
 $plugin_tx['register']['message_loggedin_welcometext']="Хорошего настроения, %s!";
-$plugin_tx['register']['message_reminderexplanation']="На этой странице вы можете указать ваш электронный адрес для получения сообщения с данными вашей учетной записи.";
-$plugin_tx['register']['message_remindersent']="Сообщение с вашими учетными данными отослано.";
 
 $plugin_tx['register']['email_register_text1']="Учетная запись пользователя, указавшего этот электронный адрес, зарегистрирована на основании данных:";
-$plugin_tx['register']['email_text1']="Учетная запись пользователя, указавшего этот электронный адрес, зарегистрирована на основании данных:";
 $plugin_tx['register']['email_prefs_updated']="Данные вашей учетной записи обновлены.";
 
 $plugin_tx['register']['error_name']="Введите, пожалуйста, имя и фамилию.";

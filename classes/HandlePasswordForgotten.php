@@ -10,13 +10,14 @@
 
 namespace Register;
 
+use Register\Infra\Logger;
+use Register\Infra\LoginManager;
 use Register\Infra\Mailer;
 use Register\Infra\Password;
 use Register\Infra\Request;
 use Register\Infra\UserRepository;
 use Register\Infra\View;
 use Register\Logic\Util;
-use Register\Logic\Validator;
 use Register\Value\Passwords;
 use Register\Value\Response;
 use Register\Value\Url;
@@ -41,19 +42,29 @@ class HandlePasswordForgotten
     /** @var Mailer */
     private $mailer;
 
+    /** @var LoginManager */
+    private $loginManager;
+
+    /** @var Logger */
+    private $logger;
+
     /** @param array<string,string> $conf */
     public function __construct(
         array $conf,
         View $view,
         UserRepository $userRepository,
         Password $password,
-        Mailer $mailer
+        Mailer $mailer,
+        LoginManager $loginManager,
+        Logger $logger
     ) {
         $this->conf = $conf;
         $this->view = $view;
         $this->userRepository = $userRepository;
         $this->password = $password;
         $this->mailer = $mailer;
+        $this->loginManager = $loginManager;
+        $this->logger = $logger;
     }
 
     public function __invoke(Request $request): Response
@@ -85,19 +96,19 @@ class HandlePasswordForgotten
             return Response::create($this->renderForm($request->url(), $post["email"], $errors));
         }
         if (!($user = $this->userRepository->findByEmail($post["email"]))) {
-            return Response::create($this->view->message('success', 'message_remindersent_reset'));
+            return Response::redirect($request->url()->without("function")->without("register_action")->absolute());
         }
         $this->sendNotification($user, $request);
-        return Response::create($this->view->message('success', 'message_remindersent_reset'));
+        return Response::redirect($request->url()->without("function")->without("register_action")->absolute());
     }
 
     private function sendNotification(User $user, Request $request): bool
     {
         $mac = Util::hmac($user->getUsername() .  $request->time(), $user->secret());
         $url = $request->url()->with("register_action", "reset_password")
-            ->with("username", $user->getUsername())
-            ->with("time", (string) $request->time())
-            ->with("mac", $mac);
+            ->with("register_username", $user->getUsername())
+            ->with("register_time", (string) $request->time())
+            ->with("register_mac", $mac);
         return $this->mailer->notifyPasswordForgotten(
             $user,
             $this->conf['senderemail'],
@@ -143,8 +154,9 @@ class HandlePasswordForgotten
         if (!$this->userRepository->save($user)) {
             return Response::create($this->view->message("fail", 'error_cannot_write_csv'));
         }
-        $this->mailer->notifyPasswordReset($user, $this->conf['senderemail'], $request->serverName());
-        return Response::create($this->view->message('success', 'message_remindersent'));
+        $this->loginManager->login($user);
+        $this->logger->logInfo("login", $this->view->plain("log_resetlogin", $user->getUsername()));
+        return Response::redirect($request->url()->withoutParams()->absolute());
     }
 
     /** @param array{username:string,time:string,mac:string} $params */

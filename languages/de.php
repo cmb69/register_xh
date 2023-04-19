@@ -51,18 +51,15 @@ $plugin_tx['register']['message_activated']="Sie haben Ihren Zugang erfolgreich 
 $plugin_tx['register']['message_changeexplanation']="Auf dieser Seite können Sie Ihre Benutzerdaten ändern. Sie benötigen dafür Ihr altes Kennwort.";
 $plugin_tx['register']['message_loggedin_welcometext']="Hallo %s!";
 $plugin_tx['register']['message_register']="Sie können ein neues Benutzerkonto registrieren. Nach der Registrierung wird Ihnen eine Email mit Anweisungen zur Aktivierung des Kontos zugesendet.";
-$plugin_tx['register']['message_reminderexplanation']="Auf dieser Seite können Sie Ihre E-Mail-Adresse eingeben, um eine E-Mail mit Ihren Benutzerdaten zu erhalten.";
-$plugin_tx['register']['message_remindersent']="Ihnen wurde eine E-Mail mit Ihren Benutzerdaten zugesandt.";
-$plugin_tx['register']['message_remindersent_reset']="Wenn die angegebene E-Mail in unserem System existiert, wurde an diese ein Link zum Zurücksetzen des Kennworts zugesandt.";
+$plugin_tx['register']['message_forgot']="Haben Sie Ihre Zugangsdaten vergessen, geben Sie Ihre Email-Adresse ein, und wir senden Ihnen eine Email mit den Daten inklusive Anweisungen wie Sie Ihr Kennwort zurücksetzen, wenn ein Konto mit dieser Emai-Adresse existiert.";
 
 $plugin_tx['register']['email_register_subject']="Ihr Benutzerkonto bei %s";
 $plugin_tx['register']['email_register_text1']="Es wurde ein Benutzerkonto mit folgenden Daten registriert:";
 $plugin_tx['register']['email_register_text2']="Wenn Sie die Registrierung nicht selbst durchgeführt haben, können Sie diese Email ignorieren.\nAndernfalls klicken Sie auf folgenden Link, um Ihr Benutzerkonto freizuschalten.";
 $plugin_tx['register']['email_register_text3']="Allerdings gibt es bereits ein Benutzerkonto zu dieser E-Mail Adresse:";
 $plugin_tx['register']['email_register_text4']="Wenn Sie ihr Kennwort vergessen haben, klicken Sie auf folgenden Link, um es zurückzusetzen.\nAndernfalls ignorieren Sie diese Mail.";
-$plugin_tx['register']['email_text1']="Es wurde ein Benutzerkonto mit folgenden Daten registriert:";
-$plugin_tx['register']['email_text3']="Klicken Sie auf folgenden Link, um ein neues Kennwort zu erhalten:";
-$plugin_tx['register']['email_reminder_subject']="Benutzerdaten für %s";
+$plugin_tx['register']['email_forgot_text1']="Das Zurücksetzen des Kennworts für das folgende Benutzerkonto wurde angefordert:";
+$plugin_tx['register']['email_forgot_text2']="Wenn Sie das Zurücksetzen des Kennworts nicht selbst angefordert haben, ignorieren Sie diese Mail.\nAndernfalls klicken Sie auf folgenden Link, um das Kennwort zurückzusetzen:";
 $plugin_tx['register']['email_prefs_subject']="Benutzerdaten geändert für %s";
 $plugin_tx['register']['email_prefs_updated']="Ihre Benutzerdaten wurden folgendermassen geändert.";
 
@@ -103,6 +100,7 @@ $plugin_tx['register']['log_login_user']="Nutzer „%s“ existiert nicht";
 $plugin_tx['register']['log_login_forbidden']="Nutzer „%s“ darf sich nicht anmelden";
 $plugin_tx['register']['log_login_password']="Nutzer „%s“ gab falsches Kennwort an";
 $plugin_tx['register']['log_autologin']="Nutzer„%s“ automatisch angemeldet";
+$plugin_tx['register']['log_resetlogin']="Nutzer “%s” nach Kennwort-Rücksetzung angemeldet";
 $plugin_tx['register']['log_logout']="Nutzer „%s“ abgemeldet";
 $plugin_tx['register']['log_unregister']="Nutzer „%s“ Konto gelöscht";
 

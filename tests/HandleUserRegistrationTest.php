@@ -172,7 +172,7 @@ class HandleUserRegistrationTest extends TestCase
     {
         $request = new FakeRequest(["query" => "&register_action=activate&register_username=js&register_nonce="]);
         $response = $this->sut()($request);
-        $this->assertStringContainsString("No validation code supplied!", $response->output());
+        $this->assertStringContainsString("No verification code supplied!", $response->output());
     }
 
     public function testActivateReportsNonExistentUser(): void
@@ -186,7 +186,7 @@ class HandleUserRegistrationTest extends TestCase
     {
         $request = new FakeRequest(["query" => "&register_action=activate&register_username=jane&register_nonce=54321"]);
         $response = $this->sut()($request);
-        $this->assertStringContainsString("The entered validation code is invalid.", $response->output());
+        $this->assertStringContainsString("The entered verification code is invalid.", $response->output());
     }
 
     public function testActivateReportsFailureToSave(): void

@@ -51,18 +51,15 @@ $plugin_tx['register']['message_activated']="You have successfully activated you
 $plugin_tx['register']['message_changeexplanation']="On this page you can change your account settings. For changing your data you will need your old password.";
 $plugin_tx['register']['message_loggedin_welcometext']="Hello %s!";
 $plugin_tx['register']['message_register']="You can register a new user account. After registration, an email with instructions to activate the account will be sent to you.";
-$plugin_tx['register']['message_reminderexplanation']="On this page you can enter your email address to receive an email with your account settings.";
-$plugin_tx['register']['message_remindersent']="An email has been sent to you with your user data.";
-$plugin_tx['register']['message_remindersent_reset']="If the email you specified exists in our system, we've sent a password reset link to it.";
+$plugin_tx['register']['message_forgot']="If you forgot your login data, enter your email address, and we will send an email with the data including instructions on how to reset your password, if an account with this email address exists.";
 
 $plugin_tx['register']['email_register_subject']="Your user account at %s";
 $plugin_tx['register']['email_register_text1']="A user account with your email address has been registered with following information:";
 $plugin_tx['register']['email_register_text2']="If you did not register a user account, just ignore this email.\nOtherwise click the following link to activate your new user account:";
 $plugin_tx['register']['email_register_text3']="However, a user account for this email address exists already:";
 $plugin_tx['register']['email_register_text4']="If you forgot your password, click the following link to reset it.\nOtherwise ignore this mail.";
-$plugin_tx['register']['email_text1']="A user account with your email address has been registered with following information:";
-$plugin_tx['register']['email_text3']="Please click the following link to reset your password:";
-$plugin_tx['register']['email_reminder_subject']="Account data for %s";
+$plugin_tx['register']['email_forgot_text1']="A password reset for the following user account has been requested:";
+$plugin_tx['register']['email_forgot_text2']="If you did not request a password reset, just ignore this email.\nOtherwise click the following link to reset your password:";
 $plugin_tx['register']['email_prefs_subject']="Account data changed for %s";
 $plugin_tx['register']['email_prefs_updated']="Your account information has been updated as follows.";
 
@@ -103,6 +100,7 @@ $plugin_tx['register']['log_login_user']="User “%s” does not exist";
 $plugin_tx['register']['log_login_forbidden']="User “%s” is not allowed to log in";
 $plugin_tx['register']['log_login_password']="User “%s” submitted wrong password";
 $plugin_tx['register']['log_autologin']="User “%s” automatically logged in";
+$plugin_tx['register']['log_resetlogin']="User “%s” logged in after password reset";
 $plugin_tx['register']['log_logout']="User “%s” logged out";
 $plugin_tx['register']['log_unregister']="User “%s” deleted account";
 

@@ -12,11 +12,12 @@ use ApprovalTests\Approvals;
 use org\bovigo\vfs\vfsStream;
 use PHPUnit\Framework\TestCase;
 use Register\Infra\FakeDbService;
+use Register\Infra\FakeLogger;
 use Register\Infra\FakeMailer;
 use Register\Infra\FakePassword;
 use Register\Infra\FakeRequest;
+use Register\Infra\LoginManager;
 use Register\Infra\Random;
-use Register\Infra\Request;
 use Register\Infra\UserRepository;
 use Register\Infra\View;
 use Register\Value\User;
@@ -27,6 +28,8 @@ class HandlePasswordForgottenTest extends TestCase
     private $dbService;
     private $userRepository;
     private $mailer;
+    private $loginManager;
+    private $logger;
 
     public function setUp(): void
     {
@@ -37,6 +40,8 @@ class HandlePasswordForgottenTest extends TestCase
         $this->dbService->writeUsers([new User("john", "12345", ["guest"], "John Dow", "john@example.com", "activated", "secret")]);
         $this->userRepository = new UserRepository($this->dbService);
         $this->mailer = new FakeMailer(false, $text);
+        $this->loginManager = $this->createMock(LoginManager::class);
+        $this->logger = new FakeLogger;
     }
 
     private function sut()
@@ -46,7 +51,9 @@ class HandlePasswordForgottenTest extends TestCase
             $this->view,
             $this->userRepository,
             new FakePassword,
-            $this->mailer
+            $this->mailer,
+            $this->loginManager,
+            $this->logger
         );
     }
 
@@ -75,7 +82,7 @@ class HandlePasswordForgottenTest extends TestCase
         $this->assertStringContainsString("The given email address is invalid.", $response->output());
     }
 
-    public function testReportsSuccessOnUnknownEmail(): void
+    public function testRedirectsOnUnknownEmail(): void
     {
         $request = new FakeRequest([
             "query" => "&register_action=forgot_password",
@@ -83,13 +90,10 @@ class HandlePasswordForgottenTest extends TestCase
             "post" => ["email" => "jane@example.com"],
         ]);
         $response = $this->sut()($request);
-        $this->assertStringContainsString(
-            "If the email you specified exists in our system, we've sent a password reset link to it.",
-            $response->output()
-        );
+        $this->assertEquals("http://example.com/", $response->location());
     }
 
-    public function testReportsSuccessOnKnownEmail(): void
+    public function testRedirectsOnSuccess(): void
     {
         $request = new FakeRequest([
             "query" => "&register_action=forgot_password",
@@ -99,16 +103,13 @@ class HandlePasswordForgottenTest extends TestCase
         ]);
         $response = $this->sut()($request);
         Approvals::verifyList($this->mailer->lastMail());
-        $this->assertStringContainsString(
-            "If the email you specified exists in our system, we've sent a password reset link to it.",
-            $response->output()
-        );
+        $this->assertEquals("http://example.com/", $response->location());
     }
 
     public function testResetReportsUnknownUser(): void
     {
         $request = new FakeRequest([
-            "query" => "&register_action=reset_password&username=colt&time=&mac",
+            "query" => "&register_action=reset_password&register_username=colt&register_time=&register_mac",
             "time" => 1637449200,
         ]);
         $response = $this->sut()($request);
@@ -118,17 +119,19 @@ class HandlePasswordForgottenTest extends TestCase
     public function testResetReportsWrongMac(): void
     {
         $request = new FakeRequest([
-            "query" => "&register_action=reset_password&username=john&time=1637449800&mac=54321",
+            "query" => "&register_action=reset_password"
+                . "&register_username=john&register_time=1637449800&register_mac=54321",
             "time" => 1637449200,
         ]);
         $response = $this->sut()($request);
-        $this->assertStringContainsString("The entered validation code is invalid.", $response->output());
+        $this->assertStringContainsString("The entered verification code is invalid.", $response->output());
     }
 
     public function testResetReportsExpiration(): void
     {
         $request = new FakeRequest([
-            "query" => "&register_action=reset_password&username=john&time=1637445599&mac=TLIb1A2yKWBs_ZGmC0l0V4w6bS8",
+            "query" => "&register_action=reset_password"
+                . "&register_username=john&register_time=1637445599&register_mac=TLIb1A2yKWBs_ZGmC0l0V4w6bS8",
             "time" => 1637449200,
         ]);
         $response = $this->sut()($request);
@@ -138,7 +141,8 @@ class HandlePasswordForgottenTest extends TestCase
     public function testResetRendersForm(): void
     {
         $request = new FakeRequest([
-            "query" => "&register_action=reset_password&username=john&time=1637449800&mac=3pjbpRHFI9OO3gUHV42CHT3IHL8",
+            "query" => "&register_action=reset_password"
+                . "&register_username=john&register_time=1637449800&register_mac=3pjbpRHFI9OO3gUHV42CHT3IHL8",
             "time" => 1637449200,
         ]);
         $response = $this->sut()($request);
@@ -148,7 +152,7 @@ class HandlePasswordForgottenTest extends TestCase
     public function testChangeReportsUnknownUser(): void
     {
         $request = new FakeRequest([
-            "query" => "&register_action=change_password&username=colt&time=&mac=",
+            "query" => "&register_action=change_password&register_username=colt&register_time=&register_mac=",
             "time" => 1637449200,
         ]);
         $response = $this->sut()($request);
@@ -158,17 +162,19 @@ class HandlePasswordForgottenTest extends TestCase
     public function testChangeReportsWrongMac(): void
     {
         $request = new FakeRequest([
-            "query" => "&register_action=change_password&username=john&time=1637449800&mac=54321",
+            "query" => "&register_action=change_password"
+                . "&register_username=john&register_time=1637449800&register_mac=54321",
             "time" => 1637449200,
         ]);
         $response = $this->sut()($request);
-        $this->assertStringContainsString("The entered validation code is invalid.", $response->output());
+        $this->assertStringContainsString("The entered verification code is invalid.", $response->output());
     }
 
     public function testChangeReportsExpiration(): void
     {
         $request = new FakeRequest([
-            "query" => "&register_action=change_password&username=john&time=1637445599&mac=TLIb1A2yKWBs_ZGmC0l0V4w6bS8",
+            "query" => "&register_action=change_password"
+                . "&register_username=john&register_time=1637445599&register_mac=TLIb1A2yKWBs_ZGmC0l0V4w6bS8",
             "time" => 1637449200,
         ]);
         $response = $this->sut()($request);
@@ -178,7 +184,8 @@ class HandlePasswordForgottenTest extends TestCase
     public function testChangeReportsPasswordValidationErrors(): void
     {
         $request = new FakeRequest([
-            "query" => "&register_action=change_password&username=john&time=1637449800&mac=3pjbpRHFI9OO3gUHV42CHT3IHL8",
+            "query" => "&register_action=change_password"
+                . "&register_username=john&register_time=1637449800&register_mac=3pjbpRHFI9OO3gUHV42CHT3IHL8",
             "time" => 1637449200,
             "post" => ["password1" => "admin", "password2" => "amdin"],
         ]);
@@ -190,7 +197,8 @@ class HandlePasswordForgottenTest extends TestCase
     {
         $this->dbService->options(["writeUsers" => false]);
         $request = new FakeRequest([
-            "query" => "&register_action=change_password&username=john&time=1637449800&mac=3pjbpRHFI9OO3gUHV42CHT3IHL8",
+            "query" => "&register_action=change_password"
+                . "&register_username=john&register_time=1637449800&register_mac=3pjbpRHFI9OO3gUHV42CHT3IHL8",
             "time" => 1637449200,
             "post" => ["password1" => "admin", "password2" => "admin"],
         ]);
@@ -198,17 +206,22 @@ class HandlePasswordForgottenTest extends TestCase
         $this->assertStringContainsString("Saving CSV file failed.", $response->output());
     }
 
-    public function testChangeReportsSuccess(): void
+    public function testChangeRedirectsOnSuccess(): void
     {
+        $this->loginManager->expects($this->once())->method("login");
         $request = new FakeRequest([
-            "query" => "&register_action=change_password&username=john&time=1637449800&mac=3pjbpRHFI9OO3gUHV42CHT3IHL8",
+            "query" => "&register_action=change_password"
+                . "&register_username=john&register_time=1637449800&register_mac=3pjbpRHFI9OO3gUHV42CHT3IHL8",
             "time" => 1637449200,
             "post" => ["password1" => "admin", "password2" => "admin"],
             "serverName" => "example.com",
         ]);
         $response = $this->sut()($request);
         $this->assertTrue(password_verify("admin", $this->userRepository->findByUsername("john")->getPassword()));
-        Approvals::verifyList($this->mailer->lastMail());
-        $this->assertStringContainsString("An email has been sent to you with your user data.", $response->output());
+        $this->assertEquals(
+            ["info", "register", "login", "User “john” logged in after password reset"],
+            $this->logger->lastEntry()
+        );
+        $this->assertEquals("http://example.com/", $response->location());
     }
 }

@@ -27,13 +27,8 @@ $plugin_tx['register']['label_username']="Uživatelské jméno";
 $plugin_tx['register']['message_activated']="Úspešně jste aktivovali Váš účet.";
 $plugin_tx['register']['message_changeexplanation']="Na této stránce můžete upravovat Vaše registrační detaily. Potřebujete Vaše původní heslo.";
 $plugin_tx['register']['message_loggedin_welcometext']="Vítejte %s!";
-$plugin_tx['register']['message_reminderexplanation']="Na této stránce můžete uvést Vaši emailovou adresu, na kterou dostanete email s Vašimi registračními detaily.\r\n";
-$plugin_tx['register']['message_remindersent']="Byl Vám odoslán email s registračními detaily.";
 
-$plugin_tx['register']['email_text1']="S Vaší emailovou adresou byl registrován uživatel s těmito detaily:";
 $plugin_tx['register']['email_register_text1']="S Vaší emailovou adresou byl registrován uživatel s těmito detaily:";
-$plugin_tx['register']['email_text3']="Prosím, klikněte na následující odkaz pro resetování hesla:";
-$plugin_tx['register']['email_reminder_subject']="Registrační údaje pro %s";
 $plugin_tx['register']['email_prefs_subject']="Změna registračních údajů pro %s";
 $plugin_tx['register']['email_prefs_updated']="Vaše registrační detaily byly změněny následovně";
 

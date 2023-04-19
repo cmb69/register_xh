@@ -34,12 +34,8 @@ $plugin_tx['register']['label_username']="Brugernavn";
 $plugin_tx['register']['message_activated']="Du har aktiveret din nye konto.";
 $plugin_tx['register']['message_changeexplanation']="På denne side kan du ændre dine kontoindstillinger. For at ændre dine data, skal du bruge din gamle adgangskode.";
 $plugin_tx['register']['message_loggedin_welcometext']="Hallo %s!";
-$plugin_tx['register']['message_reminderexplanation']="På denne side kan du indtaste din email adresse for at modtage en mail med dine kontoindstillinger.";
-$plugin_tx['register']['message_remindersent']="Der er afsendten e-mail med dine bruger data";
 
 $plugin_tx['register']['email_register_text1']="En bruger-konto med din e-mail er blevet registreret med følgende oplysninger:";
-$plugin_tx['register']['email_text1']="En bruger-konto med din e-mail er blevet registreret med følgende oplysninger:";
-$plugin_tx['register']['email_reminder_subject']="Konto data for %s";
 $plugin_tx['register']['email_prefs_subject']="Kontodata ændret for %s";
 $plugin_tx['register']['email_prefs_updated']="Dine kontooplysninger er blevet opdateret som følger.";
 
