@@ -246,19 +246,6 @@ class Request
         return defined("XH_ADM") && XH_ADM && $edit;
     }
 
-    public function function(): string
-    {
-        $function = $this->url()->param("function");
-        if (is_string($function)) {
-            return $function;
-        }
-        $post = $this->post();
-        if (isset($post["function"]) && is_string($post["function"])) {
-            return $post["function"];
-        }
-        return "";
-    }
-
     /** @codeCoverageIgnore */
     protected function query(): string
     {
