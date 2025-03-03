@@ -58,6 +58,7 @@
     </move>
     <move todir="dist">
       <fileset dir="export">
+        <exclude name="README*.md"/>
         <exclude name=".github/**"/>
         <exclude name=".phive/**"/>
         <exclude name="help/template.htm"/>
