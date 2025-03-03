@@ -11,7 +11,6 @@ namespace Register\Infra;
 
 class Random
 {
-    /** @codeCoverageIgnore */
     public function bytes(int $length): string
     {
         assert($length > 0);

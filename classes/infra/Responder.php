@@ -10,7 +10,6 @@ namespace Register\Infra;
 
 use Register\Value\Response;
 
-/** @codeCoverageIgnore */
 class Responder
 {
     /** @return string|never */

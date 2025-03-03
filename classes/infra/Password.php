@@ -10,7 +10,6 @@ namespace Register\Infra;
 
 class Password
 {
-    /** @codeCoverageIgnore */
     public function hash(string $password): string
     {
         // TODO: handle password_hash() failure - can that actually happen?

@@ -21,7 +21,6 @@
 
 namespace Register\Infra;
 
-/** @codeCoverageIgnore */
 class SystemChecker
 {
     public function checkVersion(string $actual, string $minimum): bool
