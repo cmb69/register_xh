@@ -17,7 +17,7 @@ class Mailer
 
     public function __construct(bool $fixMailHeaders)
     {
-        $this->$fixMailHeaders = $fixMailHeaders;
+        $this->fixMailHeaders = $fixMailHeaders;
     }
 
     /** @param list<string> $headers */
