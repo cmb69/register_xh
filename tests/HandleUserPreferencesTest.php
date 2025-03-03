@@ -14,12 +14,13 @@ use PHPUnit\Framework\TestCase;
 use Register\Infra\FakeCsrfProtector;
 use Register\Infra\FakeDbService;
 use Register\Infra\FakeLogger;
-use Register\Infra\FakeMailer;
 use Register\Infra\FakePassword;
 use Register\Infra\FakeRequest;
+use Register\Infra\Mailer;
 use Register\Infra\Random;
 use Register\Infra\UserRepository;
 use Register\Infra\View;
+use Register\PHPMailer\PHPMailer;
 use Register\Value\User;
 
 class HandleUserPreferencesTest extends TestCase
@@ -29,6 +30,8 @@ class HandleUserPreferencesTest extends TestCase
     private $dbService;
     private $userRepository;
     private $view;
+    /** @var PHPMailer&MockObject */
+    private $phpMailer;
     private $mailer;
     private $logger;
     private $password;
@@ -49,7 +52,8 @@ class HandleUserPreferencesTest extends TestCase
         $this->dbService->writeUsers($users);
         $this->userRepository = new UserRepository($this->dbService);
         $this->view = new View("./views/", $text);
-        $this->mailer = new FakeMailer(false, $text);
+        $this->phpMailer = $this->getMockBuilder(PHPMailer::class)->onlyMethods(["send"])->getMock();
+        $this->mailer = new Mailer($this->conf, $this->phpMailer);
         $this->logger = new FakeLogger;
         $this->password = new FakePassword;
     }
@@ -169,9 +173,17 @@ class HandleUserPreferencesTest extends TestCase
             "serverName" => "example.com",
             "remoteAddress" => "127.0.0.1",
         ]);
+        $this->phpMailer->expects($this->any())->method("send")->willReturn(true);
         $response = $this->sut()($request);
+        $this->assertEquals("postmaster@example.com", $this->phpMailer->From);
+        $this->assertEquals([["new@example.com", ""]], $this->phpMailer->getToAddresses());
+        $this->assertEquals(
+            [["john@example.com", ""], ["postmaster@example.com", ""]],
+            $this->phpMailer->getCcAddresses()
+        );
+        $this->assertEquals("Your user account at example.com", $this->phpMailer->Subject);
+        Approvals::verifyString($this->phpMailer->Body);
         $this->assertEquals("new@example.com", $this->userRepository->findByUsername("john")->getEmail());
-        Approvals::verifyList($this->mailer->lastMail());
         $this->assertEquals("http://example.com/", $response->location());
     }
 
@@ -279,12 +291,17 @@ class HandleUserPreferencesTest extends TestCase
             "serverName" => "example.com",
             "remoteAddress" => "127.0.0.1",
         ]);
+        $this->phpMailer->expects($this->any())->method("send")->willReturn(true);
         $response = $this->sut()($request);
+        $this->assertEquals("postmaster@example.com", $this->phpMailer->From);
+        $this->assertEquals([["john@example.com", ""]], $this->phpMailer->getToAddresses());
+        $this->assertEquals([["postmaster@example.com", ""]], $this->phpMailer->getCcAddresses());
+        $this->assertEquals("Your user account at example.com", $this->phpMailer->Subject);
+        Approvals::verifyString($this->phpMailer->Body);
         $this->assertEquals(
             "\$2y\$04\$vcjV1rBQmBIKJsVNhRvWZukMmECVkKIHKAdVI9FlcXmVbSb/km3c6",
             $this->userRepository->findByUsername("john")->getPassword()
         );
-        Approvals::verifyList($this->mailer->lastMail());
         $this->assertEquals("http://example.com/", $response->location());
     }
 

@@ -16,6 +16,7 @@ per email. It is used by some other plugins to add user management (e.g.
   - [Login Form](#login-form)
   - [Access to Pages](#access-to-pages)
   - [Active Users](#active-users)
+  - [Sending of emails](#sending-of-emails)
 - [Limitations](#limitations)
 - [Troubleshooting](#troubleshooting)
 - [License](#license)
@@ -148,6 +149,26 @@ Or in the template:
 
     <?=register_active_users()?>
 
+### Sending of emails
+
+Per default, Register_XH uses PHP's mail function, which is typically just
+a simple sendmail wrapper.  This way to send mails has some limitations, and
+is no longer supported by some Webservers.
+
+Thus, you are encouraged to enable SMTP support in the configuration.
+It is important to properly fill in all relevant configuration settings;
+request the necessary information from your mail provider.
+If the SMTP server requires authentication (quite likely),
+you have to provide the username and password in the configuration.
+Note that these credentials are necessarily stored in plain text in the
+respective config.php.
+Therefore it is important that the configuration folder of Register_XH is
+protected against direct access.  The plugin ships with a respective .htaccess
+file, but this may not be recognized by your server, so you need to take
+suitable measures yourself.  Before entering the sensitive credentials into
+the configuration, check whether the system check is green regarding the
+access protection of config.php.
+
 ## Troubleshooting
 
 Report bugs and ask for support either on
@@ -178,6 +199,10 @@ In 2012 Gert Ebersbach discontinued the developement,
 and gave me the permission to maintain and distribute the plugin.
 *Many thanks to Carsten Heinelt and Gert Ebersbach for their good
 work and the permission to further maintain the plugin!*
+
+For sending email
+[PHPMailer](https://github.com/PHPMailer/PHPMailer) is used.
+Many thanks for publishing this advanced mail library under LGPL-2.1.
 
 The plugin logo is designed by Wendell Fernandes.
 Many thanks for publishing this icon as freeware.

@@ -9,7 +9,7 @@
       <file>register_pd_view.php</file>
     </include>
     <exclude>
-      <file>classes/required_classes.php</file>
+      <directory suffix=".php">classes/phpmailer</directory>
     </exclude>
   </coverage>
   <testsuites>

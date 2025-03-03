@@ -21,6 +21,7 @@ use Register\Infra\SystemChecker;
 use Register\Infra\UserGroupRepository;
 use Register\Infra\UserRepository;
 use Register\Infra\View;
+use Register\PHPMailer\PHPMailer;
 
 class Dic
 {
@@ -205,7 +206,7 @@ class Dic
     private static function makeMailer(): Mailer
     {
         global $plugin_cf;
-        return new Mailer($plugin_cf["register"]["fix_mail_headers"]);
+        return new Mailer($plugin_cf["register"], new PHPMailer(false));
     }
 
     private static function makeView(): View

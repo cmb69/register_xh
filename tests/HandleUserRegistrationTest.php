@@ -12,13 +12,13 @@ use ApprovalTests\Approvals;
 use org\bovigo\vfs\vfsStream;
 use PHPUnit\Framework\TestCase;
 use Register\Infra\FakeDbService;
-use Register\Infra\FakeMailer;
 use Register\Infra\FakePassword;
 use Register\Infra\FakeRequest;
+use Register\Infra\Mailer;
 use Register\Infra\Random;
-use Register\Infra\Request;
 use Register\Infra\UserRepository;
 use Register\Infra\View;
+use Register\PHPMailer\PHPMailer;
 use Register\Value\User;
 
 class HandleUserRegistrationTest extends TestCase
@@ -26,19 +26,23 @@ class HandleUserRegistrationTest extends TestCase
     private $view;
     private $dbService;
     private $userRepository;
+    /** @var PHPMailer&MockObject */
+    private $phpMailer;
     private $mailer;
     private $random;
 
     public function setUp(): void
     {
         vfsStream::setup("root");
+        $conf = XH_includeVar("./config/config.php", "plugin_cf")["register"];
         $text = XH_includeVar("./languages/en.php", "plugin_tx")["register"];
         $this->view = new View("./views/", $text);
         $this->random = $this->createStub(Random::class);
         $this->random->method("bytes")->willReturn("0123456789ABCDE");
         $this->dbService = $this->dbService();
         $this->userRepository = new UserRepository($this->dbService);
-        $this->mailer = new FakeMailer(false, $text);
+        $this->phpMailer = $this->getMockBuilder(PHPMailer::class)->onlyMethods(["send"])->getMock();
+        $this->mailer = new Mailer($conf, $this->phpMailer);
     }
 
     public function sut(): HandleUserRegistration
@@ -126,9 +130,14 @@ class HandleUserRegistrationTest extends TestCase
             "serverName" => "example.com",
             "remoteAddress" => "127.0.0.1",
         ]);
+        $this->phpMailer->expects($this->any())->method("send")->willReturn(true);
         $response = $this->sut()($request);
+        $this->assertEquals("postmaster@example.com", $this->phpMailer->From);
+        $this->assertEquals([["john@example.com", ""]], $this->phpMailer->getToAddresses());
+        $this->assertEquals([["postmaster@example.com", ""]], $this->phpMailer->getCcAddresses());
+        $this->assertEquals("Your user account at example.com", $this->phpMailer->Subject);
+        Approvals::verifyString($this->phpMailer->Body);
         $this->assertEquals("http://example.com/", $response->location());
-        Approvals::verifyList($this->mailer->lastMail());
     }
 
     public function testRegisterReportsFailureToSave(): void
@@ -162,10 +171,15 @@ class HandleUserRegistrationTest extends TestCase
             "serverName" => "example.com",
             "remoteAddress" => "127.0.0.1",
         ]);
+        $this->phpMailer->expects($this->any())->method("send")->willReturn(true);
         $response = $this->sut()($request);
+        $this->assertEquals("postmaster@example.com", $this->phpMailer->From);
+        $this->assertEquals([["js@example.com", ""]], $this->phpMailer->getToAddresses());
+        $this->assertEquals([["postmaster@example.com", ""]], $this->phpMailer->getCcAddresses());
+        $this->assertEquals("Your user account at example.com", $this->phpMailer->Subject);
+        Approvals::verifyString($this->phpMailer->Body);
         $this->assertNotNull($this->userRepository->findByUsername("js"));
         $this->assertEquals("http://example.com/", $response->location());
-        Approvals::verifyList($this->mailer->lastMail());
     }
 
     public function testActivateReportsMissingNonce(): void

@@ -201,7 +201,7 @@ class HandleUserPreferences
     {
         return $this->mailer->sendMail(
             $user->getEmail(),
-            Util::encodeWords($this->view->plain("email_subject", $request->serverName())),
+            $this->view->plain("email_subject", $request->serverName()),
             $this->view->renderPlain("mail_update", [
                 "key" => $key,
                 "fullname" => $user->getName(),
@@ -209,7 +209,8 @@ class HandleUserPreferences
                 "email" => $user->getEmail(),
                 "remoteAddress" => $request->remoteAddress(),
             ]),
-            ["From: {$this->conf["senderemail"]}", "Cc: $email, {$this->conf["senderemail"]}"]
+            $this->conf["mail_address"],
+            "$email, {$this->conf["mail_address"]}"
         );
     }
 

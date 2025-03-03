@@ -1,6 +1,4 @@
-[0] -> js@example.com
-[1] -> =?UTF-8?Q?Your_user_account_at_example.com?=
-[2] -> Hello John Smith!
+Hello John Smith!
 
 A user account with your email address has been registered with following information:
 
@@ -16,8 +14,3 @@ Otherwise click the following link to activate your new user account:
 
 Sincerely,
 The Webmaster
-
-[3] -> From: postmaster@example.com
-Cc: postmaster@example.com
-MIME-Version: 1.0
-Content-type: text/plain; charset=UTF-8

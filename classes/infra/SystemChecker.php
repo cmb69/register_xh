@@ -37,4 +37,9 @@ class SystemChecker
     {
         return is_writable($path);
     }
+
+    public function checkAccessProtection(string $path): bool
+    {
+        return XH_isAccessProtected($path);
+    }
 }

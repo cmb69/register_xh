@@ -1,0 +1,77 @@
+--- DSNConfigurator.php	Sun Nov 24 19:04:13 2024
++++ DSNConfigurator.php	Mon Mar  3 16:43:43 2025
+@@ -19,7 +19,7 @@
+  * FITNESS FOR A PARTICULAR PURPOSE.
+  */
+ 
+-namespace PHPMailer\PHPMailer;
++namespace Register\PHPMailer;
+ 
+ /**
+  * Configure PHPMailer with DSN string.
+--- Exception.php	Sun Nov 24 19:04:13 2024
++++ Exception.php	Mon Mar  3 16:43:43 2025
+@@ -19,7 +19,7 @@
+  * FITNESS FOR A PARTICULAR PURPOSE.
+  */
+ 
+-namespace PHPMailer\PHPMailer;
++namespace Register\PHPMailer;
+ 
+ /**
+  * PHPMailer exception handler.
+--- OAuth.php	Sun Nov 24 19:04:13 2024
++++ OAuth.php	Mon Mar  3 16:43:43 2025
+@@ -19,7 +19,7 @@
+  * FITNESS FOR A PARTICULAR PURPOSE.
+  */
+ 
+-namespace PHPMailer\PHPMailer;
++namespace Register\PHPMailer;
+ 
+ use League\OAuth2\Client\Grant\RefreshToken;
+ use League\OAuth2\Client\Provider\AbstractProvider;
+--- OAuthTokenProvider.php	Sun Nov 24 19:04:13 2024
++++ OAuthTokenProvider.php	Mon Mar  3 16:43:43 2025
+@@ -19,7 +19,7 @@
+  * FITNESS FOR A PARTICULAR PURPOSE.
+  */
+ 
+-namespace PHPMailer\PHPMailer;
++namespace Register\PHPMailer;
+ 
+ /**
+  * OAuthTokenProvider - OAuth2 token provider interface.
+--- PHPMailer.php	Sun Nov 24 19:04:13 2024
++++ PHPMailer.php	Mon Mar  3 17:03:46 2025
+@@ -19,7 +19,7 @@
+  * FITNESS FOR A PARTICULAR PURPOSE.
+  */
+ 
+-namespace PHPMailer\PHPMailer;
++namespace Register\PHPMailer;
+ 
+ /**
+  * PHPMailer - PHP email creation and transport class.
+--- POP3.php	Sun Nov 24 19:04:13 2024
++++ POP3.php	Mon Mar  3 16:43:43 2025
+@@ -19,7 +19,7 @@
+  * FITNESS FOR A PARTICULAR PURPOSE.
+  */
+ 
+-namespace PHPMailer\PHPMailer;
++namespace Register\PHPMailer;
+ 
+ /**
+  * PHPMailer POP-Before-SMTP Authentication Class.
+--- SMTP.php	Sun Nov 24 19:04:13 2024
++++ SMTP.php	Mon Mar  3 16:43:43 2025
+@@ -19,7 +19,7 @@
+  * FITNESS FOR A PARTICULAR PURPOSE.
+  */
+ 
+-namespace PHPMailer\PHPMailer;
++namespace Register\PHPMailer;
+ 
+ /**
+  * PHPMailer RFC821 SMTP email transport class.

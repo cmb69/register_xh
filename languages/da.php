@@ -57,6 +57,6 @@ $plugin_tx['register']['syscheck_title']="System check";
 
 $plugin_tx['register']['cf_group_activated']="Status for nye medlemmer (gruppe efter registrering og konto aktivering).";
 $plugin_tx['register']['cf_group_default']="Status for nye medlemmer (standard gruppe for brugeren efter registrering, men før konto aktivering).";
-$plugin_tx['register']['cf_senderemail']="E-mail-konto til administrator";
+$plugin_tx['register']['cf_mail_address']="E-mail-konto til administrator";
 
 ?>

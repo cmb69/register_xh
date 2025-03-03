@@ -118,6 +118,8 @@ $plugin_tx['register']['syscheck_writable']="%s is writable";
 $plugin_tx['register']['syscheck_writable_no']="%s is not writable";
 $plugin_tx['register']['syscheck_xhversion']="CMSimple_XH version is at least %s";
 $plugin_tx['register']['syscheck_xhversion_no']="CMSimple_XH version is not at least %s";
+$plugin_tx['register']['syscheck_access_protection']="'%s' is access protected";
+$plugin_tx['register']['syscheck_access_protection_no']="'%s' is not access protected";
 
 $plugin_tx['register']['hint_accessgroups']="A comma separated list of user groups which have access to this page. Leave empty to grant access to everybody, including visitors.";
 
@@ -129,6 +131,12 @@ $plugin_tx['register']['cf_fix_mail_headers']="Whether to fix problems with some
 $plugin_tx['register']['cf_group_activated']="The status of new members (group after registration and account activation).";
 $plugin_tx['register']['cf_group_default']="The status of new members (default group for user after registration, but before account activation).";
 $plugin_tx['register']['cf_hide_pages']="Whether to hide pages in the table of contents to which the user does not have access.";
-$plugin_tx['register']['cf_senderemail']="The e-mail account of the administrator";
+$plugin_tx['register']['cf_mail_address']="The e-mail account of the administrator";
+$plugin_tx['register']['cf_mail_smtp']="Whether mails should be sent directly to an SMTP server. When enabled, the SMTP  configuration settings need to be filled in; request the information from your mail provider. Disable to use the classic PHP mail function.";
+$plugin_tx['register']['cf_smtp_host']="The name of the SMTP host.";
+$plugin_tx['register']['cf_smtp_port']="The port of the SMTP host.";
+$plugin_tx['register']['cf_smtp_tls']="The type of transfer encryption. If supported, use SMTPS.";
+$plugin_tx['register']['cf_smtp_username']="The username for SMTP authentication. Leave blank if no authentication is required.";
+$plugin_tx['register']['cf_smtp_password']="The password of the SMTP user.";
 $plugin_tx['register']['cf_activity_period']="The time in seconds after which a logged in user is considered inactive.";
 ?>

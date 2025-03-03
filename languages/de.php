@@ -118,6 +118,8 @@ $plugin_tx['register']['syscheck_writable']="%s ist schreibbar";
 $plugin_tx['register']['syscheck_writable_no']="%s ist nicht schreibbar";
 $plugin_tx['register']['syscheck_xhversion']="CMSimple_XH-Version ist wenigstens %s";
 $plugin_tx['register']['syscheck_xhversion_no']="CMSimple_XH-Version ist wenigstens %s";
+$plugin_tx['register']['syscheck_access_protection']="'%s' ist zugriffsgeschützt";
+$plugin_tx['register']['syscheck_access_protection_no']="'%s' ist nicht zugriffsgeschützt";
 
 $plugin_tx['register']['hint_accessgroups']="Eine durch Kommas getrennte Liste von Benutzergruppen, die Zugriff zu dieser Seite haben. Leer lassen, um jedem, einschließlich Besuchern, Zugriff zu gewähren.";
 
@@ -129,7 +131,13 @@ $plugin_tx['register']['cf_fix_mail_headers']="Ob Probleme mit einigen fehlerhaf
 $plugin_tx['register']['cf_group_activated']="Der Status neuer Mitglieder (Gruppe nach Registrierung und Account Aktivierung).";
 $plugin_tx['register']['cf_group_default']="Der Status neuer Mitglieder (Gruppe nach Registrierung, aber vor der Account Aktivierung).";
 $plugin_tx['register']['cf_hide_pages']="Ob versteckt Seiten, zu denen das Mitglied keinen Zugang hat, in der Navigation angezeigt werden sollen.";
-$plugin_tx['register']['cf_senderemail']="Die E-Mail-Adresse des Administrators";
+$plugin_tx['register']['cf_mail_address']="Die E-Mail-Adresse des Administrators";
+$plugin_tx['register']['cf_mail_smtp']="Ob E-Mails direkt an einen SMTP-Server gesendet werden sollen. Falls ja, dann müssen die SMTP Konfigurationseinstellungen angegeben werden; erfragen Sie die Information von Ihrem Mail-Provider. Deaktivien, um die klassische PHP mail Funktion zu verwenden.";
+$plugin_tx['register']['cf_smtp_host']="Der Name des SMTP-Hosts.";
+$plugin_tx['register']['cf_smtp_port']="Der Port des SMTP-Hosts.";
+$plugin_tx['register']['cf_smtp_tls']="Der Type der Transportverschlüsselung. Falls unterstützt, verwenden Sie SMTPS.";
+$plugin_tx['register']['cf_smtp_username']="Der Benutzername für die SMTP Authentifizierung. Leer lassen, falls keine Authentifizierung erforderlich ist.";
+$plugin_tx['register']['cf_smtp_password']="Das Password des SMTP Benutzers.";
 $plugin_tx['register']['cf_activity_period']="Die Zeit in Sekunden, nach der ein angemeldeter Nutzer als inaktiv eingestuft wird.";
 
 ?>

@@ -6,9 +6,13 @@ parameters:
     - admin.php
     - index.php
     - register_pd_view.php
+  excludePaths:
+    - classes/phpmailer/
   bootstrapFiles:
     - phpstan.php
   scanFiles:
     - ../../cmsimple/classes/PageDataRouter.php
     - ../../cmsimple/adminfuncs.php
     - ../../cmsimple/functions.php
+    - classes/phpmailer/PHPMailer.php
+    - classes/phpmailer/SMTP.php

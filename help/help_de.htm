@@ -42,6 +42,7 @@
 <li><a href="#login-formular">Login-Formular</a></li>
 <li><a href="#zugriff-auf-seiten">Zugriff auf Seiten</a></li>
 <li><a href="#aktive-nutzer">Aktive Nutzer</a></li>
+<li><a href="#e-mail-versand">E-Mail-Versand</a></li>
 </ul></li>
 <li><a href="#einschränkungen">Einschränkungen</a></li>
 <li><a href="#problembehebung">Problembehebung</a></li>
@@ -97,6 +98,9 @@
 <pre><code>{{{register_active_users()}}}</code></pre>
 <p>Oder im Template:</p>
 <pre><code>&lt;?=register_active_users()?&gt;</code></pre>
+<h3 id="e-mail-versand">E-Mail-Versand</h3>
+<p>Standardmäßig verwendet Register_XH PHPs mail Funktion, die normalerweise nur ein einfacher sendmail Wrapper ist. Diese Art E-Mails zu versenden hat einige Einschränkungen, und wird von einigen Webservern nicht mehr unterstützt.</p>
+<p>Daher tun Sie gut daran SMTP-Support in der Konfiguration zu aktivieren. Es ist wichtig alle relevanten Konfigurationeinstellungen sorgfältig einzutragen; erfragen Sie die nötigen Information von Ihrem Mail-Provider. Erfordert der SMTP-Server Authentifizierung (recht wahrscheinlich), müssen Sie den Benutzernamen und das Passwort in der Konfiguration eintragen. Beachten Sie, dass diese Anmeldedaten notwendigerweise im Klartext in der entsprechenden config.php gespeichert werden. Daher ist es wichtig, dass der Konfigurationsorder of Register_XH vor direktem Zugriff geschützt ist. Das Plugin liefert eine entsprechende .htaccess aus, aber diese wird u.U. nicht von Ihrem Server erkannt, so dass Sie selbst alternative Maßnahmen ergreifen müssen. Bevor sie die sensiblen Anmeldedaten in die Konfiguration eintragen, überprüfen Sie, ob die System-Prüfung bezüglich des Zugriffschutzes von config.php erfolgreich ist.</p>
 <h2 id="problembehebung">Problembehebung</h2>
 <p>Melden Sie Programmfehler und stellen Sie Supportanfragen entweder auf <a href="https://github.com/cmb69/register_xh/issues">Github</a> oder im <a href="https://cmsimpleforum.com/">CMSimple_XH Forum</a>.</p>
 <h2 id="lizenz">Lizenz</h2>
@@ -107,6 +111,7 @@ Copyright © 2012-2023 Christoph M. Becker</p>
 <p>Slovakische Übersetzung © 2012 Dr. Martin Sereday<br> Tschechische Übersetzung © 2012 Josef Němec<br> Dänische Übersetzung © 2012 Jens Maegard<br> Russische Übersetzung © 2012 Lubomyr Kydray</p>
 <h2 id="danksagung">Danksagung</h2>
 <p>Register wurde 2007 von <a href="http://cmsimple.heinelt.eu/">Carsten Heinelt</a> auf Basis von Michael Svarrers <a href="https://cmsimplewiki-com.keil-portal.de/doku.php?id=plugins:memberpages">Memberpages Plugin</a> entwickelt. 2010 gab er <a href="https://www.ge-webdesign.de/">Gert Ebersbach</a> die Erlaubnis es an CMSimple_XH anzupassen und es weiter zu verbessern. Das Plugin wurde dann als Register_mod_XH verbreitet. 2012 stellte Gert Ebersbach die Entwicklung ein und gab mir die Erlaubnis das Plugin zu pflegen und zu verbreiten. <em>Vielen Dank an Carsten Heinelt und Gert Ebersbach für ihre gute Arbeit und die Erlaubnis das Plugin weiterhin pflegen zu dürfen!</em></p>
+<p>Zum E-Mail-Versand wird <a href="https://github.com/PHPMailer/PHPMailer">PHPMailer</a> verwendet. Vielen Dank für die Veröffentlichung dieser fortgeschrittenen E-Mail-Bibliothek unter LGPL-2.1.</p>
 <p>Das Plugin-Logo wurde von Wendell Fernandes entworfen. Vielen Dank für die Veröffentlichung als Freeware.</p>
 <p>Vielen Dank an die Community im <a href="https://www.cmsimpleforum.com/">CMSimple_XH-Forum</a> für Anregungen, Vorschläge und das Testen. Besonders möchte ich <em>Holger</em> für das Finden eines schwerwiegenden Makels, und für seinen Vorschlag, die Benutzerverwaltung zu verbessern, <em>kmsmei</em> für das Berichten einer Sicherheitslücke, und natürlich <em>Joe</em> für viele gute Vorschläge danken.</p>
 <p>Zu guter Letzt vielen Dank an <a href="https://www.harteg.dk/">Peter Harteg</a>, den „Vater“ von CMSimple, und allen Entwicklern von <a href="http://www.cmsimple-xh.org/">CMSimple_XH</a> ohne die dieses phantastische CMS nicht existieren würde.</p>

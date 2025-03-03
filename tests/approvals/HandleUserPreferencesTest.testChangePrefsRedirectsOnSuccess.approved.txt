@@ -1,6 +1,4 @@
-[0] -> new@example.com
-[1] -> =?UTF-8?Q?Your_user_account_at_example.com?=
-[2] -> Hello John Doe!
+Hello John Doe!
 
 Your account information has been updated as follows:
 
@@ -13,8 +11,3 @@ If you did not do this yourself, please inform us immediately.
 
 Sincerely,
 The Webmaster
-
-[3] -> From: postmaster@example.com
-Cc: john@example.com, postmaster@example.com
-MIME-Version: 1.0
-Content-type: text/plain; charset=UTF-8

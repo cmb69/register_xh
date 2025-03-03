@@ -10,33 +10,58 @@
 
 namespace Register\Infra;
 
+use Register\PHPMailer\PHPMailer;
+
 class Mailer
 {
-    /** @var bool */
-    private $fixMailHeaders;
+    /** @var array<string,string> */
+    private $conf;
 
-    public function __construct(bool $fixMailHeaders)
+    /** @var PHPMailer */
+    private $mail;
+
+    /** @param array<string,string> $conf */
+    public function __construct(array $conf, PHPMailer $mail)
     {
-        $this->fixMailHeaders = $fixMailHeaders;
+        $this->conf = $conf;
+        $this->mail = $mail;
     }
 
-    /** @param list<string> $headers */
-    public function sendMail(string $to, string $encodedSubject, string $message, array $headers): bool
-    {
-        $headers[] = 'MIME-Version: 1.0';
-        $headers[] = 'Content-type: text/plain; charset=UTF-8';
-        $sep = $this->fixMailHeaders ? "\n" : "\r\n";
-        return $this->mail(
-            $to,
-            (string) preg_replace('/\R/', $sep, $encodedSubject),
-            (string) preg_replace('/\R/u', $sep, $message),
-            implode($sep, $headers)
-        );
-    }
-
-    /** @codeCoverageIgnore */
-    protected function mail(string $to, string $subject, string $message, string $headers): bool
-    {
-        return mail($to, $subject, $message, $headers);
+    public function sendMail(
+        string $to,
+        string $subject,
+        string $message,
+        string $from,
+        ?string $cc = null
+    ): bool {
+        if ($this->conf["mail_smtp"]) {
+            $this->mail->isSMTP();
+            $this->mail->Host = $this->conf["smtp_host"];
+            $this->mail->Port = (int) $this->conf["smtp_port"];
+            if ($this->conf["smtp_tls"] === "STARTTLS") {
+                $this->mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
+            } elseif ($this->conf["smtp_tls"] === "SMTPS") {
+                $this->mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;
+            }
+            if ($this->conf["smtp_username"]) {
+                $this->mail->SMTPAuth = true;
+                $this->mail->Username = $this->conf["smtp_username"];
+                $this->mail->Password = $this->conf["smtp_password"];
+            }
+        } else {
+            $this->mail->isMail();
+        }
+        $this->mail->CharSet = PHPMAILER::CHARSET_UTF8;
+        $this->mail->setFrom($from);
+        $this->mail->addAddress($to);
+        if ($cc !== null) {
+            foreach (explode(", ", $cc) as $address) {
+                $this->mail->addCC($address);
+            }
+        }
+        $this->mail->isHTML(false);
+        $this->mail->Subject = $subject;
+        $this->mail->Body = $message;
+        return $this->mail->send();
     }
 }

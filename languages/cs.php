@@ -50,6 +50,6 @@ $plugin_tx['register']['syscheck_title']="Kontrola systému";
 
 $plugin_tx['register']['cf_group_activated']="Status nových členů (skupina po registraci a aktivaci účtu).";
 $plugin_tx['register']['cf_group_default']="Stav nových členů (výchozí skupina uživatele po registraci, ale před aktivací účtu).";
-$plugin_tx['register']['cf_senderemail']="E-mailový účet správce";
+$plugin_tx['register']['cf_mail_address']="E-mailový účet správce";
 
 ?>

@@ -10,16 +10,18 @@ namespace Register;
 
 use ApprovalTests\Approvals;
 use org\bovigo\vfs\vfsStream;
+use PHPUnit\Framework\MockObject;
 use PHPUnit\Framework\TestCase;
 use Register\Infra\FakeDbService;
 use Register\Infra\FakeLogger;
-use Register\Infra\FakeMailer;
 use Register\Infra\FakePassword;
 use Register\Infra\FakeRequest;
 use Register\Infra\LoginManager;
+use Register\Infra\Mailer;
 use Register\Infra\Random;
 use Register\Infra\UserRepository;
 use Register\Infra\View;
+use Register\PHPMailer\PHPMailer;
 use Register\Value\User;
 
 class HandlePasswordForgottenTest extends TestCase
@@ -27,6 +29,8 @@ class HandlePasswordForgottenTest extends TestCase
     private $view;
     private $dbService;
     private $userRepository;
+    /** @var PHPMailer&MockObject */
+    private $phpMailer;
     private $mailer;
     private $loginManager;
     private $logger;
@@ -34,12 +38,14 @@ class HandlePasswordForgottenTest extends TestCase
     public function setUp(): void
     {
         vfsStream::setup("root");
+        $conf = XH_includeVar("./config/config.php", "plugin_cf")["register"];
         $text = XH_includeVar("./languages/en.php", "plugin_tx")["register"];
         $this->view = new View("./views/", $text);
         $this->dbService = new FakeDbService("vfs://root/register/", "guest", $this->createMock(Random::class));
         $this->dbService->writeUsers([new User("john", "12345", ["guest"], "John Dow", "john@example.com", "activated", "secret")]);
         $this->userRepository = new UserRepository($this->dbService);
-        $this->mailer = new FakeMailer(false, $text);
+        $this->phpMailer = $this->getMockBuilder(PHPMailer::class)->onlyMethods(["send"])->getMock();
+        $this->mailer = new Mailer($conf, $this->phpMailer);
         $this->loginManager = $this->createMock(LoginManager::class);
         $this->logger = new FakeLogger;
     }
@@ -101,8 +107,13 @@ class HandlePasswordForgottenTest extends TestCase
             "post" => ["email" => "john@example.com"],
             "serverName" => "example.com",
         ]);
+        $this->phpMailer->expects($this->any())->method("send")->willReturn(true);
         $response = $this->sut()($request);
-        Approvals::verifyList($this->mailer->lastMail());
+        $this->assertEquals("postmaster@example.com", $this->phpMailer->From);
+        $this->assertEquals([["john@example.com", ""]], $this->phpMailer->getToAddresses());
+        $this->assertEmpty($this->phpMailer->getCcAddresses());
+        $this->assertEquals("Your user account at example.com", $this->phpMailer->Subject);
+        Approvals::verifyString($this->phpMailer->Body);
         $this->assertEquals("http://example.com/", $response->location());
     }
 

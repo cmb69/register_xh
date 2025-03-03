@@ -53,7 +53,9 @@ class ShowPluginInfo
         return [
             $this->checkPhpVersion("7.1.0"),
             $this->checkExtension("hash"),
+            $this->checkExtension("openssl", false),
             $this->checkXhVersion("1.7.0"),
+            $this->checkAccessProtection($pluginFolder . "config/config.php"),
             $this->checkWritability($pluginFolder . "css/"),
             $this->checkWritability($pluginFolder . "config/"),
             $this->checkWritability($pluginFolder . "languages/"),
@@ -73,11 +75,11 @@ class ShowPluginInfo
     }
 
     /** @return array{class:string,key:string,arg:string} */
-    private function checkExtension(string $extension): array
+    private function checkExtension(string $extension, bool $mandatory = true): array
     {
         $state = $this->systemChecker->checkExtension($extension);
         return [
-            "class" => $state ? "xh_success" : "xh_fail",
+            "class" => $state ? "xh_success" : ($mandatory ? "xh_fail" : "xh_warning"),
             "key" => $state ? "syscheck_extension" : "syscheck_extension_no",
             "arg" => $extension,
         ];
@@ -101,6 +103,17 @@ class ShowPluginInfo
         return [
             "class" => $state ? "xh_success" : "xh_warning",
             "key" => $state ? "syscheck_writable" : "syscheck_writable_no",
+            "arg" => $folder,
+        ];
+    }
+
+    /** @return array{class:string,key:string,arg:string} */
+    private function checkAccessProtection(string $folder): array
+    {
+        $state = $this->systemChecker->checkAccessProtection($folder);
+        return [
+            "class" => $state ? "xh_success" : "xh_warning",
+            "key" => $state ? "syscheck_access_protection" : "syscheck_access_protection_no",
             "arg" => $folder,
         ];
     }

@@ -13,9 +13,9 @@ use org\bovigo\vfs\vfsStream;
 use PHPUnit\Framework\TestCase;
 use Register\Infra\FakeCsrfProtector;
 use Register\Infra\FakeDbService;
-use Register\Infra\FakeMailer;
 use Register\Infra\FakePassword;
 use Register\Infra\FakeRequest;
+use Register\Infra\Mailer;
 use Register\Infra\Random;
 use Register\Infra\UserGroupRepository;
 use Register\Infra\UserRepository;
@@ -47,7 +47,7 @@ class UserAdminTest extends TestCase
         $this->userRepository = new UserRepository($this->dbService);
         $this->userGroupRepository = new UserGroupRepository($this->dbService);
         $this->password = new FakePassword;
-        $this->mailer = new FakeMailer(false, XH_includeVar("./languages/en.php", "plugin_tx")["register"]);
+        $this->mailer = $this->createMock(Mailer::class);
         $this->view = new View("./views/", XH_includeVar("./languages/en.php", "plugin_tx")["register"]);
     }
 
@@ -392,11 +392,11 @@ class UserAdminTest extends TestCase
 
     public function testDoMailReportsFailureToSendMail(): void
     {
-        $this->mailer->options(["sendMail" => false]);
         $request = new FakeRequest([
             "query" => "&action=do_mail&user=jane",
             "post" => ["subject" => "subject", "message" => "message"],
         ]);
+        $this->mailer->expects($this->once())->method("sendMail")->willReturn(false);
         $response = $this->sut()($request);
         $this->assertEquals("Register – Users", $response->title());
         $this->assertStringContainsString("The email could not be sent!", $response->output());
@@ -408,9 +408,14 @@ class UserAdminTest extends TestCase
             "query" => "&action=do_mail&user=jane",
             "post" => ["subject" => "subject", "message" => "message"],
         ]);
+        $this->mailer->expects($this->once())->method("sendMail")->with(
+            "jane@example.com",
+            "subject",
+            "message",
+            "postmaster@example.com",
+        )->willReturn(true);
         $response = $this->sut()($request);
         $this->assertEquals("http://example.com/?register&admin=users", $response->location());
-        Approvals::verifyList($this->mailer->lastMail());
     }
 
     public function testDeleteReportsMissingUser(): void

@@ -25,6 +25,7 @@ class ShowPluginInfoTest extends TestCase
         $systemChecker->method('checkVersion')->willReturn(true);
         $systemChecker->method('checkExtension')->willReturn(true);
         $systemChecker->method('checkWritability')->willReturn(true);
+        $systemChecker->method('checkAccessProtection')->willReturn(true);
         $subject = new ShowPluginInfo("./plugins/register/", $dbService, $systemChecker, new View("./views/", $text));
         $response = $subject();
         Approvals::verifyHtml($response->output());
