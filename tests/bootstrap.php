@@ -4,7 +4,7 @@ const CMSIMPLE_XH_VERSION = "CMSimple_XH 1.7.5";
 const CMSIMPLE_URL = "http://example.com/";
 const CMSIMPLE_ROOT = "/";
 const XH_URICHAR_SEPARATOR = "|";
-const REGISTER_VERSION = "2.0-dev";
+const REGISTER_VERSION = "2.0";
 
 require_once './vendor/autoload.php';
 

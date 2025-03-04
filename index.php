@@ -20,7 +20,7 @@ if (!defined("CMSIMPLE_XH_VERSION")) {
     exit;
 }
 
-const REGISTER_VERSION = "2.0-dev";
+const REGISTER_VERSION = "2.0";
 
 function register(): string
 {
