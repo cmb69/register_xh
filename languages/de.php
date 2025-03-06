@@ -51,7 +51,7 @@ $plugin_tx['register']['message_activated']="Sie haben Ihren Zugang erfolgreich 
 $plugin_tx['register']['message_change_password']="Um Ihr Kennwort zu ändern, müssen Sie ebenfalls Ihr altes Kennwort eingeben.";
 $plugin_tx['register']['message_change_prefs']="Um Ihre Benutzerkontendaten zu ändern, müssen Sie ebenfalls Ihr altes Kenntwort eingeben.";
 $plugin_tx['register']['message_delete_account']="Um Ihr Benutzerkonto zu löschen, müssen Sie Ihr altes Kennwort eingeben.";
-$plugin_tx['register']['message_forgot']="Haben Sie Ihre Zugangsdaten vergessen, geben Sie Ihre Email-Adresse ein, und wir senden Ihnen eine Email mit den Daten inklusive Anweisungen wie Sie Ihr Kennwort zurücksetzen, wenn ein Konto mit dieser Emai-Adresse existiert.";
+$plugin_tx['register']['message_forgot']="Haben Sie Ihre Zugangsdaten vergessen, geben Sie Ihre Email-Adresse ein, und wir senden Ihnen eine Email mit den Daten inklusive Anweisungen wie Sie Ihr Kennwort zurücksetzen, wenn ein Konto mit dieser Email-Adresse existiert.";
 $plugin_tx['register']['message_register']="Sie können ein neues Benutzerkonto registrieren. Nach der Registrierung wird Ihnen eine Email mit Anweisungen zur Aktivierung des Kontos zugesendet.";
 $plugin_tx['register']['message_welcometext']="Hallo %s!";
 
