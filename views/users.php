@@ -1,6 +1,6 @@
 <?php
 
-use Register\Infra\View;
+use Plib\View;
 
 /**
  * @var View $this
@@ -31,28 +31,28 @@ use Register\Infra\View;
           <th><?=$this->text('label_status')?></th>
         </tr>
         <tr>
-          <td><input type="search" name="username" value="<?=$username?>" placeholder="<?=$this->text('label_filter')?>"></td>
+          <td><input type="search" name="username" value="<?=$this->esc($username)?>" placeholder="<?=$this->text('label_filter')?>"></td>
           <td><input type="search" name="name" value="<?=$name?>" placeholder="<?=$this->text('label_filter')?>"></td>
-          <td><input type="search" name="email" value="<?=$email?>" placeholder="<?=$this->text('label_filter')?>"></td>
+          <td><input type="search" name="email" value="<?=$this->esc($email)?>" placeholder="<?=$this->text('label_filter')?>"></td>
           <td>
             <select name="group" onchange="this.form.submit()">
 <?foreach ($groups as [$group, $selected]):?>
-              <option <?=$selected?>><?=$group?></option>
+              <option <?=$this->esc($selected)?>><?=$this->esc($group)?></option>
 <?endforeach?>
             </select>
           </td>
-          <td><input type="search" name="status" value="<?=$status?>" placeholder="<?=$this->text('label_filter')?>"></td>
+          <td><input type="search" name="status" value="<?=$this->esc($status)?>" placeholder="<?=$this->text('label_filter')?>"></td>
         </tr>
       </thead>
       <tbody>
 <?foreach ($users as $user):?>
         <tr>
           <td>
-            <label><input type="radio" name="user" value="<?=$user['username']?>" <?=$user['checked']?>> <?=$user['username']?></label>
+            <label><input type="radio" name="user" value="<?=$this->esc($user['username'])?>" <?=$this->esc($user['checked'])?>> <?=$this->esc($user['username'])?></label>
           </td>
-          <td><?=$user['fullname']?></td>
-          <td><?=$user['email']?></td>
-          <td><?=$user['groups']?></td>
+          <td><?=$this->esc($user['fullname'])?></td>
+          <td><?=$this->esc($user['email'])?></td>
+          <td><?=$this->esc($user['groups'])?></td>
           <td><?=$this->text($user['status_label'])?></td>
         </tr>
 <?endforeach?>

@@ -8,11 +8,11 @@
 
 namespace Register;
 
+use Plib\View;
 use Register\Infra\CsrfProtector;
 use Register\Infra\Pages;
 use Register\Infra\Request;
 use Register\Infra\UserGroupRepository;
-use Register\Infra\View;
 use Register\Logic\Util;
 use Register\Value\Response;
 use Register\Value\UserGroup;
@@ -87,11 +87,11 @@ class GroupAdmin
     private function doCreate(Request $request): Response
     {
         if (!$this->csrfProtector->check()) {
-            return $this->respondWith($this->view->error("error_unauthorized"));
+            return $this->respondWith($this->view->message("fail", "error_unauthorized"));
         }
         $groupname = $request->selectedGroup();
         if ($this->userGroupRepository->findByGroupname($groupname)) {
-            return $this->respondWith($this->view->error("error_groupname_exists"));
+            return $this->respondWith($this->view->message("fail", "error_groupname_exists"));
         }
         $group = $request->postedGroup();
         if (($errors = Util::validateGroup($group))) {
@@ -126,11 +126,11 @@ class GroupAdmin
     private function doUpdate(Request $request): Response
     {
         if (!$this->csrfProtector->check()) {
-            return $this->respondWith($this->view->error("error_unauthorized"));
+            return $this->respondWith($this->view->message("fail", "error_unauthorized"));
         }
         $groupname = $request->selectedGroup();
         if (!($group = $this->userGroupRepository->findByGroupname($groupname))) {
-            return $this->respondWith($this->view->error("error_group_does_not_exist", $groupname));
+            return $this->respondWith($this->view->message("fail", "error_group_does_not_exist", $groupname));
         }
         $post = $request->groupPost();
         $group = $group->with($post["loginpage"]);
@@ -164,11 +164,11 @@ class GroupAdmin
     private function doDelete(Request $request): Response
     {
         if (!$this->csrfProtector->check()) {
-            return $this->respondWith($this->view->error("error_unauthorized"));
+            return $this->respondWith($this->view->message("fail", "error_unauthorized"));
         }
         $groupname = $request->selectedGroup();
         if (!($group = $this->userGroupRepository->findByGroupname($groupname))) {
-            return $this->respondWith($this->view->error("error_group_does_not_exist", $groupname));
+            return $this->respondWith($this->view->message("fail", "error_group_does_not_exist", $groupname));
         }
         if (!$this->userGroupRepository->delete($group)) {
             return $this->respondWith($this->renderDeleteForm($group, [["error_cannot_write_csv"]]));

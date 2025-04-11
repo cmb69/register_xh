@@ -1,6 +1,6 @@
 <?php
 
-use Register\Infra\View;
+use Plib\View;
 
 /**
  * @var View $this
@@ -26,9 +26,9 @@ use Register\Infra\View;
 <?foreach ($groups as $group):?>
       <tr>
         <td>
-          <label><input type="radio" name="group" value="<?=$group['name']?>"> <?=$group['name']?></label>
+          <label><input type="radio" name="group" value="<?=$this->esc($group['name'])?>"> <?=$this->esc($group['name'])?></label>
         </td>
-        <td><?=$group['loginpage']?></td>
+        <td><?=$this->esc($group['loginpage'])?></td>
       </tr>
 <?endforeach?>
     </tbody>

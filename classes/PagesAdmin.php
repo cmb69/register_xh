@@ -8,9 +8,9 @@
 
 namespace Register;
 
+use Plib\View;
 use Register\Infra\Pages;
 use Register\Infra\Request;
-use Register\Infra\View;
 use Register\Value\Response;
 use Register\Value\Url;
 

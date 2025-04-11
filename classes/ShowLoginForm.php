@@ -10,6 +10,7 @@
 
 namespace Register;
 
+use Plib\View;
 use Register\Infra\ActivityRepository;
 use Register\Infra\Logger;
 use Register\Infra\LoginManager;
@@ -17,7 +18,6 @@ use Register\Infra\Password;
 use Register\Infra\Request;
 use Register\Infra\UserGroupRepository;
 use Register\Infra\UserRepository;
-use Register\Infra\View;
 use Register\Logic\Util;
 use Register\Value\Response;
 use Register\Value\User;
@@ -93,7 +93,7 @@ class ShowLoginForm
     private function loginAction(Request $request): Response
     {
         if ($request->username()) {
-            return Response::create($this->view->error("error_unauthorized"));
+            return Response::create($this->view->message("fail", "error_unauthorized"));
         }
         $post = $request->registerLoginPost();
         if (!($user = $this->userRepository->findByUsername($post["username"]))) {
@@ -146,7 +146,7 @@ class ShowLoginForm
     private function renderLoggedInForm(Request $request): string
     {
         if (!($user = $this->userRepository->findByUsername($request->username()))) {
-            return $this->view->error("error_user_does_not_exist", $request->username());
+            return $this->view->message("fail", "error_user_does_not_exist", $request->username());
         }
         return $this->view->render("loggedin_area", [
             "fullName" => $user->getName(),
@@ -178,7 +178,7 @@ class ShowLoginForm
     private function logoutAction(Request $request): Response
     {
         if (!$request->username()) {
-            return Response::create($this->view->error("error_unauthorized"));
+            return Response::create($this->view->message("fail", "error_unauthorized"));
         }
         $this->loginManager->logout();
         $this->activityRepository->update($request->username(), 0);

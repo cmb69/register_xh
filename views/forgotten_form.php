@@ -1,6 +1,6 @@
 <?php
 
-use Register\Infra\View;
+use Plib\View;
 
 if (!defined("CMSIMPLE_XH_VERSION")) {header("HTTP/1.1 403 Forbidden"); exit;}
 
@@ -21,12 +21,12 @@ if (!defined("CMSIMPLE_XH_VERSION")) {header("HTTP/1.1 403 Forbidden"); exit;}
     <p class="register_field">
       <label>
         <span><?=$this->text('label_email')?></span>
-        <input class="text" name="email" type="email" value="<?=$email?>" required>
+        <input class="text" name="email" type="email" value="<?=$this->esc($email)?>" required>
       </label>
     </p>
     <p class="register_buttons">
       <button class="submit" name="register_action" value="forgot_password"><?=$this->text('label_send')?></button>
-      <a href="<?=$cancel?>"><?=$this->text('label_cancel')?></a>
+      <a href="<?=$this->esc($cancel)?>"><?=$this->text('label_cancel')?></a>
     </p>
   </form>
 </div>

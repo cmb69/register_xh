@@ -8,7 +8,7 @@
 
 namespace Register;
 
-use Register\Infra\View;
+use Plib\View;
 use Register\Value\Response;
 
 class Forbidden

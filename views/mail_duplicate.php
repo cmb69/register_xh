@@ -1,6 +1,6 @@
 <?php
 
-use Register\Infra\View;
+use Plib\View;
 
 /**
  * @var View $this
@@ -18,19 +18,19 @@ use Register\Infra\View;
 
 <?=$this->text('email_register_text1')?><br>
 
-  <?=$this->text('label_name')?>: <?=$fullname?><br>
-  <?=$this->text('label_username')?>: <?=$username?><br>
-  <?=$this->text('label_email')?>: <?=$email?><br>
-  <?=$this->text('label_fromip')?>: <?=$remoteAddress?><br>
+  <?=$this->text('label_name')?>: <?=$this->esc($fullname)?><br>
+  <?=$this->text('label_username')?>: <?=$this->esc($username)?><br>
+  <?=$this->text('label_email')?>: <?=$this->esc($email)?><br>
+  <?=$this->text('label_fromip')?>: <?=$this->esc($remoteAddress)?><br>
 
 <?=$this->text('email_register_text3')?><br>
 
-  <?=$this->text('label_name')?>: <?=$other_fullname?><br>
-  <?=$this->text('label_username')?>: <?=$other_username?><br>
-  <?=$this->text('label_email')?>: <?=$other_email?><br>
+  <?=$this->text('label_name')?>: <?=$this->esc($other_fullname)?><br>
+  <?=$this->text('label_username')?>: <?=$this->esc($other_username)?><br>
+  <?=$this->text('label_email')?>: <?=$this->esc($other_email)?><br>
 
 <?=$this->text('email_register_text4')?><br>
 
-&lt;<?=$url?>&gt;
+&lt;<?=$this->esc($url)?>&gt;
 
 <?=$this->text('email_closing')?><br>

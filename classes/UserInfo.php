@@ -8,9 +8,9 @@
 
 namespace Register;
 
+use Plib\View;
 use Register\Infra\Request;
 use Register\Infra\UserRepository;
-use Register\Infra\View;
 use Register\Value\Response;
 use Register\Value\Url;
 use Register\Value\User;
@@ -40,7 +40,7 @@ class UserInfo
             return Response::create();
         }
         if (!($user = $this->userRepository->findByUsername($request->username()))) {
-            return Response::create($this->view->error("error_user_does_not_exist", $request->username()));
+            return Response::create($this->view->message("fail", "error_user_does_not_exist", $request->username()));
         }
         return Response::create($this->render($user, $request->url()->withPage($pageUrl)));
     }

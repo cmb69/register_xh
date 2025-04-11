@@ -10,12 +10,12 @@
 
 namespace Register;
 
+use Plib\View;
 use Register\Infra\Mailer;
 use Register\Infra\Password;
 use Register\Infra\Random;
 use Register\Infra\Request;
 use Register\Infra\UserRepository;
-use Register\Infra\View;
 use Register\Logic\Util;
 use Register\Value\Response;
 use Register\Value\Url;
@@ -61,7 +61,7 @@ class HandleUserRegistration
     public function __invoke(Request $request): Response
     {
         if (!$this->conf["allowed_register"] || $request->username()) {
-            return Response::create($this->view->error("error_unauthorized"));
+            return Response::create($this->view->message("fail", "error_unauthorized"));
         }
         switch ($request->registerAction()) {
             default:
@@ -150,19 +150,20 @@ class HandleUserRegistration
     private function sendDuplicateEmailNotification(User $user, User $olduser, Request $request): bool
     {
         $url = $request->url()->with("function", "register_password");
+        $html = $this->view->render("mail_duplicate", [
+            "fullname" => $user->getName(),
+            "username" => $user->getUsername(),
+            "email" => $user->getEmail(),
+            "remoteAddress" => $request->remoteAddress(),
+            "other_fullname" => $olduser->getName(),
+            "other_username" => $olduser->getUsername(),
+            "other_email" => $olduser->getEmail(),
+            "url" => $url->absolute(),
+        ]);
         return  $this->mailer->sendMail(
             $user->getEmail(),
             $this->view->plain("email_subject", $request->serverName()),
-            $this->view->renderPlain("mail_duplicate", [
-                "fullname" => $user->getName(),
-                "username" => $user->getUsername(),
-                "email" => $user->getEmail(),
-                "remoteAddress" => $request->remoteAddress(),
-                "other_fullname" => $olduser->getName(),
-                "other_username" => $olduser->getUsername(),
-                "other_email" => $olduser->getEmail(),
-                "url" => $url->absolute(),
-            ]),
+            html_entity_decode(strip_tags($html), ENT_COMPAT | ENT_SUBSTITUTE, "UTF-8"),
             $this->conf["mail_address"],
             $this->conf["mail_address"]
         );
@@ -173,16 +174,17 @@ class HandleUserRegistration
         $url = $request->url()->with("register_action", "activate")
             ->with("register_username", $user->getUsername())
             ->with("register_nonce", $user->getStatus());
+        $html = $this->view->render("mail_activation", [
+            "fullname" => $user->getName(),
+            "username" => $user->getUsername(),
+            "email" => $user->getEmail(),
+            "remoteAddress" => $request->remoteAddress(),
+            "url" => $url->absolute(),
+        ]);
         return $this->mailer->sendMail(
             $user->getEmail(),
             $this->view->plain("email_subject", $request->serverName()),
-            $this->view->renderPlain("mail_activation", [
-                "fullname" => $user->getName(),
-                "username" => $user->getUsername(),
-                "email" => $user->getEmail(),
-                "remoteAddress" => $request->remoteAddress(),
-                "url" => $url->absolute(),
-            ]),
+            html_entity_decode(strip_tags($html), ENT_COMPAT | ENT_SUBSTITUTE, "UTF-8"),
             $this->conf["mail_address"],
             $this->conf["mail_address"]
         );
@@ -192,17 +194,17 @@ class HandleUserRegistration
     {
         $params = $request->activationParams();
         if (!$params["nonce"]) {
-            return Response::create($this->view->error("error_code_missing"));
+            return Response::create($this->view->message("fail", "error_code_missing"));
         }
         if (!($user = $this->userRepository->findByUsername($params["username"]))) {
-            return Response::create($this->view->error("error_username_notfound", $params["username"]));
+            return Response::create($this->view->message("fail", "error_username_notfound", $params["username"]));
         }
         if (!hash_equals($user->getStatus(), $params["nonce"])) {
-            return Response::create($this->view->error("error_code_invalid"));
+            return Response::create($this->view->message("fail", "error_code_invalid"));
         }
         $user = $user->activate()->withAccessgroups([$this->conf["group_activated"]]);
         if (!$this->userRepository->save($user)) {
-            return Response::create($this->view->error("error_cannot_write_csv"));
+            return Response::create($this->view->message("fail", "error_cannot_write_csv"));
         }
         return Response::create($this->view->render("activation", [
             "url" => $request->url()->withoutParams()->relative(),

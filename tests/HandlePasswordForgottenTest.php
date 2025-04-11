@@ -12,6 +12,7 @@ use ApprovalTests\Approvals;
 use org\bovigo\vfs\vfsStream;
 use PHPUnit\Framework\MockObject;
 use PHPUnit\Framework\TestCase;
+use Plib\View;
 use Register\Infra\FakeDbService;
 use Register\Infra\FakeLogger;
 use Register\Infra\FakePassword;
@@ -20,7 +21,6 @@ use Register\Infra\LoginManager;
 use Register\Infra\Mailer;
 use Register\Infra\Random;
 use Register\Infra\UserRepository;
-use Register\Infra\View;
 use Register\PHPMailer\PHPMailer;
 use Register\Value\User;
 

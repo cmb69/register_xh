@@ -11,6 +11,7 @@ namespace Register;
 use ApprovalTests\Approvals;
 use org\bovigo\vfs\vfsStream;
 use PHPUnit\Framework\TestCase;
+use Plib\View;
 use Register\Infra\FakeCsrfProtector;
 use Register\Infra\FakeDbService;
 use Register\Infra\FakePassword;
@@ -19,7 +20,6 @@ use Register\Infra\Mailer;
 use Register\Infra\Random;
 use Register\Infra\UserGroupRepository;
 use Register\Infra\UserRepository;
-use Register\Infra\View;
 use Register\Value\User;
 use Register\Value\UserGroup;
 

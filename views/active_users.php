@@ -1,6 +1,6 @@
 <?php
 
-use Register\Infra\View;
+use Plib\View;
 
 /**
  * @var View $this

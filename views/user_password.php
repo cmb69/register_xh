@@ -1,6 +1,6 @@
 <?php
 
-use Register\Infra\View;
+use Plib\View;
 
 /**
  * @var View $this
@@ -16,23 +16,23 @@ use Register\Infra\View;
 <?foreach ($errors as $error):?>
   <p class="xh_fail"><?=$this->text(...$error)?></p>
 <?endforeach?>
-  <input type="hidden" name="register_token" value="<?=$token?>">
+  <input type="hidden" name="register_token" value="<?=$this->esc($token)?>">
   <p>
     <label>
       <span><?=$this->text('label_username')?></span>
-      <input value="<?=$username?>" disabled>
+      <input value="<?=$this->esc($username)?>" disabled>
     </label>
   </p>
   <p>
     <label>
       <span><?=$this->text('label_password')?></span>
-      <input type="password" autocomplete="new-password" name="password1" value="<?=$password1?>" required>
+      <input type="password" autocomplete="new-password" name="password1" value="<?=$this->esc($password1)?>" required>
     </label>
   </p>
   <p>
     <label>
       <span><?=$this->text('label_password2')?></span>
-      <input type="password" name="password2" value="<?=$password2?>" required>
+      <input type="password" name="password2" value="<?=$this->esc($password2)?>" required>
     </label>
   </p>
   <p>

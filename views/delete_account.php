@@ -1,6 +1,6 @@
 <?php
 
-use Register\Infra\View;
+use Plib\View;
 
 if (!defined("CMSIMPLE_XH_VERSION")) {header("HTTP/1.1 403 Forbidden"); exit;}
 
@@ -20,8 +20,8 @@ if (!defined("CMSIMPLE_XH_VERSION")) {header("HTTP/1.1 403 Forbidden"); exit;}
 <?foreach ($errors as $error):?>
   <p class="xh_fail"><?=$this->text(...$error)?></p>
 <?endforeach?>
-  <form action="<?=$action?>" method="post">
-    <input type="hidden" name="register_token" value="<?=$token?>">
+  <form action="<?=$this->esc($action)?>" method="post">
+    <input type="hidden" name="register_token" value="<?=$this->esc($token)?>">
     <p class="register_field">
       <label>
         <span><?=$this->text('label_oldpassword')?></span>
@@ -30,7 +30,7 @@ if (!defined("CMSIMPLE_XH_VERSION")) {header("HTTP/1.1 403 Forbidden"); exit;}
     </p>
     <p class="register_buttons">
       <button><?=$this->text('label_user_delete')?></button>
-      <a href="<?=$cancel?>"><?=$this->text('label_cancel')?></a>
+      <a href="<?=$this->esc($cancel)?>"><?=$this->text('label_cancel')?></a>
     </p>
   </form>
 </div>

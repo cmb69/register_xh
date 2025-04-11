@@ -16,3 +16,5 @@ parameters:
     - ../../cmsimple/functions.php
     - classes/phpmailer/PHPMailer.php
     - classes/phpmailer/SMTP.php
+  scanDirectories:
+    - ../plib/classes

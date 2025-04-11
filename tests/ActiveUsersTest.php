@@ -11,11 +11,11 @@ namespace Register;
 use ApprovalTests\Approvals;
 use org\bovigo\vfs\vfsStream;
 use PHPUnit\Framework\TestCase;
+use Plib\View;
 use Register\Infra\ActivityRepository;
 use Register\Infra\FakeDbService;
 use Register\Infra\FakeRequest;
 use Register\Infra\Random;
-use Register\Infra\View;
 
 class ActiveUsersTest extends TestCase
 {

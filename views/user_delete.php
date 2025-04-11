@@ -1,6 +1,6 @@
 <?php
 
-use Register\Infra\View;
+use Plib\View;
 
 /**
  * @var View $this
@@ -14,11 +14,11 @@ use Register\Infra\View;
 <?foreach ($errors as $error):?>
   <p class="xh_fail"><?=$this->text(...$error)?></p>
 <?endforeach?>
-  <input type="hidden" name="register_token" value="<?=$token?>">
+  <input type="hidden" name="register_token" value="<?=$this->esc($token)?>">
   <p>
     <label>
       <span><?=$this->text('label_username')?></span>
-      <input value="<?=$username?>" disabled>
+      <input value="<?=$this->esc($username)?>" disabled>
     </label>
   </p>
   <p>

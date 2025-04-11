@@ -10,7 +10,7 @@ namespace Register;
 
 use ApprovalTests\Approvals;
 use PHPUnit\Framework\TestCase;
-use Register\Infra\View;
+use Plib\View;
 
 class ForbiddenTest extends TestCase
 {

@@ -10,6 +10,7 @@ namespace Register;
 
 use org\bovigo\vfs\vfsStream;
 use PHPUnit\Framework\TestCase;
+use Plib\View;
 use Register\Infra\ActivityRepository;
 use Register\Infra\FakeDbService;
 use Register\Infra\FakeLogger;
@@ -19,7 +20,6 @@ use Register\Infra\LoginManager;
 use Register\Infra\Pages;
 use Register\Infra\Random;
 use Register\Infra\UserRepository;
-use Register\Infra\View;
 
 class MainTest extends TestCase
 {

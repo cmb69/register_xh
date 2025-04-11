@@ -8,6 +8,7 @@
 
 namespace Register;
 
+use Plib\View;
 use Register\Infra\CsrfProtector;
 use Register\Infra\Mailer;
 use Register\Infra\Password;
@@ -15,7 +16,6 @@ use Register\Infra\Random;
 use Register\Infra\Request;
 use Register\Infra\UserGroupRepository;
 use Register\Infra\UserRepository;
-use Register\Infra\View;
 use Register\Logic\Util;
 use Register\Value\Mail;
 use Register\Value\Passwords;
@@ -171,11 +171,11 @@ class UserAdmin
     private function doCreate(Request $request): Response
     {
         if (!$this->csrfProtector->check()) {
-            return $this->respondWith($this->view->error("error_unauthorized"));
+            return $this->respondWith($this->view->message("fail", "error_unauthorized"));
         }
         $username = $request->selectedUser();
         if ($this->userRepository->findByUsername($username)) {
-            return $this->respondWith($this->view->error("error_username_exists"));
+            return $this->respondWith($this->view->message("fail", "error_username_exists"));
         }
         $user = $request->postedUser();
         if (($errors = Util::validateUser($user, $request->postedConfirmation()))) {
@@ -225,11 +225,11 @@ class UserAdmin
     private function doUpdate(Request $request): Response
     {
         if (!$this->csrfProtector->check()) {
-            return $this->respondWith($this->view->error("error_unauthorized"));
+            return $this->respondWith($this->view->message("fail", "error_unauthorized"));
         }
         $username = $request->selectedUser();
         if (!($user = $this->userRepository->findByUsername($username))) {
-            return $this->respondWith($this->view->error("error_user_does_not_exist", $username));
+            return $this->respondWith($this->view->message("fail", "error_user_does_not_exist", $username));
         }
         $post = $request->userPost();
         $user = $user->with($post["name"], $post["email"], $post["groups"], $post["status"]);
@@ -294,11 +294,11 @@ class UserAdmin
     private function doChangePassword(Request $request): Response
     {
         if (!$this->csrfProtector->check()) {
-            return $this->respondWith($this->view->error("error_unauthorized"));
+            return $this->respondWith($this->view->message("fail", "error_unauthorized"));
         }
         $username = $request->selectedUser();
         if (!($user = $this->userRepository->findByUsername($username))) {
-            return $this->respondWith($this->view->error("error_user_does_not_exist", $username));
+            return $this->respondWith($this->view->message("fail", "error_user_does_not_exist", $username));
         }
         $passwords = $request->postedPasswords();
         if (($errors = Util::validatePasswords($passwords))) {
@@ -338,11 +338,11 @@ class UserAdmin
     private function doMail(Request $request): Response
     {
         if (!$this->csrfProtector->check()) {
-            return $this->respondWith($this->view->error("error_unauthorized"));
+            return $this->respondWith($this->view->message("fail", "error_unauthorized"));
         }
         $username = $request->selectedUser();
         if (!($user = $this->userRepository->findByUsername($username))) {
-            return $this->respondWith($this->view->error("error_user_does_not_exist", $username));
+            return $this->respondWith($this->view->message("fail", "error_user_does_not_exist", $username));
         }
         $mail = $request->postedMail();
         if (($errors = Util::validateMail($mail))) {
@@ -388,11 +388,11 @@ class UserAdmin
     private function doDelete(Request $request): Response
     {
         if (!$this->csrfProtector->check()) {
-            return $this->respondWith($this->view->error("error_unauthorized"));
+            return $this->respondWith($this->view->message("fail", "error_unauthorized"));
         }
         $username = $request->selectedUser();
         if (!($user = $this->userRepository->findByUsername($username))) {
-            return $this->respondWith($this->view->error("error_user_does_not_exist", $username));
+            return $this->respondWith($this->view->message("fail", "error_user_does_not_exist", $username));
         }
         if (!$this->userRepository->delete($user)) {
             return $this->respondWith($this->renderDeleteForm($user, [["error_cannot_write_csv"]]));

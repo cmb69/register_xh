@@ -11,13 +11,13 @@ namespace Register;
 use ApprovalTests\Approvals;
 use org\bovigo\vfs\vfsStream;
 use PHPUnit\Framework\TestCase;
+use Plib\View;
 use Register\Infra\FakeCsrfProtector;
 use Register\Infra\FakeDbService;
 use Register\Infra\FakeRequest;
 use Register\Infra\Pages;
 use Register\Infra\Random;
 use Register\Infra\UserGroupRepository;
-use Register\Infra\View;
 use Register\Value\UserGroup;
 
 class GroupAdminTest extends TestCase

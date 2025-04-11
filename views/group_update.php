@@ -1,6 +1,6 @@
 <?php
 
-use Register\Infra\View;
+use Plib\View;
 
 /**
  * @var View $this
@@ -15,11 +15,11 @@ use Register\Infra\View;
 <?foreach ($errors as $error):?>
   <p class="xh_fail"><?=$this->text(...$error)?></p>
 <?endforeach?>
-  <input type="hidden" name="register_token" value="<?=$token?>">
+  <input type="hidden" name="register_token" value="<?=$this->esc($token)?>">
   <p>
     <label>
       <span><?=$this->text('label_groupname')?></span>
-      <input name="groupname" value="<?=$group?>" disabled>
+      <input name="groupname" value="<?=$this->esc($group)?>" disabled>
     </label>
   </p>
   <p>
@@ -28,7 +28,7 @@ use Register\Infra\View;
       <select name="loginpage">
         <option value=""><?=$this->text('label_none')?></option>
 <?foreach ($options as $option):?>
-        <option value="<?=$option['url']?>" <?=$option['selected']?>><?=$option['heading']?></option>
+        <option value="<?=$this->esc($option['url'])?>" <?=$this->esc($option['selected'])?>><?=$this->esc($option['heading'])?></option>
 <?endforeach?>
       </select>
     </label>

@@ -8,6 +8,7 @@
 
 namespace Register;
 
+use Plib\View;
 use Register\Infra\ActivityRepository;
 use Register\Infra\CsrfProtector;
 use Register\Infra\DbService;
@@ -20,7 +21,6 @@ use Register\Infra\Random;
 use Register\Infra\SystemChecker;
 use Register\Infra\UserGroupRepository;
 use Register\Infra\UserRepository;
-use Register\Infra\View;
 use Register\PHPMailer\PHPMailer;
 
 class Dic
@@ -36,13 +36,13 @@ class Dic
             new Pages(),
             new Logger(),
             new LoginManager(),
-            self::makeView()
+            self::view()
         );
     }
 
     public static function makePagesAdmin(): PagesAdmin
     {
-        return new PagesAdmin(new Pages(), self::makeView());
+        return new PagesAdmin(new Pages(), self::view());
     }
 
     public static function makeUserAdmin(): UserAdmin
@@ -56,7 +56,7 @@ class Dic
             new Password(),
             new Random(),
             self::makeMailer(),
-            self::makeView()
+            self::view()
         );
     }
 
@@ -66,7 +66,7 @@ class Dic
             new CsrfProtector(),
             self::makeUserGroupRepository(),
             new Pages(),
-            self::makeView(),
+            self::view(),
         );
     }
 
@@ -77,7 +77,7 @@ class Dic
         return new HandleUserRegistration(
             $plugin_cf["register"],
             new Random(),
-            self::makeView(),
+            self::view(),
             self::makeUserRepository(),
             self::makeMailer(),
             new Password()
@@ -86,7 +86,7 @@ class Dic
 
     public static function makeForbidden(): Forbidden
     {
-        return new Forbidden(self::makeView());
+        return new Forbidden(self::view());
     }
 
     public static function makeHandlePasswordForgotten(): HandlePasswordForgotten
@@ -95,7 +95,7 @@ class Dic
 
         return new HandlePasswordForgotten(
             $plugin_cf["register"],
-            self::makeView(),
+            self::view(),
             self::makeUserRepository(),
             new Password(),
             self::makeMailer(),
@@ -112,7 +112,7 @@ class Dic
             $plugin_cf["register"],
             new CsrfProtector(),
             self::makeUserRepository(),
-            self::makeView(),
+            self::view(),
             self::makeMailer(),
             new Logger(),
             new Password()
@@ -131,7 +131,7 @@ class Dic
             new LoginManager(),
             new Logger(),
             new Password(),
-            self::makeView()
+            self::view()
         );
     }
 
@@ -141,14 +141,14 @@ class Dic
         return new UserInfo(
             $plugin_cf["register"],
             self::makeUserRepository(),
-            self::makeView()
+            self::view()
         );
     }
 
     public static function makeShowPageDataTab(): ShowPageDataTab
     {
         global $pth;
-        return new ShowPageDataTab($pth["folder"]["corestyle"], self::makeView());
+        return new ShowPageDataTab($pth["folder"]["corestyle"], self::view());
     }
 
     public static function makeShowPluginInfo(): ShowPluginInfo
@@ -158,7 +158,7 @@ class Dic
             $pth["folder"]["plugins"] . "register/",
             self::makeDbService(),
             new SystemChecker(),
-            self::makeView()
+            self::view()
         );
     }
 
@@ -168,7 +168,7 @@ class Dic
         return new ActiveUsers(
             $plugin_cf["register"],
             self::makeActivityRepository(),
-            self::makeView()
+            self::view()
         );
     }
 
@@ -209,7 +209,7 @@ class Dic
         return new Mailer($plugin_cf["register"], new PHPMailer(false));
     }
 
-    private static function makeView(): View
+    private static function view(): View
     {
         global $pth, $plugin_tx;
 

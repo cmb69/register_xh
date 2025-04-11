@@ -1,6 +1,6 @@
 <?php
 
-use Register\Infra\View;
+use Plib\View;
 
 if (!defined("CMSIMPLE_XH_VERSION")) {header("HTTP/1.1 403 Forbidden"); exit;}
 
@@ -26,36 +26,36 @@ if (!defined("CMSIMPLE_XH_VERSION")) {header("HTTP/1.1 403 Forbidden"); exit;}
     <p class="register_field">
       <label>
         <span><?=$this->text('label_name')?></span>
-        <input class="text" name="name" type="text" value="<?=$name?>" required>
+        <input class="text" name="name" type="text" value="<?=$this->esc($name)?>" required>
       </label>
     </p>
     <p class="register_field">
       <label>
         <span><?=$this->text('label_username')?></span>
-        <input class="text" name="username" type="text" value="<?=$username?>" required>
+        <input class="text" name="username" type="text" value="<?=$this->esc($username)?>" required>
       </label>
     </p>
     <p class="register_field">
       <label>
         <span><?=$this->text('label_password')?></span>
-        <input class="text" name="password1" type="password" value="<?=$password1?>" required>
+        <input class="text" name="password1" type="password" value="<?=$this->esc($password1)?>" required>
       </label>
     </p>
     <p class="register_field">
       <label>
         <span><?=$this->text('label_password2')?></span>
-        <input class="text" name="password2" type="password" value="<?=$password2?>" required>
+        <input class="text" name="password2" type="password" value="<?=$this->esc($password2)?>" required>
       </label>
     </p>
     <p class="register_field">
       <label>
         <span><?=$this->text('label_email')?></span>
-        <input class="text" name="email" type="email" value="<?=$email?>" required>
+        <input class="text" name="email" type="email" value="<?=$this->esc($email)?>" required>
       </label>
     </p>
     <p class="register_buttons">
       <button name="register_action" value="register"><?=$this->text('label_register')?></button>
-      <a href="<?=$cancel?>">Cancel</a>
+      <a href="<?=$this->esc($cancel)?>">Cancel</a>
     </p>
   </form>
 </div>

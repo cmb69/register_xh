@@ -10,9 +10,9 @@ namespace Register;
 
 use ApprovalTests\Approvals;
 use PHPUnit\Framework\TestCase;
+use Plib\View;
 use Register\Infra\DbService;
 use Register\Infra\SystemChecker;
-use Register\Infra\View;
 
 class ShowPluginInfoTest extends TestCase
 {

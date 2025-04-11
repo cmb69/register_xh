@@ -1,6 +1,6 @@
 <?php
 
-use Register\Infra\View;
+use Plib\View;
 
 /**
  * @var View $this
@@ -15,10 +15,10 @@ use Register\Infra\View;
 
 <?=$this->text($key)?><br>
 
- <?=$this->text('label_name')?>: <?=$fullname?><br>
- <?=$this->text('label_username')?>: <?=$username?><br>
- <?=$this->text('label_email')?>: <?=$email?><br>
- <?=$this->text('label_fromip')?>: <?=$remoteAddress?><br>
+ <?=$this->text('label_name')?>: <?=$this->esc($fullname)?><br>
+ <?=$this->text('label_username')?>: <?=$this->esc($username)?><br>
+ <?=$this->text('label_email')?>: <?=$this->esc($email)?><br>
+ <?=$this->text('label_fromip')?>: <?=$this->esc($remoteAddress)?><br>
 
 <?=$this->text('email_updated_text')?><br>
 

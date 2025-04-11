@@ -10,13 +10,13 @@
 
 namespace Register;
 
+use Plib\View;
 use Register\Infra\Logger;
 use Register\Infra\LoginManager;
 use Register\Infra\Mailer;
 use Register\Infra\Password;
 use Register\Infra\Request;
 use Register\Infra\UserRepository;
-use Register\Infra\View;
 use Register\Logic\Util;
 use Register\Value\Passwords;
 use Register\Value\Response;
@@ -70,7 +70,7 @@ class HandlePasswordForgotten
     public function __invoke(Request $request): Response
     {
         if (!$this->conf["allowed_password_forgotten"] || $request->username()) {
-            return Response::create($this->view->error("error_unauthorized"));
+            return Response::create($this->view->message("fail", "error_unauthorized"));
         }
         switch ($request->registerAction()) {
             default:
@@ -109,15 +109,16 @@ class HandlePasswordForgotten
             ->with("register_username", $user->getUsername())
             ->with("register_time", (string) $request->time())
             ->with("register_mac", $mac);
+        $html = $this->view->render("mail_reset", [
+            "fullname" => $user->getName(),
+            "username" => $user->getUsername(),
+            "email" => $user->getEmail(),
+            "url" => $url->absolute(),
+        ]);
         return $this->mailer->sendMail(
             $user->getEmail(),
             $this->view->plain("email_subject", $request->serverName()),
-            $this->view->renderPlain("mail_reset", [
-                "fullname" => $user->getName(),
-                "username" => $user->getUsername(),
-                "email" => $user->getEmail(),
-                "url" => $url->absolute(),
-            ]),
+            html_entity_decode(strip_tags($html), ENT_COMPAT | ENT_SUBSTITUTE, "UTF-8"),
             $this->conf["mail_address"]
         );
     }
@@ -126,7 +127,7 @@ class HandlePasswordForgotten
     {
         $params = $request->resetPasswordParams();
         if (!($user = $this->userRepository->findByUsername($params["username"]))) {
-            return Response::create($this->view->error("error_user_does_not_exist", $params["username"]));
+            return Response::create($this->view->message("fail", "error_user_does_not_exist", $params["username"]));
         }
         if (!$this->verifyMac($user, $params)) {
             return Response::create($this->view->message("fail", 'error_code_invalid'));
@@ -143,7 +144,7 @@ class HandlePasswordForgotten
     {
         $params = $request->resetPasswordParams();
         if (!($user = $this->userRepository->findByUsername($params["username"]))) {
-            return Response::create($this->view->error("error_user_does_not_exist", $params["username"]));
+            return Response::create($this->view->message("fail", "error_user_does_not_exist", $params["username"]));
         }
         if (!$this->verifyMac($user, $params)) {
             return Response::create($this->view->message("fail", 'error_code_invalid'));

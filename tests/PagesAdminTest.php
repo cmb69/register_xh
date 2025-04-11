@@ -10,9 +10,9 @@ namespace Register;
 
 use ApprovalTests\Approvals;
 use PHPUnit\Framework\TestCase;
+use Plib\View;
 use Register\Infra\FakeRequest;
 use Register\Infra\Pages;
-use Register\Infra\View;
 
 class PagesAdminTest extends TestCase
 {

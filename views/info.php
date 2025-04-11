@@ -1,6 +1,6 @@
 <?php
 
-use Register\Infra\View;
+use Plib\View;
 
 if (!defined("CMSIMPLE_XH_VERSION")) {header("HTTP/1.1 403 Forbidden"); exit;}
 
@@ -11,10 +11,10 @@ if (!defined("CMSIMPLE_XH_VERSION")) {header("HTTP/1.1 403 Forbidden"); exit;}
  */
 ?>
 <!-- register plugin info -->
-<h1>Register_XH <?=$version?></h1>
+<h1>Register_XH <?=$this->esc($version)?></h1>
 <div class="register_syscheck">
   <h2><?=$this->text('syscheck_title')?></h2>
 <?foreach ($checks as $check):?>
-  <p class="<?=$check['class']?>"><?=$this->text($check['key'], $check['arg'])?></p>
+  <p class="<?=$this->esc($check['class'])?>"><?=$this->text($check['key'], $check['arg'])?></p>
 <?endforeach?>
 </div>

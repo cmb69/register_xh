@@ -1,6 +1,6 @@
 <?php
 
-use Register\Infra\View;
+use Plib\View;
 
 if (!defined("CMSIMPLE_XH_VERSION")) {header("HTTP/1.1 403 Forbidden"); exit;}
 
@@ -12,15 +12,15 @@ if (!defined("CMSIMPLE_XH_VERSION")) {header("HTTP/1.1 403 Forbidden"); exit;}
  */
 ?>
 <!-- register page data tab -->
-<form action="<?=$action?>" method="post" id="register">
+<form action="<?=$this->esc($action)?>" method="post" id="register">
   <p>
     <div class="pl_tooltip">
-      <img src="<?=$iconFilename?>" alt="<?=$this->text('alt_help')?>">
+      <img src="<?=$this->esc($iconFilename)?>" alt="<?=$this->text('alt_help')?>">
       <div><?=$this->text("hint_accessgroups")?></div>
     </div>
     <label>
       <?=$this->text("label_accessgroups")?><br/>
-      <input name="register_access" value="<?=$accessGroups?>">
+      <input name="register_access" value="<?=$this->esc($accessGroups)?>">
     </label>
   </p>
   <input name="save_page_data" type="hidden">

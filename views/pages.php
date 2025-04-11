@@ -1,6 +1,6 @@
 <?php
 
-use Register\Infra\View;
+use Plib\View;
 
 /**
  * @var View $this
@@ -20,8 +20,8 @@ use Register\Infra\View;
     <tbody>
 <?foreach ($pages as $page):?>
       <tr>
-        <td><?=$page['indent']?><a href="<?=$page['url']?>"><?=$page['heading']?></a></td>
-        <td><?=$page['groups']?></td>
+        <td><?=$this->esc($page['indent'])?><a href="<?=$this->esc($page['url'])?>"><?=$this->esc($page['heading'])?></a></td>
+        <td><?=$this->esc($page['groups'])?></td>
       </tr>
     </tbody>
 <?endforeach?>

@@ -10,13 +10,13 @@
 
 namespace Register;
 
+use Plib\View;
 use Register\Infra\ActivityRepository;
 use Register\Infra\Logger;
 use Register\Infra\LoginManager;
 use Register\Infra\Pages;
 use Register\Infra\Request;
 use Register\Infra\UserRepository;
-use Register\Infra\View;
 use Register\Logic\Util;
 use Register\Value\Response;
 use Register\Value\User;

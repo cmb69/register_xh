@@ -11,6 +11,7 @@ namespace Register;
 use ApprovalTests\Approvals;
 use org\bovigo\vfs\vfsStream;
 use PHPUnit\Framework\TestCase;
+use Plib\View;
 use Register\Infra\FakeCsrfProtector;
 use Register\Infra\FakeDbService;
 use Register\Infra\FakeLogger;
@@ -19,7 +20,6 @@ use Register\Infra\FakeRequest;
 use Register\Infra\Mailer;
 use Register\Infra\Random;
 use Register\Infra\UserRepository;
-use Register\Infra\View;
 use Register\PHPMailer\PHPMailer;
 use Register\Value\User;
 
