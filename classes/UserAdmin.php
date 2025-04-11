@@ -8,11 +8,11 @@
 
 namespace Register;
 
+use Plib\CsrfProtector;
 use Plib\Random;
 use Plib\Request;
 use Plib\Response;
 use Plib\View;
-use Register\Infra\CsrfProtector;
 use Register\Infra\Mailer;
 use Register\Infra\Password;
 use Register\Infra\UserGroupRepository;
@@ -176,7 +176,7 @@ class UserAdmin
 
     private function doCreate(Request $request): Response
     {
-        if (!$this->csrfProtector->check()) {
+        if (!$this->csrfProtector->check($request->post("register_token"))) {
             return $this->respondWith($this->view->message("fail", "error_unauthorized"));
         }
         $username = $request->get("user") ?? "";
@@ -238,7 +238,7 @@ class UserAdmin
 
     private function doUpdate(Request $request): Response
     {
-        if (!$this->csrfProtector->check()) {
+        if (!$this->csrfProtector->check($request->post("register_token"))) {
             return $this->respondWith($this->view->message("fail", "error_unauthorized"));
         }
         $username = $request->get("user") ?? "";
@@ -311,7 +311,7 @@ class UserAdmin
 
     private function doChangePassword(Request $request): Response
     {
-        if (!$this->csrfProtector->check()) {
+        if (!$this->csrfProtector->check($request->post("register_token"))) {
             return $this->respondWith($this->view->message("fail", "error_unauthorized"));
         }
         $username = $request->get("user") ?? "";
@@ -358,7 +358,7 @@ class UserAdmin
 
     private function doMail(Request $request): Response
     {
-        if (!$this->csrfProtector->check()) {
+        if (!$this->csrfProtector->check($request->post("register_token"))) {
             return $this->respondWith($this->view->message("fail", "error_unauthorized"));
         }
         $username = $request->get("user") ?? "";
@@ -408,7 +408,7 @@ class UserAdmin
 
     private function doDelete(Request $request): Response
     {
-        if (!$this->csrfProtector->check()) {
+        if (!$this->csrfProtector->check($request->post("register_token"))) {
             return $this->respondWith($this->view->message("fail", "error_unauthorized"));
         }
         $username = $request->get("user") ?? "";

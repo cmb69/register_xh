@@ -11,14 +11,14 @@ namespace Register;
 use ApprovalTests\Approvals;
 use org\bovigo\vfs\vfsStream;
 use PHPUnit\Framework\TestCase;
+use Plib\CsrfProtector;
 use Plib\FakeRequest;
+use Plib\Random;
 use Plib\View;
-use Register\Infra\FakeCsrfProtector;
 use Register\Infra\FakeDbService;
 use Register\Infra\FakeLogger;
 use Register\Infra\FakePassword;
 use Register\Infra\Mailer;
-use Register\Infra\Random;
 use Register\Infra\UserRepository;
 use Register\PHPMailer\PHPMailer;
 use Register\Value\User;
@@ -47,7 +47,8 @@ class HandleUserPreferencesTest extends TestCase
         $this->conf = XH_includeVar("./config/config.php", "plugin_cf")["register"];
         $plugin_tx = XH_includeVar("./languages/en.php", 'plugin_tx');
         $text = $plugin_tx['register'];
-        $this->csrfProtector = new FakeCsrfProtector;
+        $this->csrfProtector = $this->createStub(CsrfProtector::class);
+        $this->csrfProtector->method("token")->willReturn("0+pVtDm4xXAxUmA3/mrL");
         $this->dbService = new FakeDbService("vfs://root/register/", "guest", $this->createMock(Random::class));
         $this->dbService->writeUsers($users);
         $this->userRepository = new UserRepository($this->dbService);
@@ -101,7 +102,7 @@ class HandleUserPreferencesTest extends TestCase
 
     public function testChangePrefsReportsCsrf(): void
     {
-        $this->csrfProtector->options(["check" => false]);
+        $this->csrfProtector->method("check")->willReturn(false);
         $request = new FakeRequest([
             "url" => "http://example.com/?&function=register_settings&register_action=change_prefs",
             "username" => "john",
@@ -112,6 +113,7 @@ class HandleUserPreferencesTest extends TestCase
 
     public function testChangePrefsReportsNonExistentUser(): void
     {
+        $this->csrfProtector->method("check")->willReturn(true);
         $request = new FakeRequest([
             "url" => "http://example.com/?&function=register_settings&register_action=change_prefs",
             "username" => "colt",
@@ -122,6 +124,7 @@ class HandleUserPreferencesTest extends TestCase
 
     public function testChangePrefsReportsLockedUser(): void
     {
+        $this->csrfProtector->method("check")->willReturn(true);
         $request = new FakeRequest([
             "url" => "http://example.com/?&function=register_settings&register_action=change_prefs",
             "username" => "jane",
@@ -132,6 +135,7 @@ class HandleUserPreferencesTest extends TestCase
 
     public function testChangePrefsReportsWrongPassword(): void
     {
+        $this->csrfProtector->method("check")->willReturn(true);
         $request = new FakeRequest([
             "url" => "http://example.com/?&function=register_settings&register_action=change_prefs",
             "username" => "john",
@@ -143,6 +147,7 @@ class HandleUserPreferencesTest extends TestCase
 
     public function testChangePrefsReportsValidationErrors(): void
     {
+        $this->csrfProtector->method("check")->willReturn(true);
         $request = new FakeRequest([
             "url" => "http://example.com/?&function=register_settings&register_action=change_prefs",
             "username" => "john",
@@ -154,6 +159,7 @@ class HandleUserPreferencesTest extends TestCase
 
     public function testChangePrefsReportsFailureToSave(): void
     {
+        $this->csrfProtector->method("check")->willReturn(true);
         $this->dbService->options(["writeUsers" => false]);
         $request = new FakeRequest([
             "url" => "http://example.com/?&function=register_settings&register_action=change_prefs",
@@ -167,6 +173,7 @@ class HandleUserPreferencesTest extends TestCase
     public function testChangePrefsRedirectsOnSuccess(): void
     {
         $_SERVER["REMOTE_ADDR"] = "127.0.0.1";
+        $this->csrfProtector->method("check")->willReturn(true);
         $request = new FakeRequest([
             "url" => "http://example.com/?&function=register_settings&register_action=change_prefs",
             "username" => "john",
@@ -219,7 +226,7 @@ class HandleUserPreferencesTest extends TestCase
 
     public function testChangePasswordReportsCsrf(): void
     {
-        $this->csrfProtector->options(["check" => false]);
+        $this->csrfProtector->method("check")->willReturn(false);
         $request = new FakeRequest([
             "url" => "http://example.com/?&function=register_settings&register_action=change_password",
             "username" => "john",
@@ -230,6 +237,7 @@ class HandleUserPreferencesTest extends TestCase
 
     public function testChangePasswordReportsNonExistentUser(): void
     {
+        $this->csrfProtector->method("check")->willReturn(true);
         $request = new FakeRequest([
             "url" => "http://example.com/?&function=register_settings&register_action=change_password",
             "username" => "colt",
@@ -240,6 +248,7 @@ class HandleUserPreferencesTest extends TestCase
 
     public function testChangePasswordReportsLockedUser(): void
     {
+        $this->csrfProtector->method("check")->willReturn(true);
         $request = new FakeRequest([
             "url" => "http://example.com/?&function=register_settings&register_action=change_password",
             "username" => "jane",
@@ -250,6 +259,7 @@ class HandleUserPreferencesTest extends TestCase
 
     public function testChangePasswordReportsWrongPassword(): void
     {
+        $this->csrfProtector->method("check")->willReturn(true);
         $request = new FakeRequest([
             "url" => "http://example.com/?&function=register_settings&register_action=change_password",
             "username" => "john",
@@ -261,6 +271,7 @@ class HandleUserPreferencesTest extends TestCase
 
     public function testChangePasswordReportsValidationErrors(): void
     {
+        $this->csrfProtector->method("check")->willReturn(true);
         $request = new FakeRequest([
             "url" => "http://example.com/?&function=register_settings&register_action=change_password",
             "username" => "john",
@@ -272,6 +283,7 @@ class HandleUserPreferencesTest extends TestCase
 
     public function testChangePasswordReportsFailureToSave(): void
     {
+        $this->csrfProtector->method("check")->willReturn(true);
         $this->dbService->options(["writeUsers" => false]);
         $request = new FakeRequest([
             "url" => "http://example.com/?&function=register_settings&register_action=change_password",
@@ -285,6 +297,7 @@ class HandleUserPreferencesTest extends TestCase
     public function testChangePasswordRedirectsOnSuccess(): void
     {
         $_SERVER["REMOTE_ADDR"] = "127.0.0.1";
+        $this->csrfProtector->method("check")->willReturn(true);
         $request = new FakeRequest([
             "url" => "http://example.com/?&function=register_settings&register_action=change_password",
             "username" => "john",
@@ -337,7 +350,7 @@ class HandleUserPreferencesTest extends TestCase
 
     public function testUnregisterReportsCsrf(): void
     {
-        $this->csrfProtector->options(["check" => false]);
+        $this->csrfProtector->method("check")->willReturn(false);
         $request = new FakeRequest([
             "url" => "http://example.com/?&function=register_settings&register_action=unregister",
             "username" => "john",
@@ -348,6 +361,7 @@ class HandleUserPreferencesTest extends TestCase
 
     public function testUnregisterReportsNonExistentUser(): void
     {
+        $this->csrfProtector->method("check")->willReturn(true);
         $request = new FakeRequest([
             "url" => "http://example.com/?&function=register_settings&register_action=unregister",
             "username" => "colt",
@@ -358,6 +372,7 @@ class HandleUserPreferencesTest extends TestCase
 
     public function testUnregisterReportsLockedUser(): void
     {
+        $this->csrfProtector->method("check")->willReturn(true);
         $request = new FakeRequest([
             "url" => "http://example.com/?&function=register_settings&register_action=unregister",
             "username" => "jane",
@@ -368,6 +383,7 @@ class HandleUserPreferencesTest extends TestCase
 
     public function testUnregisterReportsWrongPassword(): void
     {
+        $this->csrfProtector->method("check")->willReturn(true);
         $request = new FakeRequest([
             "url" => "http://example.com/?&function=register_settings&register_action=unregister",
             "username" => "john",
@@ -391,6 +407,7 @@ class HandleUserPreferencesTest extends TestCase
 
     public function testUnregisterRedirectsOnSuccess(): void
     {
+        $this->csrfProtector->method("check")->willReturn(true);
         $request = new FakeRequest([
             "url" => "http://example.com/?&function=register_settings&register_action=unregister",
             "username" => "john",

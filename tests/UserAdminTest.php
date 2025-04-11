@@ -11,13 +11,13 @@ namespace Register;
 use ApprovalTests\Approvals;
 use org\bovigo\vfs\vfsStream;
 use PHPUnit\Framework\TestCase;
+use Plib\CsrfProtector;
 use Plib\FakeRequest;
+use Plib\Random;
 use Plib\View;
-use Register\Infra\FakeCsrfProtector;
 use Register\Infra\FakeDbService;
 use Register\Infra\FakePassword;
 use Register\Infra\Mailer;
-use Register\Infra\Random;
 use Register\Infra\UserGroupRepository;
 use Register\Infra\UserRepository;
 use Register\Value\User;
@@ -39,7 +39,8 @@ class UserAdminTest extends TestCase
     {
         vfsStream::setup("root");
         $this->conf = XH_includeVar("./config/config.php", "plugin_cf")["register"];
-        $this->csrfProtector = new FakeCsrfProtector;
+        $this->csrfProtector = $this->createStub(CsrfProtector::class);
+        $this->csrfProtector->method("token")->willReturn("0+pVtDm4xXAxUmA3/mrL");
         $this->random = $this->createMock(Random::class);
         $this->random->method("bytes")->willReturn(hex2bin("de69351538c8d0a32beec9e9a365a4"));
         $this->dbService = new FakeDbService("vfs://root/register/", "guest", $this->random);
@@ -84,7 +85,7 @@ class UserAdminTest extends TestCase
 
     public function testDoCreateIsCsrfProtected(): void
     {
-        $this->csrfProtector->options(["check" => false]);
+        $this->csrfProtector->method("check")->willReturn(false);
         $request = new FakeRequest([
             "url" => "http://example.com/?&action=do_create",
         ]);
@@ -95,6 +96,7 @@ class UserAdminTest extends TestCase
 
     public function testDoCreateReportsExistingUser(): void
     {
+        $this->csrfProtector->method("check")->willReturn(true);
         $request = new FakeRequest([
             "url" => "http://example.com/?&action=do_create&user=jane",
         ]);
@@ -105,6 +107,7 @@ class UserAdminTest extends TestCase
 
     public function testDoCreateReportsValidationErrors(): void
     {
+        $this->csrfProtector->method("check")->willReturn(true);
         $request = new FakeRequest([
             "url" => "http://example.com/?&action=do_create",
             "post" => [
@@ -124,6 +127,7 @@ class UserAdminTest extends TestCase
 
     public function testDoCreateReportsExistingEmail(): void
     {
+        $this->csrfProtector->method("check")->willReturn(true);
         $request = new FakeRequest([
             "url" => "http://example.com/?&action=do_create",
             "post" => [
@@ -143,6 +147,7 @@ class UserAdminTest extends TestCase
 
     public function testDoCreateReportsFailureToSave(): void
     {
+        $this->csrfProtector->method("check")->willReturn(true);
         $this->dbService->options(["writeUsers" => false]);
         $request = new FakeRequest([
             "url" => "http://example.com/?&action=do_create",
@@ -163,6 +168,7 @@ class UserAdminTest extends TestCase
 
     public function testCreateRedirectsOnSuccess(): void
     {
+        $this->csrfProtector->method("check")->willReturn(true);
         $request = new FakeRequest([
             "url" => "http://example.com/?&action=do_create",
             "post" => [
@@ -200,7 +206,7 @@ class UserAdminTest extends TestCase
 
     public function testDoUpdateIsCsrfProtected(): void
     {
-        $this->csrfProtector->options(["check" => false]);
+        $this->csrfProtector->method("check")->willReturn(false);
         $request = new FakeRequest(["url" => "http://example.com/?&action=do_update"]);
         $response = $this->sut()($request);
         $this->assertEquals("Register – Users", $response->title());
@@ -209,6 +215,7 @@ class UserAdminTest extends TestCase
 
     public function testDoUpdateReportsMissingUser(): void
     {
+        $this->csrfProtector->method("check")->willReturn(true);
         $request = new FakeRequest(["url" => "http://example.com/?&action=do_update"]);
         $response = $this->sut()($request);
         $this->assertEquals("Register – Users", $response->title());
@@ -217,6 +224,7 @@ class UserAdminTest extends TestCase
 
     public function testDoUpdateReportsValidationErrors(): void
     {
+        $this->csrfProtector->method("check")->willReturn(true);
         $request = new FakeRequest([
             "url" => "http://example.com/?&action=do_update&user=jane",
             "post" => [
@@ -235,6 +243,7 @@ class UserAdminTest extends TestCase
 
     public function testDoUpdateReportsExistingEmail(): void
     {
+        $this->csrfProtector->method("check")->willReturn(true);
         $this->userRepository->save(
             new User("cmb", "test", ["guest"], "Christoph Becker", "cmb@example.com", "activated", "secret")
         );
@@ -254,6 +263,7 @@ class UserAdminTest extends TestCase
 
     public function testDoUpdateReportsFailureToSave(): void
     {
+        $this->csrfProtector->method("check")->willReturn(true);
         $this->dbService->options(["writeUsers" => false]);
         $request = new FakeRequest([
             "url" => "http://example.com/?&action=do_update&user=john",
@@ -271,6 +281,7 @@ class UserAdminTest extends TestCase
 
     public function testDoUpdateRedirectsOnSuccess(): void
     {
+        $this->csrfProtector->method("check")->willReturn(true);
         $request = new FakeRequest([
             "url" => "http://example.com/?&action=do_update&user=john",
             "post" => [
@@ -303,7 +314,7 @@ class UserAdminTest extends TestCase
 
     public function testDoChangePasswordIsCsrfProtected(): void
     {
-        $this->csrfProtector->options(["check" => false]);
+        $this->csrfProtector->method("check")->willReturn(false);
         $request = new FakeRequest(["url" => "http://example.com/?&action=do_change_password"]);
         $response = $this->sut()($request);
         $this->assertEquals("Register – Users", $response->title());
@@ -312,6 +323,7 @@ class UserAdminTest extends TestCase
 
     public function testDoChangePasswordReportsMissingUser(): void
     {
+        $this->csrfProtector->method("check")->willReturn(true);
         $request = new FakeRequest(["url" => "http://example.com/?&action=do_change_password&user=cmb"]);
         $response = $this->sut()($request);
         $this->assertEquals("Register – Users", $response->title());
@@ -320,6 +332,7 @@ class UserAdminTest extends TestCase
 
     public function testDoChangePasswordReportsValidationErrors(): void
     {
+        $this->csrfProtector->method("check")->willReturn(true);
         $request = new FakeRequest([
             "url" => "http://example.com/?&action=do_change_password&user=jane",
             "post" => ["password1" => "a", "password2" => "b"],
@@ -331,6 +344,7 @@ class UserAdminTest extends TestCase
 
     public function testDoChangePasswordReportsFailureToWrite(): void
     {
+        $this->csrfProtector->method("check")->willReturn(true);
         $this->dbService->options(["writeUsers" => false]);
         $request = new FakeRequest([
             "url" => "http://example.com/?&action=do_change_password&user=jane",
@@ -343,6 +357,7 @@ class UserAdminTest extends TestCase
 
     public function testDoChangePasswordRedirectsOnSuccess(): void
     {
+        $this->csrfProtector->method("check")->willReturn(true);
         $request = new FakeRequest([
             "url" => "http://example.com/?&action=do_change_password&user=jane",
             "post" => ["password1" => "a", "password2" => "a"],
@@ -370,7 +385,7 @@ class UserAdminTest extends TestCase
 
     public function testDoMailIsCsrfProtected(): void
     {
-        $this->csrfProtector->options(["check" => false]);
+        $this->csrfProtector->method("check")->willReturn(false);
         $request = new FakeRequest(["url" => "http://example.com/?&action=do_mail"]);
         $response = $this->sut()($request);
         $this->assertEquals("Register – Users", $response->title());
@@ -379,6 +394,7 @@ class UserAdminTest extends TestCase
 
     public function testDoMailReportsMissingUser(): void
     {
+        $this->csrfProtector->method("check")->willReturn(true);
         $request = new FakeRequest(["url" => "http://example.com/?&action=do_mail&user=cmb"]);
         $response = $this->sut()($request);
         $this->assertEquals("Register – Users", $response->title());
@@ -387,6 +403,7 @@ class UserAdminTest extends TestCase
 
     public function testDoMailReportsValidationErrors(): void
     {
+        $this->csrfProtector->method("check")->willReturn(true);
         $request = new FakeRequest([
             "url" => "http://example.com/?&action=do_mail&user=jane",
             "post" => ["subject" => "", "message" => "message"],
@@ -398,6 +415,7 @@ class UserAdminTest extends TestCase
 
     public function testDoMailReportsFailureToSendMail(): void
     {
+        $this->csrfProtector->method("check")->willReturn(true);
         $request = new FakeRequest([
             "url" => "http://example.com/?&action=do_mail&user=jane",
             "post" => ["subject" => "subject", "message" => "message"],
@@ -410,6 +428,7 @@ class UserAdminTest extends TestCase
 
     public function testDoMailRedirectsOnSuccess(): void
     {
+        $this->csrfProtector->method("check")->willReturn(true);
         $request = new FakeRequest([
             "url" => "http://example.com/?&action=do_mail&user=jane",
             "post" => ["subject" => "subject", "message" => "message"],
@@ -442,7 +461,7 @@ class UserAdminTest extends TestCase
 
     public function testDoDeleteIsCsrfProtected(): void
     {
-        $this->csrfProtector->options(["check" => false]);
+        $this->csrfProtector->method("check")->willReturn(false);
         $request = new FakeRequest(["url" => "http://example.com/?&action=do_delete"]);
         $response = $this->sut()($request);
         $this->assertEquals("Register – Users", $response->title());
@@ -451,6 +470,7 @@ class UserAdminTest extends TestCase
 
     public function testDoDeleteReportsMissingUser(): void
     {
+        $this->csrfProtector->method("check")->willReturn(true);
         $request = new FakeRequest(["url" => "http://example.com/?&action=do_delete&user=cmb"]);
         $response = $this->sut()($request);
         $this->assertEquals("Register – Users", $response->title());
@@ -459,6 +479,7 @@ class UserAdminTest extends TestCase
 
     public function testDoDeleteReportsFailureToSave(): void
     {
+        $this->csrfProtector->method("check")->willReturn(true);
         $this->dbService->options(["writeUsers" => false]);
         $request = new FakeRequest(["url" => "http://example.com/?&action=do_delete&user=jane"]);
         $response = $this->sut()($request);
@@ -468,6 +489,7 @@ class UserAdminTest extends TestCase
 
     public function testDoDeleteRedirectsOnSuccess(): void
     {
+        $this->csrfProtector->method("check")->willReturn(true);
         $request = new FakeRequest(["url" => "http://example.com/?&action=do_delete&user=jane"]);
         $response = $this->sut()($request);
         $this->assertNull($this->userRepository->findByUsername("jane"));

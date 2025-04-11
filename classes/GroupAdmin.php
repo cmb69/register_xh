@@ -8,10 +8,10 @@
 
 namespace Register;
 
+use Plib\CsrfProtector;
 use Plib\Request;
 use Plib\Response;
 use Plib\View;
-use Register\Infra\CsrfProtector;
 use Register\Infra\Pages;
 use Register\Infra\UserGroupRepository;
 use Register\Logic\Util;
@@ -86,7 +86,7 @@ class GroupAdmin
 
     private function doCreate(Request $request): Response
     {
-        if (!$this->csrfProtector->check()) {
+        if (!$this->csrfProtector->check($request->post("register_token"))) {
             return $this->respondWith($this->view->message("fail", "error_unauthorized"));
         }
         $groupname = $request->get("group") ?? "";
@@ -125,7 +125,7 @@ class GroupAdmin
 
     private function doUpdate(Request $request): Response
     {
-        if (!$this->csrfProtector->check()) {
+        if (!$this->csrfProtector->check($request->post("register_token"))) {
             return $this->respondWith($this->view->message("fail", "error_unauthorized"));
         }
         $groupname = $request->get("group") ?? "";
@@ -163,7 +163,7 @@ class GroupAdmin
 
     private function doDelete(Request $request): Response
     {
-        if (!$this->csrfProtector->check()) {
+        if (!$this->csrfProtector->check($request->post("register_token"))) {
             return $this->respondWith($this->view->message("fail", "error_unauthorized"));
         }
         $groupname = $request->get("group") ?? "";

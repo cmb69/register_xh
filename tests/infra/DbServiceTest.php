@@ -4,6 +4,7 @@ namespace Register\Infra;
 
 use org\bovigo\vfs\vfsStream;
 use PHPUnit\Framework\TestCase;
+use Plib\Random;
 use Register\Value\User;
 use Register\Value\UserGroup;
 

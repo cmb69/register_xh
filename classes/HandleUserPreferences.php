@@ -10,11 +10,11 @@
 
 namespace Register;
 
+use Plib\CsrfProtector;
 use Plib\Request;
 use Plib\Response;
 use Plib\Url;
 use Plib\View;
-use Register\Infra\CsrfProtector;
 use Register\Infra\Logger;
 use Register\Infra\Mailer;
 use Register\Infra\Password;
@@ -102,10 +102,10 @@ class HandleUserPreferences
 
     private function saveUser(Request $request): Response
     {
-        $username = $request->username() ?? "";
-        if (!$this->csrfProtector->check()) {
+        if (!$this->csrfProtector->check($request->post("register_token"))) {
             return Response::create($this->view->message("fail", "error_unauthorized"));
         }
+        $username = $request->username() ?? "";
         if (!($user = $this->userRepository->findByUsername($username))) {
             return Response::create($this->view->message("fail", "error_user_does_not_exist", $username));
         }
@@ -161,7 +161,7 @@ class HandleUserPreferences
 
     private function changePassword(Request $request): Response
     {
-        if (!$this->csrfProtector->check()) {
+        if (!$this->csrfProtector->check($request->post("register_token"))) {
             return Response::create($this->view->message("fail", "error_unauthorized"));
         }
         $username = $request->username() ?? "";
@@ -240,7 +240,7 @@ class HandleUserPreferences
 
     private function unregisterUser(Request $request): Response
     {
-        if (!$this->csrfProtector->check()) {
+        if (!$this->csrfProtector->check($request->post("register_token"))) {
             return Response::create($this->view->message("fail", "error_unauthorized"));
         }
         $username = $request->username() ?? "";

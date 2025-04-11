@@ -12,10 +12,10 @@ use ApprovalTests\Approvals;
 use org\bovigo\vfs\vfsStream;
 use PHPUnit\Framework\TestCase;
 use Plib\FakeRequest;
+use Plib\Random;
 use Plib\View;
 use Register\Infra\ActivityRepository;
 use Register\Infra\FakeDbService;
-use Register\Infra\Random;
 
 class ActiveUsersTest extends TestCase
 {

@@ -8,10 +8,10 @@
 
 namespace Register;
 
+use Plib\CsrfProtector;
 use Plib\Random;
 use Plib\View;
 use Register\Infra\ActivityRepository;
-use Register\Infra\CsrfProtector;
 use Register\Infra\DbService;
 use Register\Infra\Logger;
 use Register\Infra\LoginManager;
