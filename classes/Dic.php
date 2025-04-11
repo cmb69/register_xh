@@ -8,6 +8,7 @@
 
 namespace Register;
 
+use Plib\Random;
 use Plib\View;
 use Register\Infra\ActivityRepository;
 use Register\Infra\CsrfProtector;
@@ -17,7 +18,6 @@ use Register\Infra\LoginManager;
 use Register\Infra\Mailer;
 use Register\Infra\Pages;
 use Register\Infra\Password;
-use Register\Infra\Random;
 use Register\Infra\SystemChecker;
 use Register\Infra\UserGroupRepository;
 use Register\Infra\UserRepository;

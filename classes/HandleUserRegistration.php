@@ -10,13 +10,13 @@
 
 namespace Register;
 
+use Plib\Random;
 use Plib\Request;
 use Plib\Response;
 use Plib\Url;
 use Plib\View;
 use Register\Infra\Mailer;
 use Register\Infra\Password;
-use Register\Infra\Random;
 use Register\Infra\UserRepository;
 use Register\Logic\Util;
 use Register\Value\User;

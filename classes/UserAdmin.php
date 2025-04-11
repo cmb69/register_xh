@@ -8,13 +8,13 @@
 
 namespace Register;
 
+use Plib\Random;
 use Plib\Request;
 use Plib\Response;
 use Plib\View;
 use Register\Infra\CsrfProtector;
 use Register\Infra\Mailer;
 use Register\Infra\Password;
-use Register\Infra\Random;
 use Register\Infra\UserGroupRepository;
 use Register\Infra\UserRepository;
 use Register\Logic\Util;

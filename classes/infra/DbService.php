@@ -10,6 +10,7 @@
 
 namespace Register\Infra;
 
+use Plib\Random;
 use Register\Value\User;
 use Register\Value\UserGroup;
 
