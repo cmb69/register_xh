@@ -43,7 +43,7 @@ function register_user_info(string $pageUrl): string
 
 function register_active_users(): string
 {
-    return Dic::makeActiveUsers()(Request::current())();
+    return Dic::activeUsersController()(Request::current())();
 }
 
 function register_forbidden(): string

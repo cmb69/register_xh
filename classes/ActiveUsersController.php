@@ -13,7 +13,7 @@ use Plib\Response;
 use Plib\View;
 use Register\Infra\ActivityRepository;
 
-class ActiveUsers
+class ActiveUsersController
 {
     /** @var array<string,string> */
     private $conf;

@@ -162,10 +162,10 @@ class Dic
         );
     }
 
-    public static function makeActiveUsers(): ActiveUsers
+    public static function activeUsersController(): ActiveUsersController
     {
         global $plugin_cf;
-        return new ActiveUsers(
+        return new ActiveUsersController(
             $plugin_cf["register"],
             self::makeActivityRepository(),
             self::view()

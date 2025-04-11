@@ -17,7 +17,7 @@ use Plib\View;
 use Register\Infra\ActivityRepository;
 use Register\Infra\FakeDbService;
 
-class ActiveUsersTest extends TestCase
+class ActiveUsersControllerTest extends TestCase
 {
     private $conf;
     private $activityRepository;
@@ -35,7 +35,7 @@ class ActiveUsersTest extends TestCase
 
     private function sut()
     {
-        return new ActiveUsers(
+        return new ActiveUsersController(
             $this->conf,
             $this->activityRepository,
             $this->view

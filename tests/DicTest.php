@@ -81,8 +81,8 @@ class DicTest extends TestCase
         $this->assertInstanceOf(ShowPluginInfo::class, Dic::makeShowPluginInfo());
     }
 
-    public function testMakesActiveUsers(): void
+    public function testMakesActiveUsersController(): void
     {
-        $this->assertInstanceOf(ActiveUsers::class, Dic::makeActiveUsers());
+        $this->assertInstanceOf(ActiveUsersController::class, Dic::activeUsersController());
     }
 }
