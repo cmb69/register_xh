@@ -9,19 +9,20 @@
 namespace Register;
 
 use Plib\CsrfProtector;
+use Plib\DocumentStore;
 use Plib\Random;
 use Plib\Request;
 use Plib\Response;
 use Plib\View;
 use Register\Infra\Mailer;
 use Register\Infra\Password;
-use Register\Infra\UserGroupRepository;
 use Register\Infra\UserRepository;
 use Register\Logic\Util;
+use Register\Model\Groups;
+use Register\Model\UserGroup;
 use Register\Value\Mail;
 use Register\Value\Passwords;
 use Register\Value\User;
-use Register\Value\UserGroup;
 
 class UserAdmin
 {
@@ -34,8 +35,8 @@ class UserAdmin
     /** @var UserRepository */
     private $userRepository;
 
-    /** @var UserGroupRepository */
-    private $userGroupRepository;
+    /** @var DocumentStore */
+    private $store;
 
     /** @var Password */
     private $password;
@@ -54,7 +55,7 @@ class UserAdmin
         array $conf,
         CsrfProtector $csrfProtector,
         UserRepository $userRepository,
-        UserGroupRepository $userGroupRepository,
+        DocumentStore $store,
         Password $password,
         Random $random,
         Mailer $mailer,
@@ -63,7 +64,7 @@ class UserAdmin
         $this->conf = $conf;
         $this->csrfProtector = $csrfProtector;
         $this->userRepository = $userRepository;
-        $this->userGroupRepository = $userGroupRepository;
+        $this->store = $store;
         $this->password = $password;
         $this->random = $random;
         $this->mailer = $mailer;
@@ -109,7 +110,7 @@ class UserAdmin
             "status" => $request->get("status") ?? "",
         ];
         $users = $this->userRepository->select($filters);
-        $groups = $this->userGroupRepository->all();
+        $groups = Groups::retrieve($this->store)->groups();
         return $this->respondWith($this->view->render("users", [
             "errors" => $errors,
             "users" => $this->userRecords($users, $request->get("user") ?? ""),
@@ -213,7 +214,7 @@ class UserAdmin
     /** @param list<array{string}> $errors */
     private function renderCreateForm(User $user, string $password2, array $errors = []): string
     {
-        $groups = $this->userGroupRepository->all();
+        $groups = Groups::retrieve($this->store)->groups();
         return $this->view->render("user_create", [
             "errors" => $errors,
             "token" => $this->csrfProtector->token(),
@@ -266,7 +267,7 @@ class UserAdmin
     /** @param list<array{string}> $errors */
     private function renderUpdateForm(User $user, array $errors = []): string
     {
-        $groups = $this->userGroupRepository->all();
+        $groups = Groups::retrieve($this->store)->groups();
         return $this->view->render("user_update", [
             "errors" => $errors,
             "token" => $this->csrfProtector->token(),

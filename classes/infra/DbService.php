@@ -11,16 +11,13 @@
 namespace Register\Infra;
 
 use Plib\Random;
+use Register\Model\UserGroup;
 use Register\Value\User;
-use Register\Value\UserGroup;
 
 class DbService
 {
     /** @var string */
     private $dirname;
-
-    /** @var string */
-    private $defaultGroupName;
 
     /** @var Random */
     private $random;
@@ -28,10 +25,9 @@ class DbService
     /** @var bool */
     private $initialized = false;
 
-    public function __construct(string $dirname, string $defaultGroupName, Random $random)
+    public function __construct(string $dirname, Random $random)
     {
         $this->dirname = $dirname;
-        $this->defaultGroupName = $defaultGroupName;
         $this->random = $random;
     }
 
@@ -47,9 +43,6 @@ class DbService
         }
         if (!is_file("{$this->dirname}users.csv")) {
             $this->writeUsers([]);
-        }
-        if (!is_file("{$this->dirname}groups.csv")) {
-            $this->writeGroups([new UserGroup($this->defaultGroupName, '')]);
         }
         return $this->dirname;
     }
@@ -76,16 +69,6 @@ class DbService
             flock($stream, LOCK_UN);
             fclose($stream);
         }
-    }
-
-    /** @return list<UserGroup> */
-    public function readGroups(): array
-    {
-        return $this->read($this->dataFolder() . "groups.csv", function (string $line) {
-            $fields = explode('|', rtrim($line), 2);
-            $fields = array_pad($fields, 2, "");
-            return UserGroup::fromArray($fields);
-        });
     }
 
     /** @return list<User> */

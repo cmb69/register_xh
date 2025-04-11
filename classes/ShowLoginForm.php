@@ -17,10 +17,10 @@ use Plib\View;
 use Register\Infra\Logger;
 use Register\Infra\LoginManager;
 use Register\Infra\Password;
-use Register\Infra\UserGroupRepository;
 use Register\Infra\UserRepository;
 use Register\Logic\Util;
 use Register\Model\ActiveUsers;
+use Register\Model\Groups;
 use Register\Value\User;
 
 class ShowLoginForm
@@ -30,9 +30,6 @@ class ShowLoginForm
 
     /** @var UserRepository */
     private $userRepository;
-
-    /** @var UserGroupRepository */
-    private $userGroupRepository;
 
     /** @var DocumentStore */
     private $store;
@@ -53,7 +50,6 @@ class ShowLoginForm
     public function __construct(
         array $conf,
         UserRepository $userRepository,
-        UserGroupRepository $userGroupRepository,
         DocumentStore $store,
         LoginManager $loginManager,
         Logger $logger,
@@ -62,7 +58,6 @@ class ShowLoginForm
     ) {
         $this->conf = $conf;
         $this->userRepository = $userRepository;
-        $this->userGroupRepository = $userGroupRepository;
         $this->store = $store;
         $this->loginManager = $loginManager;
         $this->logger = $logger;
@@ -171,7 +166,8 @@ class ShowLoginForm
 
     private function loginUrl(Request $request, User $user): string
     {
-        if (!($group = $this->userGroupRepository->findByGroupname($user->getAccessgroups()[0]))) {
+        $groups = Groups::retrieve($this->store);
+        if (!($group = $groups->group($user->getAccessgroups()[0]))) {
             return $request->url()->without("register_action")->absolute();
         }
         if (!$group->getLoginpage()) {

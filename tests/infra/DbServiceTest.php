@@ -6,7 +6,6 @@ use org\bovigo\vfs\vfsStream;
 use PHPUnit\Framework\TestCase;
 use Plib\Random;
 use Register\Value\User;
-use Register\Value\UserGroup;
 
 class DbServiceTest extends TestCase
 {
@@ -16,7 +15,7 @@ class DbServiceTest extends TestCase
     protected function setUp(): void
     {
         vfsStream::setup("root");
-        $this->subject = new DbService("vfs://root/register/", "guest", $this->createStub(Random::class));
+        $this->subject = new DbService("vfs://root/register/", $this->createStub(Random::class));
     }
 
     public function testCanAquireLock(): void
@@ -33,16 +32,6 @@ class DbServiceTest extends TestCase
         chmod($lockFilename, 0000);
         $lock = $this->subject->lock(true);
         $this->assertNull($lock);
-    }
-
-    public function testWriteAndReadGroups()
-    {
-        $expected = array(
-            new UserGroup('admin', '')
-        );
-        $this->subject->writeGroups($expected);
-        $actual = $this->subject->readGroups();
-        $this->assertEquals($expected, $actual);
     }
 
     public function testWriteAndReadUsers()

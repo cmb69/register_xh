@@ -12,19 +12,20 @@ use ApprovalTests\Approvals;
 use org\bovigo\vfs\vfsStream;
 use PHPUnit\Framework\TestCase;
 use Plib\CsrfProtector;
+use Plib\DocumentStore;
 use Plib\FakeRequest;
 use Plib\Random;
 use Plib\View;
 use Register\Infra\FakeDbService;
 use Register\Infra\Pages;
-use Register\Infra\UserGroupRepository;
-use Register\Value\UserGroup;
+use Register\Model\Groups;
+use Register\Model\UserGroup;
 
 class GroupAdminTest extends TestCase
 {
     private $csrfProtector;
     private $dbService;
-    private $userGroupRepository;
+    private $store;
     private $pages;
     private $view;
 
@@ -33,9 +34,9 @@ class GroupAdminTest extends TestCase
         vfsStream::setup("root");
         $this->csrfProtector = $this->createStub(CsrfProtector::class);
         $this->csrfProtector->method("token")->willReturn("0+pVtDm4xXAxUmA3/mrL");
-        $this->dbService = new FakeDbService("vfs://root/register/", "guest", $this->createMock(Random::class));
+        $this->dbService = new FakeDbService("vfs://root/register/", $this->createMock(Random::class));
         $this->dbService->dataFolder();
-        $this->userGroupRepository = new UserGroupRepository($this->dbService);
+        $this->store = $this->createMock(DocumentStore::class);
         $this->pages = $this->createStub(Pages::class);
         $this->view = new View("./views/", XH_includeVar("./languages/en.php", "plugin_tx")["register"]);
     }
@@ -44,7 +45,7 @@ class GroupAdminTest extends TestCase
     {
         return new GroupAdmin(
             $this->csrfProtector,
-            $this->userGroupRepository,
+            $this->store,
             $this->pages,
             $this->view
         );
@@ -52,7 +53,10 @@ class GroupAdminTest extends TestCase
 
     public function testRendersOverview(): void
     {
-        $this->userGroupRepository->save(new UserGroup("new", "Start"));
+        $this->store->method("retrieve")->willReturn(new Groups([
+            new UserGroup("guest", ""),
+            new UserGroup("new", "Start"),
+        ]));
         $request = new FakeRequest();
         $response = $this->sut()($request);
         $this->assertEquals("Register – Groups", $response->title());
@@ -83,6 +87,7 @@ class GroupAdminTest extends TestCase
     public function testDoCreateReportsExistingGroup(): void
     {
         $this->csrfProtector->method("check")->willReturn(true);
+        $this->store->method("update")->willReturn(new Groups(["guest" => new UserGroup("guest", "")]));
         $request = new FakeRequest([
             "url" => "http://example.com/?&group=guest",
             "post" => ["action" => "do_create"],
@@ -95,6 +100,7 @@ class GroupAdminTest extends TestCase
     public function testDoCreateReportsInvalidGroup(): void
     {
         $this->csrfProtector->method("check")->willReturn(true);
+        $this->store->method("update")->willReturn(new Groups([]));
         $request = new FakeRequest(["post" => ["action" => "do_create", "groupname" => "", "loginpage" => ""]]);
         $response = $this->sut()($request);
         $this->assertEquals("Register – Groups", $response->title());
@@ -107,6 +113,8 @@ class GroupAdminTest extends TestCase
     public function testDoCreateReportsFailureToSave(): void
     {
         $this->csrfProtector->method("check")->willReturn(true);
+        $this->store->method("update")->willReturn(new Groups([]));
+        $this->store->method("commit")->willReturn(false);
         $this->dbService->options(["writeGroups" => false]);
         $request = new FakeRequest(["post" => ["action" => "do_create", "groupname" => "new", "loginpage" => ""]]);
         $response = $this->sut()($request);
@@ -117,16 +125,22 @@ class GroupAdminTest extends TestCase
     public function testDoCreateRedirectsOnSuccess(): void
     {
         $this->csrfProtector->method("check")->willReturn(true);
+        $groups = new Groups([]);
+        $this->store->method("update")->willReturn($groups);
+        $this->store->method("commit")->willReturn(true);
         $request = new FakeRequest([
             "post" => ["action" => "do_create", "groupname" => "new", "loginpage" => ""],
         ]);
         $response = $this->sut()($request);
-        $this->assertEquals(new UserGroup("new", ""), $this->userGroupRepository->findByGroupName("new"));
+        $this->assertEquals(new UserGroup("new", ""), $groups->group("new"));
         $this->assertEquals("http://example.com/?register&admin=groups", $response->location());
     }
 
     public function testUpdateReportsMissingGroup(): void
     {
+        $this->store->method("retrieve")->willReturn(new Groups([
+            new UserGroup("guest", ""),
+        ]));
         $request = new FakeRequest([
             "url" => "http://example.com/?register&admin=groups&action=update&group=missing",
         ]);
@@ -137,6 +151,7 @@ class GroupAdminTest extends TestCase
 
     public function testRendersUpdateForm(): void
     {
+        $this->store->method("retrieve")->willReturn(new Groups(["guest" => new UserGroup("guest", "")]));
         $request = new FakeRequest([
             "url" => "http://example.com/?&action=update&group=guest",
         ]);
@@ -157,6 +172,7 @@ class GroupAdminTest extends TestCase
     public function testDoUpdateReportsMissingGroup(): void
     {
         $this->csrfProtector->method("check")->willReturn(true);
+        $this->store->method("update")->willReturn(new Groups([]));
         $request = new FakeRequest([
             "url" => "http://example.com/?&group=missing",
             "post" => ["action" => "do_update"],
@@ -169,6 +185,7 @@ class GroupAdminTest extends TestCase
     public function testDoUpdateReportsFailureToSave(): void
     {
         $this->csrfProtector->method("check")->willReturn(true);
+        $this->store->method("update")->willReturn(new Groups(["guest" => new UserGroup("guest", "")]));
         $this->dbService->options(["writeGroups" => false]);
         $request = new FakeRequest([
             "url" => "http://example.com/?&group=guest",
@@ -182,17 +199,21 @@ class GroupAdminTest extends TestCase
     public function testDoUpdateRedirectsOnSuccess(): void
     {
         $this->csrfProtector->method("check")->willReturn(true);
+        $groups = new Groups(["guest" => new UserGroup("guest", "")]);
+        $this->store->method("update")->willReturn($groups);
+        $this->store->method("commit")->willReturn(true);
         $request = new FakeRequest([
             "url" => "http://example.com/?&group=guest",
             "post" => ["action" => "do_update", "loginpage" => "Login"],
         ]);
         $response = $this->sut()($request);
-        $this->assertEquals(new UserGroup("guest", "Login"), $this->userGroupRepository->findByGroupName("guest"));
+        $this->assertEquals(new UserGroup("guest", "Login"), $groups->group("guest"));
         $this->assertEquals("http://example.com/?register&admin=groups", $response->location());
     }
 
     public function testDeleteReportsMissingGroup(): void
     {
+        $this->store->method("retrieve")->willReturn(new Groups([]));
         $request = new FakeRequest([
             "url" => "http://example.com/?&action=delete&group=missing",
         ]);
@@ -203,6 +224,7 @@ class GroupAdminTest extends TestCase
 
     public function testRendersDeleteForm(): void
     {
+        $this->store->method("retrieve")->willReturn(new Groups(["guest" => new UserGroup("guest", "")]));
         $request = new FakeRequest(["url" => "http://example.com/?&action=delete&group=guest"]);
         $response = $this->sut()($request);
         $this->assertEquals("Register – Groups", $response->title());
@@ -220,6 +242,7 @@ class GroupAdminTest extends TestCase
     public function testDoDeleteReportsMissingGroup(): void
     {
         $this->csrfProtector->method("check")->willReturn(true);
+        $this->store->method("update")->willReturn(new Groups([]));
         $request = new FakeRequest([
             "url" => "http://example.com/?&group=missing",
             "post" => ["action" => "do_delete"],
@@ -232,6 +255,8 @@ class GroupAdminTest extends TestCase
     public function testDoDeleteReportsFailureToSave(): void
     {
         $this->csrfProtector->method("check")->willReturn(true);
+        $this->store->method("update")->willReturn(new Groups(["guest" => new UserGroup("guest", "")]));
+        $this->store->method("commit")->willReturn(false);
         $this->dbService->options(["writeGroups" => false]);
         $request = new FakeRequest([
             "url" => "http://example.com/?&group=guest",
@@ -245,12 +270,15 @@ class GroupAdminTest extends TestCase
     public function testDoDeleteRedirectsOnSuccess(): void
     {
         $this->csrfProtector->method("check")->willReturn(true);
+        $groups = new Groups(["guest" => new UserGroup("guest", "")]);
+        $this->store->method("update")->willReturn($groups);
+        $this->store->method("commit")->willReturn(true);
         $request = new FakeRequest([
             "url" => "http://example.com/?&group=guest",
             "post" => ["action" => "do_delete"],
         ]);
         $response = $this->sut()($request);
-        $this->assertNull($this->userGroupRepository->findByGroupName("guest"));
+        $this->assertNull($groups->group("guest"));
         $this->assertEquals("http://example.com/?register&admin=groups", $response->location());
     }
 }

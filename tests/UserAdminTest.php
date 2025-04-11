@@ -12,23 +12,24 @@ use ApprovalTests\Approvals;
 use org\bovigo\vfs\vfsStream;
 use PHPUnit\Framework\TestCase;
 use Plib\CsrfProtector;
+use Plib\DocumentStore;
 use Plib\FakeRequest;
 use Plib\Random;
 use Plib\View;
 use Register\Infra\FakeDbService;
 use Register\Infra\FakePassword;
 use Register\Infra\Mailer;
-use Register\Infra\UserGroupRepository;
 use Register\Infra\UserRepository;
+use Register\Model\Groups;
+use Register\Model\UserGroup;
 use Register\Value\User;
-use Register\Value\UserGroup;
 
 class UserAdminTest extends TestCase
 {
     private $conf;
     private $csrfProtector;
     private $userRepository;
-    private $userGroupRepository;
+    private $store;
     private $dbService;
     private $password;
     private $random;
@@ -43,10 +44,10 @@ class UserAdminTest extends TestCase
         $this->csrfProtector->method("token")->willReturn("0+pVtDm4xXAxUmA3/mrL");
         $this->random = $this->createMock(Random::class);
         $this->random->method("bytes")->willReturn(hex2bin("de69351538c8d0a32beec9e9a365a4"));
-        $this->dbService = new FakeDbService("vfs://root/register/", "guest", $this->random);
+        $this->dbService = new FakeDbService("vfs://root/register/", $this->random);
         $this->dbService->writeUsers($this->users());
         $this->userRepository = new UserRepository($this->dbService);
-        $this->userGroupRepository = new UserGroupRepository($this->dbService);
+        $this->store = $this->createMock(DocumentStore::class);
         $this->password = new FakePassword;
         $this->mailer = $this->createMock(Mailer::class);
         $this->view = new View("./views/", XH_includeVar("./languages/en.php", "plugin_tx")["register"]);
@@ -58,7 +59,7 @@ class UserAdminTest extends TestCase
             $this->conf,
             $this->csrfProtector,
             $this->userRepository,
-            $this->userGroupRepository,
+            $this->store,
             $this->password,
             $this->random,
             $this->mailer,
@@ -68,6 +69,7 @@ class UserAdminTest extends TestCase
 
     public function testRendersOverview(): void
     {
+        $this->store->method("retrieve")->willReturn(new Groups([new UserGroup("guest", "")]));
         $request = new FakeRequest();
         $response = $this->sut()($request);
         $this->assertEquals("Register – Users", $response->title());
@@ -76,7 +78,10 @@ class UserAdminTest extends TestCase
 
     public function testRendersCreateForm(): void
     {
-        $this->userGroupRepository->save(new UserGroup("admin", ""));
+        $this->store->method("retrieve")->willReturn(new Groups([
+            new UserGroup("guest", ""),
+            new UserGroup("admin", "")
+        ]));
         $request = new FakeRequest(["url" => "http://example.com/?&action=create"]);
         $response = $this->sut()($request);
         $this->assertEquals("Register – Users", $response->title());
@@ -108,6 +113,7 @@ class UserAdminTest extends TestCase
     public function testDoCreateReportsValidationErrors(): void
     {
         $this->csrfProtector->method("check")->willReturn(true);
+        $this->store->method("retrieve")->willReturn(new Groups([new UserGroup("guest", "")]));
         $request = new FakeRequest([
             "url" => "http://example.com/?&action=do_create",
             "post" => [
@@ -128,6 +134,7 @@ class UserAdminTest extends TestCase
     public function testDoCreateReportsExistingEmail(): void
     {
         $this->csrfProtector->method("check")->willReturn(true);
+        $this->store->method("retrieve")->willReturn(new Groups([new UserGroup("guest", "")]));
         $request = new FakeRequest([
             "url" => "http://example.com/?&action=do_create",
             "post" => [
@@ -149,6 +156,7 @@ class UserAdminTest extends TestCase
     {
         $this->csrfProtector->method("check")->willReturn(true);
         $this->dbService->options(["writeUsers" => false]);
+        $this->store->method("retrieve")->willReturn(new Groups([new UserGroup("guest", "")]));
         $request = new FakeRequest([
             "url" => "http://example.com/?&action=do_create",
             "post" => [
@@ -188,6 +196,7 @@ class UserAdminTest extends TestCase
 
     public function testUpdateReportsMissingUser(): void
     {
+        $this->store->method("retrieve")->willReturn(new Groups([new UserGroup("guest", "")]));
         $request = new FakeRequest([
             "url" => "http://example.com/?&action=update",
         ]);
@@ -198,6 +207,7 @@ class UserAdminTest extends TestCase
 
     public function testRendersUpdateForm(): void
     {
+        $this->store->method("retrieve")->willReturn(new Groups([new UserGroup("guest", "")]));
         $request = new FakeRequest(["url" => "http://example.com/?&action=update&user=jane"]);
         $response = $this->sut()($request);
         $this->assertEquals("Register – Users", $response->title());
@@ -225,6 +235,7 @@ class UserAdminTest extends TestCase
     public function testDoUpdateReportsValidationErrors(): void
     {
         $this->csrfProtector->method("check")->willReturn(true);
+        $this->store->method("retrieve")->willReturn(new Groups([new UserGroup("guest", "")]));
         $request = new FakeRequest([
             "url" => "http://example.com/?&action=do_update&user=jane",
             "post" => [
@@ -247,6 +258,7 @@ class UserAdminTest extends TestCase
         $this->userRepository->save(
             new User("cmb", "test", ["guest"], "Christoph Becker", "cmb@example.com", "activated", "secret")
         );
+        $this->store->method("retrieve")->willReturn(new Groups([new UserGroup("guest", "")]));
         $request = new FakeRequest([
             "url" => "http://example.com/?&action=do_update&user=cmb",
             "post" => [
@@ -264,6 +276,7 @@ class UserAdminTest extends TestCase
     public function testDoUpdateReportsFailureToSave(): void
     {
         $this->csrfProtector->method("check")->willReturn(true);
+        $this->store->method("retrieve")->willReturn(new Groups([new UserGroup("guest", "")]));
         $this->dbService->options(["writeUsers" => false]);
         $request = new FakeRequest([
             "url" => "http://example.com/?&action=do_update&user=john",
@@ -298,6 +311,7 @@ class UserAdminTest extends TestCase
 
     public function testChangePasswordReportsMissingUser(): void
     {
+        $this->store->method("retrieve")->willReturn(new Groups([new UserGroup("guest", "")]));
         $request = new FakeRequest(["url" => "http://example.com/?&action=change_password"]);
         $response = $this->sut()($request);
         $this->assertEquals("Register – Users", $response->title());
@@ -369,6 +383,7 @@ class UserAdminTest extends TestCase
 
     public function testMailReportsMissingUser(): void
     {
+        $this->store->method("retrieve")->willReturn(new Groups([new UserGroup("guest", "")]));
         $request = new FakeRequest(["url" => "http://example.com/?&action=mail&user=cmb"]);
         $response = $this->sut()($request);
         $this->assertEquals("Register – Users", $response->title());
@@ -445,6 +460,7 @@ class UserAdminTest extends TestCase
 
     public function testDeleteReportsMissingUser(): void
     {
+        $this->store->method("retrieve")->willReturn(new Groups([new UserGroup("guest", "")]));
         $request = new FakeRequest(["url" => "http://example.com/?&action=delete&user=cmb"]);
         $response = $this->sut()($request);
         $this->assertEquals("Register – Users", $response->title());

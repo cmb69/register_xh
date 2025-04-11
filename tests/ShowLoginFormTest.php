@@ -15,21 +15,19 @@ use Plib\DocumentStore;
 use Plib\FakeRequest;
 use Plib\Random;
 use Plib\View;
-use Register\Infra\ActivityRepository;
 use Register\Infra\FakeDbService;
 use Register\Infra\FakeLogger;
 use Register\Infra\FakePassword;
 use Register\Infra\LoginManager;
-use Register\Infra\UserGroupRepository;
 use Register\Infra\UserRepository;
 use Register\Model\ActiveUsers;
+use Register\Model\Groups;
+use Register\Model\UserGroup;
 use Register\Value\User;
-use Register\Value\UserGroup;
 
 class ShowLoginFormTest extends TestCase
 {
     private $userRepository;
-    private $userGroupRepository;
     private $store;
     private $loginManager;
     private $logger;
@@ -39,13 +37,12 @@ class ShowLoginFormTest extends TestCase
     public function setUp(): void
     {
         vfsStream::setup("root");
-        $dbService = new FakeDbService("vfs://root/register/", "guest", $this->createMock(Random::class));
+        $dbService = new FakeDbService("vfs://root/register/", $this->createMock(Random::class));
         $dbService->writeUsers(array_values($this->users()));
-        $dbService->writeGroups([new UserGroup("guest", ""), new UserGroup("admin", "Admin")]);
         $this->userRepository = new UserRepository($dbService);
-        $this->userGroupRepository = new UserGroupRepository($dbService, "guest", $this->createMock(Random::class));
         $this->activeUsers = $this->activeUsers();
         $this->store = $this->createMock(DocumentStore::class);
+        $this->store->method("retrieve")->willReturn(new Groups(["admin" => new UserGroup("admin", "Admin")]));
         $this->store->method("update")->willReturn($this->activeUsers);
         $this->loginManager = $this->createMock(LoginManager::class);
         $this->logger = new FakeLogger;
@@ -57,7 +54,6 @@ class ShowLoginFormTest extends TestCase
         return new ShowLoginForm(
             XH_includeVar("./config/config.php", "plugin_cf")["register"],
             $this->userRepository,
-            $this->userGroupRepository,
             $this->store,
             $this->loginManager,
             $this->logger,

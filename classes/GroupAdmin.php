@@ -9,21 +9,22 @@
 namespace Register;
 
 use Plib\CsrfProtector;
+use Plib\DocumentStore;
 use Plib\Request;
 use Plib\Response;
 use Plib\View;
 use Register\Infra\Pages;
-use Register\Infra\UserGroupRepository;
 use Register\Logic\Util;
-use Register\Value\UserGroup;
+use Register\Model\Groups;
+use Register\Model\UserGroup;
 
 class GroupAdmin
 {
     /** @var CsrfProtector */
     private $csrfProtector;
 
-    /** @var UserGroupRepository */
-    private $userGroupRepository;
+    /** @var DocumentStore */
+    private $store;
 
     /** @var Pages */
     private $pages;
@@ -33,12 +34,12 @@ class GroupAdmin
 
     public function __construct(
         CsrfProtector $csrfProtector,
-        UserGroupRepository $userGroupRepository,
+        DocumentStore $store,
         Pages $pages,
         View $view
     ) {
         $this->csrfProtector = $csrfProtector;
-        $this->userGroupRepository = $userGroupRepository;
+        $this->store = $store;
         $this->pages = $pages;
         $this->view = $view;
     }
@@ -66,7 +67,7 @@ class GroupAdmin
     /** @param list<array{string}> $errors */
     private function overview(array $errors = []): Response
     {
-        $groups = $this->userGroupRepository->all();
+        $groups = Groups::retrieve($this->store)->groups();
         return $this->respondWith($this->view->render("groups", [
             "errors" => $errors,
             "groups" => array_map(function (UserGroup $group) {
@@ -90,14 +91,17 @@ class GroupAdmin
             return $this->respondWith($this->view->message("fail", "error_unauthorized"));
         }
         $groupname = $request->get("group") ?? "";
-        if ($this->userGroupRepository->findByGroupname($groupname)) {
+        $groups = Groups::update($this->store);
+        if ($groups->group($groupname) !== null) {
+            $this->store->rollback();
             return $this->respondWith($this->view->message("fail", "error_groupname_exists"));
         }
-        $group = new UserGroup($request->post("groupname") ?? "", $request->post("loginpage") ?? "");
+        $group = $groups->createGroup($request->post("groupname") ?? "", $request->post("loginpage") ?? "");
         if (($errors = Util::validateGroup($group))) {
+            $this->store->rollback();
             return $this->respondWith($this->renderCreateForm($group, $errors));
         }
-        if (!$this->userGroupRepository->save($group)) {
+        if (!$this->store->commit()) {
             return $this->respondWith($this->renderCreateForm($group, [["error_cannot_write_csv"]]));
         }
         return Response::redirect($request->url()->page("register")->with("admin", "groups")->absolute());
@@ -117,7 +121,8 @@ class GroupAdmin
     private function update(Request $request): Response
     {
         $groupname = $request->get("group") ?? "";
-        if (!($group = $this->userGroupRepository->findByGroupname($groupname))) {
+        $groups = Groups::retrieve($this->store);
+        if (!($group = $groups->group($groupname))) {
             return $this->overview([["error_group_does_not_exist", $groupname]]);
         }
         return $this->respondWith($this->renderUpdateForm($group));
@@ -129,13 +134,15 @@ class GroupAdmin
             return $this->respondWith($this->view->message("fail", "error_unauthorized"));
         }
         $groupname = $request->get("group") ?? "";
-        if (!($group = $this->userGroupRepository->findByGroupname($groupname))) {
+        $groups = Groups::update($this->store);
+        if (!($group = $groups->group($groupname))) {
+            $this->store->rollback();
             return $this->respondWith($this->view->message("fail", "error_group_does_not_exist", $groupname));
         }
         $post = ["loginpage" => $request->post("loginpage") ?? ""];
-        $group = $group->with($post["loginpage"]);
+        $group->setLoginpage($post["loginpage"]);
         assert(!Util::validateGroup($group));
-        if (!$this->userGroupRepository->save($group)) {
+        if (!$this->store->commit()) {
             return $this->respondWith($this->renderUpdateForm($group, [["error_cannot_write_csv"]]));
         }
         return Response::redirect($request->url()->page("register")->with("admin", "groups")->absolute());
@@ -155,7 +162,8 @@ class GroupAdmin
     private function delete(Request $request): Response
     {
         $groupname = $request->get("group") ?? "";
-        if (!($group = $this->userGroupRepository->findByGroupname($groupname))) {
+        $groups = Groups::retrieve($this->store);
+        if (!($group = $groups->group($groupname))) {
             return $this->overview([["error_group_does_not_exist", $groupname]]);
         }
         return $this->respondWith($this->renderDeleteForm($group));
@@ -167,10 +175,13 @@ class GroupAdmin
             return $this->respondWith($this->view->message("fail", "error_unauthorized"));
         }
         $groupname = $request->get("group") ?? "";
-        if (!($group = $this->userGroupRepository->findByGroupname($groupname))) {
+        $groups = Groups::update($this->store);
+        if (!($group = $groups->group($groupname))) {
+            $this->store->rollback();
             return $this->respondWith($this->view->message("fail", "error_group_does_not_exist", $groupname));
         }
-        if (!$this->userGroupRepository->delete($group)) {
+        $groups->deleteGroup($groupname);
+        if (!$this->store->commit()) {
             return $this->respondWith($this->renderDeleteForm($group, [["error_cannot_write_csv"]]));
         }
         return Response::redirect($request->url()->page("register")->with("admin", "groups")->absolute());

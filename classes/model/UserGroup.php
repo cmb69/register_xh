@@ -6,10 +6,16 @@
 * This file is part of Register_XH.
 */
 
-namespace Register\Value;
+namespace Register\Model;
 
 class UserGroup
 {
+    /** @var string */
+    private $groupname;
+
+    /** @var string */
+    private $loginpage;
+
     /** @param list<string> $fields */
     public static function fromArray(array $fields): ?self
     {
@@ -18,12 +24,6 @@ class UserGroup
         }
         return new self(...$fields);
     }
-
-    /** @var string */
-    private $groupname;
-
-    /** @var string */
-    private $loginpage;
 
     public function __construct(string $groupname, string $loginpage)
     {
@@ -41,10 +41,8 @@ class UserGroup
         return $this->loginpage;
     }
 
-    public function with(string $loginpage): self
+    public function setLoginpage(string $loginpage): void
     {
-        $that = clone $this;
-        $that->loginpage = $loginpage;
-        return $that;
+        $this->loginpage = $loginpage;
     }
 }

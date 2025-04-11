@@ -53,7 +53,7 @@ class Dic
             $plugin_cf["register"],
             new CsrfProtector(),
             self::makeUserRepository(),
-            self::makeUserGroupRepository(),
+            new DocumentStore(self::contentFolder()),
             new Password(),
             new Random(),
             self::makeMailer(),
@@ -65,7 +65,7 @@ class Dic
     {
         return new GroupAdmin(
             new CsrfProtector(),
-            self::makeUserGroupRepository(),
+            new DocumentStore(self::contentFolder()),
             new Pages(),
             self::view(),
         );
@@ -127,7 +127,6 @@ class Dic
         return new ShowLoginForm(
             $plugin_cf["register"],
             self::makeUserRepository(),
-            self::makeUserGroupRepository(),
             new DocumentStore(self::contentFolder()),
             new LoginManager(),
             new Logger(),
@@ -178,14 +177,9 @@ class Dic
         return new UserRepository(self::makeDbService());
     }
 
-    private static function makeUserGroupRepository(): UserGroupRepository
-    {
-        return new UserGroupRepository(self::makeDbService());
-    }
-
     private static function makeDbService(): DbService
     {
-        global $pth, $plugin_cf;
+        global $pth;
         static $instance;
 
         if (!isset($instance)) {
@@ -194,7 +188,7 @@ class Dic
                 $folder = dirname($folder) . "/";
             }
             $folder .= "register/";
-            $instance = new DbService($folder, $plugin_cf['register']['group_default'], new Random());
+            $instance = new DbService($folder, new Random());
         }
         return $instance;
     }
