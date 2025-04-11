@@ -10,11 +10,11 @@ namespace Register;
 
 use org\bovigo\vfs\vfsStream;
 use PHPUnit\Framework\TestCase;
+use Plib\FakeRequest;
 use Plib\View;
 use Register\Infra\ActivityRepository;
 use Register\Infra\FakeDbService;
 use Register\Infra\FakeLogger;
-use Register\Infra\FakeRequest;
 use Register\Value\User;
 use Register\Infra\LoginManager;
 use Register\Infra\Pages;
@@ -76,34 +76,34 @@ class MainTest extends TestCase
     public function testDoesNotProtectPagesInEditMode(): void
     {
         $this->pages->expects($this->never())->method("setContentOf");
-        $request = new FakeRequest(["username" => "john", "editMode" => true]);
+        $request = new FakeRequest(["username" => "john", "admin" => true, "edit" => true]);
         $this->sut()($request);
     }
 
     public function testAutoLoginFailsOnBorkedCookie(): void
     {
-        $request = new FakeRequest(["cookies" => ["register_remember" => "jane"]]);
+        $request = new FakeRequest(["cookie" => ["register_remember" => "jane"]]);
         $response = $this->sut()($request);
         $this->assertEquals(["register_remember", "", 0], $response->cookie());
     }
 
     public function testAutoLoginFailsForNonExistentUser(): void
     {
-        $request = new FakeRequest(["cookies" => ["register_remember" => "colt.6M5brgkTOP4AaQ9ZGLss7MZYyG4"]]);
+        $request = new FakeRequest(["cookie" => ["register_remember" => "colt.6M5brgkTOP4AaQ9ZGLss7MZYyG4"]]);
         $response = $this->sut()($request);
         $this->assertEquals(["register_remember", "", 0], $response->cookie());
     }
 
     public function testAutoLoginFailsForDeactivatedUser(): void
     {
-        $request = new FakeRequest(["cookies" => ["register_remember" => "john.6M5brgkTOP4AaQ9ZGLss7MZYyG4"]]);
+        $request = new FakeRequest(["cookie" => ["register_remember" => "john.6M5brgkTOP4AaQ9ZGLss7MZYyG4"]]);
         $response = $this->sut()($request);
         $this->assertEquals(["register_remember", "", 0], $response->cookie());
     }
 
     public function testAutoLoginFailsForManipulatedCookie(): void
     {
-        $request = new FakeRequest(["cookies" => ["register_remember" => "jane.6M5brgkTOP4AaQ9ZGLss7MZYyG4"]]);
+        $request = new FakeRequest(["cookie" => ["register_remember" => "jane.6M5brgkTOP4AaQ9ZGLss7MZYyG4"]]);
         $response = $this->sut()($request);
         $this->assertEquals(["register_remember", "", 0], $response->cookie());
     }
@@ -111,7 +111,7 @@ class MainTest extends TestCase
     public function testAutoLoginSucceeds(): void
     {
         $this->loginManager->expects($this->once())->method("login")->with($this->jane());
-        $request = new FakeRequest(["cookies" => ["register_remember" => "jane.i5ixPyjRJ6iPuDjTEwBwpxSg6H0"]]);
+        $request = new FakeRequest(["cookie" => ["register_remember" => "jane.i5ixPyjRJ6iPuDjTEwBwpxSg6H0"]]);
         $this->sut()($request);
         $this->assertEquals(
             ["info", "register", "login", "User “jane” automatically logged in"],

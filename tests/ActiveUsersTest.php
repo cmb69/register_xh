@@ -11,10 +11,10 @@ namespace Register;
 use ApprovalTests\Approvals;
 use org\bovigo\vfs\vfsStream;
 use PHPUnit\Framework\TestCase;
+use Plib\FakeRequest;
 use Plib\View;
 use Register\Infra\ActivityRepository;
 use Register\Infra\FakeDbService;
-use Register\Infra\FakeRequest;
 use Register\Infra\Random;
 
 class ActiveUsersTest extends TestCase
@@ -47,7 +47,7 @@ class ActiveUsersTest extends TestCase
         $this->activityRepository->update("cmb", strtotime("2023-04-16T17:13"));
         $this->activityRepository->update("jane", strtotime("2023-04-16T17:14"));
         $this->activityRepository->update("john", strtotime("2023-04-16T17:15"));
-        $response = $this->sut()(new FakeRequest());
+        $response = $this->sut()(new FakeRequest(["time" => 0]));
         Approvals::verifyHtml($response->output());
     }
 }

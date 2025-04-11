@@ -10,17 +10,17 @@
 
 namespace Register;
 
+use Plib\Request;
 use Plib\Response;
+use Plib\Url;
 use Plib\View;
 use Register\Infra\Logger;
 use Register\Infra\LoginManager;
 use Register\Infra\Mailer;
 use Register\Infra\Password;
-use Register\Infra\Request;
 use Register\Infra\UserRepository;
 use Register\Logic\Util;
 use Register\Value\Passwords;
-use Register\Value\Url;
 use Register\Value\User;
 
 class HandlePasswordForgotten
@@ -72,7 +72,7 @@ class HandlePasswordForgotten
         if (!$this->conf["allowed_password_forgotten"] || $request->username()) {
             return Response::create($this->view->message("fail", "error_unauthorized"));
         }
-        switch ($request->registerAction()) {
+        switch ($request->post("register_action") ?? $request->get("register_action")) {
             default:
                 return $this->showForm($request);
             case "forgot_password":
@@ -91,7 +91,9 @@ class HandlePasswordForgotten
 
     private function passwordForgotten(Request $request): Response
     {
-        $post = $request->forgotPasswordPost();
+        $post = [
+            "email" => $request->post("email") ?? "",
+        ];
         if (($errors = Util::validateEmail($post["email"]))) {
             return Response::create($this->renderForm($request->url(), $post["email"], $errors));
         }
@@ -117,7 +119,7 @@ class HandlePasswordForgotten
         ]);
         return $this->mailer->sendMail(
             $user->getEmail(),
-            $this->view->plain("email_subject", $request->serverName()),
+            $this->view->plain("email_subject", $request->header("HOST") ?? ""),
             html_entity_decode(strip_tags($html), ENT_COMPAT | ENT_SUBSTITUTE, "UTF-8"),
             $this->conf["mail_address"]
         );
@@ -125,7 +127,11 @@ class HandlePasswordForgotten
 
     private function resetPassword(Request $request): Response
     {
-        $params = $request->resetPasswordParams();
+        $params = [
+            "username" => $request->get("register_username") ?? "",
+            "time" => $request->get("register_time") ?? "",
+            "mac" => $request->get("register_mac") ?? "",
+        ];
         if (!($user = $this->userRepository->findByUsername($params["username"]))) {
             return Response::create($this->view->message("fail", "error_user_does_not_exist", $params["username"]));
         }
@@ -136,13 +142,17 @@ class HandlePasswordForgotten
             return Response::create($this->view->message("fail", "error_expired"));
         }
         return Response::create(
-            $this->renderResetPasswordForm($request->url(), new Passwords("", ""))
+            $this->renderResetPasswordForm($request, new Passwords("", ""))
         );
     }
 
     private function changePassword(Request $request): Response
     {
-        $params = $request->resetPasswordParams();
+        $params = [
+            "username" => $request->get("register_username") ?? "",
+            "time" => $request->get("register_time") ?? "",
+            "mac" => $request->get("register_mac") ?? "",
+        ];
         if (!($user = $this->userRepository->findByUsername($params["username"]))) {
             return Response::create($this->view->message("fail", "error_user_does_not_exist", $params["username"]));
         }
@@ -152,9 +162,12 @@ class HandlePasswordForgotten
         if ($this->isExpired((int) $params["time"], $request)) {
             return Response::create($this->view->message("fail", "error_expired"));
         }
-        $passwords = $request->postedPasswords();
+        $passwords = new Passwords(
+            $request->post("password1") ?? "",
+            $request->post("password2") ?? ""
+        );
         if (($errors = Util::validatePasswords($passwords))) {
-            return Response::create($this->renderResetPasswordForm($request->url(), $passwords, $errors));
+            return Response::create($this->renderResetPasswordForm($request, $passwords, $errors));
         }
         $user = $user->withPassword($this->password->hash($passwords->password()));
         if (!$this->userRepository->save($user)) {
@@ -162,7 +175,7 @@ class HandlePasswordForgotten
         }
         $this->loginManager->login($user);
         $this->logger->logInfo("login", $this->view->plain("log_resetlogin", $user->getUsername()));
-        return Response::redirect($request->url()->withoutParams()->absolute());
+        return Response::redirect($request->url()->page($request->selected())->absolute());
     }
 
     /** @param array{username:string,time:string,mac:string} $params */
@@ -187,13 +200,13 @@ class HandlePasswordForgotten
     }
 
     /** @param list<array{string}> $errors */
-    private function renderResetPasswordForm(Url $url, Passwords $passwords, array $errors = []): string
+    private function renderResetPasswordForm(Request $request, Passwords $passwords, array $errors = []): string
     {
         return $this->view->render("reset_password", [
             "errors" => $errors,
             "password1" => $passwords->password(),
             "password2" => $passwords->confirmation(),
-            "cancel" => $url->withPage($url->page())->relative(),
+            "cancel" => $request->url()->page($request->selected())->relative(),
         ]);
     }
 }

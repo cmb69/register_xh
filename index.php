@@ -10,8 +10,8 @@
 
 // phpcs:disable PSR1.Files.SideEffects
 
+use Plib\Request;
 use Register\Dic;
-use Register\Infra\Request;
 use XH\PageDataRouter;
 
 if (!defined("CMSIMPLE_XH_VERSION")) {

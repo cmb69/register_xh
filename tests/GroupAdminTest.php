@@ -11,10 +11,10 @@ namespace Register;
 use ApprovalTests\Approvals;
 use org\bovigo\vfs\vfsStream;
 use PHPUnit\Framework\TestCase;
+use Plib\FakeRequest;
 use Plib\View;
 use Register\Infra\FakeCsrfProtector;
 use Register\Infra\FakeDbService;
-use Register\Infra\FakeRequest;
 use Register\Infra\Pages;
 use Register\Infra\Random;
 use Register\Infra\UserGroupRepository;
@@ -64,7 +64,7 @@ class GroupAdminTest extends TestCase
         $this->pages->method("url")->willReturn("Start");
         $this->pages->method("heading")->willReturn("Start");
         $this->pages->method("level")->willReturn(1);
-        $request = new FakeRequest(["query" => "&action=create"]);
+        $request = new FakeRequest(["url" => "http://example.com/?&action=create"]);
         $response = $this->sut()($request);
         $this->assertEquals("Register – Groups", $response->title());
         Approvals::verifyHtml($response->output());
@@ -81,7 +81,10 @@ class GroupAdminTest extends TestCase
 
     public function testDoCreateReportsExistingGroup(): void
     {
-        $request = new FakeRequest(["query" => "&group=guest", "post" => ["action" => "do_create"]]);
+        $request = new FakeRequest([
+            "url" => "http://example.com/?&group=guest",
+            "post" => ["action" => "do_create"],
+        ]);
         $response = $this->sut()($request);
         $this->assertEquals("Register – Groups", $response->title());
         $this->assertStringContainsString("This groupname already exists!", $response->output());
@@ -119,7 +122,9 @@ class GroupAdminTest extends TestCase
 
     public function testUpdateReportsMissingGroup(): void
     {
-        $request = new FakeRequest(["query" => "register&admin=groups&action=update&group=missing"]);
+        $request = new FakeRequest([
+            "url" => "http://example.com/?register&admin=groups&action=update&group=missing",
+        ]);
         $response = $this->sut()($request);
         $this->assertEquals("Register – Groups", $response->title());
         $this->assertStringContainsString("Group 'missing' does not exist!", $response->output());
@@ -127,7 +132,9 @@ class GroupAdminTest extends TestCase
 
     public function testRendersUpdateForm(): void
     {
-        $request = new FakeRequest(["query" => "&action=update&group=guest"]);
+        $request = new FakeRequest([
+            "url" => "http://example.com/?&action=update&group=guest",
+        ]);
         $response = $this->sut()($request);
         $this->assertEquals("Register – Groups", $response->title());
         Approvals::verifyHtml($response->output());
@@ -144,7 +151,10 @@ class GroupAdminTest extends TestCase
 
     public function testDoUpdateReportsMissingGroup(): void
     {
-        $request = new FakeRequest(["query" => "&group=missing", "post" => ["action" => "do_update"]]);
+        $request = new FakeRequest([
+            "url" => "http://example.com/?&group=missing",
+            "post" => ["action" => "do_update"],
+        ]);
         $response = $this->sut()($request);
         $this->assertEquals("Register – Groups", $response->title());
         $this->assertStringContainsString("Group 'missing' does not exist!", $response->output());
@@ -154,7 +164,7 @@ class GroupAdminTest extends TestCase
     {
         $this->dbService->options(["writeGroups" => false]);
         $request = new FakeRequest([
-            "query" => "&group=guest",
+            "url" => "http://example.com/?&group=guest",
             "post" => ["action" => "do_update", "loginpage" => "Login"],
         ]);
         $response = $this->sut()($request);
@@ -165,7 +175,7 @@ class GroupAdminTest extends TestCase
     public function testDoUpdateRedirectsOnSuccess(): void
     {
         $request = new FakeRequest([
-            "query" => "&group=guest",
+            "url" => "http://example.com/?&group=guest",
             "post" => ["action" => "do_update", "loginpage" => "Login"],
         ]);
         $response = $this->sut()($request);
@@ -175,7 +185,9 @@ class GroupAdminTest extends TestCase
 
     public function testDeleteReportsMissingGroup(): void
     {
-        $request = new FakeRequest(["query" => "&action=delete&group=missing"]);
+        $request = new FakeRequest([
+            "url" => "http://example.com/?&action=delete&group=missing",
+        ]);
         $response = $this->sut()($request);
         $this->assertEquals("Register – Groups", $response->title());
         $this->assertStringContainsString("Group 'missing' does not exist!", $response->output());
@@ -183,7 +195,7 @@ class GroupAdminTest extends TestCase
 
     public function testRendersDeleteForm(): void
     {
-        $request = new FakeRequest(["query" => "&action=delete&group=guest"]);
+        $request = new FakeRequest(["url" => "http://example.com/?&action=delete&group=guest"]);
         $response = $this->sut()($request);
         $this->assertEquals("Register – Groups", $response->title());
         Approvals::verifyHtml($response->output());
@@ -199,7 +211,10 @@ class GroupAdminTest extends TestCase
     }
     public function testDoDeleteReportsMissingGroup(): void
     {
-        $request = new FakeRequest(["query" => "&group=missing", "post" => ["action" => "do_delete"]]);
+        $request = new FakeRequest([
+            "url" => "http://example.com/?&group=missing",
+            "post" => ["action" => "do_delete"],
+        ]);
         $response = $this->sut()($request);
         $this->assertEquals("Register – Groups", $response->title());
         $this->assertStringContainsString("Group 'missing' does not exist!", $response->output());
@@ -208,7 +223,10 @@ class GroupAdminTest extends TestCase
     public function testDoDeleteReportsFailureToSave(): void
     {
         $this->dbService->options(["writeGroups" => false]);
-        $request = new FakeRequest(["query" => "&group=guest", "post" => ["action" => "do_delete"]]);
+        $request = new FakeRequest([
+            "url" => "http://example.com/?&group=guest",
+            "post" => ["action" => "do_delete"],
+        ]);
         $response = $this->sut()($request);
         $this->assertEquals("Register – Groups", $response->title());
         $this->assertStringContainsString("Saving CSV file failed.", $response->output());
@@ -216,7 +234,10 @@ class GroupAdminTest extends TestCase
 
     public function testDoDeleteRedirectsOnSuccess(): void
     {
-        $request = new FakeRequest(["query" => "&group=guest", "post" => ["action" => "do_delete"]]);
+        $request = new FakeRequest([
+            "url" => "http://example.com/?&group=guest",
+            "post" => ["action" => "do_delete"],
+        ]);
         $response = $this->sut()($request);
         $this->assertNull($this->userGroupRepository->findByGroupName("guest"));
         $this->assertEquals("http://example.com/?register&admin=groups", $response->location());

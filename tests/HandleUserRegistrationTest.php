@@ -11,10 +11,10 @@ namespace Register;
 use ApprovalTests\Approvals;
 use org\bovigo\vfs\vfsStream;
 use PHPUnit\Framework\TestCase;
+use Plib\FakeRequest;
 use Plib\View;
 use Register\Infra\FakeDbService;
 use Register\Infra\FakePassword;
-use Register\Infra\FakeRequest;
 use Register\Infra\Mailer;
 use Register\Infra\Random;
 use Register\Infra\UserRepository;
@@ -87,7 +87,7 @@ class HandleUserRegistrationTest extends TestCase
     public function testRegisterReportsValidationErrors(): void
     {
         $request = new FakeRequest([
-            "query" => "&register_action=register",
+            "url" => "http://example.com/?&register_action=register",
             "post" => [
                 "name" => "",
                 "username" => "",
@@ -103,7 +103,7 @@ class HandleUserRegistrationTest extends TestCase
     public function testRegisterReportsExistingUser(): void
     {
         $request = new FakeRequest([
-            "query" => "&register_action=register",
+            "url" => "http://example.com/?&register_action=register",
             "post" => [
                 "name" => "Jane Smith",
                 "username" => "jane",
@@ -118,8 +118,9 @@ class HandleUserRegistrationTest extends TestCase
 
     public function testRegisterRedirectsOnExistingEmail(): void
     {
+        $_SERVER["REMOTE_ADDR"] = "127.0.0.1";
         $request = new FakeRequest([
-            "query" => "&register_action=register",
+            "url" => "http://example.com/?&register_action=register",
             "post" => [
                 "name" => "John Smith",
                 "username" => "js",
@@ -127,8 +128,7 @@ class HandleUserRegistrationTest extends TestCase
                 "password2" => "test",
                 "email" => "john@example.com",
             ],
-            "serverName" => "example.com",
-            "remoteAddress" => "127.0.0.1",
+            "header" => ["HOST" => "example.com"],
         ]);
         $this->phpMailer->expects($this->any())->method("send")->willReturn(true);
         $response = $this->sut()($request);
@@ -144,7 +144,7 @@ class HandleUserRegistrationTest extends TestCase
     {
         $this->dbService->options(["writeUsers" => false]);
         $request = new FakeRequest([
-            "query" => "&register_action=register",
+            "url" => "http://example.com/?&register_action=register",
             "post" => [
                 "name" => "John Smith",
                 "username" => "js",
@@ -159,8 +159,9 @@ class HandleUserRegistrationTest extends TestCase
 
     public function testRegisterRedirectsOnSuccess(): void
     {
+        $_SERVER["REMOTE_ADDR"] = "127.0.0.1";
         $request = new FakeRequest([
-            "query" => "&register_action=register",
+            "url" => "http://example.com/?&register_action=register",
             "post" => [
                 "name" => "John Smith",
                 "username" => "js",
@@ -168,8 +169,7 @@ class HandleUserRegistrationTest extends TestCase
                 "password2" => "test",
                 "email" => "js@example.com",
             ],
-            "serverName" => "example.com",
-            "remoteAddress" => "127.0.0.1",
+            "header" => ["HOST" => "example.com"],
         ]);
         $this->phpMailer->expects($this->any())->method("send")->willReturn(true);
         $response = $this->sut()($request);
@@ -184,21 +184,27 @@ class HandleUserRegistrationTest extends TestCase
 
     public function testActivateReportsMissingNonce(): void
     {
-        $request = new FakeRequest(["query" => "&register_action=activate&register_username=js&register_nonce="]);
+        $request = new FakeRequest([
+            "url" => "http://example.com/?&register_action=activate&register_username=js&register_nonce=",
+        ]);
         $response = $this->sut()($request);
         $this->assertStringContainsString("No verification code supplied!", $response->output());
     }
 
     public function testActivateReportsNonExistentUser(): void
     {
-        $request = new FakeRequest(["query" => "&register_action=activate&register_username=js&register_nonce=12345"]);
+        $request = new FakeRequest([
+            "url" => "http://example.com/?&register_action=activate&register_username=js&register_nonce=12345",
+        ]);
         $response = $this->sut()($request);
         $this->assertStringContainsString("The Username 'js' could not be found!", $response->output());
     }
 
     public function testActivateReportsInvalidNonce(): void
     {
-        $request = new FakeRequest(["query" => "&register_action=activate&register_username=jane&register_nonce=54321"]);
+        $request = new FakeRequest([
+            "url" => "http://example.com/?&register_action=activate&register_username=jane&register_nonce=54321",
+        ]);
         $response = $this->sut()($request);
         $this->assertStringContainsString("The entered verification code is invalid.", $response->output());
     }
@@ -206,14 +212,18 @@ class HandleUserRegistrationTest extends TestCase
     public function testActivateReportsFailureToSave(): void
     {
         $this->dbService->options(["writeUsers" => false]);
-        $request = new FakeRequest(["query" => "&register_action=activate&register_username=jane&register_nonce=12345"]);
+        $request = new FakeRequest([
+            "url" => "http://example.com/?&register_action=activate&register_username=jane&register_nonce=12345",
+        ]);
         $response = $this->sut()($request);
         $this->assertStringContainsString("Saving CSV file failed.", $response->output());
     }
 
     public function testActivateReportsSuccess(): void
     {
-        $request = new FakeRequest(["query" => "&register_action=activate&register_username=jane&register_nonce=12345"]);
+        $request = new FakeRequest([
+            "url" => "http://example.com/?&register_action=activate&register_username=jane&register_nonce=12345",
+        ]);
         $response = $this->sut()($request);
         $this->assertTrue($this->userRepository->findByUsername("jane")->isActivated());
         $this->assertStringContainsString("You have successfully activated your new account.", $response->output());

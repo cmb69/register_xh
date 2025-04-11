@@ -10,13 +10,13 @@
 
 namespace Register;
 
+use Plib\Request;
 use Plib\Response;
 use Plib\View;
 use Register\Infra\ActivityRepository;
 use Register\Infra\Logger;
 use Register\Infra\LoginManager;
 use Register\Infra\Pages;
-use Register\Infra\Request;
 use Register\Infra\UserRepository;
 use Register\Logic\Util;
 use Register\Value\User;
@@ -68,7 +68,7 @@ class Main
         if ($request->username()) {
             $this->activityRepository->update($request->username(), $request->time());
         }
-        if (!$request->editMode()) {
+        if (!$request->admin() || !$request->edit()) {
             $this->protectPages($request);
         }
         if ($this->conf["allowed_remember"] && $request->cookie("register_remember") && !$request->username()) {
@@ -83,7 +83,7 @@ class Main
     /** @return void */
     private function protectPages(Request $request)
     {
-        $user = $this->userRepository->findByUsername($request->username());
+        $user = $this->userRepository->findByUsername($request->username() ?? "");
         $this->protectPagesNew($user);
         $this->protectedPagesLegacy($user);
     }
@@ -150,7 +150,7 @@ class Main
     private function forcedLogout(Request $request): Response
     {
         $this->loginManager->logout();
-        $this->activityRepository->update($request->username(), 0);
+        $this->activityRepository->update($request->username() ?? "", 0);
         return Response::redirect($request->url()->absolute());
     }
 }

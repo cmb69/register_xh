@@ -10,13 +10,13 @@
 
 namespace Register;
 
+use Plib\Request;
 use Plib\Response;
 use Plib\View;
 use Register\Infra\ActivityRepository;
 use Register\Infra\Logger;
 use Register\Infra\LoginManager;
 use Register\Infra\Password;
-use Register\Infra\Request;
 use Register\Infra\UserGroupRepository;
 use Register\Infra\UserRepository;
 use Register\Logic\Util;
@@ -71,7 +71,7 @@ class ShowLoginForm
 
     public function __invoke(Request $request): Response
     {
-        switch ($request->registerAction()) {
+        switch ($request->post("register_action") ?? $request->get("register_action")) {
             default:
                 return $this->show($request);
             case "login":
@@ -83,7 +83,7 @@ class ShowLoginForm
 
     private function show(Request $request): Response
     {
-        if ($request->username() !== "") {
+        if ($request->username() !== null) {
             return Response::create($this->renderLoggedInForm($request));
         }
         $login = ["username" => "", "password" => "", "remember" => ""];
@@ -95,7 +95,11 @@ class ShowLoginForm
         if ($request->username()) {
             return Response::create($this->view->message("fail", "error_unauthorized"));
         }
-        $post = $request->registerLoginPost();
+        $post = [
+            "username" => $request->post("username") ?? "",
+            "password" => $request->post("password") ?? "",
+            "remember" => $request->post("remember") ?? "",
+        ];
         if (!($user = $this->userRepository->findByUsername($post["username"]))) {
             $this->logger->logInfo("login", $this->view->plain("log_login_user", $post["username"]));
             return Response::create($this->renderLoginForm($request, $post, [["error_login"]]));
@@ -145,8 +149,8 @@ class ShowLoginForm
 
     private function renderLoggedInForm(Request $request): string
     {
-        if (!($user = $this->userRepository->findByUsername($request->username()))) {
-            return $this->view->message("fail", "error_user_does_not_exist", $request->username());
+        if (!($user = $this->userRepository->findByUsername($request->username() ?? ""))) {
+            return $this->view->message("fail", "error_user_does_not_exist", $request->username() ?? "");
         }
         return $this->view->render("loggedin_area", [
             "fullName" => $user->getName(),
@@ -172,7 +176,7 @@ class ShowLoginForm
         if (!$group->getLoginpage()) {
             return $request->url()->without("register_action")->absolute();
         }
-        return $request->url()->withPage($group->getLoginpage())->absolute();
+        return $request->url()->page($group->getLoginpage())->absolute();
     }
 
     private function logoutAction(Request $request): Response

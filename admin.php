@@ -8,8 +8,8 @@
  * This file is part of Register_XH.
  */
 
+use Plib\Request;
 use Register\Dic;
-use Register\Infra\Request;
 use XH\PageDataRouter;
 
 if (!defined("CMSIMPLE_XH_VERSION")) {
@@ -26,8 +26,8 @@ if (!defined("CMSIMPLE_XH_VERSION")) {
  */
 
 $temp = [
-    "users_url" => Request::current()->url()->withPage("register")->with("admin", "users")->with("normal")->relative(),
-    "groups_url" => Request::current()->url()->withPage("register")->with("admin", "groups")->with("normal")
+    "users_url" => Request::current()->url()->page("register")->with("admin", "users")->with("normal")->relative(),
+    "groups_url" => Request::current()->url()->page("register")->with("admin", "groups")->with("normal")
         ->relative(),
 ];
 

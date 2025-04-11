@@ -8,10 +8,10 @@
 
 namespace Register;
 
+use Plib\Request;
 use Plib\Response;
 use Plib\View;
 use Register\Infra\ActivityRepository;
-use Register\Infra\Request;
 
 class ActiveUsers
 {

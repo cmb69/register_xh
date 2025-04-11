@@ -11,12 +11,12 @@ namespace Register;
 use ApprovalTests\Approvals;
 use org\bovigo\vfs\vfsStream;
 use PHPUnit\Framework\TestCase;
+use Plib\FakeRequest;
 use Plib\View;
 use Register\Infra\FakeCsrfProtector;
 use Register\Infra\FakeDbService;
 use Register\Infra\FakeLogger;
 use Register\Infra\FakePassword;
-use Register\Infra\FakeRequest;
 use Register\Infra\Mailer;
 use Register\Infra\Random;
 use Register\Infra\UserRepository;
@@ -73,28 +73,28 @@ class HandleUserPreferencesTest extends TestCase
 
     public function testReportsUnauthorizedAccessToVisitors(): void
     {
-        $request = new FakeRequest(["query" => "&function=register_settings"]);
+        $request = new FakeRequest(["url" => "http://example.com/?&function=register_settings"]);
         $response = $this->sut()($request);
         $this->assertStringContainsString("You are not authorized for this action!", $response->output());
     }
 
     public function testReportsNonExistentUser(): void
     {
-        $request = new FakeRequest(["query" => "&function=register_settings", "username" => "colt"]);
+        $request = new FakeRequest(["url" => "http://example.com/?&function=register_settings", "username" => "colt"]);
         $response = $this->sut()($request);
         $this->assertStringContainsString("User 'colt' does not exist!", $response->output());
     }
 
     public function testReportsIfUserIsLocked(): void
     {
-        $request = new FakeRequest(["query" => "&function=register_settings", "username" => "jane"]);
+        $request = new FakeRequest(["url" => "http://example.com/?&function=register_settings", "username" => "jane"]);
         $response = $this->sut()($request);
         $this->assertStringContainsString("User Preferences for 'jane' can't be changed!", $response->output());
     }
 
     public function testRendersForm(): void
     {
-        $request = new FakeRequest(["query" => "&function=register_settings", "username" => "john"]);
+        $request = new FakeRequest(["url" => "http://example.com/?&function=register_settings", "username" => "john"]);
         $response = $this->sut()($request);
         Approvals::verifyHtml($response->output());
     }
@@ -103,7 +103,7 @@ class HandleUserPreferencesTest extends TestCase
     {
         $this->csrfProtector->options(["check" => false]);
         $request = new FakeRequest([
-            "query" => "&function=register_settings&register_action=change_prefs",
+            "url" => "http://example.com/?&function=register_settings&register_action=change_prefs",
             "username" => "john",
         ]);
         $response = $this->sut()($request);
@@ -113,7 +113,7 @@ class HandleUserPreferencesTest extends TestCase
     public function testChangePrefsReportsNonExistentUser(): void
     {
         $request = new FakeRequest([
-            "query" => "&function=register_settings&register_action=change_prefs",
+            "url" => "http://example.com/?&function=register_settings&register_action=change_prefs",
             "username" => "colt",
         ]);
         $response = $this->sut()($request);
@@ -123,7 +123,7 @@ class HandleUserPreferencesTest extends TestCase
     public function testChangePrefsReportsLockedUser(): void
     {
         $request = new FakeRequest([
-            "query" => "&function=register_settings&register_action=change_prefs",
+            "url" => "http://example.com/?&function=register_settings&register_action=change_prefs",
             "username" => "jane",
         ]);
         $response = $this->sut()($request);
@@ -133,7 +133,7 @@ class HandleUserPreferencesTest extends TestCase
     public function testChangePrefsReportsWrongPassword(): void
     {
         $request = new FakeRequest([
-            "query" => "&function=register_settings&register_action=change_prefs",
+            "url" => "http://example.com/?&function=register_settings&register_action=change_prefs",
             "username" => "john",
             "post" => ["oldpassword" => "54321", "name" => "", "email" => ""]
         ]);
@@ -144,7 +144,7 @@ class HandleUserPreferencesTest extends TestCase
     public function testChangePrefsReportsValidationErrors(): void
     {
         $request = new FakeRequest([
-            "query" => "&function=register_settings&register_action=change_prefs",
+            "url" => "http://example.com/?&function=register_settings&register_action=change_prefs",
             "username" => "john",
             "post" => ["oldpassword" => "12345", "name" => "", "email" => ""]
         ]);
@@ -156,7 +156,7 @@ class HandleUserPreferencesTest extends TestCase
     {
         $this->dbService->options(["writeUsers" => false]);
         $request = new FakeRequest([
-            "query" => "&function=register_settings&register_action=change_prefs",
+            "url" => "http://example.com/?&function=register_settings&register_action=change_prefs",
             "username" => "john",
             "post" => ["oldpassword" => "12345", "name" => "John Doe", "email" => "new@example.com"]
         ]);
@@ -166,12 +166,12 @@ class HandleUserPreferencesTest extends TestCase
 
     public function testChangePrefsRedirectsOnSuccess(): void
     {
+        $_SERVER["REMOTE_ADDR"] = "127.0.0.1";
         $request = new FakeRequest([
-            "query" => "&function=register_settings&register_action=change_prefs",
+            "url" => "http://example.com/?&function=register_settings&register_action=change_prefs",
             "username" => "john",
             "post" => ["oldpassword" => "12345", "name" => "John Doe", "email" => "new@example.com"],
-            "serverName" => "example.com",
-            "remoteAddress" => "127.0.0.1",
+            "header" => ["HOST" => "example.com"],
         ]);
         $this->phpMailer->expects($this->any())->method("send")->willReturn(true);
         $response = $this->sut()($request);
@@ -190,7 +190,7 @@ class HandleUserPreferencesTest extends TestCase
     public function testPasswordReportsNonExistentUser(): void
     {
         $request = new FakeRequest([
-            "query" => "&function=register_settings&register_action=password",
+            "url" => "http://example.com/?&function=register_settings&register_action=password",
             "username" => "colt",
         ]);
         $response = $this->sut()($request);
@@ -200,7 +200,7 @@ class HandleUserPreferencesTest extends TestCase
     public function testPasswordReportsIfUserIsLocked(): void
     {
         $request = new FakeRequest([
-            "query" => "&function=register_settings&register_action=password",
+            "url" => "http://example.com/?&function=register_settings&register_action=password",
             "username" => "jane",
         ]);
         $response = $this->sut()($request);
@@ -210,7 +210,7 @@ class HandleUserPreferencesTest extends TestCase
     public function testRendersPasswordForm(): void
     {
         $request = new FakeRequest([
-            "query" => "&function=register_settings&register_action=password",
+            "url" => "http://example.com/?&function=register_settings&register_action=password",
             "username" => "john",
         ]);
         $response = $this->sut()($request);
@@ -221,7 +221,7 @@ class HandleUserPreferencesTest extends TestCase
     {
         $this->csrfProtector->options(["check" => false]);
         $request = new FakeRequest([
-            "query" => "&function=register_settings&register_action=change_password",
+            "url" => "http://example.com/?&function=register_settings&register_action=change_password",
             "username" => "john",
         ]);
         $response = $this->sut()($request);
@@ -231,7 +231,7 @@ class HandleUserPreferencesTest extends TestCase
     public function testChangePasswordReportsNonExistentUser(): void
     {
         $request = new FakeRequest([
-            "query" => "&function=register_settings&register_action=change_password",
+            "url" => "http://example.com/?&function=register_settings&register_action=change_password",
             "username" => "colt",
         ]);
         $response = $this->sut()($request);
@@ -241,7 +241,7 @@ class HandleUserPreferencesTest extends TestCase
     public function testChangePasswordReportsLockedUser(): void
     {
         $request = new FakeRequest([
-            "query" => "&function=register_settings&register_action=change_password",
+            "url" => "http://example.com/?&function=register_settings&register_action=change_password",
             "username" => "jane",
         ]);
         $response = $this->sut()($request);
@@ -251,7 +251,7 @@ class HandleUserPreferencesTest extends TestCase
     public function testChangePasswordReportsWrongPassword(): void
     {
         $request = new FakeRequest([
-            "query" => "&function=register_settings&register_action=change_password",
+            "url" => "http://example.com/?&function=register_settings&register_action=change_password",
             "username" => "john",
             "post" => ["oldpassword" => "54321", "password1" => "", "password2" => ""]
         ]);
@@ -262,7 +262,7 @@ class HandleUserPreferencesTest extends TestCase
     public function testChangePasswordReportsValidationErrors(): void
     {
         $request = new FakeRequest([
-            "query" => "&function=register_settings&register_action=change_password",
+            "url" => "http://example.com/?&function=register_settings&register_action=change_password",
             "username" => "john",
             "post" => ["oldpassword" => "12345", "password1" => "a", "password2" => "b"]
         ]);
@@ -274,7 +274,7 @@ class HandleUserPreferencesTest extends TestCase
     {
         $this->dbService->options(["writeUsers" => false]);
         $request = new FakeRequest([
-            "query" => "&function=register_settings&register_action=change_password",
+            "url" => "http://example.com/?&function=register_settings&register_action=change_password",
             "username" => "john",
             "post" => ["oldpassword" => "12345", "password1" => "test", "password2" => "test"]
         ]);
@@ -284,12 +284,12 @@ class HandleUserPreferencesTest extends TestCase
 
     public function testChangePasswordRedirectsOnSuccess(): void
     {
+        $_SERVER["REMOTE_ADDR"] = "127.0.0.1";
         $request = new FakeRequest([
-            "query" => "&function=register_settings&register_action=change_password",
+            "url" => "http://example.com/?&function=register_settings&register_action=change_password",
             "username" => "john",
             "post" => ["oldpassword" => "12345", "password1" => "test", "password2" => "test"],
-            "serverName" => "example.com",
-            "remoteAddress" => "127.0.0.1",
+            "header" => ["HOST" => "example.com"],
         ]);
         $this->phpMailer->expects($this->any())->method("send")->willReturn(true);
         $response = $this->sut()($request);
@@ -308,7 +308,7 @@ class HandleUserPreferencesTest extends TestCase
     public function testDeleteReportsNonExistentUser(): void
     {
         $request = new FakeRequest([
-            "query" => "&function=register_settings&register_action=delete",
+            "url" => "http://example.com/?&function=register_settings&register_action=delete",
             "username" => "colt",
         ]);
         $response = $this->sut()($request);
@@ -318,7 +318,7 @@ class HandleUserPreferencesTest extends TestCase
     public function testDeleteReportsIfUserIsLocked(): void
     {
         $request = new FakeRequest([
-            "query" => "&function=register_settings&register_action=delete",
+            "url" => "http://example.com/?&function=register_settings&register_action=delete",
             "username" => "jane",
         ]);
         $response = $this->sut()($request);
@@ -328,7 +328,7 @@ class HandleUserPreferencesTest extends TestCase
     public function testRendersDeleteForm(): void
     {
         $request = new FakeRequest([
-            "query" => "&function=register_settings&register_action=delete",
+            "url" => "http://example.com/?&function=register_settings&register_action=delete",
             "username" => "john",
         ]);
         $response = $this->sut()($request);
@@ -339,7 +339,7 @@ class HandleUserPreferencesTest extends TestCase
     {
         $this->csrfProtector->options(["check" => false]);
         $request = new FakeRequest([
-            "query" => "&function=register_settings&register_action=unregister",
+            "url" => "http://example.com/?&function=register_settings&register_action=unregister",
             "username" => "john",
         ]);
         $response = $this->sut()($request);
@@ -349,7 +349,7 @@ class HandleUserPreferencesTest extends TestCase
     public function testUnregisterReportsNonExistentUser(): void
     {
         $request = new FakeRequest([
-            "query" => "&function=register_settings&register_action=unregister",
+            "url" => "http://example.com/?&function=register_settings&register_action=unregister",
             "username" => "colt",
         ]);
         $response = $this->sut()($request);
@@ -359,7 +359,7 @@ class HandleUserPreferencesTest extends TestCase
     public function testUnregisterReportsLockedUser(): void
     {
         $request = new FakeRequest([
-            "query" => "&function=register_settings&register_action=unregister",
+            "url" => "http://example.com/?&function=register_settings&register_action=unregister",
             "username" => "jane",
         ]);
         $response = $this->sut()($request);
@@ -369,7 +369,7 @@ class HandleUserPreferencesTest extends TestCase
     public function testUnregisterReportsWrongPassword(): void
     {
         $request = new FakeRequest([
-            "query" => "&function=register_settings&register_action=unregister",
+            "url" => "http://example.com/?&function=register_settings&register_action=unregister",
             "username" => "john",
             "post" => ["oldpassword" => "54321"],
         ]);
@@ -381,7 +381,7 @@ class HandleUserPreferencesTest extends TestCase
     {
         $this->dbService->options(["writeUsers" => false]);
         $request = new FakeRequest([
-            "query" => "&function=register_settings&register_action=unregister",
+            "url" => "http://example.com/?&function=register_settings&register_action=unregister",
             "username" => "john",
             "post" => ["oldpassword" => "12345"],
         ]);
@@ -392,7 +392,7 @@ class HandleUserPreferencesTest extends TestCase
     public function testUnregisterRedirectsOnSuccess(): void
     {
         $request = new FakeRequest([
-            "query" => "&function=register_settings&register_action=unregister",
+            "url" => "http://example.com/?&function=register_settings&register_action=unregister",
             "username" => "john",
             "post" => ["oldpassword" => "12345"],
         ]);

@@ -11,11 +11,11 @@ namespace Register;
 use ApprovalTests\Approvals;
 use org\bovigo\vfs\vfsStream;
 use PHPUnit\Framework\TestCase;
+use Plib\FakeRequest;
 use Plib\View;
 use Register\Infra\FakeCsrfProtector;
 use Register\Infra\FakeDbService;
 use Register\Infra\FakePassword;
-use Register\Infra\FakeRequest;
 use Register\Infra\Mailer;
 use Register\Infra\Random;
 use Register\Infra\UserGroupRepository;
@@ -76,7 +76,7 @@ class UserAdminTest extends TestCase
     public function testRendersCreateForm(): void
     {
         $this->userGroupRepository->save(new UserGroup("admin", ""));
-        $request = new FakeRequest(["query" => "&action=create"]);
+        $request = new FakeRequest(["url" => "http://example.com/?&action=create"]);
         $response = $this->sut()($request);
         $this->assertEquals("Register – Users", $response->title());
         Approvals::verifyHtml($response->output());
@@ -85,7 +85,9 @@ class UserAdminTest extends TestCase
     public function testDoCreateIsCsrfProtected(): void
     {
         $this->csrfProtector->options(["check" => false]);
-        $request = new FakeRequest(["query" => "&action=do_create"]);
+        $request = new FakeRequest([
+            "url" => "http://example.com/?&action=do_create",
+        ]);
         $response = $this->sut()($request);
         $this->assertEquals("Register – Users", $response->title());
         $this->assertStringContainsString("You are not authorized for this action!", $response->output());
@@ -93,7 +95,9 @@ class UserAdminTest extends TestCase
 
     public function testDoCreateReportsExistingUser(): void
     {
-        $request = new FakeRequest(["query" => "&action=do_create&user=jane"]);
+        $request = new FakeRequest([
+            "url" => "http://example.com/?&action=do_create&user=jane",
+        ]);
         $response = $this->sut()($request);
         $this->assertEquals("Register – Users", $response->title());
         $this->assertStringContainsString("The chosen username exists already.", $response->output());
@@ -102,7 +106,7 @@ class UserAdminTest extends TestCase
     public function testDoCreateReportsValidationErrors(): void
     {
         $request = new FakeRequest([
-            "query" => "&action=do_create",
+            "url" => "http://example.com/?&action=do_create",
             "post" => [
                 "username" => "cmb",
                 "password1" => "test",
@@ -121,7 +125,7 @@ class UserAdminTest extends TestCase
     public function testDoCreateReportsExistingEmail(): void
     {
         $request = new FakeRequest([
-            "query" => "&action=do_create",
+            "url" => "http://example.com/?&action=do_create",
             "post" => [
                 "username" => "cmb",
                 "password1" => "test",
@@ -141,7 +145,7 @@ class UserAdminTest extends TestCase
     {
         $this->dbService->options(["writeUsers" => false]);
         $request = new FakeRequest([
-            "query" => "&action=do_create",
+            "url" => "http://example.com/?&action=do_create",
             "post" => [
                 "username" => "cmb",
                 "password1" => "test",
@@ -160,7 +164,7 @@ class UserAdminTest extends TestCase
     public function testCreateRedirectsOnSuccess(): void
     {
         $request = new FakeRequest([
-            "query" => "&action=do_create",
+            "url" => "http://example.com/?&action=do_create",
             "post" => [
                 "username" => "cmb",
                 "password1" => "test",
@@ -178,7 +182,9 @@ class UserAdminTest extends TestCase
 
     public function testUpdateReportsMissingUser(): void
     {
-        $request = new FakeRequest(["query" => "&action=update"]);
+        $request = new FakeRequest([
+            "url" => "http://example.com/?&action=update",
+        ]);
         $response = $this->sut()($request);
         $this->assertEquals("Register – Users", $response->title());
         $this->assertStringContainsString("User '' does not exist!", $response->output());
@@ -186,7 +192,7 @@ class UserAdminTest extends TestCase
 
     public function testRendersUpdateForm(): void
     {
-        $request = new FakeRequest(["query" => "&action=update&user=jane"]);
+        $request = new FakeRequest(["url" => "http://example.com/?&action=update&user=jane"]);
         $response = $this->sut()($request);
         $this->assertEquals("Register – Users", $response->title());
         Approvals::verifyHtml($response->output());
@@ -195,7 +201,7 @@ class UserAdminTest extends TestCase
     public function testDoUpdateIsCsrfProtected(): void
     {
         $this->csrfProtector->options(["check" => false]);
-        $request = new FakeRequest(["query" => "&action=do_update"]);
+        $request = new FakeRequest(["url" => "http://example.com/?&action=do_update"]);
         $response = $this->sut()($request);
         $this->assertEquals("Register – Users", $response->title());
         $this->assertStringContainsString("You are not authorized for this action!", $response->output());
@@ -203,7 +209,7 @@ class UserAdminTest extends TestCase
 
     public function testDoUpdateReportsMissingUser(): void
     {
-        $request = new FakeRequest(["query" => "&action=do_update"]);
+        $request = new FakeRequest(["url" => "http://example.com/?&action=do_update"]);
         $response = $this->sut()($request);
         $this->assertEquals("Register – Users", $response->title());
         $this->assertStringContainsString("User '' does not exist!", $response->output());
@@ -212,7 +218,7 @@ class UserAdminTest extends TestCase
     public function testDoUpdateReportsValidationErrors(): void
     {
         $request = new FakeRequest([
-            "query" => "&action=do_update&user=jane",
+            "url" => "http://example.com/?&action=do_update&user=jane",
             "post" => [
                 "username" => "jane",
                 "password1" => "test",
@@ -233,7 +239,7 @@ class UserAdminTest extends TestCase
             new User("cmb", "test", ["guest"], "Christoph Becker", "cmb@example.com", "activated", "secret")
         );
         $request = new FakeRequest([
-            "query" => "&action=do_update&user=cmb",
+            "url" => "http://example.com/?&action=do_update&user=cmb",
             "post" => [
                 "groups" => ["guest"],
                 "name" => "Christoph M. Becker",
@@ -250,7 +256,7 @@ class UserAdminTest extends TestCase
     {
         $this->dbService->options(["writeUsers" => false]);
         $request = new FakeRequest([
-            "query" => "&action=do_update&user=john",
+            "url" => "http://example.com/?&action=do_update&user=john",
             "post" => [
                 "groups" => ["guest"],
                 "name" => "John Doe",
@@ -266,7 +272,7 @@ class UserAdminTest extends TestCase
     public function testDoUpdateRedirectsOnSuccess(): void
     {
         $request = new FakeRequest([
-            "query" => "&action=do_update&user=john",
+            "url" => "http://example.com/?&action=do_update&user=john",
             "post" => [
                 "groups" => ["guest"],
                 "name" => "John Doe",
@@ -281,7 +287,7 @@ class UserAdminTest extends TestCase
 
     public function testChangePasswordReportsMissingUser(): void
     {
-        $request = new FakeRequest(["query" => "&action=change_password"]);
+        $request = new FakeRequest(["url" => "http://example.com/?&action=change_password"]);
         $response = $this->sut()($request);
         $this->assertEquals("Register – Users", $response->title());
         $this->assertStringContainsString("User '' does not exist!", $response->output());
@@ -289,7 +295,7 @@ class UserAdminTest extends TestCase
 
     public function testRendersChangePasswordForm(): void
     {
-        $request = new FakeRequest(["query" => "&action=change_password&user=jane"]);
+        $request = new FakeRequest(["url" => "http://example.com/?&action=change_password&user=jane"]);
         $response = $this->sut()($request);
         $this->assertEquals("Register – Users", $response->title());
         Approvals::verifyHtml($response->output());
@@ -298,7 +304,7 @@ class UserAdminTest extends TestCase
     public function testDoChangePasswordIsCsrfProtected(): void
     {
         $this->csrfProtector->options(["check" => false]);
-        $request = new FakeRequest(["query" => "&action=do_change_password"]);
+        $request = new FakeRequest(["url" => "http://example.com/?&action=do_change_password"]);
         $response = $this->sut()($request);
         $this->assertEquals("Register – Users", $response->title());
         $this->assertStringContainsString("You are not authorized for this action!", $response->output());
@@ -306,7 +312,7 @@ class UserAdminTest extends TestCase
 
     public function testDoChangePasswordReportsMissingUser(): void
     {
-        $request = new FakeRequest(["query" => "&action=do_change_password&user=cmb"]);
+        $request = new FakeRequest(["url" => "http://example.com/?&action=do_change_password&user=cmb"]);
         $response = $this->sut()($request);
         $this->assertEquals("Register – Users", $response->title());
         $this->assertStringContainsString("User 'cmb' does not exist!", $response->output());
@@ -315,7 +321,7 @@ class UserAdminTest extends TestCase
     public function testDoChangePasswordReportsValidationErrors(): void
     {
         $request = new FakeRequest([
-            "query" => "&action=do_change_password&user=jane",
+            "url" => "http://example.com/?&action=do_change_password&user=jane",
             "post" => ["password1" => "a", "password2" => "b"],
         ]);
         $response = $this->sut()($request);
@@ -327,7 +333,7 @@ class UserAdminTest extends TestCase
     {
         $this->dbService->options(["writeUsers" => false]);
         $request = new FakeRequest([
-            "query" => "&action=do_change_password&user=jane",
+            "url" => "http://example.com/?&action=do_change_password&user=jane",
             "post" => ["password1" => "a", "password2" => "a"],
         ]);
         $response = $this->sut()($request);
@@ -338,7 +344,7 @@ class UserAdminTest extends TestCase
     public function testDoChangePasswordRedirectsOnSuccess(): void
     {
         $request = new FakeRequest([
-            "query" => "&action=do_change_password&user=jane",
+            "url" => "http://example.com/?&action=do_change_password&user=jane",
             "post" => ["password1" => "a", "password2" => "a"],
         ]);
         $response = $this->sut()($request);
@@ -348,7 +354,7 @@ class UserAdminTest extends TestCase
 
     public function testMailReportsMissingUser(): void
     {
-        $request = new FakeRequest(["query" => "&action=mail&user=cmb"]);
+        $request = new FakeRequest(["url" => "http://example.com/?&action=mail&user=cmb"]);
         $response = $this->sut()($request);
         $this->assertEquals("Register – Users", $response->title());
         $this->assertStringContainsString("User 'cmb' does not exist!", $response->output());
@@ -356,7 +362,7 @@ class UserAdminTest extends TestCase
 
     public function testRendersMailForm(): void
     {
-        $request = new FakeRequest(["query" => "&action=mail&user=jane"]);
+        $request = new FakeRequest(["url" => "http://example.com/?&action=mail&user=jane"]);
         $response = $this->sut()($request);
         $this->assertEquals("Register – Users", $response->title());
         Approvals::verifyHtml($response->output());
@@ -365,7 +371,7 @@ class UserAdminTest extends TestCase
     public function testDoMailIsCsrfProtected(): void
     {
         $this->csrfProtector->options(["check" => false]);
-        $request = new FakeRequest(["query" => "&action=do_mail"]);
+        $request = new FakeRequest(["url" => "http://example.com/?&action=do_mail"]);
         $response = $this->sut()($request);
         $this->assertEquals("Register – Users", $response->title());
         $this->assertStringContainsString("You are not authorized for this action!", $response->output());
@@ -373,7 +379,7 @@ class UserAdminTest extends TestCase
 
     public function testDoMailReportsMissingUser(): void
     {
-        $request = new FakeRequest(["query" => "&action=do_mail&user=cmb"]);
+        $request = new FakeRequest(["url" => "http://example.com/?&action=do_mail&user=cmb"]);
         $response = $this->sut()($request);
         $this->assertEquals("Register – Users", $response->title());
         $this->assertStringContainsString("User 'cmb' does not exist!", $response->output());
@@ -382,7 +388,7 @@ class UserAdminTest extends TestCase
     public function testDoMailReportsValidationErrors(): void
     {
         $request = new FakeRequest([
-            "query" => "&action=do_mail&user=jane",
+            "url" => "http://example.com/?&action=do_mail&user=jane",
             "post" => ["subject" => "", "message" => "message"],
         ]);
         $response = $this->sut()($request);
@@ -393,7 +399,7 @@ class UserAdminTest extends TestCase
     public function testDoMailReportsFailureToSendMail(): void
     {
         $request = new FakeRequest([
-            "query" => "&action=do_mail&user=jane",
+            "url" => "http://example.com/?&action=do_mail&user=jane",
             "post" => ["subject" => "subject", "message" => "message"],
         ]);
         $this->mailer->expects($this->once())->method("sendMail")->willReturn(false);
@@ -405,7 +411,7 @@ class UserAdminTest extends TestCase
     public function testDoMailRedirectsOnSuccess(): void
     {
         $request = new FakeRequest([
-            "query" => "&action=do_mail&user=jane",
+            "url" => "http://example.com/?&action=do_mail&user=jane",
             "post" => ["subject" => "subject", "message" => "message"],
         ]);
         $this->mailer->expects($this->once())->method("sendMail")->with(
@@ -420,7 +426,7 @@ class UserAdminTest extends TestCase
 
     public function testDeleteReportsMissingUser(): void
     {
-        $request = new FakeRequest(["query" => "&action=delete&user=cmb"]);
+        $request = new FakeRequest(["url" => "http://example.com/?&action=delete&user=cmb"]);
         $response = $this->sut()($request);
         $this->assertEquals("Register – Users", $response->title());
         $this->assertStringContainsString("User 'cmb' does not exist!", $response->output());
@@ -428,7 +434,7 @@ class UserAdminTest extends TestCase
 
     public function testDeleteRendersDeleteForm(): void
     {
-        $request = new FakeRequest(["query" => "&action=delete&user=jane"]);
+        $request = new FakeRequest(["url" => "http://example.com/?&action=delete&user=jane"]);
         $response = $this->sut()($request);
         $this->assertEquals("Register – Users", $response->title());
         Approvals::verifyHtml($response->output());
@@ -437,7 +443,7 @@ class UserAdminTest extends TestCase
     public function testDoDeleteIsCsrfProtected(): void
     {
         $this->csrfProtector->options(["check" => false]);
-        $request = new FakeRequest(["query" => "&action=do_delete"]);
+        $request = new FakeRequest(["url" => "http://example.com/?&action=do_delete"]);
         $response = $this->sut()($request);
         $this->assertEquals("Register – Users", $response->title());
         $this->assertStringContainsString("You are not authorized for this action!", $response->output());
@@ -445,7 +451,7 @@ class UserAdminTest extends TestCase
 
     public function testDoDeleteReportsMissingUser(): void
     {
-        $request = new FakeRequest(["query" => "&action=do_delete&user=cmb"]);
+        $request = new FakeRequest(["url" => "http://example.com/?&action=do_delete&user=cmb"]);
         $response = $this->sut()($request);
         $this->assertEquals("Register – Users", $response->title());
         $this->assertStringContainsString("User 'cmb' does not exist!", $response->output());
@@ -454,7 +460,7 @@ class UserAdminTest extends TestCase
     public function testDoDeleteReportsFailureToSave(): void
     {
         $this->dbService->options(["writeUsers" => false]);
-        $request = new FakeRequest(["query" => "&action=do_delete&user=jane"]);
+        $request = new FakeRequest(["url" => "http://example.com/?&action=do_delete&user=jane"]);
         $response = $this->sut()($request);
         $this->assertEquals("Register – Users", $response->title());
         $this->assertStringContainsString("Saving CSV file failed.", $response->output());
@@ -462,7 +468,7 @@ class UserAdminTest extends TestCase
 
     public function testDoDeleteRedirectsOnSuccess(): void
     {
-        $request = new FakeRequest(["query" => "&action=do_delete&user=jane"]);
+        $request = new FakeRequest(["url" => "http://example.com/?&action=do_delete&user=jane"]);
         $response = $this->sut()($request);
         $this->assertNull($this->userRepository->findByUsername("jane"));
         $this->assertEquals("http://example.com/?register&admin=users", $response->location());

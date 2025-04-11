@@ -10,15 +10,15 @@
 
 namespace Register;
 
+use Plib\Request;
 use Plib\Response;
+use Plib\Url;
 use Plib\View;
 use Register\Infra\Mailer;
 use Register\Infra\Password;
 use Register\Infra\Random;
-use Register\Infra\Request;
 use Register\Infra\UserRepository;
 use Register\Logic\Util;
-use Register\Value\Url;
 use Register\Value\User;
 
 class HandleUserRegistration
@@ -63,7 +63,7 @@ class HandleUserRegistration
         if (!$this->conf["allowed_register"] || $request->username()) {
             return Response::create($this->view->message("fail", "error_unauthorized"));
         }
-        switch ($request->registerAction()) {
+        switch ($request->post("register_action") ?? $request->get("register_action")) {
             default:
                 return $this->showForm($request);
             case "register":
@@ -81,7 +81,13 @@ class HandleUserRegistration
 
     private function registerUser(Request $request): Response
     {
-        $post = $request->registerUserPost();
+        $post = [
+            "name" => $request->post("name") ?? "",
+            "username" => $request->post("username") ?? "",
+            "password1" => $request->post("password1") ?? "",
+            "password2" => $request->post("password2") ?? "",
+            "email" => $request->post("email") ?? "",
+        ];
         $user = $this->userFromPost($post);
         if (($errors = Util::validateUser($user, $post["password2"]))) {
             return Response::create($this->renderForm($request->url(), $user, $post["password2"], $errors));
@@ -154,7 +160,7 @@ class HandleUserRegistration
             "fullname" => $user->getName(),
             "username" => $user->getUsername(),
             "email" => $user->getEmail(),
-            "remoteAddress" => $request->remoteAddress(),
+            "remoteAddress" => $request->remoteAddr(),
             "other_fullname" => $olduser->getName(),
             "other_username" => $olduser->getUsername(),
             "other_email" => $olduser->getEmail(),
@@ -162,7 +168,7 @@ class HandleUserRegistration
         ]);
         return  $this->mailer->sendMail(
             $user->getEmail(),
-            $this->view->plain("email_subject", $request->serverName()),
+            $this->view->plain("email_subject", $request->header("HOST") ?? ""),
             html_entity_decode(strip_tags($html), ENT_COMPAT | ENT_SUBSTITUTE, "UTF-8"),
             $this->conf["mail_address"],
             $this->conf["mail_address"]
@@ -178,12 +184,12 @@ class HandleUserRegistration
             "fullname" => $user->getName(),
             "username" => $user->getUsername(),
             "email" => $user->getEmail(),
-            "remoteAddress" => $request->remoteAddress(),
+            "remoteAddress" => $request->remoteAddr(),
             "url" => $url->absolute(),
         ]);
         return $this->mailer->sendMail(
             $user->getEmail(),
-            $this->view->plain("email_subject", $request->serverName()),
+            $this->view->plain("email_subject", $request->header("HOST") ?? ""),
             html_entity_decode(strip_tags($html), ENT_COMPAT | ENT_SUBSTITUTE, "UTF-8"),
             $this->conf["mail_address"],
             $this->conf["mail_address"]
@@ -192,7 +198,10 @@ class HandleUserRegistration
 
     private function activateUser(Request $request): Response
     {
-        $params = $request->activationParams();
+        $params = [
+            "username" => $request->get("register_username") ?? "",
+            "nonce" => $request->get("register_nonce") ?? "",
+        ];
         if (!$params["nonce"]) {
             return Response::create($this->view->message("fail", "error_code_missing"));
         }
@@ -207,7 +216,7 @@ class HandleUserRegistration
             return Response::create($this->view->message("fail", "error_cannot_write_csv"));
         }
         return Response::create($this->view->render("activation", [
-            "url" => $request->url()->withoutParams()->relative(),
+            "url" => $request->url()->page($request->selected())->relative(),
         ]));
     }
 }

@@ -8,11 +8,11 @@
 
 namespace Register;
 
+use Plib\Request;
 use Plib\Response;
+use Plib\Url;
 use Plib\View;
 use Register\Infra\Pages;
-use Register\Infra\Request;
-use Register\Value\Url;
 
 class PagesAdmin
 {
@@ -41,7 +41,7 @@ class PagesAdmin
         return array_map(function (int $i, array $pd) use ($url) {
             return [
                 "heading" => $this->pages->heading($i),
-                "url" => $url->withPage($this->pages->url($i))->with("edit")->relative(),
+                "url" => $url->page($this->pages->url($i))->with("edit")->relative(),
                 "indent" => str_repeat("\xC2\xA0", 3 * ($this->pages->level($i) - 1)),
                 "groups" => $pd["register_access"],
             ];

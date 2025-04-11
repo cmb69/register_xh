@@ -11,12 +11,12 @@ namespace Register;
 use ApprovalTests\Approvals;
 use org\bovigo\vfs\vfsStream;
 use PHPUnit\Framework\TestCase;
+use Plib\FakeRequest;
 use Plib\View;
 use Register\Infra\ActivityRepository;
 use Register\Infra\FakeDbService;
 use Register\Infra\FakeLogger;
 use Register\Infra\FakePassword;
-use Register\Infra\FakeRequest;
 use Register\Infra\LoginManager;
 use Register\Infra\Random;
 use Register\Infra\UserGroupRepository;
@@ -77,14 +77,14 @@ class ShowLoginFormTest extends TestCase
 
     public function testRendersLoggedInForm(): void
     {
-        $request = new FakeRequest(["query" => "Foo", "username" => "jane"]);
+        $request = new FakeRequest(["url" => "http://example.com/?Foo", "username" => "jane"]);
         $response = $this->sut()($request);
         Approvals::verifyHtml($response->output());
     }
 
     public function testLoginReportsMissingAuthorization(): void
     {
-        $request = new FakeRequest(["query" => "&register_action=login", "username" => "cmb"]);
+        $request = new FakeRequest(["url" => "http://example.com/?&register_action=login", "username" => "cmb"]);
         $response = $this->sut()($request);
         $this->assertStringContainsString("You are not authorized for this action!", $response->output());
     }
@@ -92,7 +92,7 @@ class ShowLoginFormTest extends TestCase
     public function testLoginReportsMissingUser(): void
     {
         $request = new FakeRequest([
-            "query" => "&register_action=login",
+            "url" => "http://example.com/?&register_action=login",
             "post" => ["username" => "colt", "password" => "", "remember" => ""],
         ]);
         $response = $this->sut()($request);
@@ -106,7 +106,7 @@ class ShowLoginFormTest extends TestCase
     public function testLoginReportsDeactivatedUser(): void
     {
         $request = new FakeRequest([
-            "query" => "&register_action=login",
+            "url" => "http://example.com/?&register_action=login",
             "post" => ["username" => "john", "password" => "", "remember" => ""],
         ]);
         $response = $this->sut()($request);
@@ -123,7 +123,7 @@ class ShowLoginFormTest extends TestCase
     public function testLoginReportsWrongPassword(): void
     {
         $request = new FakeRequest([
-            "query" => "&register_action=login",
+            "url" => "http://example.com/?&register_action=login",
             "post" => ["username" => "jane", "password" => "", "remember" => ""],
         ]);
         $response = $this->sut()($request);
@@ -141,8 +141,9 @@ class ShowLoginFormTest extends TestCase
     {
         $this->loginManager->expects($this->once())->method("login")->with($this->users()["james"]);
         $request = new FakeRequest([
-            "query" => "Foo",
+            "url" => "http://example.com/?Foo",
             "post" => ["register_action" => "login", "username" => "james", "password" => "test", "remember" => "on"],
+            "time" => 0,
         ]);
         $response = $this->sut()($request);
         $this->assertEquals("http://example.com/?Foo", $response->location());
@@ -168,7 +169,7 @@ class ShowLoginFormTest extends TestCase
     {
         $this->loginManager->expects($this->once())->method("login")->with($this->users()["joan"]);
         $request = new FakeRequest([
-            "query" => "Foo",
+            "url" => "http://example.com/?Foo",
             "post" => ["register_action" => "login", "username" => "joan", "password" => "test", "remember" => ""],
         ]);
         $response = $this->sut()($request);
@@ -178,7 +179,7 @@ class ShowLoginFormTest extends TestCase
 
     public function testLogoutReportsMissingAuthorization(): void
     {
-        $request = new FakeRequest(["query" => "&register_action=logout"]);
+        $request = new FakeRequest(["url" => "http://example.com/?&register_action=logout"]);
         $response = $this->sut()($request);
         $this->assertStringContainsString("You are not authorized for this action!", $response->output());
     }
@@ -186,7 +187,7 @@ class ShowLoginFormTest extends TestCase
     public function testLogoutSucceeds(): void
     {
         $this->activityRepository->expects($this->once())->method("update")->with("jane", 0);
-        $request = new FakeRequest(["query" => "&register_action=logout", "username" => "jane"]);
+        $request = new FakeRequest(["url" => "http://example.com/?&register_action=logout", "username" => "jane"]);
         $response = $this->sut()($request);
         $this->assertEquals("http://example.com/", $response->location());
     }
@@ -195,9 +196,9 @@ class ShowLoginFormTest extends TestCase
     {
         $this->activityRepository->expects($this->once())->method("update")->with("jane", 0);
         $request = new FakeRequest([
-            "query" => "&register_action=logout",
+            "url" => "http://example.com/?&register_action=logout",
             "username" => "jane",
-            "cookies" => ["register_remember" => "jane.i5ixPyjRJ6iPuDjTEwBwpxSg6H0"],
+            "cookie" => ["register_remember" => "jane.i5ixPyjRJ6iPuDjTEwBwpxSg6H0"],
         ]);
         $response = $this->sut()($request);
         $this->assertEquals(["register_remember", "", 0], $response->cookie());

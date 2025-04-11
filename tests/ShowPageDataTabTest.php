@@ -8,8 +8,8 @@ namespace Register;
 
 use ApprovalTests\Approvals;
 use PHPUnit\Framework\TestCase;
+use Plib\FakeRequest;
 use Plib\View;
-use Register\Infra\FakeRequest;
 
 class ShowPageDataTabTest extends TestCase
 {
@@ -17,7 +17,7 @@ class ShowPageDataTabTest extends TestCase
     {
         $text = XH_includeVar("./languages/en.php", "plugin_tx")["register"];
         $sut = new ShowPageDataTab("../../assets/css/", new View("./views/", $text));
-        $request = new FakeRequest(["query" => "SomePage"]);
+        $request = new FakeRequest(["url" => "http://example.com/?SomePage"]);
         $response = $sut($request, ["register_access" => "cmb"]);
         Approvals::verifyHtml($response->output());
     }
