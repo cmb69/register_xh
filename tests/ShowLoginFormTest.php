@@ -147,8 +147,8 @@ class ShowLoginFormTest extends TestCase
         $response = $this->sut()($request);
         $this->assertEquals("http://example.com/?Foo", $response->location());
         $this->assertEquals(
-            [["register_remember", "james.6M5brgkTOP4AaQ9ZGLss7MZYyG4", "8640000"]],
-            $response->cookies()
+            ["register_remember", "james.6M5brgkTOP4AaQ9ZGLss7MZYyG4", "8640000"],
+            $response->cookie()
         );
         $this->assertEquals(["info", "register", "login", "User “james” logged in"], $this->logger->lastEntry());
     }
@@ -200,7 +200,7 @@ class ShowLoginFormTest extends TestCase
             "cookies" => ["register_remember" => "jane.i5ixPyjRJ6iPuDjTEwBwpxSg6H0"],
         ]);
         $response = $this->sut()($request);
-        $this->assertEquals([["register_remember", "", 0]], $response->cookies());
+        $this->assertEquals(["register_remember", "", 0], $response->cookie());
         $this->assertEquals("http://example.com/", $response->location());
         $this->assertEquals(["info", "register", "logout", "User “jane” logged out"], $this->logger->lastEntry());
     }

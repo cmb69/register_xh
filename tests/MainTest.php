@@ -84,28 +84,28 @@ class MainTest extends TestCase
     {
         $request = new FakeRequest(["cookies" => ["register_remember" => "jane"]]);
         $response = $this->sut()($request);
-        $this->assertEquals([["register_remember", "", 0]], $response->cookies());
+        $this->assertEquals(["register_remember", "", 0], $response->cookie());
     }
 
     public function testAutoLoginFailsForNonExistentUser(): void
     {
         $request = new FakeRequest(["cookies" => ["register_remember" => "colt.6M5brgkTOP4AaQ9ZGLss7MZYyG4"]]);
         $response = $this->sut()($request);
-        $this->assertEquals([["register_remember", "", 0]], $response->cookies());
+        $this->assertEquals(["register_remember", "", 0], $response->cookie());
     }
 
     public function testAutoLoginFailsForDeactivatedUser(): void
     {
         $request = new FakeRequest(["cookies" => ["register_remember" => "john.6M5brgkTOP4AaQ9ZGLss7MZYyG4"]]);
         $response = $this->sut()($request);
-        $this->assertEquals([["register_remember", "", 0]], $response->cookies());
+        $this->assertEquals(["register_remember", "", 0], $response->cookie());
     }
 
     public function testAutoLoginFailsForManipulatedCookie(): void
     {
         $request = new FakeRequest(["cookies" => ["register_remember" => "jane.6M5brgkTOP4AaQ9ZGLss7MZYyG4"]]);
         $response = $this->sut()($request);
-        $this->assertEquals([["register_remember", "", 0]], $response->cookies());
+        $this->assertEquals(["register_remember", "", 0], $response->cookie());
     }
 
     public function testAutoLoginSucceeds(): void

@@ -8,10 +8,10 @@
 
 namespace Register;
 
+use Plib\Response;
 use Plib\View;
 use Register\Infra\DbService;
 use Register\Infra\SystemChecker;
-use Register\Value\Response;
 
 class ShowPluginInfo
 {

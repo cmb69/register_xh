@@ -19,7 +19,7 @@ class ForbiddenTest extends TestCase
         $view = new View("./views/", XH_includeVar("./languages/en.php", "plugin_tx")["register"]);
         $sut = new Forbidden($view);
         $response = $sut();
-        $this->assertTrue($response->isForbidden());
+        $this->assertSame(403, $response->status());
         $this->assertEquals("Access Restricted", $response->title());
         Approvals::verifyHtml($response->output());
     }

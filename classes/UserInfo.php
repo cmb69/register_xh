@@ -8,10 +8,10 @@
 
 namespace Register;
 
+use Plib\Response;
 use Plib\View;
 use Register\Infra\Request;
 use Register\Infra\UserRepository;
-use Register\Value\Response;
 use Register\Value\Url;
 use Register\Value\User;
 

@@ -6,9 +6,9 @@
 
 namespace Register;
 
+use Plib\Response;
 use Plib\View;
 use Register\Infra\Request;
-use Register\Value\Response;
 
 class ShowPageDataTab
 {

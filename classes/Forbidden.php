@@ -8,8 +8,8 @@
 
 namespace Register;
 
+use Plib\Response;
 use Plib\View;
-use Register\Value\Response;
 
 class Forbidden
 {
@@ -22,7 +22,7 @@ class Forbidden
     }
     public function __invoke(): Response
     {
-        return Response::forbid("<h1>" . $this->view->text("label_access_error") . "</h1>\n"
+        return Response::error(403, "<h1>" . $this->view->text("label_access_error") . "</h1>\n"
             . "<p>" . $this->view->text("error_access") . "</p>\n")
             ->withTitle($this->view->text("label_access_error"));
     }

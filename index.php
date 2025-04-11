@@ -12,7 +12,6 @@
 
 use Register\Dic;
 use Register\Infra\Request;
-use Register\Infra\Responder;
 use XH\PageDataRouter;
 
 if (!defined("CMSIMPLE_XH_VERSION")) {
@@ -27,29 +26,29 @@ function register(): string
     global $function;
     switch ($function) {
         default:
-            return Responder::respond(Dic::makeShowLoginForm()(Request::current()));
+            return Dic::makeShowLoginForm()(Request::current())();
         case "register_user":
-            return Responder::respond(Dic::makeHandleUserRegistration()(Request::current()));
+            return Dic::makeHandleUserRegistration()(Request::current())();
         case "register_password":
-            return Responder::respond(Dic::makeHandlePasswordForgotten()(Request::current()));
+            return Dic::makeHandlePasswordForgotten()(Request::current())();
         case "register_settings":
-            return Responder::respond(Dic::makeHandleUserPreferences()(Request::current()));
+            return Dic::makeHandleUserPreferences()(Request::current())();
     }
 }
 
 function register_user_info(string $pageUrl): string
 {
-    return Responder::respond(Dic::makeUserInfo()(Request::current(), $pageUrl));
+    return Dic::makeUserInfo()(Request::current(), $pageUrl)();
 }
 
 function register_active_users(): string
 {
-    return Responder::respond(Dic::makeActiveUsers()(Request::current()));
+    return Dic::makeActiveUsers()(Request::current())();
 }
 
 function register_forbidden(): string
 {
-    return Responder::respond(Dic::makeForbidden()());
+    return Dic::makeForbidden()()();
 }
 
 /** @deprecated */
@@ -93,4 +92,4 @@ function Register_loggedInForm(string $pageUrl): string
 /** @var PageDataRouter $pd_router */
 
 $pd_router->add_interest("register_access");
-Responder::respond(Dic::makeMain()(Request::current()));
+Dic::makeMain()(Request::current())();

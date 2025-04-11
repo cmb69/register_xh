@@ -8,6 +8,7 @@
 
 namespace Register;
 
+use Plib\Response;
 use Plib\View;
 use Register\Infra\CsrfProtector;
 use Register\Infra\Mailer;
@@ -19,7 +20,6 @@ use Register\Infra\UserRepository;
 use Register\Logic\Util;
 use Register\Value\Mail;
 use Register\Value\Passwords;
-use Register\Value\Response;
 use Register\Value\User;
 use Register\Value\UserGroup;
 

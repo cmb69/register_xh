@@ -10,6 +10,7 @@
 
 namespace Register;
 
+use Plib\Response;
 use Plib\View;
 use Register\Infra\Mailer;
 use Register\Infra\Password;
@@ -17,7 +18,6 @@ use Register\Infra\Random;
 use Register\Infra\Request;
 use Register\Infra\UserRepository;
 use Register\Logic\Util;
-use Register\Value\Response;
 use Register\Value\Url;
 use Register\Value\User;
 

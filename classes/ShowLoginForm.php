@@ -10,6 +10,7 @@
 
 namespace Register;
 
+use Plib\Response;
 use Plib\View;
 use Register\Infra\ActivityRepository;
 use Register\Infra\Logger;
@@ -19,7 +20,6 @@ use Register\Infra\Request;
 use Register\Infra\UserGroupRepository;
 use Register\Infra\UserRepository;
 use Register\Logic\Util;
-use Register\Value\Response;
 use Register\Value\User;
 
 class ShowLoginForm

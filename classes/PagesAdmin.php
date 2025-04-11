@@ -8,10 +8,10 @@
 
 namespace Register;
 
+use Plib\Response;
 use Plib\View;
 use Register\Infra\Pages;
 use Register\Infra\Request;
-use Register\Value\Response;
 use Register\Value\Url;
 
 class PagesAdmin

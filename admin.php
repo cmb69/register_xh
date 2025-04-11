@@ -10,7 +10,6 @@
 
 use Register\Dic;
 use Register\Infra\Request;
-use Register\Infra\Responder;
 use XH\PageDataRouter;
 
 if (!defined("CMSIMPLE_XH_VERSION")) {
@@ -49,16 +48,16 @@ if (XH_wantsPluginAdministration("register")) {
     $o .= pluginmenu("SHOW");
     switch ($admin) {
         case "":
-            $o .= Responder::respond(Dic::makeShowPluginInfo()());
+            $o .= Dic::makeShowPluginInfo()()();
             break;
         case "plugin_main":
-            $o .= Responder::respond(Dic::makePagesAdmin()(Request::current()));
+            $o .= Dic::makePagesAdmin()(Request::current())();
             break;
         case "groups":
-            $o .= Responder::respond(Dic::makeGroupAdmin()(Request::current()));
+            $o .= Dic::makeGroupAdmin()(Request::current())();
             break;
         case "users":
-            $o .= Responder::respond(Dic::makeUserAdmin()(Request::current()));
+            $o .= Dic::makeUserAdmin()(Request::current())();
             break;
         default:
             $o .= plugin_admin_common();
