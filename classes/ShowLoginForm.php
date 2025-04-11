@@ -10,16 +10,17 @@
 
 namespace Register;
 
+use Plib\DocumentStore;
 use Plib\Request;
 use Plib\Response;
 use Plib\View;
-use Register\Infra\ActivityRepository;
 use Register\Infra\Logger;
 use Register\Infra\LoginManager;
 use Register\Infra\Password;
 use Register\Infra\UserGroupRepository;
 use Register\Infra\UserRepository;
 use Register\Logic\Util;
+use Register\Model\ActiveUsers;
 use Register\Value\User;
 
 class ShowLoginForm
@@ -33,8 +34,8 @@ class ShowLoginForm
     /** @var UserGroupRepository */
     private $userGroupRepository;
 
-    /** @var ActivityRepository */
-    private $activityRepository;
+    /** @var DocumentStore */
+    private $store;
 
     /** @var LoginManager */
     private $loginManager;
@@ -53,7 +54,7 @@ class ShowLoginForm
         array $conf,
         UserRepository $userRepository,
         UserGroupRepository $userGroupRepository,
-        ActivityRepository $activityRepository,
+        DocumentStore $store,
         LoginManager $loginManager,
         Logger $logger,
         Password $password,
@@ -62,7 +63,7 @@ class ShowLoginForm
         $this->conf = $conf;
         $this->userRepository = $userRepository;
         $this->userGroupRepository = $userGroupRepository;
-        $this->activityRepository = $activityRepository;
+        $this->store = $store;
         $this->loginManager = $loginManager;
         $this->logger = $logger;
         $this->password = $password;
@@ -185,7 +186,9 @@ class ShowLoginForm
             return Response::create($this->view->message("fail", "error_unauthorized"));
         }
         $this->loginManager->logout();
-        $this->activityRepository->update($request->username(), 0);
+        $activeUsers = ActiveUsers::update($this->store);
+        $activeUsers->removeUser($request->username());
+        $this->store->commit();
         $this->logger->logInfo("logout", $this->view->plain("log_logout", $request->username()));
         if ($this->conf["allowed_remember"] && $request->cookie("register_remember")) {
             return Response::redirect($request->url()->without("register_action")->absolute())

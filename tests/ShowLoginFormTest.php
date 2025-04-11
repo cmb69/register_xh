@@ -11,6 +11,7 @@ namespace Register;
 use ApprovalTests\Approvals;
 use org\bovigo\vfs\vfsStream;
 use PHPUnit\Framework\TestCase;
+use Plib\DocumentStore;
 use Plib\FakeRequest;
 use Plib\Random;
 use Plib\View;
@@ -21,6 +22,7 @@ use Register\Infra\FakePassword;
 use Register\Infra\LoginManager;
 use Register\Infra\UserGroupRepository;
 use Register\Infra\UserRepository;
+use Register\Model\ActiveUsers;
 use Register\Value\User;
 use Register\Value\UserGroup;
 
@@ -28,10 +30,11 @@ class ShowLoginFormTest extends TestCase
 {
     private $userRepository;
     private $userGroupRepository;
-    private $activityRepository;
+    private $store;
     private $loginManager;
     private $logger;
     private $view;
+    private $activeUsers;
 
     public function setUp(): void
     {
@@ -41,7 +44,9 @@ class ShowLoginFormTest extends TestCase
         $dbService->writeGroups([new UserGroup("guest", ""), new UserGroup("admin", "Admin")]);
         $this->userRepository = new UserRepository($dbService);
         $this->userGroupRepository = new UserGroupRepository($dbService, "guest", $this->createMock(Random::class));
-        $this->activityRepository = $this->createMock(ActivityRepository::class);
+        $this->activeUsers = $this->activeUsers();
+        $this->store = $this->createMock(DocumentStore::class);
+        $this->store->method("update")->willReturn($this->activeUsers);
         $this->loginManager = $this->createMock(LoginManager::class);
         $this->logger = new FakeLogger;
         $this->view = new View("./views/", XH_includeVar("./languages/en.php", "plugin_tx")["register"]);
@@ -53,7 +58,7 @@ class ShowLoginFormTest extends TestCase
             XH_includeVar("./config/config.php", "plugin_cf")["register"],
             $this->userRepository,
             $this->userGroupRepository,
-            $this->activityRepository,
+            $this->store,
             $this->loginManager,
             $this->logger,
             new FakePassword,
@@ -186,21 +191,21 @@ class ShowLoginFormTest extends TestCase
 
     public function testLogoutSucceeds(): void
     {
-        $this->activityRepository->expects($this->once())->method("update")->with("jane", 0);
         $request = new FakeRequest(["url" => "http://example.com/?&register_action=logout", "username" => "jane"]);
         $response = $this->sut()($request);
+        $this->assertCount(0, $this->activeUsers->fetch(12345678));
         $this->assertEquals("http://example.com/", $response->location());
     }
 
     public function testSuccessfulLogoutDeletesCookie(): void
     {
-        $this->activityRepository->expects($this->once())->method("update")->with("jane", 0);
         $request = new FakeRequest([
             "url" => "http://example.com/?&register_action=logout",
             "username" => "jane",
             "cookie" => ["register_remember" => "jane.i5ixPyjRJ6iPuDjTEwBwpxSg6H0"],
         ]);
         $response = $this->sut()($request);
+        $this->assertCount(0, $this->activeUsers->fetch(12345678));
         $this->assertEquals(["register_remember", "", 0], $response->cookie());
         $this->assertEquals("http://example.com/", $response->location());
         $this->assertEquals(["info", "register", "logout", "User “jane” logged out"], $this->logger->lastEntry());
@@ -238,5 +243,12 @@ class ShowLoginFormTest extends TestCase
                 "secret"
             ),
         ];
+    }
+
+    private function activeUsers(): ActiveUsers
+    {
+        return new ActiveUsers([
+            "jane" => 12345678,
+        ]);
     }
 }

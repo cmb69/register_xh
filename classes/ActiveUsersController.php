@@ -8,34 +8,36 @@
 
 namespace Register;
 
+use Plib\DocumentStore;
 use Plib\Request;
 use Plib\Response;
 use Plib\View;
-use Register\Infra\ActivityRepository;
+use Register\Model\ActiveUsers;
 
 class ActiveUsersController
 {
     /** @var array<string,string> */
     private $conf;
 
-    /** @var ActivityRepository */
-    private $activityRepository;
+    /** @var DocumentStore */
+    private $store;
 
     /** @var View */
     private $view;
 
     /** @param array<string,string> $conf */
-    public function __construct(array $conf, ActivityRepository $activityRepository, View $view)
+    public function __construct(array $conf, DocumentStore $store, View $view)
     {
         $this->conf = $conf;
-        $this->activityRepository = $activityRepository;
+        $this->store = $store;
         $this->view = $view;
     }
 
     public function __invoke(Request $request): Response
     {
+        $activeUsers = ActiveUsers::retrieve($this->store);
         return Response::create($this->view->render("active_users", [
-            "users" => $this->activityRepository->find($request->time() - (int) $this->conf["activity_period"]),
+            "users" => $activeUsers->fetch($request->time() - (int) $this->conf["activity_period"]),
         ]));
     }
 }

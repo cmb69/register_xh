@@ -10,6 +10,7 @@ namespace Register;
 
 use org\bovigo\vfs\vfsStream;
 use PHPUnit\Framework\TestCase;
+use Plib\DocumentStore;
 use Plib\FakeRequest;
 use Plib\Random;
 use Plib\View;
@@ -20,12 +21,13 @@ use Register\Value\User;
 use Register\Infra\LoginManager;
 use Register\Infra\Pages;
 use Register\Infra\UserRepository;
+use Register\Model\ActiveUsers;
 
 class MainTest extends TestCase
 {
     private $conf;
     private $userRepository;
-    private $activityRepository;
+    private $store;
     private $pages;
     private $logger;
     private $loginManager;
@@ -39,7 +41,8 @@ class MainTest extends TestCase
         $dbService = new FakeDbService("vfs://root/register/", "guest", $this->createMock(Random::class));
         $dbService->writeUsers([$this->jane(), $this->john()]);
         $this->userRepository = new UserRepository($dbService);
-        $this->activityRepository = new ActivityRepository($dbService);
+        $this->store = $this->createMock(DocumentStore::class);
+        $this->store->method("update")->willReturn(new ActiveUsers([]));
         $this->pages = $this->createMock(Pages::class);
         $this->pages->method("data")->willReturn([
             ["register_access" => ""],
@@ -56,7 +59,7 @@ class MainTest extends TestCase
         return new Main(
             $this->conf,
             $this->userRepository,
-            $this->activityRepository,
+            $this->store,
             $this->pages,
             $this->logger,
             $this->loginManager,

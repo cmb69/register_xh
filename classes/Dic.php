@@ -9,6 +9,7 @@
 namespace Register;
 
 use Plib\CsrfProtector;
+use Plib\DocumentStore;
 use Plib\Random;
 use Plib\View;
 use Register\Infra\ActivityRepository;
@@ -32,7 +33,7 @@ class Dic
         return new Main(
             $plugin_cf["register"],
             self::makeUserRepository(),
-            self::makeActivityRepository(),
+            new DocumentStore(self::contentFolder()),
             new Pages(),
             new Logger(),
             new LoginManager(),
@@ -127,7 +128,7 @@ class Dic
             $plugin_cf["register"],
             self::makeUserRepository(),
             self::makeUserGroupRepository(),
-            self::makeActivityRepository(),
+            new DocumentStore(self::contentFolder()),
             new LoginManager(),
             new Logger(),
             new Password(),
@@ -167,7 +168,7 @@ class Dic
         global $plugin_cf;
         return new ActiveUsersController(
             $plugin_cf["register"],
-            self::makeActivityRepository(),
+            new DocumentStore(self::contentFolder()),
             self::view()
         );
     }
@@ -180,11 +181,6 @@ class Dic
     private static function makeUserGroupRepository(): UserGroupRepository
     {
         return new UserGroupRepository(self::makeDbService());
-    }
-
-    private static function makeActivityRepository(): ActivityRepository
-    {
-        return new ActivityRepository(self::makeDbService());
     }
 
     private static function makeDbService(): DbService
@@ -201,6 +197,17 @@ class Dic
             $instance = new DbService($folder, $plugin_cf['register']['group_default'], new Random());
         }
         return $instance;
+    }
+
+    private static function contentFolder(): string
+    {
+        global $pth;
+        $folder = $pth["folder"]["content"];
+        if ($pth["folder"]["base"] === "../") {
+            $folder = dirname($folder) . "/";
+        }
+        $folder .= "register/";
+        return $folder;
     }
 
     private static function makeMailer(): Mailer

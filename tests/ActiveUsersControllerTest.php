@@ -11,25 +11,22 @@ namespace Register;
 use ApprovalTests\Approvals;
 use org\bovigo\vfs\vfsStream;
 use PHPUnit\Framework\TestCase;
+use Plib\DocumentStore;
 use Plib\FakeRequest;
-use Plib\Random;
 use Plib\View;
-use Register\Infra\ActivityRepository;
-use Register\Infra\FakeDbService;
+use Register\Model\ActiveUsers;
 
 class ActiveUsersControllerTest extends TestCase
 {
     private $conf;
-    private $activityRepository;
+    private $store;
     private $view;
 
     public function setUp(): void
     {
         vfsStream::setup("root");
         $this->conf = XH_includeVar("./config/config.php", "plugin_cf")["register"];
-        $this->activityRepository = new ActivityRepository(
-            new FakeDbService("vfs://root/register/active_users.dat", "guest", $this->createMock(Random::class))
-        );
+        $this->store = $this->createMock(DocumentStore::class);
         $this->view = new View("./views/", XH_includeVar("./languages/en.php", "plugin_tx")["register"]);
     }
 
@@ -37,16 +34,18 @@ class ActiveUsersControllerTest extends TestCase
     {
         return new ActiveUsersController(
             $this->conf,
-            $this->activityRepository,
+            $this->store,
             $this->view
         );
     }
 
     public function testRendersActiveUsers(): void
     {
-        $this->activityRepository->update("cmb", strtotime("2023-04-16T17:13"));
-        $this->activityRepository->update("jane", strtotime("2023-04-16T17:14"));
-        $this->activityRepository->update("john", strtotime("2023-04-16T17:15"));
+        $this->store->method("retrieve")->willReturn(new ActiveUsers([
+            "cmb" => strtotime("2023-04-16T17:13"),
+            "jane" => strtotime("2023-04-16T17:14"),
+            "john" => strtotime("2023-04-16T17:15"),
+        ]));
         $response = $this->sut()(new FakeRequest(["time" => 0]));
         Approvals::verifyHtml($response->output());
     }

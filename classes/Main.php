@@ -10,15 +10,16 @@
 
 namespace Register;
 
+use Plib\DocumentStore;
 use Plib\Request;
 use Plib\Response;
 use Plib\View;
-use Register\Infra\ActivityRepository;
 use Register\Infra\Logger;
 use Register\Infra\LoginManager;
 use Register\Infra\Pages;
 use Register\Infra\UserRepository;
 use Register\Logic\Util;
+use Register\Model\ActiveUsers;
 use Register\Value\User;
 
 class Main
@@ -29,8 +30,8 @@ class Main
     /** @var UserRepository */
     private $userRepository;
 
-    /** @var ActivityRepository */
-    private $activityRepository;
+    /** @var DocumentStore */
+    private $store;
 
     /** @var Pages */
     private $pages;
@@ -48,7 +49,7 @@ class Main
     public function __construct(
         array $conf,
         UserRepository $userRepository,
-        ActivityRepository $activityRepository,
+        DocumentStore $store,
         Pages $pages,
         Logger $logger,
         LoginManager $loginManager,
@@ -56,7 +57,7 @@ class Main
     ) {
         $this->conf = $conf;
         $this->userRepository = $userRepository;
-        $this->activityRepository = $activityRepository;
+        $this->store = $store;
         $this->pages = $pages;
         $this->logger = $logger;
         $this->loginManager = $loginManager;
@@ -66,7 +67,9 @@ class Main
     public function __invoke(Request $request): Response
     {
         if ($request->username()) {
-            $this->activityRepository->update($request->username(), $request->time());
+            $activeUsers = ActiveUsers::update($this->store);
+            $activeUsers->updateUser($request->username(), $request->time());
+            $this->store->commit();
         }
         if (!$request->admin() || !$request->edit()) {
             $this->protectPages($request);
@@ -150,7 +153,9 @@ class Main
     private function forcedLogout(Request $request): Response
     {
         $this->loginManager->logout();
-        $this->activityRepository->update($request->username() ?? "", 0);
+        $activeUsers = ActiveUsers::update($this->store);
+        $activeUsers->removeUser($request->username() ?? "");
+        $this->store->commit();
         return Response::redirect($request->url()->absolute());
     }
 }
