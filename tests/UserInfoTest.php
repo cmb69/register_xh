@@ -11,25 +11,23 @@ namespace Register;
 use ApprovalTests\Approvals;
 use org\bovigo\vfs\vfsStream;
 use PHPUnit\Framework\TestCase;
+use Plib\DocumentStore;
 use Plib\FakeRequest;
-use Plib\Random;
 use Plib\View;
-use Register\Infra\DbService;
-use Register\Infra\UserRepository;
-use Register\Value\User;
+use Register\Model\User;
+use Register\Model\Users;
 
 class UserInfoTest extends TestCase
 {
     private $conf;
-    private $userRepository;
+    private $store;
     private $view;
 
     public function setUp(): void
     {
         vfsStream::setup("root");
         $this->conf = XH_includeVar("./config/config.php", "plugin_cf")["register"];
-        $dbService = new DbService("vfs://root/register/", "guest", $this->createMock(Random::class));
-        $this->userRepository = new UserRepository($dbService);
+        $this->store = $this->createStub(DocumentStore::class);
         $this->view = new View("./views/", XH_includeVar("./languages/en.php", "plugin_tx")["register"]);
     }
 
@@ -37,7 +35,7 @@ class UserInfoTest extends TestCase
     {
         return new UserInfo(
             $this->conf,
-            $this->userRepository,
+            $this->store,
             $this->view
         );
     }
@@ -51,6 +49,7 @@ class UserInfoTest extends TestCase
 
     public function testReportsNonExistentUser(): void
     {
+        $this->store->method("retrieve")->willReturn(new Users([]));
         $request = new FakeRequest(["username" => "colt"]);
         $response = $this->sut()($request, "Register");
         $this->assertStringContainsString("User 'colt' does not exist!", $response->output());
@@ -58,7 +57,8 @@ class UserInfoTest extends TestCase
 
     public function testRendersUserInfo(): void
     {
-        $this->userRepository->save(new User("cmb", "12345", ["guest"], "Christoph Becker", "cmb@example.com", "1", "1"));
+        $user = new User("cmb", "12345", ["guest"], "Christoph Becker", "cmb@example.com", "1", "1");
+        $this->store->method("retrieve")->willReturn(new Users(["cmb" => $user]));
         $request = new FakeRequest(["username" => "cmb"]);
         $response = $this->sut()($request, "Register");
         Approvals::verifyHtml($response->output());

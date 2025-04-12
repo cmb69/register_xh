@@ -12,23 +12,21 @@ use ApprovalTests\Approvals;
 use org\bovigo\vfs\vfsStream;
 use PHPUnit\Framework\MockObject;
 use PHPUnit\Framework\TestCase;
+use Plib\DocumentStore;
 use Plib\FakeRequest;
-use Plib\Random;
 use Plib\View;
-use Register\Infra\FakeDbService;
 use Register\Infra\FakeLogger;
 use Register\Infra\FakePassword;
 use Register\Infra\LoginManager;
 use Register\Infra\Mailer;
-use Register\Infra\UserRepository;
+use Register\Model\User;
+use Register\Model\Users;
 use Register\PHPMailer\PHPMailer;
-use Register\Value\User;
 
 class HandlePasswordForgottenTest extends TestCase
 {
     private $view;
-    private $dbService;
-    private $userRepository;
+    private $store;
     /** @var PHPMailer&MockObject */
     private $phpMailer;
     private $mailer;
@@ -41,9 +39,7 @@ class HandlePasswordForgottenTest extends TestCase
         $conf = XH_includeVar("./config/config.php", "plugin_cf")["register"];
         $text = XH_includeVar("./languages/en.php", "plugin_tx")["register"];
         $this->view = new View("./views/", $text);
-        $this->dbService = new FakeDbService("vfs://root/register/", "guest", $this->createMock(Random::class));
-        $this->dbService->writeUsers([new User("john", "12345", ["guest"], "John Dow", "john@example.com", "activated", "secret")]);
-        $this->userRepository = new UserRepository($this->dbService);
+        $this->store = $this->createStub(DocumentStore::class);
         $this->phpMailer = $this->getMockBuilder(PHPMailer::class)->onlyMethods(["send"])->getMock();
         $this->mailer = new Mailer($conf, $this->phpMailer);
         $this->loginManager = $this->createMock(LoginManager::class);
@@ -55,7 +51,7 @@ class HandlePasswordForgottenTest extends TestCase
         return new HandlePasswordForgotten(
             XH_includeVar("./config/config.php", "plugin_cf")["register"],
             $this->view,
-            $this->userRepository,
+            $this->store,
             new FakePassword,
             $this->mailer,
             $this->loginManager,
@@ -90,6 +86,7 @@ class HandlePasswordForgottenTest extends TestCase
 
     public function testRedirectsOnUnknownEmail(): void
     {
+        $this->store->method("retrieve")->willReturn(new Users([]));
         $request = new FakeRequest([
             "url" => "http://example.com/?&register_action=forgot_password",
             "time" => 1637449200,
@@ -101,6 +98,7 @@ class HandlePasswordForgottenTest extends TestCase
 
     public function testRedirectsOnSuccess(): void
     {
+        $this->store->method("retrieve")->willReturn(new Users(["john" => $this->john()]));
         $request = new FakeRequest([
             "url" => "http://example.com/?&register_action=forgot_password",
             "time" => 1637449200,
@@ -119,6 +117,7 @@ class HandlePasswordForgottenTest extends TestCase
 
     public function testResetReportsUnknownUser(): void
     {
+        $this->store->method("retrieve")->willReturn(new Users([]));
         $request = new FakeRequest([
             "url" => "http://example.com/?&register_action=reset_password&register_username=colt"
                 . "&register_time=&register_mac",
@@ -130,6 +129,7 @@ class HandlePasswordForgottenTest extends TestCase
 
     public function testResetReportsWrongMac(): void
     {
+        $this->store->method("retrieve")->willReturn(new Users(["john" => $this->john()]));
         $request = new FakeRequest([
             "url" => "http://example.com/?&register_action=reset_password"
                 . "&register_username=john&register_time=1637449800&register_mac=54321",
@@ -141,6 +141,7 @@ class HandlePasswordForgottenTest extends TestCase
 
     public function testResetReportsExpiration(): void
     {
+        $this->store->method("retrieve")->willReturn(new Users(["john" => $this->john()]));
         $request = new FakeRequest([
             "url" => "http://example.com/?&register_action=reset_password"
                 . "&register_username=john&register_time=1637445599&register_mac=TLIb1A2yKWBs_ZGmC0l0V4w6bS8",
@@ -152,6 +153,7 @@ class HandlePasswordForgottenTest extends TestCase
 
     public function testResetRendersForm(): void
     {
+        $this->store->method("retrieve")->willReturn(new Users(["john" => $this->john()]));
         $request = new FakeRequest([
             "url" => "http://example.com/?&register_action=reset_password"
                 . "&register_username=john&register_time=1637449800&register_mac=3pjbpRHFI9OO3gUHV42CHT3IHL8",
@@ -163,6 +165,7 @@ class HandlePasswordForgottenTest extends TestCase
 
     public function testChangeReportsUnknownUser(): void
     {
+        $this->store->method("update")->willReturn(new Users(([])));
         $request = new FakeRequest([
             "url" => "http://example.com/?&register_action=change_password&register_username=colt"
                 . "&register_time=&register_mac=",
@@ -174,6 +177,7 @@ class HandlePasswordForgottenTest extends TestCase
 
     public function testChangeReportsWrongMac(): void
     {
+        $this->store->method("update")->willReturn(new Users(["john" => $this->john()]));
         $request = new FakeRequest([
             "url" => "http://example.com/?&register_action=change_password"
                 . "&register_username=john&register_time=1637449800&register_mac=54321",
@@ -185,6 +189,7 @@ class HandlePasswordForgottenTest extends TestCase
 
     public function testChangeReportsExpiration(): void
     {
+        $this->store->method("update")->willReturn(new Users(["john" => $this->john()]));
         $request = new FakeRequest([
             "url" => "http://example.com/?&register_action=change_password"
                 . "&register_username=john&register_time=1637445599&register_mac=TLIb1A2yKWBs_ZGmC0l0V4w6bS8",
@@ -196,6 +201,7 @@ class HandlePasswordForgottenTest extends TestCase
 
     public function testChangeReportsPasswordValidationErrors(): void
     {
+        $this->store->method("update")->willReturn(new Users(["john" => $this->john()]));
         $request = new FakeRequest([
             "url" => "http://example.com/?&register_action=change_password"
                 . "&register_username=john&register_time=1637449800&register_mac=3pjbpRHFI9OO3gUHV42CHT3IHL8",
@@ -208,7 +214,7 @@ class HandlePasswordForgottenTest extends TestCase
 
     public function testChangeReportsFailureToSave(): void
     {
-        $this->dbService->options(["writeUsers" => false]);
+        $this->store->method("update")->willReturn(new Users(["john" => $this->john()]));
         $request = new FakeRequest([
             "url" => "http://example.com/?&register_action=change_password"
                 . "&register_username=john&register_time=1637449800&register_mac=3pjbpRHFI9OO3gUHV42CHT3IHL8",
@@ -221,6 +227,9 @@ class HandlePasswordForgottenTest extends TestCase
 
     public function testChangeRedirectsOnSuccess(): void
     {
+        $users = new Users(["john" => $this->john()]);
+        $this->store->method("update")->willReturn($users);
+        $this->store->method("commit")->willReturn(true);
         $this->loginManager->expects($this->once())->method("login");
         $request = new FakeRequest([
             "url" => "http://example.com/?&register_action=change_password"
@@ -230,11 +239,16 @@ class HandlePasswordForgottenTest extends TestCase
             "serverName" => "example.com",
         ]);
         $response = $this->sut()($request);
-        $this->assertTrue(password_verify("admin", $this->userRepository->findByUsername("john")->getPassword()));
+        $this->assertTrue(password_verify("admin", $users->user("john")->getPassword()));
         $this->assertEquals(
             ["info", "register", "login", "User “john” logged in after password reset"],
             $this->logger->lastEntry()
         );
         $this->assertEquals("http://example.com/", $response->location());
+    }
+
+    private function john(): User
+    {
+        return new User("john", "12345", ["guest"], "John Dow", "john@example.com", "activated", "secret");
     }
 }

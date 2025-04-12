@@ -10,6 +10,7 @@
 
 namespace Register;
 
+use Plib\DocumentStore;
 use Plib\Request;
 use Plib\Response;
 use Plib\Url;
@@ -18,10 +19,10 @@ use Register\Infra\Logger;
 use Register\Infra\LoginManager;
 use Register\Infra\Mailer;
 use Register\Infra\Password;
-use Register\Infra\UserRepository;
 use Register\Logic\Util;
+use Register\Model\User;
+use Register\Model\Users;
 use Register\Value\Passwords;
-use Register\Value\User;
 
 class HandlePasswordForgotten
 {
@@ -33,8 +34,8 @@ class HandlePasswordForgotten
     /** @var View */
     private $view;
 
-    /** @var UserRepository */
-    private $userRepository;
+    /** @var DocumentStore */
+    private $store;
 
     /** @var Password */
     private $password;
@@ -52,7 +53,7 @@ class HandlePasswordForgotten
     public function __construct(
         array $conf,
         View $view,
-        UserRepository $userRepository,
+        DocumentStore $store,
         Password $password,
         Mailer $mailer,
         LoginManager $loginManager,
@@ -60,7 +61,7 @@ class HandlePasswordForgotten
     ) {
         $this->conf = $conf;
         $this->view = $view;
-        $this->userRepository = $userRepository;
+        $this->store = $store;
         $this->password = $password;
         $this->mailer = $mailer;
         $this->loginManager = $loginManager;
@@ -97,7 +98,8 @@ class HandlePasswordForgotten
         if (($errors = Util::validateEmail($post["email"]))) {
             return Response::create($this->renderForm($request->url(), $post["email"], $errors));
         }
-        if (!($user = $this->userRepository->findByEmail($post["email"]))) {
+        $users = Users::retrieve($this->store);
+        if (!($user = $users->userByEmail($post["email"]))) {
             return Response::redirect($request->url()->without("function")->without("register_action")->absolute());
         }
         $this->sendNotification($user, $request);
@@ -132,7 +134,8 @@ class HandlePasswordForgotten
             "time" => $request->get("register_time") ?? "",
             "mac" => $request->get("register_mac") ?? "",
         ];
-        if (!($user = $this->userRepository->findByUsername($params["username"]))) {
+        $users = Users::retrieve($this->store);
+        if (!($user = $users->user($params["username"]))) {
             return Response::create($this->view->message("fail", "error_user_does_not_exist", $params["username"]));
         }
         if (!$this->verifyMac($user, $params)) {
@@ -153,7 +156,8 @@ class HandlePasswordForgotten
             "time" => $request->get("register_time") ?? "",
             "mac" => $request->get("register_mac") ?? "",
         ];
-        if (!($user = $this->userRepository->findByUsername($params["username"]))) {
+        $users = Users::update($this->store);
+        if (!($user = $users->user($params["username"]))) {
             return Response::create($this->view->message("fail", "error_user_does_not_exist", $params["username"]));
         }
         if (!$this->verifyMac($user, $params)) {
@@ -169,8 +173,8 @@ class HandlePasswordForgotten
         if (($errors = Util::validatePasswords($passwords))) {
             return Response::create($this->renderResetPasswordForm($request, $passwords, $errors));
         }
-        $user = $user->withPassword($this->password->hash($passwords->password()));
-        if (!$this->userRepository->save($user)) {
+        $user->setPassword($this->password->hash($passwords->password()));
+        if (!$this->store->commit()) {
             return Response::create($this->view->message("fail", 'error_cannot_write_csv'));
         }
         $this->loginManager->login($user);

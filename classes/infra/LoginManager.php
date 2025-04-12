@@ -10,7 +10,7 @@
 
 namespace Register\Infra;
 
-use Register\Value\User;
+use Register\Model\User;
 
 /** @codeCoverageIgnore */
 class LoginManager

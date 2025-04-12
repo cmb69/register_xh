@@ -11,6 +11,7 @@
 namespace Register;
 
 use Plib\CsrfProtector;
+use Plib\DocumentStore;
 use Plib\Request;
 use Plib\Response;
 use Plib\Url;
@@ -18,10 +19,10 @@ use Plib\View;
 use Register\Infra\Logger;
 use Register\Infra\Mailer;
 use Register\Infra\Password;
-use Register\Infra\UserRepository;
 use Register\Logic\Util;
+use Register\Model\User;
+use Register\Model\Users;
 use Register\Value\Passwords;
-use Register\Value\User;
 
 class HandleUserPreferences
 {
@@ -31,8 +32,8 @@ class HandleUserPreferences
     /** @var CsrfProtector */
     private $csrfProtector;
 
-    /** @var UserRepository */
-    private $userRepository;
+    /** @var DocumentStore */
+    private $store;
 
     /** @var View */
     private $view;
@@ -52,7 +53,7 @@ class HandleUserPreferences
     public function __construct(
         array $conf,
         CsrfProtector $csrfProtector,
-        UserRepository $userRepository,
+        DocumentStore $store,
         View $view,
         Mailer $mailer,
         Logger $logger,
@@ -60,7 +61,7 @@ class HandleUserPreferences
     ) {
         $this->conf = $conf;
         $this->csrfProtector = $csrfProtector;
-        $this->userRepository = $userRepository;
+        $this->store = $store;
         $this->view = $view;
         $this->mailer = $mailer;
         $this->logger = $logger;
@@ -91,7 +92,8 @@ class HandleUserPreferences
     private function showSettingsForm(Request $request): Response
     {
         $username = $request->username() ?? "";
-        if (!($user = $this->userRepository->findByUsername($username))) {
+        $users = Users::retrieve($this->store);
+        if (!($user = $users->user($username))) {
             return Response::create($this->view->message("fail", "error_user_does_not_exist", $username));
         }
         if ($user->isLocked()) {
@@ -106,7 +108,8 @@ class HandleUserPreferences
             return Response::create($this->view->message("fail", "error_unauthorized"));
         }
         $username = $request->username() ?? "";
-        if (!($user = $this->userRepository->findByUsername($username))) {
+        $users = Users::update($this->store);
+        if (!($user = $users->user($username))) {
             return Response::create($this->view->message("fail", "error_user_does_not_exist", $username));
         }
         if ($user->isLocked()) {
@@ -117,21 +120,23 @@ class HandleUserPreferences
             "name" => $request->post("name") ?? "",
             "email" => $request->post("email") ?? "",
         ];
-        $changedUser = $user->withName($post["name"])->withEmail($post["email"]);
+        $oldemail = $user->getEmail();
+        $user->setName($post["name"]);
+        $user->setEmail($post["email"]);
         if (!$this->password->verify($post["oldpassword"], $user->getPassword())) {
             return Response::create(
-                $this->renderSettingsForm($request->url(), $changedUser, [["error_old_password_wrong"]])
+                $this->renderSettingsForm($request->url(), $user, [["error_old_password_wrong"]])
             );
         }
-        if (($errors = Util::validateUser($changedUser, $changedUser->getPassword()))) {
-            return Response::create($this->renderSettingsForm($request->url(), $changedUser, $errors));
+        if (($errors = Util::validateUser($user, $user->getPassword()))) {
+            return Response::create($this->renderSettingsForm($request->url(), $user, $errors));
         }
-        if (!$this->userRepository->save($changedUser)) {
+        if (!$this->store->commit()) {
             return Response::create(
-                $this->renderSettingsForm($request->url(), $changedUser, [["error_cannot_write_csv"]])
+                $this->renderSettingsForm($request->url(), $user, [["error_cannot_write_csv"]])
             );
         }
-        $this->sendNotification($changedUser, "email_prefs_updated", $user->getEmail(), $request);
+        $this->sendNotification($user, "email_prefs_updated", $oldemail, $request);
         return Response::redirect($request->url()->without("function")->without("register_action")->absolute());
     }
 
@@ -150,7 +155,8 @@ class HandleUserPreferences
     private function showPasswordForm(Request $request): Response
     {
         $username = $request->username() ?? "";
-        if (!($user = $this->userRepository->findByUsername($username))) {
+        $users = Users::retrieve($this->store);
+        if (!($user = $users->user($username))) {
             return Response::create($this->view->message("fail", "error_user_does_not_exist", $username));
         }
         if ($user->isLocked()) {
@@ -165,7 +171,8 @@ class HandleUserPreferences
             return Response::create($this->view->message("fail", "error_unauthorized"));
         }
         $username = $request->username() ?? "";
-        if (!($user = $this->userRepository->findByUsername($username))) {
+        $users = Users::update($this->store);
+        if (!($user = $users->user($username))) {
             return Response::create($this->view->message("fail", "error_user_does_not_exist", $username));
         }
         if ($user->isLocked()) {
@@ -181,17 +188,17 @@ class HandleUserPreferences
                 $this->renderPasswordForm($request->url(), $passwords, [["error_old_password_wrong"]])
             );
         }
-        $changedUser = $user->withPassword($passwords->password());
-        if (($errors = Util::validateUser($changedUser, $passwords->confirmation()))) {
+        $user->setPassword($passwords->password());
+        if (($errors = Util::validateUser($user, $passwords->confirmation()))) {
             return Response::create($this->renderPasswordForm($request->url(), $passwords, $errors));
         }
-        $changedUser = $changedUser->withPassword($this->password->hash($changedUser->getPassword()));
-        if (!$this->userRepository->save($changedUser)) {
+        $user->setPassword($this->password->hash($user->getPassword()));
+        if (!$this->store->commit()) {
             return Response::create(
                 $this->renderPasswordForm($request->url(), $passwords, [["error_cannot_write_csv"]])
             );
         }
-        $this->sendNotification($changedUser, "email_password_updated", $user->getEmail(), $request);
+        $this->sendNotification($user, "email_password_updated", $user->getEmail(), $request);
         return Response::redirect($request->url()->without("function")->without("register_action")->absolute());
     }
 
@@ -229,7 +236,8 @@ class HandleUserPreferences
     private function showDeleteForm(Request $request): Response
     {
         $username = $request->username() ?? "";
-        if (!($user = $this->userRepository->findByUsername($username))) {
+        $users = Users::retrieve($this->store);
+        if (!($user = $users->user($username))) {
             return Response::create($this->view->message("fail", "error_user_does_not_exist", $username));
         }
         if ($user->isLocked()) {
@@ -244,7 +252,8 @@ class HandleUserPreferences
             return Response::create($this->view->message("fail", "error_unauthorized"));
         }
         $username = $request->username() ?? "";
-        if (!($user = $this->userRepository->findByUsername($username))) {
+        $users = Users::update($this->store);
+        if (!($user = $users->user($username))) {
             return Response::create($this->view->message("fail", "error_user_does_not_exist", $username));
         }
         if ($user->isLocked()) {
@@ -254,7 +263,8 @@ class HandleUserPreferences
         if (!$this->password->verify($password, $user->getPassword())) {
             return Response::create($this->renderDeleteForm($request->url(), [["error_old_password_wrong"]]));
         }
-        if (!$this->userRepository->delete($user)) {
+        $users->deleteUser($username);
+        if (!$this->store->commit()) {
             return Response::create($this->renderDeleteForm($request->url(), [["error_cannot_write_csv"]]));
         }
         $this->logger->logInfo("logout", $this->view->plain("log_unregister", $user->getUsername()));

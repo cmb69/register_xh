@@ -8,9 +8,9 @@
 
 namespace Register;
 
+use Plib\DocumentStore;
 use Plib\Response;
 use Plib\View;
-use Register\Infra\DbService;
 use Register\Infra\SystemChecker;
 
 class ShowPluginInfo
@@ -18,8 +18,8 @@ class ShowPluginInfo
     /** @var string */
     private $pluginFolder;
 
-    /** @var DbService */
-    private $dbService;
+    /** @var DocumentStore */
+    private $store;
 
     /** @var SystemChecker */
     private $systemChecker;
@@ -29,12 +29,12 @@ class ShowPluginInfo
 
     public function __construct(
         string $pluginFolder,
-        DbService $dbService,
+        DocumentStore $store,
         SystemChecker $systemChecker,
         View $view
     ) {
         $this->pluginFolder = $pluginFolder;
-        $this->dbService = $dbService;
+        $this->store = $store;
         $this->systemChecker = $systemChecker;
         $this->view = $view;
     }
@@ -59,7 +59,7 @@ class ShowPluginInfo
             $this->checkWritability($pluginFolder . "css/"),
             $this->checkWritability($pluginFolder . "config/"),
             $this->checkWritability($pluginFolder . "languages/"),
-            $this->checkWritability($this->dbService->dataFolder())
+            $this->checkWritability($this->store->folder())
         ];
     }
 

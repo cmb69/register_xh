@@ -8,10 +8,10 @@
 
 namespace Register\Logic;
 
+use Register\Model\User;
 use Register\Model\UserGroup;
 use Register\Value\Mail;
 use Register\Value\Passwords;
-use Register\Value\User;
 
 class Util
 {

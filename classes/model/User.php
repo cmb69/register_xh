@@ -6,7 +6,7 @@
 * This file is part of Register_XH.
 */
 
-namespace Register\Value;
+namespace Register\Model;
 
 class User
 {
@@ -116,57 +116,41 @@ class User
         return $this->secret;
     }
 
+    public function setPassword(string $password): void
+    {
+        $this->password = $password;
+    }
+
+    public function setName(string $name): void
+    {
+        $this->name = $name;
+    }
+
+    public function setEmail(string $email): void
+    {
+        $this->email = $email;
+    }
+
     /** @param list<string> $accessgroups */
-    public function with(string $name, string $email, array $accessgroups, string $status): self
+    public function setAccessGroups(array $accessgroups): void
     {
-        $that = clone $this;
-        $that->name = $name;
-        $that->email = $email;
-        $that->accessgroups = $accessgroups;
-        $that->status = $status;
-        return $that;
+        $this->accessgroups = $accessgroups;
     }
 
-    public function withPassword(string $password): self
+    public function setStatus(string $status): void
     {
-        $that = clone $this;
-        $that->password = $password;
-        return $that;
+        $this->status = $status;
     }
 
-    /** @param array<int,string> $accessgroups */
-    public function withAccessgroups(array $accessgroups): self
+    public function activate(string $accessgroup): void
     {
-        $that = clone $this;
-        $that->accessgroups = $accessgroups;
-        return $that;
+        $this->status = "activated";
+        $this->accessgroups = [$accessgroup];
     }
 
-    public function withName(string $name): self
+    public function setSecret(string $secret): void
     {
-        $that = clone $this;
-        $that->name = $name;
-        return $that;
-    }
-
-    public function withEmail(string $email): self
-    {
-        $that = clone $this;
-        $that->email = $email;
-        return $that;
-    }
-
-    public function activate(): self
-    {
-        $that = clone $this;
-        $that->status = "activated";
-        return $that;
-    }
-
-    public function withSecret(string $secret): self
-    {
-        $that = clone $this;
-        $that->secret = $secret;
-        return $that;
+        // assert($this->secret === "");
+        $this->secret = $secret;
     }
 }

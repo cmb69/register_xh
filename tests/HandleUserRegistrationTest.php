@@ -11,21 +11,22 @@ namespace Register;
 use ApprovalTests\Approvals;
 use org\bovigo\vfs\vfsStream;
 use PHPUnit\Framework\TestCase;
+use Plib\DocumentStore;
 use Plib\FakeRequest;
 use Plib\Random;
 use Plib\View;
-use Register\Infra\FakeDbService;
 use Register\Infra\FakePassword;
 use Register\Infra\Mailer;
-use Register\Infra\UserRepository;
+use Register\Model\User;
+use Register\Model\Users;
 use Register\PHPMailer\PHPMailer;
-use Register\Value\User;
 
 class HandleUserRegistrationTest extends TestCase
 {
+    private const HASH = "\$2y\$04\$FMR/.rF4uHySPVzW4ZSYDO.BMmJNLAsHdzrD.r8EufGEk7XkWuwzW";
+
     private $view;
-    private $dbService;
-    private $userRepository;
+    private $store;
     /** @var PHPMailer&MockObject */
     private $phpMailer;
     private $mailer;
@@ -39,8 +40,7 @@ class HandleUserRegistrationTest extends TestCase
         $this->view = new View("./views/", $text);
         $this->random = $this->createStub(Random::class);
         $this->random->method("bytes")->willReturn("0123456789ABCDE");
-        $this->dbService = $this->dbService();
-        $this->userRepository = new UserRepository($this->dbService);
+        $this->store = $this->createStub(DocumentStore::class);
         $this->phpMailer = $this->getMockBuilder(PHPMailer::class)->onlyMethods(["send"])->getMock();
         $this->mailer = new Mailer($conf, $this->phpMailer);
     }
@@ -52,22 +52,10 @@ class HandleUserRegistrationTest extends TestCase
             XH_includeVar("./config/config.php", "plugin_cf")["register"],
             $this->random,
             $this->view,
-            $this->userRepository,
+            $this->store,
             $this->mailer,
             $password
         );
-    }
-
-    private function dbService()
-    {
-        $hash = "\$2y\$04\$FMR/.rF4uHySPVzW4ZSYDO.BMmJNLAsHdzrD.r8EufGEk7XkWuwzW";
-        $users = [
-            "john" => new User("john", $hash, ["guest"], "John Doe", "john@example.com", "", "secret"),
-            "jane" => new User("jane", $hash, ["guest"], "Jane Doe", "jane@example.com", "12345", "secret"),
-        ];
-        $dbService = new FakeDbService("vfs://root/register/", "guest", $this->random);
-        $dbService->writeUsers($users);
-        return $dbService;
     }
 
     public function testReportsUnauthorizedAccessToLoggedInUsers(): void
@@ -102,6 +90,7 @@ class HandleUserRegistrationTest extends TestCase
 
     public function testRegisterReportsExistingUser(): void
     {
+        $this->store->method("update")->willReturn(new Users(["jane" => $this->jane()]));
         $request = new FakeRequest([
             "url" => "http://example.com/?&register_action=register",
             "post" => [
@@ -119,6 +108,7 @@ class HandleUserRegistrationTest extends TestCase
     public function testRegisterRedirectsOnExistingEmail(): void
     {
         $_SERVER["REMOTE_ADDR"] = "127.0.0.1";
+        $this->store->method("update")->willReturn(new Users(["john" => $this->john()]));
         $request = new FakeRequest([
             "url" => "http://example.com/?&register_action=register",
             "post" => [
@@ -142,7 +132,7 @@ class HandleUserRegistrationTest extends TestCase
 
     public function testRegisterReportsFailureToSave(): void
     {
-        $this->dbService->options(["writeUsers" => false]);
+        $this->store->method("update")->willReturn(new Users([]));
         $request = new FakeRequest([
             "url" => "http://example.com/?&register_action=register",
             "post" => [
@@ -160,6 +150,9 @@ class HandleUserRegistrationTest extends TestCase
     public function testRegisterRedirectsOnSuccess(): void
     {
         $_SERVER["REMOTE_ADDR"] = "127.0.0.1";
+        $users = new Users([]);
+        $this->store->method("update")->willReturn($users);
+        $this->store->method("commit")->willReturn(true);
         $request = new FakeRequest([
             "url" => "http://example.com/?&register_action=register",
             "post" => [
@@ -178,7 +171,7 @@ class HandleUserRegistrationTest extends TestCase
         $this->assertEquals([["postmaster@example.com", ""]], $this->phpMailer->getCcAddresses());
         $this->assertEquals("Your user account at example.com", $this->phpMailer->Subject);
         Approvals::verifyString($this->phpMailer->Body);
-        $this->assertNotNull($this->userRepository->findByUsername("js"));
+        $this->assertNotNull($users->user("js"));
         $this->assertEquals("http://example.com/", $response->location());
     }
 
@@ -193,6 +186,7 @@ class HandleUserRegistrationTest extends TestCase
 
     public function testActivateReportsNonExistentUser(): void
     {
+        $this->store->method("update")->willReturn(new Users([]));
         $request = new FakeRequest([
             "url" => "http://example.com/?&register_action=activate&register_username=js&register_nonce=12345",
         ]);
@@ -202,6 +196,7 @@ class HandleUserRegistrationTest extends TestCase
 
     public function testActivateReportsInvalidNonce(): void
     {
+        $this->store->method("update")->willReturn(new Users(["jane" => $this->jane()]));
         $request = new FakeRequest([
             "url" => "http://example.com/?&register_action=activate&register_username=jane&register_nonce=54321",
         ]);
@@ -211,7 +206,7 @@ class HandleUserRegistrationTest extends TestCase
 
     public function testActivateReportsFailureToSave(): void
     {
-        $this->dbService->options(["writeUsers" => false]);
+        $this->store->method("update")->willReturn(new Users(["jane" => $this->jane()]));
         $request = new FakeRequest([
             "url" => "http://example.com/?&register_action=activate&register_username=jane&register_nonce=12345",
         ]);
@@ -221,11 +216,24 @@ class HandleUserRegistrationTest extends TestCase
 
     public function testActivateReportsSuccess(): void
     {
+        $users = new Users(["jane" => $this->jane()]);
+        $this->store->method("update")->willReturn($users);
+        $this->store->method("commit")->willReturn(true);
         $request = new FakeRequest([
             "url" => "http://example.com/?&register_action=activate&register_username=jane&register_nonce=12345",
         ]);
         $response = $this->sut()($request);
-        $this->assertTrue($this->userRepository->findByUsername("jane")->isActivated());
+        $this->assertTrue($users->user("jane")->isActivated());
         $this->assertStringContainsString("You have successfully activated your new account.", $response->output());
+    }
+
+    private function jane(): User
+    {
+        return new User("jane", self::HASH, ["guest"], "Jane Doe", "jane@example.com", "12345", "secret");
+    }
+
+    private function john(): User
+    {
+        return new User("john", self::HASH, ["guest"], "John Doe", "john@example.com", "", "secret");
     }
 }

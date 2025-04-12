@@ -17,19 +17,16 @@ use Plib\View;
 use Register\Infra\Logger;
 use Register\Infra\LoginManager;
 use Register\Infra\Password;
-use Register\Infra\UserRepository;
 use Register\Logic\Util;
 use Register\Model\ActiveUsers;
 use Register\Model\Groups;
-use Register\Value\User;
+use Register\Model\User;
+use Register\Model\Users;
 
 class ShowLoginForm
 {
     /** @var array<string,string> */
     private $conf;
-
-    /** @var UserRepository */
-    private $userRepository;
 
     /** @var DocumentStore */
     private $store;
@@ -49,7 +46,6 @@ class ShowLoginForm
     /** @param array<string,string> $conf */
     public function __construct(
         array $conf,
-        UserRepository $userRepository,
         DocumentStore $store,
         LoginManager $loginManager,
         Logger $logger,
@@ -57,7 +53,6 @@ class ShowLoginForm
         View $view
     ) {
         $this->conf = $conf;
-        $this->userRepository = $userRepository;
         $this->store = $store;
         $this->loginManager = $loginManager;
         $this->logger = $logger;
@@ -96,7 +91,8 @@ class ShowLoginForm
             "password" => $request->post("password") ?? "",
             "remember" => $request->post("remember") ?? "",
         ];
-        if (!($user = $this->userRepository->findByUsername($post["username"]))) {
+        $users = Users::update($this->store);
+        if (!($user = $users->user($post["username"]))) {
             $this->logger->logInfo("login", $this->view->plain("log_login_user", $post["username"]));
             return Response::create($this->renderLoginForm($request, $post, [["error_login"]]));
         }
@@ -109,7 +105,8 @@ class ShowLoginForm
             return Response::create($this->renderLoginForm($request, $post, [["error_login"]]));
         }
         if ($this->password->needsRehash($user->getPassword())) {
-            $this->userRepository->save($user->withPassword($this->password->hash($post["password"])));
+            $user->setPassword($this->password->hash($post["password"]));
+            $this->store->commit();
         }
         $this->loginManager->login($user);
         $this->logger->logInfo("login", $this->view->plain("log_login", $post["username"]));
@@ -145,7 +142,7 @@ class ShowLoginForm
 
     private function renderLoggedInForm(Request $request): string
     {
-        if (!($user = $this->userRepository->findByUsername($request->username() ?? ""))) {
+        if (!($user = Users::retrieve($this->store)->user($request->username() ?? ""))) {
             return $this->view->message("fail", "error_user_does_not_exist", $request->username() ?? "");
         }
         return $this->view->render("loggedin_area", [

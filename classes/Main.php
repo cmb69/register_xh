@@ -17,18 +17,15 @@ use Plib\View;
 use Register\Infra\Logger;
 use Register\Infra\LoginManager;
 use Register\Infra\Pages;
-use Register\Infra\UserRepository;
 use Register\Logic\Util;
 use Register\Model\ActiveUsers;
-use Register\Value\User;
+use Register\Model\User;
+use Register\Model\Users;
 
 class Main
 {
     /** @var array<string,string> */
     private $conf;
-
-    /** @var UserRepository */
-    private $userRepository;
 
     /** @var DocumentStore */
     private $store;
@@ -48,7 +45,6 @@ class Main
     /** @param array<string,string> $conf */
     public function __construct(
         array $conf,
-        UserRepository $userRepository,
         DocumentStore $store,
         Pages $pages,
         Logger $logger,
@@ -56,7 +52,6 @@ class Main
         View $view
     ) {
         $this->conf = $conf;
-        $this->userRepository = $userRepository;
         $this->store = $store;
         $this->pages = $pages;
         $this->logger = $logger;
@@ -77,7 +72,7 @@ class Main
         if ($this->conf["allowed_remember"] && $request->cookie("register_remember") && !$request->username()) {
             return $this->autoLogin($request);
         }
-        if ($request->username() && !$this->userRepository->findByUsername($request->username())) {
+        if ($request->username() && Users::retrieve($this->store)->user($request->username()) === null) {
             return $this->forcedLogout($request);
         }
         return Response::create();
@@ -86,7 +81,7 @@ class Main
     /** @return void */
     private function protectPages(Request $request)
     {
-        $user = $this->userRepository->findByUsername($request->username() ?? "");
+        $user = Users::retrieve($this->store)->user($request->username() ?? "");
         $this->protectPagesNew($user);
         $this->protectedPagesLegacy($user);
     }
@@ -135,7 +130,7 @@ class Main
             return Response::create()->withCookie("register_remember", "", 0);
         }
         [$username, $token] = $parts;
-        if (!($user = $this->userRepository->findByUsername($username))) {
+        if (($user = Users::retrieve($this->store)->user($username)) === null) {
             return Response::create()->withCookie("register_remember", "", 0);
         }
         if (!$user->isActivated() && !$user->isLocked()) {

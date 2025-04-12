@@ -10,8 +10,8 @@ namespace Register;
 
 use ApprovalTests\Approvals;
 use PHPUnit\Framework\TestCase;
+use Plib\DocumentStore;
 use Plib\View;
-use Register\Infra\DbService;
 use Register\Infra\SystemChecker;
 
 class ShowPluginInfoTest extends TestCase
@@ -20,13 +20,14 @@ class ShowPluginInfoTest extends TestCase
     {
         $plugin_tx = XH_includeVar("./languages/en.php", 'plugin_tx');
         $text = $plugin_tx['register'];
-        $dbService = $this->createStub(DbService::class);
+        $store = $this->createStub(DocumentStore::class);
+        $store->method("folder")->willReturn("./content/register/");
         $systemChecker = $this->createStub(SystemChecker::class);
         $systemChecker->method('checkVersion')->willReturn(true);
         $systemChecker->method('checkExtension')->willReturn(true);
         $systemChecker->method('checkWritability')->willReturn(true);
         $systemChecker->method('checkAccessProtection')->willReturn(true);
-        $subject = new ShowPluginInfo("./plugins/register/", $dbService, $systemChecker, new View("./views/", $text));
+        $subject = new ShowPluginInfo("./plugins/register/", $store, $systemChecker, new View("./views/", $text));
         $response = $subject();
         Approvals::verifyHtml($response->output());
     }

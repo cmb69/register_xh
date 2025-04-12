@@ -12,21 +12,17 @@ use org\bovigo\vfs\vfsStream;
 use PHPUnit\Framework\TestCase;
 use Plib\DocumentStore;
 use Plib\FakeRequest;
-use Plib\Random;
 use Plib\View;
-use Register\Infra\ActivityRepository;
-use Register\Infra\FakeDbService;
 use Register\Infra\FakeLogger;
-use Register\Value\User;
 use Register\Infra\LoginManager;
 use Register\Infra\Pages;
-use Register\Infra\UserRepository;
 use Register\Model\ActiveUsers;
+use Register\Model\User;
+use Register\Model\Users;
 
 class MainTest extends TestCase
 {
     private $conf;
-    private $userRepository;
     private $store;
     private $pages;
     private $logger;
@@ -38,10 +34,8 @@ class MainTest extends TestCase
         vfsStream::setup("root");
         $plugin_cf = XH_includeVar("./config/config.php", 'plugin_cf');
         $this->conf = $plugin_cf['register'];
-        $dbService = new FakeDbService("vfs://root/register/", "guest", $this->createMock(Random::class));
-        $dbService->writeUsers([$this->jane(), $this->john()]);
-        $this->userRepository = new UserRepository($dbService);
-        $this->store = $this->createMock(DocumentStore::class);
+        $this->store = $this->createStub(DocumentStore::class);
+        $this->store->method("retrieve")->willReturn(new Users(["jane" => $this->jane(), "john" => $this->john()]));
         $this->store->method("update")->willReturn(new ActiveUsers([]));
         $this->pages = $this->createMock(Pages::class);
         $this->pages->method("data")->willReturn([
@@ -58,7 +52,6 @@ class MainTest extends TestCase
     {
         return new Main(
             $this->conf,
-            $this->userRepository,
             $this->store,
             $this->pages,
             $this->logger,

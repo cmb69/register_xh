@@ -14,9 +14,7 @@ use PHPUnit\Framework\TestCase;
 use Plib\CsrfProtector;
 use Plib\DocumentStore;
 use Plib\FakeRequest;
-use Plib\Random;
 use Plib\View;
-use Register\Infra\FakeDbService;
 use Register\Infra\Pages;
 use Register\Model\Groups;
 use Register\Model\UserGroup;
@@ -24,7 +22,6 @@ use Register\Model\UserGroup;
 class GroupAdminTest extends TestCase
 {
     private $csrfProtector;
-    private $dbService;
     private $store;
     private $pages;
     private $view;
@@ -34,8 +31,6 @@ class GroupAdminTest extends TestCase
         vfsStream::setup("root");
         $this->csrfProtector = $this->createStub(CsrfProtector::class);
         $this->csrfProtector->method("token")->willReturn("0+pVtDm4xXAxUmA3/mrL");
-        $this->dbService = new FakeDbService("vfs://root/register/", $this->createMock(Random::class));
-        $this->dbService->dataFolder();
         $this->store = $this->createMock(DocumentStore::class);
         $this->pages = $this->createStub(Pages::class);
         $this->view = new View("./views/", XH_includeVar("./languages/en.php", "plugin_tx")["register"]);
@@ -115,7 +110,6 @@ class GroupAdminTest extends TestCase
         $this->csrfProtector->method("check")->willReturn(true);
         $this->store->method("update")->willReturn(new Groups([]));
         $this->store->method("commit")->willReturn(false);
-        $this->dbService->options(["writeGroups" => false]);
         $request = new FakeRequest(["post" => ["action" => "do_create", "groupname" => "new", "loginpage" => ""]]);
         $response = $this->sut()($request);
         $this->assertEquals("Register – Groups", $response->title());
@@ -186,7 +180,6 @@ class GroupAdminTest extends TestCase
     {
         $this->csrfProtector->method("check")->willReturn(true);
         $this->store->method("update")->willReturn(new Groups(["guest" => new UserGroup("guest", "")]));
-        $this->dbService->options(["writeGroups" => false]);
         $request = new FakeRequest([
             "url" => "http://example.com/?&group=guest",
             "post" => ["action" => "do_update", "loginpage" => "Login"],
@@ -257,7 +250,6 @@ class GroupAdminTest extends TestCase
         $this->csrfProtector->method("check")->willReturn(true);
         $this->store->method("update")->willReturn(new Groups(["guest" => new UserGroup("guest", "")]));
         $this->store->method("commit")->willReturn(false);
-        $this->dbService->options(["writeGroups" => false]);
         $request = new FakeRequest([
             "url" => "http://example.com/?&group=guest",
             "post" => ["action" => "do_delete"],

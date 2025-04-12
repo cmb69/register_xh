@@ -10,6 +10,7 @@
 
 namespace Register;
 
+use Plib\DocumentStore;
 use Plib\Random;
 use Plib\Request;
 use Plib\Response;
@@ -17,9 +18,9 @@ use Plib\Url;
 use Plib\View;
 use Register\Infra\Mailer;
 use Register\Infra\Password;
-use Register\Infra\UserRepository;
 use Register\Logic\Util;
-use Register\Value\User;
+use Register\Model\User;
+use Register\Model\Users;
 
 class HandleUserRegistration
 {
@@ -32,8 +33,8 @@ class HandleUserRegistration
     /** @var View */
     private $view;
 
-    /** @var UserRepository */
-    private $userRepository;
+    /** @var DocumentStore */
+    private $store;
 
     /** @var Mailer */
     private $mailer;
@@ -46,14 +47,14 @@ class HandleUserRegistration
         array $conf,
         Random $random,
         View $view,
-        UserRepository $userRepository,
+        DocumentStore $store,
         Mailer $mailer,
         Password $password
     ) {
         $this->conf = $conf;
         $this->random = $random;
         $this->view = $view;
-        $this->userRepository = $userRepository;
+        $this->store = $store;
         $this->mailer = $mailer;
         $this->password = $password;
     }
@@ -92,17 +93,18 @@ class HandleUserRegistration
         if (($errors = Util::validateUser($user, $post["password2"]))) {
             return Response::create($this->renderForm($request->url(), $user, $post["password2"], $errors));
         }
-        if ($this->userRepository->findByUsername($post["username"])) {
+        $users = Users::update($this->store);
+        if ($users->user($post["username"])) {
             return Response::create(
                 $this->renderForm($request->url(), $user, $post["password2"], [["error_username_exists"]])
             );
         }
-        if (($olduser = $this->userRepository->findByEmail($user->getEmail()))) {
+        if (($olduser = $users->userByEmail($user->getEmail()))) {
             $this->sendDuplicateEmailNotification($user, $olduser, $request);
             return Response::redirect($request->url()->without("function")->without("register_action")->absolute());
         }
-        $newUser = $this->registeredUser($post);
-        if (!$this->userRepository->save($newUser)) {
+        $newUser = $this->registeredUser($users, $post);
+        if (!$this->store->commit()) {
             return Response::create(
                 $this->renderForm($request->url(), $user, $post["password2"], [["error_cannot_write_csv"]])
             );
@@ -140,9 +142,9 @@ class HandleUserRegistration
     }
 
     /** @param array{name:string,username:string,password1:string,password2:string,email:string} $post */
-    private function registeredUser(array $post): User
+    private function registeredUser(Users $users, array $post): User
     {
-        return new User(
+        return $users->createUser(
             $post["username"],
             $this->password->hash($post["password1"]),
             array($this->conf["group_default"]),
@@ -205,14 +207,15 @@ class HandleUserRegistration
         if (!$params["nonce"]) {
             return Response::create($this->view->message("fail", "error_code_missing"));
         }
-        if (!($user = $this->userRepository->findByUsername($params["username"]))) {
+        $users = Users::update($this->store);
+        if (!($user = $users->user($params["username"]))) {
             return Response::create($this->view->message("fail", "error_username_notfound", $params["username"]));
         }
         if (!hash_equals($user->getStatus(), $params["nonce"])) {
             return Response::create($this->view->message("fail", "error_code_invalid"));
         }
-        $user = $user->activate()->withAccessgroups([$this->conf["group_activated"]]);
-        if (!$this->userRepository->save($user)) {
+        $user->activate($this->conf["group_activated"]);
+        if (!$this->store->commit()) {
             return Response::create($this->view->message("fail", "error_cannot_write_csv"));
         }
         return Response::create($this->view->render("activation", [

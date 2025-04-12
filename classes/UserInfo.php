@@ -8,29 +8,30 @@
 
 namespace Register;
 
+use Plib\DocumentStore;
 use Plib\Request;
 use Plib\Response;
 use Plib\Url;
 use Plib\View;
-use Register\Infra\UserRepository;
-use Register\Value\User;
+use Register\Model\User;
+use Register\Model\Users;
 
 class UserInfo
 {
     /** @var array<string,string> */
     private $conf;
 
-    /** @var UserRepository */
-    private $userRepository;
+    /** @var DocumentStore */
+    private $store;
 
     /** @var View */
     private $view;
 
     /** @param array<string,string> $conf */
-    public function __construct(array $conf, UserRepository $userRepository, View $view)
+    public function __construct(array $conf, DocumentStore $store, View $view)
     {
         $this->conf = $conf;
-        $this->userRepository = $userRepository;
+        $this->store = $store;
         $this->view = $view;
     }
 
@@ -39,7 +40,7 @@ class UserInfo
         if ($request->username() === null) {
             return Response::create();
         }
-        if (!($user = $this->userRepository->findByUsername($request->username()))) {
+        if (!($user = Users::retrieve($this->store)->user($request->username()))) {
             return Response::create($this->view->message("fail", "error_user_does_not_exist", $request->username()));
         }
         return Response::create($this->render($user, $request->url()->page($pageUrl)));

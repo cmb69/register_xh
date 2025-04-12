@@ -9,8 +9,8 @@
 namespace Register\Logic;
 
 use PHPUnit\Framework\TestCase;
+use Register\Model\User;
 use Register\Value\Mail;
-use Register\Value\User;
 
 class UtilTest extends TestCase
 {

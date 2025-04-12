@@ -12,16 +12,12 @@ use Plib\CsrfProtector;
 use Plib\DocumentStore;
 use Plib\Random;
 use Plib\View;
-use Register\Infra\ActivityRepository;
-use Register\Infra\DbService;
 use Register\Infra\Logger;
 use Register\Infra\LoginManager;
 use Register\Infra\Mailer;
 use Register\Infra\Pages;
 use Register\Infra\Password;
 use Register\Infra\SystemChecker;
-use Register\Infra\UserGroupRepository;
-use Register\Infra\UserRepository;
 use Register\PHPMailer\PHPMailer;
 
 class Dic
@@ -32,7 +28,6 @@ class Dic
 
         return new Main(
             $plugin_cf["register"],
-            self::makeUserRepository(),
             new DocumentStore(self::contentFolder()),
             new Pages(),
             new Logger(),
@@ -52,7 +47,6 @@ class Dic
         return new UserAdmin(
             $plugin_cf["register"],
             new CsrfProtector(),
-            self::makeUserRepository(),
             new DocumentStore(self::contentFolder()),
             new Password(),
             new Random(),
@@ -79,7 +73,7 @@ class Dic
             $plugin_cf["register"],
             new Random(),
             self::view(),
-            self::makeUserRepository(),
+            new DocumentStore(self::contentFolder()),
             self::makeMailer(),
             new Password()
         );
@@ -97,7 +91,7 @@ class Dic
         return new HandlePasswordForgotten(
             $plugin_cf["register"],
             self::view(),
-            self::makeUserRepository(),
+            new DocumentStore(self::contentFolder()),
             new Password(),
             self::makeMailer(),
             new LoginManager(),
@@ -112,7 +106,7 @@ class Dic
         return new HandleUserPreferences(
             $plugin_cf["register"],
             new CsrfProtector(),
-            self::makeUserRepository(),
+            new DocumentStore(self::contentFolder()),
             self::view(),
             self::makeMailer(),
             new Logger(),
@@ -126,7 +120,6 @@ class Dic
 
         return new ShowLoginForm(
             $plugin_cf["register"],
-            self::makeUserRepository(),
             new DocumentStore(self::contentFolder()),
             new LoginManager(),
             new Logger(),
@@ -140,7 +133,7 @@ class Dic
         global $plugin_cf;
         return new UserInfo(
             $plugin_cf["register"],
-            self::makeUserRepository(),
+            new DocumentStore(self::contentFolder()),
             self::view()
         );
     }
@@ -156,7 +149,7 @@ class Dic
         global $pth;
         return new ShowPluginInfo(
             $pth["folder"]["plugins"] . "register/",
-            self::makeDbService(),
+            new DocumentStore(self::contentFolder()),
             new SystemChecker(),
             self::view()
         );
@@ -170,27 +163,6 @@ class Dic
             new DocumentStore(self::contentFolder()),
             self::view()
         );
-    }
-
-    private static function makeUserRepository(): UserRepository
-    {
-        return new UserRepository(self::makeDbService());
-    }
-
-    private static function makeDbService(): DbService
-    {
-        global $pth;
-        static $instance;
-
-        if (!isset($instance)) {
-            $folder = $pth["folder"]["content"];
-            if ($pth["folder"]["base"] === "../") {
-                $folder = dirname($folder) . "/";
-            }
-            $folder .= "register/";
-            $instance = new DbService($folder, new Random());
-        }
-        return $instance;
     }
 
     private static function contentFolder(): string
