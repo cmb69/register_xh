@@ -178,6 +178,7 @@ class UserAdmin
         $username = $request->get("user") ?? "";
         $users = Users::update($this->store);
         if ($users->user($username) !== null) {
+            $this->store->rollback();
             return $this->respondWith($this->view->message("fail", "error_username_exists"));
         }
         $duplicateEmail = $users->userByEmail($request->post("email") ?? "") !== null;
@@ -191,9 +192,11 @@ class UserAdmin
             ""
         );
         if (($errors = Util::validateUser($user, $request->post("password2") ?? ""))) {
+            $this->store->rollback();
             return $this->respondWith($this->renderCreateForm($user, $request->post("password2") ?? "", $errors));
         }
         if ($duplicateEmail) {
+            $this->store->rollback();
             return $this->respondWith(
                 $this->renderCreateForm($user, $request->post("password2") ?? "", [["error_email_exists"]])
             );
@@ -245,6 +248,7 @@ class UserAdmin
         $username = $request->get("user") ?? "";
         $users = Users::update($this->store);
         if (($user = $users->user($username)) === null) {
+            $this->store->rollback();
             return $this->respondWith($this->view->message("fail", "error_user_does_not_exist", $username));
         }
         $post = [
@@ -259,9 +263,11 @@ class UserAdmin
         $user->setAccessGroups($post["groups"]);
         $user->setStatus($post["status"]);
         if (($errors = Util::validateUser($user, $user->getPassword()))) {
+            $this->store->rollback();
             return $this->respondWith($this->renderUpdateForm($user, $errors));
         }
         if ($duplicateEmail) {
+            $this->store->rollback();
             return $this->respondWith($this->renderUpdateForm($user, [["error_email_exists"]]));
         }
         if (!$this->store->commit()) {
@@ -323,6 +329,7 @@ class UserAdmin
         $username = $request->get("user") ?? "";
         $users = Users::update($this->store);
         if (($user = $users->user($username)) === null) {
+            $this->store->rollback();
             return $this->respondWith($this->view->message("fail", "error_user_does_not_exist", $username));
         }
         $passwords = new Passwords(
@@ -330,6 +337,7 @@ class UserAdmin
             $request->post("password2") ?? ""
         );
         if (($errors = Util::validatePasswords($passwords))) {
+            $this->store->rollback();
             return $this->respondWith($this->renderPasswordForm($user, $passwords, $errors));
         }
         $user->setPassword($this->password->hash($passwords->password()));
@@ -422,6 +430,7 @@ class UserAdmin
         $username = $request->get("user") ?? "";
         $users = Users::update($this->store);
         if (!($user = $users->user($username))) {
+            $this->store->rollback();
             return $this->respondWith($this->view->message("fail", "error_user_does_not_exist", $username));
         }
         $users->deleteUser($username);

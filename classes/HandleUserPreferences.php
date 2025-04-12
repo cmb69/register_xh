@@ -110,9 +110,11 @@ class HandleUserPreferences
         $username = $request->username() ?? "";
         $users = Users::update($this->store);
         if (!($user = $users->user($username))) {
+            $this->store->rollback();
             return Response::create($this->view->message("fail", "error_user_does_not_exist", $username));
         }
         if ($user->isLocked()) {
+            $this->store->rollback();
             return Response::create($this->view->message("fail", "error_user_locked", $user->getUsername()));
         }
         $post = [
@@ -124,11 +126,13 @@ class HandleUserPreferences
         $user->setName($post["name"]);
         $user->setEmail($post["email"]);
         if (!$this->password->verify($post["oldpassword"], $user->getPassword())) {
+            $this->store->rollback();
             return Response::create(
                 $this->renderSettingsForm($request->url(), $user, [["error_old_password_wrong"]])
             );
         }
         if (($errors = Util::validateUser($user, $user->getPassword()))) {
+            $this->store->rollback();
             return Response::create($this->renderSettingsForm($request->url(), $user, $errors));
         }
         if (!$this->store->commit()) {
@@ -173,9 +177,11 @@ class HandleUserPreferences
         $username = $request->username() ?? "";
         $users = Users::update($this->store);
         if (!($user = $users->user($username))) {
+            $this->store->rollback();
             return Response::create($this->view->message("fail", "error_user_does_not_exist", $username));
         }
         if ($user->isLocked()) {
+            $this->store->rollback();
             return Response::create($this->view->message("fail", "error_user_locked", $user->getUsername()));
         }
         $password = $request->post("oldpassword") ?? "";
@@ -184,12 +190,14 @@ class HandleUserPreferences
             $request->post("password2") ?? ""
         );
         if (!$this->password->verify($password, $user->getPassword())) {
+            $this->store->rollback();
             return Response::create(
                 $this->renderPasswordForm($request->url(), $passwords, [["error_old_password_wrong"]])
             );
         }
         $user->setPassword($passwords->password());
         if (($errors = Util::validateUser($user, $passwords->confirmation()))) {
+            $this->store->rollback();
             return Response::create($this->renderPasswordForm($request->url(), $passwords, $errors));
         }
         $user->setPassword($this->password->hash($user->getPassword()));
@@ -254,13 +262,16 @@ class HandleUserPreferences
         $username = $request->username() ?? "";
         $users = Users::update($this->store);
         if (!($user = $users->user($username))) {
+            $this->store->rollback();
             return Response::create($this->view->message("fail", "error_user_does_not_exist", $username));
         }
         if ($user->isLocked()) {
+            $this->store->rollback();
             return Response::create($this->view->message("fail", "error_user_locked", $user->getUsername()));
         }
         $password = $request->post("oldpassword") ?? "";
         if (!$this->password->verify($password, $user->getPassword())) {
+            $this->store->rollback();
             return Response::create($this->renderDeleteForm($request->url(), [["error_old_password_wrong"]]));
         }
         $users->deleteUser($username);

@@ -34,15 +34,24 @@ class HandleUserRegistrationTest extends TestCase
 
     public function setUp(): void
     {
-        vfsStream::setup("root");
+        $this->setUpStore();
         $conf = XH_includeVar("./config/config.php", "plugin_cf")["register"];
         $text = XH_includeVar("./languages/en.php", "plugin_tx")["register"];
         $this->view = new View("./views/", $text);
         $this->random = $this->createStub(Random::class);
         $this->random->method("bytes")->willReturn("0123456789ABCDE");
-        $this->store = $this->createStub(DocumentStore::class);
         $this->phpMailer = $this->getMockBuilder(PHPMailer::class)->onlyMethods(["send"])->getMock();
         $this->mailer = new Mailer($conf, $this->phpMailer);
+    }
+
+    private function setUpStore(): void
+    {
+        vfsStream::setup("root");
+        $this->store = new DocumentStore(vfsStream::url("root/content/register/"));
+        $users = Users::update($this->store);
+        $users->createUser("jane", self::HASH, ["guest"], "Jane Doe", "jane@example.com", "12345", "secret");
+        $users->createUser("john", self::HASH, ["guest"], "John Doe", "john@example.com", "", "secret");
+        $this->store->commit();
     }
 
     public function sut(): HandleUserRegistration
@@ -90,7 +99,6 @@ class HandleUserRegistrationTest extends TestCase
 
     public function testRegisterReportsExistingUser(): void
     {
-        $this->store->method("update")->willReturn(new Users(["jane" => $this->jane()]));
         $request = new FakeRequest([
             "url" => "http://example.com/?&register_action=register",
             "post" => [
@@ -108,7 +116,6 @@ class HandleUserRegistrationTest extends TestCase
     public function testRegisterRedirectsOnExistingEmail(): void
     {
         $_SERVER["REMOTE_ADDR"] = "127.0.0.1";
-        $this->store->method("update")->willReturn(new Users(["john" => $this->john()]));
         $request = new FakeRequest([
             "url" => "http://example.com/?&register_action=register",
             "post" => [
@@ -132,7 +139,7 @@ class HandleUserRegistrationTest extends TestCase
 
     public function testRegisterReportsFailureToSave(): void
     {
-        $this->store->method("update")->willReturn(new Users([]));
+        vfsStream::setQuota(0);
         $request = new FakeRequest([
             "url" => "http://example.com/?&register_action=register",
             "post" => [
@@ -150,9 +157,6 @@ class HandleUserRegistrationTest extends TestCase
     public function testRegisterRedirectsOnSuccess(): void
     {
         $_SERVER["REMOTE_ADDR"] = "127.0.0.1";
-        $users = new Users([]);
-        $this->store->method("update")->willReturn($users);
-        $this->store->method("commit")->willReturn(true);
         $request = new FakeRequest([
             "url" => "http://example.com/?&register_action=register",
             "post" => [
@@ -171,7 +175,7 @@ class HandleUserRegistrationTest extends TestCase
         $this->assertEquals([["postmaster@example.com", ""]], $this->phpMailer->getCcAddresses());
         $this->assertEquals("Your user account at example.com", $this->phpMailer->Subject);
         Approvals::verifyString($this->phpMailer->Body);
-        $this->assertNotNull($users->user("js"));
+        $this->assertNotNull(Users::retrieve($this->store)->user("js"));
         $this->assertEquals("http://example.com/", $response->location());
     }
 
@@ -186,7 +190,6 @@ class HandleUserRegistrationTest extends TestCase
 
     public function testActivateReportsNonExistentUser(): void
     {
-        $this->store->method("update")->willReturn(new Users([]));
         $request = new FakeRequest([
             "url" => "http://example.com/?&register_action=activate&register_username=js&register_nonce=12345",
         ]);
@@ -196,7 +199,6 @@ class HandleUserRegistrationTest extends TestCase
 
     public function testActivateReportsInvalidNonce(): void
     {
-        $this->store->method("update")->willReturn(new Users(["jane" => $this->jane()]));
         $request = new FakeRequest([
             "url" => "http://example.com/?&register_action=activate&register_username=jane&register_nonce=54321",
         ]);
@@ -206,7 +208,7 @@ class HandleUserRegistrationTest extends TestCase
 
     public function testActivateReportsFailureToSave(): void
     {
-        $this->store->method("update")->willReturn(new Users(["jane" => $this->jane()]));
+        vfsStream::setQuota(0);
         $request = new FakeRequest([
             "url" => "http://example.com/?&register_action=activate&register_username=jane&register_nonce=12345",
         ]);
@@ -216,24 +218,11 @@ class HandleUserRegistrationTest extends TestCase
 
     public function testActivateReportsSuccess(): void
     {
-        $users = new Users(["jane" => $this->jane()]);
-        $this->store->method("update")->willReturn($users);
-        $this->store->method("commit")->willReturn(true);
         $request = new FakeRequest([
             "url" => "http://example.com/?&register_action=activate&register_username=jane&register_nonce=12345",
         ]);
         $response = $this->sut()($request);
-        $this->assertTrue($users->user("jane")->isActivated());
+        $this->assertTrue(Users::retrieve($this->store)->user("jane")->isActivated());
         $this->assertStringContainsString("You have successfully activated your new account.", $response->output());
-    }
-
-    private function jane(): User
-    {
-        return new User("jane", self::HASH, ["guest"], "Jane Doe", "jane@example.com", "12345", "secret");
-    }
-
-    private function john(): User
-    {
-        return new User("john", self::HASH, ["guest"], "John Doe", "john@example.com", "", "secret");
     }
 }

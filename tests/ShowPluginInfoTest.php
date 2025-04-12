@@ -9,6 +9,7 @@
 namespace Register;
 
 use ApprovalTests\Approvals;
+use org\bovigo\vfs\vfsStream;
 use PHPUnit\Framework\TestCase;
 use Plib\DocumentStore;
 use Plib\View;

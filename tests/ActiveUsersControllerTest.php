@@ -26,7 +26,7 @@ class ActiveUsersControllerTest extends TestCase
     {
         vfsStream::setup("root");
         $this->conf = XH_includeVar("./config/config.php", "plugin_cf")["register"];
-        $this->store = $this->createMock(DocumentStore::class);
+        $this->store = new DocumentStore(vfsStream::url("root/content/register/"));
         $this->view = new View("./views/", XH_includeVar("./languages/en.php", "plugin_tx")["register"]);
     }
 
@@ -41,11 +41,11 @@ class ActiveUsersControllerTest extends TestCase
 
     public function testRendersActiveUsers(): void
     {
-        $this->store->method("retrieve")->willReturn(new ActiveUsers([
-            "cmb" => strtotime("2023-04-16T17:13"),
-            "jane" => strtotime("2023-04-16T17:14"),
-            "john" => strtotime("2023-04-16T17:15"),
-        ]));
+        $activeUsers = ActiveUsers::update($this->store);
+        $activeUsers->updateUser("cmb", strtotime("2023-04-16T17:13"));
+        $activeUsers->updateUser("jane", strtotime("2023-04-16T17:14"));
+        $activeUsers->updateUser("john", strtotime("2023-04-16T17:15"));
+        $this->store->commit();
         $response = $this->sut()(new FakeRequest(["time" => 0]));
         Approvals::verifyHtml($response->output());
     }

@@ -31,12 +31,9 @@ class MainTest extends TestCase
 
     public function setUp(): void
     {
-        vfsStream::setup("root");
+        $this->setUpStore();
         $plugin_cf = XH_includeVar("./config/config.php", 'plugin_cf');
         $this->conf = $plugin_cf['register'];
-        $this->store = $this->createStub(DocumentStore::class);
-        $this->store->method("retrieve")->willReturn(new Users(["jane" => $this->jane(), "john" => $this->john()]));
-        $this->store->method("update")->willReturn(new ActiveUsers([]));
         $this->pages = $this->createMock(Pages::class);
         $this->pages->method("data")->willReturn([
             ["register_access" => ""],
@@ -46,6 +43,32 @@ class MainTest extends TestCase
         $this->logger = new FakeLogger;
         $this->loginManager = $this->createStub(LoginManager::class);
         $this->view = new View("./views/", XH_includeVar("./languages/en.php", "plugin_tx")["register"]);
+    }
+
+    private function setUpStore(): void
+    {
+        vfsStream::setup("root");
+        $this->store = new DocumentStore(vfsStream::url("root/content/register/"));
+        $users = Users::update($this->store);
+        $users->createUser(
+            "jane",
+            "\$2y\$04\$vcjV1rBQmBIKJsVNhRvWZukMmECVkKIHKAdVI9FlcXmVbSb/km3c6",
+            ["admin"],
+            "Jane Doe",
+            "jane@example.com",
+            "activated",
+            "secret"
+        );
+        $users->createUser(
+            "john",
+            "\$2y\$04\$vcjV1rBQmBIKJsVNhRvWZukMmECVkKIHKAdVI9FlcXmVbSb/km3c6",
+            ["guest"],
+            "John Doe",
+            "john@example.com",
+            "deactivated",
+            "secret"
+        );
+        $this->store->commit();
     }
 
     private function sut()

@@ -95,11 +95,13 @@ class HandleUserRegistration
         }
         $users = Users::update($this->store);
         if ($users->user($post["username"])) {
+            $this->store->rollback();
             return Response::create(
                 $this->renderForm($request->url(), $user, $post["password2"], [["error_username_exists"]])
             );
         }
         if (($olduser = $users->userByEmail($user->getEmail()))) {
+            $this->store->rollback();
             $this->sendDuplicateEmailNotification($user, $olduser, $request);
             return Response::redirect($request->url()->without("function")->without("register_action")->absolute());
         }
@@ -209,9 +211,11 @@ class HandleUserRegistration
         }
         $users = Users::update($this->store);
         if (!($user = $users->user($params["username"]))) {
+            $this->store->rollback();
             return Response::create($this->view->message("fail", "error_username_notfound", $params["username"]));
         }
         if (!hash_equals($user->getStatus(), $params["nonce"])) {
+            $this->store->rollback();
             return Response::create($this->view->message("fail", "error_code_invalid"));
         }
         $user->activate($this->conf["group_activated"]);

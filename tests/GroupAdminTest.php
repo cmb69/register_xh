@@ -28,12 +28,21 @@ class GroupAdminTest extends TestCase
 
     public function setUp(): void
     {
-        vfsStream::setup("root");
+        $this->setUpStore();
         $this->csrfProtector = $this->createStub(CsrfProtector::class);
         $this->csrfProtector->method("token")->willReturn("0+pVtDm4xXAxUmA3/mrL");
-        $this->store = $this->createMock(DocumentStore::class);
         $this->pages = $this->createStub(Pages::class);
         $this->view = new View("./views/", XH_includeVar("./languages/en.php", "plugin_tx")["register"]);
+    }
+
+    private function setUpStore(): void
+    {
+        vfsStream::setup("root");
+        $this->store = new DocumentStore(vfsStream::url("root//content/register/"));
+        $groups = Groups::update($this->store);
+        $groups->createGroup("guest", "");
+        $groups->createGroup("mods", "Start");
+        $this->store->commit();
     }
 
     private function sut(): GroupAdmin
@@ -48,10 +57,6 @@ class GroupAdminTest extends TestCase
 
     public function testRendersOverview(): void
     {
-        $this->store->method("retrieve")->willReturn(new Groups([
-            new UserGroup("guest", ""),
-            new UserGroup("new", "Start"),
-        ]));
         $request = new FakeRequest();
         $response = $this->sut()($request);
         $this->assertEquals("Register – Groups", $response->title());
@@ -82,7 +87,6 @@ class GroupAdminTest extends TestCase
     public function testDoCreateReportsExistingGroup(): void
     {
         $this->csrfProtector->method("check")->willReturn(true);
-        $this->store->method("update")->willReturn(new Groups(["guest" => new UserGroup("guest", "")]));
         $request = new FakeRequest([
             "url" => "http://example.com/?&group=guest",
             "post" => ["action" => "do_create"],
@@ -95,7 +99,6 @@ class GroupAdminTest extends TestCase
     public function testDoCreateReportsInvalidGroup(): void
     {
         $this->csrfProtector->method("check")->willReturn(true);
-        $this->store->method("update")->willReturn(new Groups([]));
         $request = new FakeRequest(["post" => ["action" => "do_create", "groupname" => "", "loginpage" => ""]]);
         $response = $this->sut()($request);
         $this->assertEquals("Register – Groups", $response->title());
@@ -108,8 +111,7 @@ class GroupAdminTest extends TestCase
     public function testDoCreateReportsFailureToSave(): void
     {
         $this->csrfProtector->method("check")->willReturn(true);
-        $this->store->method("update")->willReturn(new Groups([]));
-        $this->store->method("commit")->willReturn(false);
+        vfsStream::setQuota(0);
         $request = new FakeRequest(["post" => ["action" => "do_create", "groupname" => "new", "loginpage" => ""]]);
         $response = $this->sut()($request);
         $this->assertEquals("Register – Groups", $response->title());
@@ -119,22 +121,16 @@ class GroupAdminTest extends TestCase
     public function testDoCreateRedirectsOnSuccess(): void
     {
         $this->csrfProtector->method("check")->willReturn(true);
-        $groups = new Groups([]);
-        $this->store->method("update")->willReturn($groups);
-        $this->store->method("commit")->willReturn(true);
         $request = new FakeRequest([
             "post" => ["action" => "do_create", "groupname" => "new", "loginpage" => ""],
         ]);
         $response = $this->sut()($request);
-        $this->assertEquals(new UserGroup("new", ""), $groups->group("new"));
+        $this->assertEquals(new UserGroup("new", ""), Groups::retrieve($this->store)->group("new"));
         $this->assertEquals("http://example.com/?register&admin=groups", $response->location());
     }
 
     public function testUpdateReportsMissingGroup(): void
     {
-        $this->store->method("retrieve")->willReturn(new Groups([
-            new UserGroup("guest", ""),
-        ]));
         $request = new FakeRequest([
             "url" => "http://example.com/?register&admin=groups&action=update&group=missing",
         ]);
@@ -145,7 +141,6 @@ class GroupAdminTest extends TestCase
 
     public function testRendersUpdateForm(): void
     {
-        $this->store->method("retrieve")->willReturn(new Groups(["guest" => new UserGroup("guest", "")]));
         $request = new FakeRequest([
             "url" => "http://example.com/?&action=update&group=guest",
         ]);
@@ -166,7 +161,6 @@ class GroupAdminTest extends TestCase
     public function testDoUpdateReportsMissingGroup(): void
     {
         $this->csrfProtector->method("check")->willReturn(true);
-        $this->store->method("update")->willReturn(new Groups([]));
         $request = new FakeRequest([
             "url" => "http://example.com/?&group=missing",
             "post" => ["action" => "do_update"],
@@ -179,7 +173,7 @@ class GroupAdminTest extends TestCase
     public function testDoUpdateReportsFailureToSave(): void
     {
         $this->csrfProtector->method("check")->willReturn(true);
-        $this->store->method("update")->willReturn(new Groups(["guest" => new UserGroup("guest", "")]));
+        vfsStream::setQuota(0);
         $request = new FakeRequest([
             "url" => "http://example.com/?&group=guest",
             "post" => ["action" => "do_update", "loginpage" => "Login"],
@@ -192,21 +186,17 @@ class GroupAdminTest extends TestCase
     public function testDoUpdateRedirectsOnSuccess(): void
     {
         $this->csrfProtector->method("check")->willReturn(true);
-        $groups = new Groups(["guest" => new UserGroup("guest", "")]);
-        $this->store->method("update")->willReturn($groups);
-        $this->store->method("commit")->willReturn(true);
         $request = new FakeRequest([
             "url" => "http://example.com/?&group=guest",
             "post" => ["action" => "do_update", "loginpage" => "Login"],
         ]);
         $response = $this->sut()($request);
-        $this->assertEquals(new UserGroup("guest", "Login"), $groups->group("guest"));
+        $this->assertEquals(new UserGroup("guest", "Login"), Groups::retrieve($this->store)->group("guest"));
         $this->assertEquals("http://example.com/?register&admin=groups", $response->location());
     }
 
     public function testDeleteReportsMissingGroup(): void
     {
-        $this->store->method("retrieve")->willReturn(new Groups([]));
         $request = new FakeRequest([
             "url" => "http://example.com/?&action=delete&group=missing",
         ]);
@@ -217,7 +207,6 @@ class GroupAdminTest extends TestCase
 
     public function testRendersDeleteForm(): void
     {
-        $this->store->method("retrieve")->willReturn(new Groups(["guest" => new UserGroup("guest", "")]));
         $request = new FakeRequest(["url" => "http://example.com/?&action=delete&group=guest"]);
         $response = $this->sut()($request);
         $this->assertEquals("Register – Groups", $response->title());
@@ -235,7 +224,6 @@ class GroupAdminTest extends TestCase
     public function testDoDeleteReportsMissingGroup(): void
     {
         $this->csrfProtector->method("check")->willReturn(true);
-        $this->store->method("update")->willReturn(new Groups([]));
         $request = new FakeRequest([
             "url" => "http://example.com/?&group=missing",
             "post" => ["action" => "do_delete"],
@@ -248,8 +236,7 @@ class GroupAdminTest extends TestCase
     public function testDoDeleteReportsFailureToSave(): void
     {
         $this->csrfProtector->method("check")->willReturn(true);
-        $this->store->method("update")->willReturn(new Groups(["guest" => new UserGroup("guest", "")]));
-        $this->store->method("commit")->willReturn(false);
+        vfsStream::setQuota(0);
         $request = new FakeRequest([
             "url" => "http://example.com/?&group=guest",
             "post" => ["action" => "do_delete"],
@@ -262,15 +249,12 @@ class GroupAdminTest extends TestCase
     public function testDoDeleteRedirectsOnSuccess(): void
     {
         $this->csrfProtector->method("check")->willReturn(true);
-        $groups = new Groups(["guest" => new UserGroup("guest", "")]);
-        $this->store->method("update")->willReturn($groups);
-        $this->store->method("commit")->willReturn(true);
         $request = new FakeRequest([
             "url" => "http://example.com/?&group=guest",
             "post" => ["action" => "do_delete"],
         ]);
         $response = $this->sut()($request);
-        $this->assertNull($groups->group("guest"));
+        $this->assertNull(Groups::retrieve($this->store)->group("guest"));
         $this->assertEquals("http://example.com/?register&admin=groups", $response->location());
     }
 }

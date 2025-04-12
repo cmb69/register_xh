@@ -38,22 +38,27 @@ class HandleUserPreferencesTest extends TestCase
 
     public function setUp(): void
     {
-        vfsStream::setup("root");
-        $users = [
-            "john" => new User("john", self::HASH, ["guest"], "John Doe", "john@example.com", "activated", "secret"),
-            "jane" => new User("jane", self::HASH, ["guest"], "Jane Doe", "jane@example.com", "locked", "secret"),
-        ];
+        $this->setUpStore();
         $this->conf = XH_includeVar("./config/config.php", "plugin_cf")["register"];
         $plugin_tx = XH_includeVar("./languages/en.php", 'plugin_tx');
         $text = $plugin_tx['register'];
         $this->csrfProtector = $this->createStub(CsrfProtector::class);
         $this->csrfProtector->method("token")->willReturn("0+pVtDm4xXAxUmA3/mrL");
-        $this->store = $this->createStub(DocumentStore::class);
         $this->view = new View("./views/", $text);
         $this->phpMailer = $this->getMockBuilder(PHPMailer::class)->onlyMethods(["send"])->getMock();
         $this->mailer = new Mailer($this->conf, $this->phpMailer);
         $this->logger = new FakeLogger;
         $this->password = new FakePassword;
+    }
+
+    private function setUpStore(): void
+    {
+        vfsStream::setup("root");
+        $this->store = new DocumentStore(vfsStream::url("root/content/register/"));
+        $users = Users::update($this->store);
+        $users->createUser("john", self::HASH, ["guest"], "John Doe", "john@example.com", "activated", "secret");
+        $users->createUser("jane", self::HASH, ["guest"], "Jane Doe", "jane@example.com", "locked", "secret");
+        $this->store->commit();
     }
 
     private function sut(): HandleUserPreferences
@@ -78,7 +83,6 @@ class HandleUserPreferencesTest extends TestCase
 
     public function testReportsNonExistentUser(): void
     {
-        $this->store->method("retrieve")->willReturn(new Users([]));
         $request = new FakeRequest(["url" => "http://example.com/?&function=register_settings", "username" => "colt"]);
         $response = $this->sut()($request);
         $this->assertStringContainsString("User 'colt' does not exist!", $response->output());
@@ -86,7 +90,6 @@ class HandleUserPreferencesTest extends TestCase
 
     public function testReportsIfUserIsLocked(): void
     {
-        $this->store->method("retrieve")->willReturn(new Users(["jane" => $this->jane()]));
         $request = new FakeRequest(["url" => "http://example.com/?&function=register_settings", "username" => "jane"]);
         $response = $this->sut()($request);
         $this->assertStringContainsString("User Preferences for 'jane' can't be changed!", $response->output());
@@ -94,7 +97,6 @@ class HandleUserPreferencesTest extends TestCase
 
     public function testRendersForm(): void
     {
-        $this->store->method("retrieve")->willReturn(new Users(["john" => $this->john()]));
         $request = new FakeRequest(["url" => "http://example.com/?&function=register_settings", "username" => "john"]);
         $response = $this->sut()($request);
         Approvals::verifyHtml($response->output());
@@ -114,7 +116,6 @@ class HandleUserPreferencesTest extends TestCase
     public function testChangePrefsReportsNonExistentUser(): void
     {
         $this->csrfProtector->method("check")->willReturn(true);
-        $this->store->method("update")->willReturn(new Users([]));
         $request = new FakeRequest([
             "url" => "http://example.com/?&function=register_settings&register_action=change_prefs",
             "username" => "colt",
@@ -126,7 +127,6 @@ class HandleUserPreferencesTest extends TestCase
     public function testChangePrefsReportsLockedUser(): void
     {
         $this->csrfProtector->method("check")->willReturn(true);
-        $this->store->method("update")->willReturn(new Users(["jane" => $this->jane()]));
         $request = new FakeRequest([
             "url" => "http://example.com/?&function=register_settings&register_action=change_prefs",
             "username" => "jane",
@@ -138,7 +138,6 @@ class HandleUserPreferencesTest extends TestCase
     public function testChangePrefsReportsWrongPassword(): void
     {
         $this->csrfProtector->method("check")->willReturn(true);
-        $this->store->method("update")->willReturn(new Users(["john" => $this->john()]));
         $request = new FakeRequest([
             "url" => "http://example.com/?&function=register_settings&register_action=change_prefs",
             "username" => "john",
@@ -151,7 +150,6 @@ class HandleUserPreferencesTest extends TestCase
     public function testChangePrefsReportsValidationErrors(): void
     {
         $this->csrfProtector->method("check")->willReturn(true);
-        $this->store->method("update")->willReturn(new Users(["john" => $this->john()]));
         $request = new FakeRequest([
             "url" => "http://example.com/?&function=register_settings&register_action=change_prefs",
             "username" => "john",
@@ -164,7 +162,7 @@ class HandleUserPreferencesTest extends TestCase
     public function testChangePrefsReportsFailureToSave(): void
     {
         $this->csrfProtector->method("check")->willReturn(true);
-        $this->store->method("update")->willReturn(new Users(["john" => $this->john()]));
+        vfsStream::setQuota(0);
         $request = new FakeRequest([
             "url" => "http://example.com/?&function=register_settings&register_action=change_prefs",
             "username" => "john",
@@ -178,9 +176,6 @@ class HandleUserPreferencesTest extends TestCase
     {
         $_SERVER["REMOTE_ADDR"] = "127.0.0.1";
         $this->csrfProtector->method("check")->willReturn(true);
-        $users = new Users(["john" => $this->john()]);
-        $this->store->method("update")->willReturn($users);
-        $this->store->method("commit")->willReturn(true);
         $request = new FakeRequest([
             "url" => "http://example.com/?&function=register_settings&register_action=change_prefs",
             "username" => "john",
@@ -197,13 +192,12 @@ class HandleUserPreferencesTest extends TestCase
         );
         $this->assertEquals("Your user account at example.com", $this->phpMailer->Subject);
         Approvals::verifyString($this->phpMailer->Body);
-        $this->assertEquals("new@example.com", $users->user("john")->getEmail());
+        $this->assertEquals("new@example.com", Users::retrieve($this->store)->user("john")->getEmail());
         $this->assertEquals("http://example.com/", $response->location());
     }
 
     public function testPasswordReportsNonExistentUser(): void
     {
-        $this->store->method("retrieve")->willReturn(new Users([]));
         $request = new FakeRequest([
             "url" => "http://example.com/?&function=register_settings&register_action=password",
             "username" => "colt",
@@ -214,7 +208,6 @@ class HandleUserPreferencesTest extends TestCase
 
     public function testPasswordReportsIfUserIsLocked(): void
     {
-        $this->store->method("retrieve")->willReturn(new Users(["jane" => $this->jane()]));
         $request = new FakeRequest([
             "url" => "http://example.com/?&function=register_settings&register_action=password",
             "username" => "jane",
@@ -225,7 +218,6 @@ class HandleUserPreferencesTest extends TestCase
 
     public function testRendersPasswordForm(): void
     {
-        $this->store->method("retrieve")->willReturn(new Users(["john" => $this->john()]));
         $request = new FakeRequest([
             "url" => "http://example.com/?&function=register_settings&register_action=password",
             "username" => "john",
@@ -248,7 +240,6 @@ class HandleUserPreferencesTest extends TestCase
     public function testChangePasswordReportsNonExistentUser(): void
     {
         $this->csrfProtector->method("check")->willReturn(true);
-        $this->store->method("update")->willReturn(new Users([]));
         $request = new FakeRequest([
             "url" => "http://example.com/?&function=register_settings&register_action=change_password",
             "username" => "colt",
@@ -260,7 +251,6 @@ class HandleUserPreferencesTest extends TestCase
     public function testChangePasswordReportsLockedUser(): void
     {
         $this->csrfProtector->method("check")->willReturn(true);
-        $this->store->method("update")->willReturn(new Users(["jane" => $this->jane()]));
         $request = new FakeRequest([
             "url" => "http://example.com/?&function=register_settings&register_action=change_password",
             "username" => "jane",
@@ -272,7 +262,6 @@ class HandleUserPreferencesTest extends TestCase
     public function testChangePasswordReportsWrongPassword(): void
     {
         $this->csrfProtector->method("check")->willReturn(true);
-        $this->store->method("update")->willReturn(new Users(["john" => $this->john()]));
         $request = new FakeRequest([
             "url" => "http://example.com/?&function=register_settings&register_action=change_password",
             "username" => "john",
@@ -285,7 +274,6 @@ class HandleUserPreferencesTest extends TestCase
     public function testChangePasswordReportsValidationErrors(): void
     {
         $this->csrfProtector->method("check")->willReturn(true);
-        $this->store->method("update")->willReturn(new Users(["john" => $this->john()]));
         $request = new FakeRequest([
             "url" => "http://example.com/?&function=register_settings&register_action=change_password",
             "username" => "john",
@@ -298,7 +286,7 @@ class HandleUserPreferencesTest extends TestCase
     public function testChangePasswordReportsFailureToSave(): void
     {
         $this->csrfProtector->method("check")->willReturn(true);
-        $this->store->method("update")->willReturn(new Users(["john" => $this->john()]));
+        vfsStream::setQuota(0);
         $request = new FakeRequest([
             "url" => "http://example.com/?&function=register_settings&register_action=change_password",
             "username" => "john",
@@ -312,9 +300,6 @@ class HandleUserPreferencesTest extends TestCase
     {
         $_SERVER["REMOTE_ADDR"] = "127.0.0.1";
         $this->csrfProtector->method("check")->willReturn(true);
-        $users = new Users(["john" => $this->john()]);
-        $this->store->method("update")->willReturn($users);
-        $this->store->method("commit")->willReturn(true);
         $request = new FakeRequest([
             "url" => "http://example.com/?&function=register_settings&register_action=change_password",
             "username" => "john",
@@ -330,14 +315,13 @@ class HandleUserPreferencesTest extends TestCase
         Approvals::verifyString($this->phpMailer->Body);
         $this->assertEquals(
             "\$2y\$04\$vcjV1rBQmBIKJsVNhRvWZukMmECVkKIHKAdVI9FlcXmVbSb/km3c6",
-            $users->user("john")->getPassword()
+            Users::retrieve($this->store)->user("john")->getPassword()
         );
         $this->assertEquals("http://example.com/", $response->location());
     }
 
     public function testDeleteReportsNonExistentUser(): void
     {
-        $this->store->method("retrieve")->willReturn(new Users([]));
         $request = new FakeRequest([
             "url" => "http://example.com/?&function=register_settings&register_action=delete",
             "username" => "colt",
@@ -348,7 +332,6 @@ class HandleUserPreferencesTest extends TestCase
 
     public function testDeleteReportsIfUserIsLocked(): void
     {
-        $this->store->method("retrieve")->willReturn(new Users(["jane" => $this->jane()]));
         $request = new FakeRequest([
             "url" => "http://example.com/?&function=register_settings&register_action=delete",
             "username" => "jane",
@@ -359,7 +342,6 @@ class HandleUserPreferencesTest extends TestCase
 
     public function testRendersDeleteForm(): void
     {
-        $this->store->method("retrieve")->willReturn(new Users(["john" => $this->john()]));
         $request = new FakeRequest([
             "url" => "http://example.com/?&function=register_settings&register_action=delete",
             "username" => "john",
@@ -382,7 +364,6 @@ class HandleUserPreferencesTest extends TestCase
     public function testUnregisterReportsNonExistentUser(): void
     {
         $this->csrfProtector->method("check")->willReturn(true);
-        $this->store->method("update")->willReturn(new Users([]));
         $request = new FakeRequest([
             "url" => "http://example.com/?&function=register_settings&register_action=unregister",
             "username" => "colt",
@@ -394,7 +375,6 @@ class HandleUserPreferencesTest extends TestCase
     public function testUnregisterReportsLockedUser(): void
     {
         $this->csrfProtector->method("check")->willReturn(true);
-        $this->store->method("update")->willReturn(new Users(["jane" => $this->jane()]));
         $request = new FakeRequest([
             "url" => "http://example.com/?&function=register_settings&register_action=unregister",
             "username" => "jane",
@@ -406,7 +386,6 @@ class HandleUserPreferencesTest extends TestCase
     public function testUnregisterReportsWrongPassword(): void
     {
         $this->csrfProtector->method("check")->willReturn(true);
-        $this->store->method("update")->willReturn(new Users(["john" => $this->john()]));
         $request = new FakeRequest([
             "url" => "http://example.com/?&function=register_settings&register_action=unregister",
             "username" => "john",
@@ -430,27 +409,14 @@ class HandleUserPreferencesTest extends TestCase
     public function testUnregisterRedirectsOnSuccess(): void
     {
         $this->csrfProtector->method("check")->willReturn(true);
-        $users = new Users(["john" => $this->john()]);
-        $this->store->method("update")->willReturn($users);
-        $this->store->method("commit")->willReturn(true);
         $request = new FakeRequest([
             "url" => "http://example.com/?&function=register_settings&register_action=unregister",
             "username" => "john",
             "post" => ["oldpassword" => "12345"],
         ]);
         $response = $this->sut()($request);
-        $this->assertNull($users->user("john"));
+        $this->assertNull(Users::retrieve($this->store)->user("john"));
         $this->assertEquals(["info", "register", "logout", "User “john” deleted account"], $this->logger->lastEntry());
         $this->assertEquals("http://example.com/", $response->location());
-    }
-
-    private function jane(): User
-    {
-        return new User("jane", self::HASH, ["guest"], "Jane Doe", "jane@example.com", "locked", "secret");
-    }
-
-    private function john(): User
-    {
-        return new User("john", self::HASH, ["guest"], "John Doe", "john@example.com", "activated", "secret");
     }
 }

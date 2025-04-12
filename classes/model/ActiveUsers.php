@@ -22,7 +22,9 @@ final class ActiveUsers implements Document
     public static function fromString(string $contents, string $key)
     {
         $users = unserialize($contents);
-        assert(is_array($users));
+        if (!is_array($users)) {
+            $users = [];
+        }
         return new static($users);
     }
 

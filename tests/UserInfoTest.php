@@ -25,10 +25,18 @@ class UserInfoTest extends TestCase
 
     public function setUp(): void
     {
-        vfsStream::setup("root");
+        $this->setUpStore();
         $this->conf = XH_includeVar("./config/config.php", "plugin_cf")["register"];
-        $this->store = $this->createStub(DocumentStore::class);
         $this->view = new View("./views/", XH_includeVar("./languages/en.php", "plugin_tx")["register"]);
+    }
+
+    private function setUpStore(): void
+    {
+        vfsStream::setup("root");
+        $this->store = new DocumentStore(vfsStream::url("root/content/register/"));
+        $users = Users::update($this->store);
+        $users->createUser("cmb", "12345", ["guest"], "Christoph Becker", "cmb@example.com", "1", "1");
+        $this->store->commit();
     }
 
     private function sut(): UserInfo
@@ -49,7 +57,6 @@ class UserInfoTest extends TestCase
 
     public function testReportsNonExistentUser(): void
     {
-        $this->store->method("retrieve")->willReturn(new Users([]));
         $request = new FakeRequest(["username" => "colt"]);
         $response = $this->sut()($request, "Register");
         $this->assertStringContainsString("User 'colt' does not exist!", $response->output());
@@ -57,8 +64,6 @@ class UserInfoTest extends TestCase
 
     public function testRendersUserInfo(): void
     {
-        $user = new User("cmb", "12345", ["guest"], "Christoph Becker", "cmb@example.com", "1", "1");
-        $this->store->method("retrieve")->willReturn(new Users(["cmb" => $user]));
         $request = new FakeRequest(["username" => "cmb"]);
         $response = $this->sut()($request, "Register");
         Approvals::verifyHtml($response->output());

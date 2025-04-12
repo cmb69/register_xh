@@ -158,12 +158,15 @@ class HandlePasswordForgotten
         ];
         $users = Users::update($this->store);
         if (!($user = $users->user($params["username"]))) {
+            $this->store->rollback();
             return Response::create($this->view->message("fail", "error_user_does_not_exist", $params["username"]));
         }
         if (!$this->verifyMac($user, $params)) {
+            $this->store->rollback();
             return Response::create($this->view->message("fail", 'error_code_invalid'));
         }
         if ($this->isExpired((int) $params["time"], $request)) {
+            $this->store->rollback();
             return Response::create($this->view->message("fail", "error_expired"));
         }
         $passwords = new Passwords(
@@ -171,6 +174,7 @@ class HandlePasswordForgotten
             $request->post("password2") ?? ""
         );
         if (($errors = Util::validatePasswords($passwords))) {
+            $this->store->rollback();
             return Response::create($this->renderResetPasswordForm($request, $passwords, $errors));
         }
         $user->setPassword($this->password->hash($passwords->password()));

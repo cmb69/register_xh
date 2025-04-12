@@ -93,14 +93,17 @@ class ShowLoginForm
         ];
         $users = Users::update($this->store);
         if (!($user = $users->user($post["username"]))) {
+            $this->store->rollback();
             $this->logger->logInfo("login", $this->view->plain("log_login_user", $post["username"]));
             return Response::create($this->renderLoginForm($request, $post, [["error_login"]]));
         }
         if (!$user->isActivated() && !$user->isLocked()) {
+            $this->store->rollback();
             $this->logger->logInfo("login", $this->view->plain("log_login_forbidden", $post["username"]));
             return Response::create($this->renderLoginForm($request, $post, [["error_login"]]));
         }
         if (!$this->password->verify($post["password"], $user->getPassword())) {
+            $this->store->rollback();
             $this->logger->logInfo("login", $this->view->plain("log_login_password", $post["username"]));
             return Response::create($this->renderLoginForm($request, $post, [["error_login"]]));
         }
@@ -108,6 +111,7 @@ class ShowLoginForm
             $user->setPassword($this->password->hash($post["password"]));
             $this->store->commit();
         }
+        $this->store->rollback();
         $this->loginManager->login($user);
         $this->logger->logInfo("login", $this->view->plain("log_login", $post["username"]));
         if ($this->conf["allowed_remember"] && $post["remember"]) {

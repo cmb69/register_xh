@@ -20,7 +20,6 @@ use Register\Infra\LoginManager;
 use Register\Model\ActiveUsers;
 use Register\Model\Groups;
 use Register\Model\User;
-use Register\Model\UserGroup;
 use Register\Model\Users;
 
 class ShowLoginFormTest extends TestCase
@@ -29,18 +28,52 @@ class ShowLoginFormTest extends TestCase
     private $loginManager;
     private $logger;
     private $view;
-    private $activeUsers;
 
     public function setUp(): void
     {
-        vfsStream::setup("root");
-        $this->activeUsers = $this->activeUsers();
-        $this->store = $this->createMock(DocumentStore::class);
+        $this->setUpStore();
         $this->loginManager = $this->createMock(LoginManager::class);
         $this->logger = new FakeLogger;
         $this->view = new View("./views/", XH_includeVar("./languages/en.php", "plugin_tx")["register"]);
     }
 
+    private function setUpStore(): void
+    {
+        vfsStream::setup("root");
+        $this->store = new DocumentStore(vfsStream::url("root/content/register/"));
+        $groups = Groups::update($this->store);
+        $groups->createGroup("admin", "Admin");
+        $users = Users::update($this->store);
+        $users->createUser(
+            "jane",
+            "\$2y\$04\$FMR/.rF4uHySPVzW4ZSYDO.BMmJNLAsHdzrD.r8EufGEk7XkWuwzW",
+            ["admin"],
+            "Jane Doe",
+            "jane@example.com",
+            "activated",
+            "secret"
+        );
+        $users->createUser("john", "12345", ["guest"], "John Doe", "john@example.com", "deactivated", "secret");
+        $users->createUser(
+            "james",
+            "\$2y\$04\$vcjV1rBQmBIKJsVNhRvWZukMmECVkKIHKAdVI9FlcXmVbSb/km3c6",
+            ["unknown"],
+            "James Doe",
+            "james@example.com",
+            "activated",
+            "secret"
+        );
+        $users->createUser(
+            "joan",
+            "\$2y\$04\$vcjV1rBQmBIKJsVNhRvWZukMmECVkKIHKAdVI9FlcXmVbSb/km3c6",
+            ["guest"],
+            "Joan Doe",
+            "joan@example.com",
+            "activated",
+            "secret"
+        );
+        $this->store->commit();
+    }
     private function sut()
     {
         return new ShowLoginForm(
@@ -62,10 +95,6 @@ class ShowLoginFormTest extends TestCase
 
     public function testLoggedInFormReportsMissingUser(): void
     {
-        $this->store->method("retrieve")->willReturnMap([
-            ["groups.csv", Groups::class, new Groups(["admin" => new UserGroup("admin", "Admin")])],
-            ["users.csv", Users::class, new Users($this->users())],
-        ]);
         $request = new FakeRequest(["username" => "colt"]);
         $response = $this->sut()($request);
         $this->assertStringContainsString("User 'colt' does not exist!", $response->output());
@@ -73,7 +102,6 @@ class ShowLoginFormTest extends TestCase
 
     public function testRendersLoggedInForm(): void
     {
-        $this->store->method("retrieve")->willReturn(new Users($this->users()));
         $request = new FakeRequest(["url" => "http://example.com/?Foo", "username" => "jane"]);
         $response = $this->sut()($request);
         Approvals::verifyHtml($response->output());
@@ -88,10 +116,6 @@ class ShowLoginFormTest extends TestCase
 
     public function testLoginReportsMissingUser(): void
     {
-        $this->store->method("update")->willReturnMap([
-            ["active_users.csv", ActiveUsers::class, $this->activeUsers()],
-            ["users.csv", Users::class, new Users([])],
-        ]);
         $request = new FakeRequest([
             "url" => "http://example.com/?&register_action=login",
             "post" => ["username" => "colt", "password" => "", "remember" => ""],
@@ -106,10 +130,6 @@ class ShowLoginFormTest extends TestCase
 
     public function testLoginReportsDeactivatedUser(): void
     {
-        $this->store->method("update")->willReturnMap([
-            ["active_users.csv", ActiveUsers::class, $this->activeUsers],
-            ["users.csv", Users::class, new Users($this->users())],
-        ]);
         $request = new FakeRequest([
             "url" => "http://example.com/?&register_action=login",
             "post" => ["username" => "john", "password" => "", "remember" => ""],
@@ -127,10 +147,6 @@ class ShowLoginFormTest extends TestCase
 
     public function testLoginReportsWrongPassword(): void
     {
-        $this->store->method("update")->willReturnMap([
-            ["active_users.csv", ActiveUsers::class, $this->activeUsers],
-            ["users.csv", Users::class, new Users($this->users())],
-        ]);
         $request = new FakeRequest([
             "url" => "http://example.com/?&register_action=login",
             "post" => ["username" => "jane", "password" => "", "remember" => ""],
@@ -148,8 +164,6 @@ class ShowLoginFormTest extends TestCase
 
     public function testLoginRedirectsWithCookieOnSuccess(): void
     {
-        $this->store->method("retrieve")->willReturn(new Groups(["admin" => new UserGroup("admin", "Admin")]));
-        $this->store->method("update")->willReturn(new Users($this->users()));
         $this->loginManager->expects($this->once())->method("login")->with($this->users()["james"]);
         $request = new FakeRequest([
             "url" => "http://example.com/?Foo",
@@ -167,8 +181,6 @@ class ShowLoginFormTest extends TestCase
 
     public function testLoginRedirectsToGroupPageOnSuccess(): void
     {
-        $this->store->method("retrieve")->willReturn(new Groups(["admin" => new UserGroup("admin", "Admin")]));
-        $this->store->method("update")->willReturn(new Users($this->users()));
         $this->loginManager->expects($this->once())->method("login")->with($this->users()["jane"]);
         $request = new FakeRequest([
             "post" => ["register_action" => "login", "username" => "jane", "password" => "12345", "remember" => ""],
@@ -180,11 +192,6 @@ class ShowLoginFormTest extends TestCase
 
     public function testLoginRedirectsToSamePageOnSuccess(): void
     {
-        $this->store->method("retrieve")->willReturn(new Groups(["admin" => new UserGroup("admin", "Admin")]));
-        $this->store->method("update")->willReturnMap([
-            ["active_users.dat", ActiveUsers::class, $this->activeUsers],
-            ["users.csv", Users::class, new Users($this->users())],
-        ]);
         $this->loginManager->expects($this->once())->method("login")->with($this->users()["joan"]);
         $request = new FakeRequest([
             "url" => "http://example.com/?Foo",
@@ -204,29 +211,21 @@ class ShowLoginFormTest extends TestCase
 
     public function testLogoutSucceeds(): void
     {
-        $this->store->method("update")->willReturnMap([
-            ["active_users.dat", ActiveUsers::class, $this->activeUsers],
-            ["users.csv", Users::class, new Users([])],
-        ]);
         $request = new FakeRequest(["url" => "http://example.com/?&register_action=logout", "username" => "jane"]);
         $response = $this->sut()($request);
-        $this->assertCount(0, $this->activeUsers->fetch(12345678));
+        $this->assertCount(0, ActiveUsers::retrieve($this->store)->fetch(12345678));
         $this->assertEquals("http://example.com/", $response->location());
     }
 
     public function testSuccessfulLogoutDeletesCookie(): void
     {
-        $this->store->method("update")->willReturnMap([
-            ["active_users.dat", ActiveUsers::class, $this->activeUsers],
-            ["users.csv", Users::class, new Users([])],
-        ]);
         $request = new FakeRequest([
             "url" => "http://example.com/?&register_action=logout",
             "username" => "jane",
             "cookie" => ["register_remember" => "jane.i5ixPyjRJ6iPuDjTEwBwpxSg6H0"],
         ]);
         $response = $this->sut()($request);
-        $this->assertCount(0, $this->activeUsers->fetch(12345678));
+        $this->assertCount(0, ActiveUsers::retrieve($this->store)->fetch(12345678));
         $this->assertEquals(["register_remember", "", 0], $response->cookie());
         $this->assertEquals("http://example.com/", $response->location());
         $this->assertEquals(["info", "register", "logout", "User “jane” logged out"], $this->logger->lastEntry());
