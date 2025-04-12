@@ -38,6 +38,9 @@ class Users implements Document
             return $that;
         }
         foreach ($lines as $line) {
+            if (strncmp($line, "//", 2) === 0) {
+                continue;
+            }
             $fields = explode(':', $line);
             $fields = array_pad($fields, 6, "");
             // if (count($fields) < 7) {

@@ -38,6 +38,9 @@ class Groups implements Document
             return $that;
         }
         foreach ($lines as $line) {
+            if (strncmp($line, "//", 2) === 0) {
+                continue;
+            }
             $fields = explode('|', $line, 2);
             $fields = array_pad($fields, 2, "");
             $group = UserGroup::fromArray($fields);
