@@ -8,9 +8,13 @@ use Plib\View;
  * @var string $token
  * @var string $group
  * @var list<array{selected:string,url:string,heading:string}> $options
+ * @var string $disabled
+ * @var bool $show_details
+ * @var string $button
+ * @var string $label
  */
 ?>
-<!-- register create group -->
+
 <form method="post">
 <?foreach ($errors as $error):?>
   <p class="xh_fail"><?=$this->text(...$error)?></p>
@@ -19,21 +23,23 @@ use Plib\View;
   <p>
     <label>
       <span><?=$this->text('label_groupname')?></span>
-      <input name="groupname" value="<?=$this->esc($group)?>">
+      <input name="groupname" value="<?=$this->esc($group)?>" <?=$this->esc($disabled)?>>
     </label>
   </p>
+<?if ($show_details):?>
   <p>
     <label>
       <span><?=$this->text('label_login')?></span>
       <select name="loginpage">
         <option value=""><?=$this->text('label_none')?></option>
-<?foreach ($options as $option):?>
+<?  foreach ($options as $option):?>
         <option value="<?=$this->esc($option['url'])?>" <?=$this->esc($option['selected'])?>><?=$this->esc($option['heading'])?></option>
-<?endforeach?>
+<?  endforeach?>
       </select>
     </label>
   </p>
+<?endif?>
   <p>
-    <button name="action" value="do_create"><?=$this->text('label_create')?></button>
+    <button name="action" value="<?=$this->esc($button)?>"><?=$this->text($label)?></button>
   </p>
 </form>

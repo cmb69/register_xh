@@ -82,7 +82,7 @@ class GroupAdmin
     private function create(): Response
     {
         $group = new UserGroup("", "");
-        return $this->respondWith($this->renderCreateForm($group));
+        return $this->respondWith($this->renderEditForm($group, "create"));
     }
 
     private function doCreate(Request $request): Response
@@ -99,23 +99,12 @@ class GroupAdmin
         $group = $groups->createGroup($request->post("groupname") ?? "", $request->post("loginpage") ?? "");
         if (($errors = Util::validateGroup($group))) {
             $this->store->rollback();
-            return $this->respondWith($this->renderCreateForm($group, $errors));
+            return $this->respondWith($this->renderEditForm($group, "create", $errors));
         }
         if (!$this->store->commit()) {
-            return $this->respondWith($this->renderCreateForm($group, [["error_cannot_write_csv"]]));
+            return $this->respondWith($this->renderEditForm($group, "create", [["error_cannot_write_csv"]]));
         }
         return Response::redirect($request->url()->page("register")->with("admin", "groups")->absolute());
-    }
-
-    /** @param list<array{string}> $errors */
-    private function renderCreateForm(UserGroup $group, array $errors = []): string
-    {
-        return $this->view->render("group_create", [
-            "errors" => $errors,
-            "token" => $this->csrfProtector->token(),
-            "group" => $group->getGroupname(),
-            "options" => $this->options($group->getLoginpage()),
-        ]);
     }
 
     private function update(Request $request): Response
@@ -125,7 +114,7 @@ class GroupAdmin
         if (!($group = $groups->group($groupname))) {
             return $this->overview([["error_group_does_not_exist", $groupname]]);
         }
-        return $this->respondWith($this->renderUpdateForm($group));
+        return $this->respondWith($this->renderEditForm($group, "update"));
     }
 
     private function doUpdate(Request $request): Response
@@ -143,20 +132,9 @@ class GroupAdmin
         $group->setLoginpage($post["loginpage"]);
         assert(!Util::validateGroup($group));
         if (!$this->store->commit()) {
-            return $this->respondWith($this->renderUpdateForm($group, [["error_cannot_write_csv"]]));
+            return $this->respondWith($this->renderEditForm($group, "update", [["error_cannot_write_csv"]]));
         }
         return Response::redirect($request->url()->page("register")->with("admin", "groups")->absolute());
-    }
-
-    /** @param list<array{string}> $errors */
-    private function renderUpdateForm(UserGroup $group, array $errors = []): string
-    {
-        return $this->view->render("group_update", [
-            "errors" => $errors,
-            "token" => $this->csrfProtector->token(),
-            "group" => $group->getGroupname(),
-            "options" => $this->options($group->getLoginpage()),
-        ]);
     }
 
     private function delete(Request $request): Response
@@ -166,7 +144,7 @@ class GroupAdmin
         if (!($group = $groups->group($groupname))) {
             return $this->overview([["error_group_does_not_exist", $groupname]]);
         }
-        return $this->respondWith($this->renderDeleteForm($group));
+        return $this->respondWith($this->renderEditForm($group, "delete"));
     }
 
     private function doDelete(Request $request): Response
@@ -182,18 +160,23 @@ class GroupAdmin
         }
         $groups->deleteGroup($groupname);
         if (!$this->store->commit()) {
-            return $this->respondWith($this->renderDeleteForm($group, [["error_cannot_write_csv"]]));
+            return $this->respondWith($this->renderEditForm($group, "delete", [["error_cannot_write_csv"]]));
         }
         return Response::redirect($request->url()->page("register")->with("admin", "groups")->absolute());
     }
 
     /** @param list<array{string}> $errors */
-    private function renderDeleteForm(UserGroup $group, array $errors = []): string
+    private function renderEditForm(UserGroup $group, string $action, array $errors = []): string
     {
-        return $this->view->render("group_delete", [
+        return $this->view->render("group_edit", [
             "errors" => $errors,
             "token" => $this->csrfProtector->token(),
-            "groupname" => $group->getGroupname(),
+            "group" => $group->getGroupname(),
+            "options" => $this->options($group->getLoginpage()),
+            "show_details" => $action !== "delete",
+            "disabled" => $action === "create" ? "" : "disabled",
+            "button" => "do_" . $action,
+            "label" => "label_" . $action,
         ]);
     }
 

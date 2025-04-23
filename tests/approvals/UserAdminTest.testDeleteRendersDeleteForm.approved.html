@@ -1,15 +1,15 @@
 <section class="register_admin">
 <h1>Register – Users</h1>
-<!-- register admin delete -->
+
 <form method="post">
   <input type="hidden" name="register_token" value="0+pVtDm4xXAxUmA3/mrL">
   <p>
     <label>
       <span>Username</span>
-      <input value="jane" disabled>
+      <input name="username" value="jane" required disabled>
     </label>
   </p>
-  <p>
+  <p class="register_buttons">
     <button name="action" value="do_delete">Delete</button>
   </p>
 </form>

@@ -167,7 +167,7 @@ class UserAdmin
     private function create(): Response
     {
         $user = new User("", "", [$this->conf["group_default"]], "", "", "activated", "");
-        return $this->respondWith($this->renderCreateForm($user, ""));
+        return $this->respondWith($this->renderEditForm($user, "create", ""));
     }
 
     private function doCreate(Request $request): Response
@@ -193,12 +193,14 @@ class UserAdmin
         );
         if (($errors = Util::validateUser($user, $request->post("password2") ?? ""))) {
             $this->store->rollback();
-            return $this->respondWith($this->renderCreateForm($user, $request->post("password2") ?? "", $errors));
+            return $this->respondWith(
+                $this->renderEditForm($user, "create", $request->post("password2") ?? "", $errors)
+            );
         }
         if ($duplicateEmail) {
             $this->store->rollback();
             return $this->respondWith(
-                $this->renderCreateForm($user, $request->post("password2") ?? "", [["error_email_exists"]])
+                $this->renderEditForm($user, "create", $request->post("password2") ?? "", [["error_email_exists"]])
             );
         }
         $user->setPassword($this->password->hash($request->post("password1") ?? ""));
@@ -207,27 +209,10 @@ class UserAdmin
             $user->setPassword($request->post("password1") ?? "");
             $user->setSecret("");
             return $this->respondWith(
-                $this->renderCreateForm($user, $request->post("password2") ?? "", [["error_cannot_write_csv"]])
+                $this->renderEditForm($user, "create", $request->post("password2") ?? "", [["error_cannot_write_csv"]])
             );
         }
         return Response::redirect($request->url()->page("register")->with("admin", "users")->absolute());
-    }
-
-    /** @param list<array{string}> $errors */
-    private function renderCreateForm(User $user, string $password2, array $errors = []): string
-    {
-        $groups = Groups::retrieve($this->store)->groups();
-        return $this->view->render("user_create", [
-            "errors" => $errors,
-            "token" => $this->csrfProtector->token(),
-            "username" => $user->getUsername(),
-            "name" => $user->getName(),
-            "email" => $user->getEmail(),
-            "groups" => $this->groupRecords($user, $groups),
-            "states" => $this->states($user),
-            "password1" => $user->getPassword(),
-            "password2" => $password2,
-        ]);
     }
 
     private function update(Request $request): Response
@@ -237,7 +222,7 @@ class UserAdmin
         if (($user = $users->user($username)) === null) {
             return $this->overview($request, [["error_user_does_not_exist", $username]]);
         }
-        return $this->respondWith($this->renderUpdateForm($user));
+        return $this->respondWith($this->renderEditForm($user, "update", ""));
     }
 
     private function doUpdate(Request $request): Response
@@ -264,52 +249,16 @@ class UserAdmin
         $user->setStatus($post["status"]);
         if (($errors = Util::validateUser($user, $user->getPassword()))) {
             $this->store->rollback();
-            return $this->respondWith($this->renderUpdateForm($user, $errors));
+            return $this->respondWith($this->renderEditForm($user, "update", "", $errors));
         }
         if ($duplicateEmail) {
             $this->store->rollback();
-            return $this->respondWith($this->renderUpdateForm($user, [["error_email_exists"]]));
+            return $this->respondWith($this->renderEditForm($user, "update", "", [["error_email_exists"]]));
         }
         if (!$this->store->commit()) {
-            return $this->respondWith($this->renderUpdateForm($user, [["error_cannot_write_csv"]]));
+            return $this->respondWith($this->renderEditForm($user, "update", "", [["error_cannot_write_csv"]]));
         }
         return Response::redirect($request->url()->page("register")->with("admin", "users")->absolute());
-    }
-    /** @param list<array{string}> $errors */
-    private function renderUpdateForm(User $user, array $errors = []): string
-    {
-        $groups = Groups::retrieve($this->store)->groups();
-        return $this->view->render("user_update", [
-            "errors" => $errors,
-            "token" => $this->csrfProtector->token(),
-            "username" => $user->getUsername(),
-            "name" => $user->getName(),
-            "email" => $user->getEmail(),
-            "groups" => $this->groupRecords($user, $groups),
-            "states" => $this->states($user),
-        ]);
-    }
-
-    /** @return list<array{string,string,string}> */
-    private function states(User $user): array
-    {
-        return array_map(function (string $status) use ($user) {
-            return [$status, "status_$status", $user->getStatus() === $status ? "selected" : ""];
-        }, User::STATUSES);
-    }
-
-    /**
-     * @param list<UserGroup> $groups
-     * @return list<array{string,string}>
-     */
-    private function groupRecords(User $user, array $groups): array
-    {
-        return array_map(function (UserGroup $group) use ($user) {
-            return [
-                $group->getGroupname(),
-                in_array($group->getGroupname(), $user->getAccessgroups(), true) ? "checked" : "",
-            ];
-        }, $groups);
     }
 
     private function changePassword(Request $request): Response
@@ -419,7 +368,7 @@ class UserAdmin
         if (!($user = Users::retrieve($this->store)->user($username))) {
             return $this->overview($request, [["error_user_does_not_exist", $username]]);
         }
-        return $this->respondWith($this->renderDeleteForm($user));
+        return $this->respondWith($this->renderEditForm($user, "delete", ""));
     }
 
     private function doDelete(Request $request): Response
@@ -435,19 +384,53 @@ class UserAdmin
         }
         $users->deleteUser($username);
         if (!$this->store->commit()) {
-            return $this->respondWith($this->renderDeleteForm($user, [["error_cannot_write_csv"]]));
+            return $this->respondWith($this->renderEditForm($user, "delete", "", [["error_cannot_write_csv"]]));
         }
         return Response::redirect($request->url()->page("register")->with("admin", "users")->absolute());
     }
 
     /** @param list<array{string}> $errors */
-    private function renderDeleteForm(User $user, array $errors = []): string
+    private function renderEditForm(User $user, string $action, string $password2, array $errors = []): string
     {
-        return $this->view->render("user_delete", [
+        $groups = Groups::retrieve($this->store)->groups();
+        return $this->view->render("user_edit", [
             "errors" => $errors,
             "token" => $this->csrfProtector->token(),
+            "disabled" => $action === "create" ? "" : "disabled",
             "username" => $user->getUsername(),
+            "show_details" => $action !== "delete",
+            "name" => $user->getName(),
+            "email" => $user->getEmail(),
+            "groups" => $this->groupRecords($user, $groups),
+            "states" => $this->states($user),
+            "show_passwords" => $action === "create",
+            "password1" => $user->getPassword(),
+            "password2" => $password2,
+            "button" => "do_" . $action,
+            "button_label" => "label_" . $action,
         ]);
+    }
+
+    /** @return list<array{string,string,string}> */
+    private function states(User $user): array
+    {
+        return array_map(function (string $status) use ($user) {
+            return [$status, "status_$status", $user->getStatus() === $status ? "selected" : ""];
+        }, User::STATUSES);
+    }
+
+    /**
+     * @param list<UserGroup> $groups
+     * @return list<array{string,string}>
+     */
+    private function groupRecords(User $user, array $groups): array
+    {
+        return array_map(function (UserGroup $group) use ($user) {
+            return [
+                $group->getGroupname(),
+                in_array($group->getGroupname(), $user->getAccessgroups(), true) ? "checked" : "",
+            ];
+        }, $groups);
     }
 
     private function respondWith(string $output): Response
