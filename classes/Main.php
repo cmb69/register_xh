@@ -147,10 +147,11 @@ class Main
 
     private function forcedLogout(Request $request): Response
     {
-        $this->loginManager->logout();
+        assert($request->username() !== null);
         $activeUsers = ActiveUsers::update($this->store);
-        $activeUsers->removeUser($request->username() ?? "");
+        $activeUsers->removeUser($request->username());
         $this->store->commit();
+        $this->loginManager->logout();
         return Response::redirect($request->url()->absolute());
     }
 }

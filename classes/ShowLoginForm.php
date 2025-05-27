@@ -182,10 +182,10 @@ class ShowLoginForm
         if (!$request->username()) {
             return Response::create($this->view->message("fail", "error_unauthorized"));
         }
-        $this->loginManager->logout();
         $activeUsers = ActiveUsers::update($this->store);
         $activeUsers->removeUser($request->username());
         $this->store->commit();
+        $this->loginManager->logout();
         $this->logger->logInfo("logout", $this->view->plain("log_logout", $request->username()));
         if ($this->conf["allowed_remember"] && $request->cookie("register_remember")) {
             return Response::redirect($request->url()->without("register_action")->absolute())
